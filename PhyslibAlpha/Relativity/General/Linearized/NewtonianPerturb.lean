@@ -80,7 +80,7 @@ lemma newtonianPerturb_lorenz_gauge (Φ : (Fin 4 → ℝ) → ℝ) (y : Fin 4 �
     (hstat : pd 0 Φ y = 0) (j : Fin 4) :
     lorenzGaugeCond (newtonianPerturb Φ) y j := by
   simp only [lorenzGaugeCond, lorenzDiv, Fin.sum_univ_four, traceReversed_newtonianPerturb,
-    eta4_apply]
+    minkowskiMetric4_apply]
   fin_cases j <;> norm_num
   · simp only [pd_const]
     have hneg : (fun z => -(4 * Φ z)) = fun z => (-4 : ℝ) * Φ z := funext fun _ => by ring
@@ -119,7 +119,7 @@ lemma newtonianPerturb_linEinstein_00 (Φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 
       funext fun z => pd_const_mul k (-4) z
     rw [hev, pd_const_mul]
   rw [htr]
-  simp only [boxEta, Fin.sum_univ_four, eta4_apply, laplacian3]
+  simp only [boxEta, Fin.sum_univ_four, minkowskiMetric4_apply, laplacian3]
   rw [h00, hk 1, hk 2, hk 3]
   norm_num
   ring

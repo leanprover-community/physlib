@@ -71,17 +71,17 @@ structure CurvDeriv where
 /-- The derivative of the Einstein tensor, `∂_e G_ij = ∂_e Ric_ij - (1/2) ∂_e S η_ij`
 (the metric is constant in an orthonormal chart, so `∂η = 0`). -/
 noncomputable def CurvDeriv.dEinstein (D : CurvDeriv) (e : Fin 4) : Tensor2 4 :=
-  fun i j => D.dRic e i j - (1 / 2) * D.dS e * eta4 i j
+  fun i j => D.dRic e i j - (1 / 2) * D.dS e * minkowskiMetric4 i j
 
 /-- Divergence of a family of rank-2 tensor derivatives in an orthonormal chart:
 `∇^a T_ab = ∑ a, η^{aa} ∂_a T_ab`. -/
 noncomputable def divergence (T : Fin 4 → Tensor2 4) (b : Fin 4) : ℝ :=
-  ∑ a, eta4 a a * T a a b
+  ∑ a, minkowskiMetric4 a a * T a a b
 
 /-- Raising and lowering with `η` cancels: `∑ a, f a * (η^{aa} η_ab) = f b`. -/
 lemma sum_eta_mul (f : Fin 4 → ℝ) (b : Fin 4) :
-    (∑ a, f a * (eta4 a a * eta4 a b)) = f b := by
-  fin_cases b <;> simp [Fin.sum_univ_four, eta4]
+    (∑ a, f a * (minkowskiMetric4 a a * minkowskiMetric4 a b)) = f b := by
+  fin_cases b <;> simp [Fin.sum_univ_four, minkowskiMetric4]
 
 /-!
 
@@ -92,14 +92,14 @@ lemma sum_eta_mul (f : Fin 4 → ℝ) (b : Fin 4) :
 /-- The divergence of a linear combination `α Ric + β S g`: the contracted Bianchi identity
 collapses `∇Ric` to `(1/2) ∇S`, leaving `(α/2 + β) ∇_b S`. -/
 lemma divergence_combination (D : CurvDeriv)
-    (hB : ∀ b, (∑ a, eta4 a a * D.dRic a a b) = (1 / 2) * D.dS b)
+    (hB : ∀ b, (∑ a, minkowskiMetric4 a a * D.dRic a a b) = (1 / 2) * D.dS b)
     (α β : ℝ) (b : Fin 4) :
-    divergence (fun e i j => α * D.dRic e i j + β * D.dS e * eta4 i j) b
+    divergence (fun e i j => α * D.dRic e i j + β * D.dS e * minkowskiMetric4 i j) b
       = (α / 2 + β) * D.dS b := by
   have hterm : ∀ a,
-      eta4 a a * (α * D.dRic a a b + β * D.dS a * eta4 a b)
-        = α * (eta4 a a * D.dRic a a b)
-          + β * (D.dS a * (eta4 a a * eta4 a b)) := by
+      minkowskiMetric4 a a * (α * D.dRic a a b + β * D.dS a * minkowskiMetric4 a b)
+        = α * (minkowskiMetric4 a a * D.dRic a a b)
+          + β * (D.dS a * (minkowskiMetric4 a a * minkowskiMetric4 a b)) := by
     intro a
     ring
   simp only [divergence]
@@ -109,11 +109,11 @@ lemma divergence_combination (D : CurvDeriv)
 
 /-- The Einstein tensor is conserved (`∇^a G_ab = 0`) under the contracted Bianchi identity. -/
 lemma divergence_einstein_eq_zero (D : CurvDeriv)
-    (hB : ∀ b, (∑ a, eta4 a a * D.dRic a a b) = (1 / 2) * D.dS b) (b : Fin 4) :
+    (hB : ∀ b, (∑ a, minkowskiMetric4 a a * D.dRic a a b) = (1 / 2) * D.dS b) (b : Fin 4) :
     divergence D.dEinstein b = 0 := by
   have h := divergence_combination D hB 1 (-(1 / 2)) b
   have heq : D.dEinstein
-      = fun e i j => 1 * D.dRic e i j + (-(1 / 2)) * D.dS e * eta4 i j := by
+      = fun e i j => 1 * D.dRic e i j + (-(1 / 2)) * D.dS e * minkowskiMetric4 i j := by
     funext e i j
     simp only [CurvDeriv.dEinstein]
     ring
@@ -123,9 +123,10 @@ lemma divergence_einstein_eq_zero (D : CurvDeriv)
 /-- Uniqueness of the Einstein combination: if `∇_b S ≠ 0` somewhere, `α Ric + β S g` is
 divergence free only when `α = -2β`, i.e. a multiple of `G = Ric - (1/2) S g`. -/
 lemma combination_conserved_iff (D : CurvDeriv)
-    (hB : ∀ b, (∑ a, eta4 a a * D.dRic a a b) = (1 / 2) * D.dS b)
+    (hB : ∀ b, (∑ a, minkowskiMetric4 a a * D.dRic a a b) = (1 / 2) * D.dS b)
     (α β : ℝ) (hne : ∃ b, D.dS b ≠ 0)
-    (h : ∀ b, divergence (fun e i j => α * D.dRic e i j + β * D.dS e * eta4 i j) b = 0) :
+    (h : ∀ b, divergence (fun e i j => α * D.dRic e i j + β * D.dS e * minkowskiMetric4 i j) b
+      = 0) :
     α = -2 * β := by
   obtain ⟨b, hb⟩ := hne
   have h0 : (α / 2 + β) * D.dS b = 0 := by

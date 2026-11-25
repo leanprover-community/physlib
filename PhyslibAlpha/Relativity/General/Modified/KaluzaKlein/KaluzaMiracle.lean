@@ -29,7 +29,7 @@ combine to reduce the 5D scalar curvature `kkScalar5D` to the 4D Einstein–Maxw
 
 - `maxwellF2`, `maxwellStressEnergy`, `maxwellStressEnergy_trace_zero` : 4D Maxwell invariant,
   stress-energy tensor, and tracelessness.
-- `kkRicci44`, `kkRicci4D`, `kkScalar5D`, `kkScalar5D_eq` : Kaluza miracle scalar reduction.
+- `kkRicci44`, `kkRicci4D`, `kkScalar5D`, `kaluza_miracle` : Kaluza miracle scalar reduction.
 - `kkEinstein4D_eq_zero_iff` : equivalence of 5D vacuum and 4D Einstein–Maxwell equations.
 
 ## iii. Table of contents
@@ -77,25 +77,28 @@ lemma maxwellStressEnergy_trace_zero (M : MetricTensor 4) (F : Tensor2 4) :
     (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b * maxwellStressEnergy M F a b) = 0 := by
   simpa [metricTrace, maxwellStressEnergy] using maxwellStressEnergyRaw_trace_zero M F
 
-/-- Fifth-dimension `(4, 4)` Kaluza–Klein Ricci component at unit dilaton `φ = 1`:
-`R^{(5)}_{44} = ¼ F_{ab} F^{ab}`. -/
+/-- Fifth-dimension `(4, 4)` Kaluza–Klein Ricci component in the unit-dilaton (`φ = 1`)
+specialization `R^{(5)}_{44} = ¼ F_{ab} F^{ab}`, factored out to isolate the scalar
+dimensional-reduction step of the Kaluza miracle. -/
 noncomputable def kkRicci44 (M : MetricTensor 4) (F : Tensor2 4) : ℝ :=
   (1 / 4) * maxwellF2 M F
 
-/-- Horizontal 4D Kaluza–Klein Ricci components at unit dilaton `φ = 1`:
-`R^{(5)}_{ab} = R^{(4)}_{ab} - ½ g^{cd} F_{ac} F_{bd}`. -/
+/-- Horizontal 4D Kaluza–Klein Ricci components in the unit-dilaton (`φ = 1`) specialization
+`R^{(5)}_{ab} = R^{(4)}_{ab} - ½ g^{cd} F_{ac} F_{bd}`, factored out to separate the horizontal
+4D curvature shift cleanly from the full 5D trace. -/
 noncomputable def kkRicci4D (M : MetricTensor 4) (R4 : Tensor2 4) (F : Tensor2 4)
     (a b : Fin 4) : ℝ :=
   R4 a b - (1 / 2) * ∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * F a c * F b d
 
-/-- Five-dimensional Kaluza–Klein scalar curvature `R^{(5)} = g^{ab} R^{(5)}_{ab} + R^{(5)}_{44}` at
-unit dilaton `φ = 1`. -/
+/-- Five-dimensional Kaluza–Klein scalar curvature in the unit-dilaton (`φ = 1`) specialization
+`R^{(5)} = g^{ab} R^{(5)}_{ab} + R^{(5)}_{44}`, packaged so `kaluza_miracle` states the 5D-to-4D
+reduction cleanly. -/
 noncomputable def kkScalar5D (M : MetricTensor 4) (R4 : Tensor2 4) (F : Tensor2 4) : ℝ :=
   (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b * kkRicci4D M R4 F a b) + kkRicci44 M F
 
 /-- The Kaluza miracle: the 5D Einstein–Hilbert scalar curvature `R^{(5)}` reduces identically to
 the 4D Einstein–Maxwell Lagrangian `R^{(4)} - ¼ F_{ab} F^{ab}`. -/
-lemma kkScalar5D_eq (M : MetricTensor 4) (R4 : Tensor2 4) (F : Tensor2 4) :
+lemma kaluza_miracle (M : MetricTensor 4) (R4 : Tensor2 4) (F : Tensor2 4) :
     kkScalar5D M R4 F =
       (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b * R4 a b) - (1 / 4) * maxwellF2 M F := by
   unfold kkScalar5D kkRicci4D kkRicci44 maxwellF2
@@ -122,7 +125,7 @@ lemma kkEinstein4D_eq_zero_iff (M : MetricTensor 4) (R4 : Tensor2 4) (F : Tensor
     kkRicci4D M R4 F a b - (1 / 2) * M.g a b * kkScalar5D M R4 F = 0 ↔
       R4 a b - (1 / 2) * M.g a b * (∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * R4 c d) =
         (1 / 2) * maxwellStressEnergy M F a b := by
-  rw [kkScalar5D_eq]
+  rw [kaluza_miracle]
   unfold kkRicci4D maxwellStressEnergy maxwellStressEnergyRaw maxwellF2
   constructor <;> intro h <;> linarith
 

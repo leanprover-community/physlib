@@ -70,7 +70,8 @@ namespace SchwarzschildDeSitter
 /-- The pure-trace part of the frame Riemann tensor for cosmological constant `Λ`:
 `(Λ / 3) (η_{ik} η_{jl} - η_{il} η_{jk})`. -/
 noncomputable def deSitterPart (Λ : ℝ) (i j k l : Fin 4) : ℝ :=
-  (Λ / 3) * (eta4 i k * eta4 j l - eta4 i l * eta4 j k)
+  (Λ / 3) * (minkowskiMetric4 i k * minkowskiMetric4 j l
+    - minkowskiMetric4 i l * minkowskiMetric4 j k)
 
 /-- Antisymmetry of `deSitterPart` in its last pair of indices. -/
 lemma deSitterPart_skew_last (Λ : ℝ) (i j k l : Fin 4) :
@@ -81,19 +82,19 @@ lemma deSitterPart_skew_last (Λ : ℝ) (i j k l : Fin 4) :
 /-- Pair symmetry of `deSitterPart`. -/
 lemma deSitterPart_pair_symm (Λ : ℝ) (i j k l : Fin 4) :
     deSitterPart Λ i j k l = deSitterPart Λ k l i j := by
-  have h1 : eta4 k i = eta4 i k := eta4_symm k i
-  have h2 : eta4 l j = eta4 j l := eta4_symm l j
-  have h3 : eta4 k j = eta4 j k := eta4_symm k j
-  have h4 : eta4 l i = eta4 i l := eta4_symm l i
+  have h1 : minkowskiMetric4 k i = minkowskiMetric4 i k := minkowskiMetric4_symm k i
+  have h2 : minkowskiMetric4 l j = minkowskiMetric4 j l := minkowskiMetric4_symm l j
+  have h3 : minkowskiMetric4 k j = minkowskiMetric4 j k := minkowskiMetric4_symm k j
+  have h4 : minkowskiMetric4 l i = minkowskiMetric4 i l := minkowskiMetric4_symm l i
   simp only [deSitterPart, h1, h2, h3, h4]
   ring
 
 /-- First Bianchi identity for `deSitterPart`. -/
 lemma deSitterPart_bianchi (Λ : ℝ) (i j k l : Fin 4) :
     deSitterPart Λ i j k l + deSitterPart Λ i k l j + deSitterPart Λ i l j k = 0 := by
-  have h1 : eta4 k j = eta4 j k := eta4_symm k j
-  have h2 : eta4 l k = eta4 k l := eta4_symm l k
-  have h3 : eta4 l j = eta4 j l := eta4_symm l j
+  have h1 : minkowskiMetric4 k j = minkowskiMetric4 j k := minkowskiMetric4_symm k j
+  have h2 : minkowskiMetric4 l k = minkowskiMetric4 k l := minkowskiMetric4_symm l k
+  have h3 : minkowskiMetric4 l j = minkowskiMetric4 j l := minkowskiMetric4_symm l j
   simp only [deSitterPart, h1, h2, h3]
   ring
 
@@ -175,24 +176,25 @@ noncomputable def sdsFrameComp (M Λ r : ℝ) (i j k l : Fin 4) : ℝ :=
 
 /-- Frame Ricci tensor `Ric_{σν} = ∑ ρ ρ', η^{ρρ'} R_{ρ'σρν}`. -/
 noncomputable def sdsRic (M Λ r : ℝ) (σ ν : Fin 4) : ℝ :=
-  ∑ ρ, ∑ ρ', eta4 ρ ρ' * sdsFrameComp M Λ r ρ' σ ρ ν
+  ∑ ρ, ∑ ρ', minkowskiMetric4 ρ ρ' * sdsFrameComp M Λ r ρ' σ ρ ν
 
 /-- The Weyl part is trace free and contributes nothing to the Ricci tensor. -/
 lemma weylRic_zero (M r : ℝ) (σ ν : Fin 4) :
-    (∑ ρ, ∑ ρ', eta4 ρ ρ' * (Schwarzschild.schwarzschild (M / r ^ 3)).comp ρ' σ ρ ν) = 0 := by
+    (∑ ρ, ∑ ρ', minkowskiMetric4 ρ ρ' * (Schwarzschild.schwarzschild (M / r ^ 3)).comp ρ' σ ρ ν)
+      = 0 := by
   fin_cases σ <;> fin_cases ν <;>
     simp [Fin.sum_univ_four, Schwarzschild.schwarzschild, Schwarzschild.electricPart] <;>
     ring
 
 /-- The de Sitter trace part contracts to `Λ η` in every entry. -/
 lemma traceRic_eq (Λ : ℝ) (σ ν : Fin 4) :
-    (∑ ρ, ∑ ρ', eta4 ρ ρ' * deSitterPart Λ ρ' σ ρ ν) = Λ * eta4 σ ν := by
+    (∑ ρ, ∑ ρ', minkowskiMetric4 ρ ρ' * deSitterPart Λ ρ' σ ρ ν) = Λ * minkowskiMetric4 σ ν := by
   fin_cases σ <;> fin_cases ν <;>
     simp [Fin.sum_univ_four, deSitterPart] <;> ring
 
 /-- The frame Ricci tensor of Schwarzschild–de Sitter equals `Λ η`. -/
 lemma sdsRic_eq (M Λ r : ℝ) (σ ν : Fin 4) :
-    sdsRic M Λ r σ ν = Λ * eta4 σ ν := by
+    sdsRic M Λ r σ ν = Λ * minkowskiMetric4 σ ν := by
   have hW := weylRic_zero M r σ ν
   have hT := traceRic_eq Λ σ ν
   simp only [sdsRic, sdsFrameComp, mul_add, Finset.sum_add_distrib]
@@ -200,23 +202,23 @@ lemma sdsRic_eq (M Λ r : ℝ) (σ ν : Fin 4) :
   ring
 
 /-- Frame scalar curvature `S = ∑ σ ν, η^{σν} Ric_{σν}`. -/
-noncomputable def sdsScalar (M Λ r : ℝ) : ℝ :=
-  ∑ σ, ∑ ν, eta4 σ ν * sdsRic M Λ r σ ν
+noncomputable def sdsRicciScalar (M Λ r : ℝ) : ℝ :=
+  ∑ σ, ∑ ν, minkowskiMetric4 σ ν * sdsRic M Λ r σ ν
 
 /-- The frame scalar curvature of Schwarzschild–de Sitter equals `4 Λ`. -/
-lemma sdsScalar_eq (M Λ r : ℝ) : sdsScalar M Λ r = 4 * Λ := by
-  simp only [sdsScalar, sdsRic_eq]
+lemma sdsScalar_eq (M Λ r : ℝ) : sdsRicciScalar M Λ r = 4 * Λ := by
+  simp only [sdsRicciScalar, sdsRic_eq]
   simp [Fin.sum_univ_four]
   ring
 
 /-- Frame Einstein tensor `G_{ij} = Ric_{ij} - (1/2) S η_{ij}`. -/
 noncomputable def sdsEinstein (M Λ r : ℝ) (i j : Fin 4) : ℝ :=
-  sdsRic M Λ r i j - (1 / 2) * sdsScalar M Λ r * eta4 i j
+  sdsRic M Λ r i j - (1 / 2) * sdsRicciScalar M Λ r * minkowskiMetric4 i j
 
 /-- The frame Einstein tensor of Schwarzschild–de Sitter equals `-Λ η`, solving
 `G_{ij} + Λ η_{ij} = 0`. -/
 lemma sdsEinstein_eq (M Λ r : ℝ) (i j : Fin 4) :
-    sdsEinstein M Λ r i j = -(Λ * eta4 i j) := by
+    sdsEinstein M Λ r i j = -(Λ * minkowskiMetric4 i j) := by
   simp only [sdsEinstein, sdsRic_eq, sdsScalar_eq]
   ring
 
@@ -259,7 +261,7 @@ lemma schwarzschild_ricci_zero (M r : ℝ) (σ ν : Fin 4) :
   ring
 
 /-- At `Λ = 0`, the frame scalar curvature vanishes. -/
-lemma schwarzschild_scalar_zero (M r : ℝ) : sdsScalar M 0 r = 0 := by
+lemma schwarzschild_scalar_zero (M r : ℝ) : sdsRicciScalar M 0 r = 0 := by
   rw [sdsScalar_eq]
   ring
 
@@ -283,7 +285,7 @@ noncomputable def sdsFrameCurvDeriv : CurvDeriv where
 
 /-- The contracted Bianchi identity holds for the frame Einstein space without assumption. -/
 lemma sds_frame_bianchi :
-    ∀ b, (∑ a, eta4 a a * sdsFrameCurvDeriv.dRic a a b)
+    ∀ b, (∑ a, minkowskiMetric4 a a * sdsFrameCurvDeriv.dRic a a b)
       = (1 / 2) * sdsFrameCurvDeriv.dS b := by
   intro b
   simp [sdsFrameCurvDeriv]

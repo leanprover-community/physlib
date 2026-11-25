@@ -37,10 +37,11 @@ This module feeds `staticSphericalMetric f` and its inverse directly through
 
 - `staticSphericalMetricTensor` : bundled `MetricTensor 4` at any nondegenerate chart point
   `(r ≠ 0, f(r) ≠ 0, sin θ ≠ 0)`.
-- `christoffel_eq_staticSphericalG` and `pd_staticSphericalG_eq_staticSphericalDG` : exact
+- `christoffel_eq_staticSphericalChristoffel` and `pd_staticSphericalChristoffel_eq_deriv` : exact
   identification of all 64 Christoffel symbols and all 256 Christoffel partial derivatives from
   smoothness of `f` at `r`.
-- `ricciOf_staticSpherical`, `scalarOf_staticSpherical`, and `einsteinOf_staticSpherical` :
+- `ricciTensorOf_staticSpherical`, `ricciScalarOf_staticSpherical`, and
+  `einsteinTensorOf_staticSpherical` :
   exact closed-form coordinate Ricci, scalar, and Einstein tensors in terms of `f`, `f'`, and `f''`.
 
 This general engine instantiates immediately to Schwarzschild, Schwarzschild–de Sitter, and
@@ -52,9 +53,12 @@ Reissner–Nordström electrovacuum spacetimes.
   parameterised by its radial lapse function.
 - `staticSphericalMetric`, `staticSphericalMetricInv`, `staticSphericalMetricTensor` : metric,
   inverse, and certified `MetricTensor 4` bundle.
-- `staticSphericalG`, `staticSphericalDG` : closed-form Christoffel and partial-derivative tables.
-- `christoffel_eq_staticSphericalG`, `riemann_staticSpherical_eq_data` : metric-to-Riemann bridge.
-- `ricciOf_staticSpherical`, `scalarOf_staticSpherical`, `einsteinOf_staticSpherical` :
+- `staticSphericalChristoffel`, `staticSphericalChristoffelDeriv` : closed-form Christoffel and
+  partial-derivative tables.
+- `christoffel_eq_staticSphericalChristoffel`, `riemann_staticSpherical_eq_data` :
+  metric-to-Riemann bridge.
+- `ricciTensorOf_staticSpherical`, `ricciScalarOf_staticSpherical`,
+  `einsteinTensorOf_staticSpherical` :
   pipeline curvature formulas for arbitrary twice-differentiable `f`.
 
 ## iii. Table of contents
@@ -162,8 +166,9 @@ noncomputable def staticSphericalMetricTensor (f : ℝ → ℝ) (x : Fin 4 → �
 -/
 
 /-- Closed-form Christoffel symbols `Γ^k_{ij}` of `staticSphericalMetric f` in `(t, r, θ, φ)`
-coordinates. -/
-noncomputable def staticSphericalG (f : ℝ → ℝ) (x : Fin 4 → ℝ) (k i j : Fin 4) : ℝ :=
+coordinates. Factored out separately from `Pipeline.christoffel` so symbolic radial
+differentiation avoids differentiating 4-term metric-inverse sums at each step. -/
+noncomputable def staticSphericalChristoffel (f : ℝ → ℝ) (x : Fin 4 → ℝ) (k i j : Fin 4) : ℝ :=
   if k = 0 then
     (if (i = 1 ∧ j = 0) ∨ (i = 0 ∧ j = 1) then deriv f (x 1) / (2 * f (x 1)) else 0)
   else if k = 1 then
@@ -269,32 +274,33 @@ private lemma pd_metric_r (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hf_diff : Diffe
     | exact pd_metric_r_33 f x
     | simp [pd, staticSphericalMetric]
 
-/-- All 64 Christoffel symbols computed by `christoffel` match `staticSphericalG` at any regular
+/-- All 64 Christoffel symbols computed by `christoffel` match `staticSphericalChristoffel` at any
+regular
 point where `f` is differentiable. -/
-lemma christoffel_eq_staticSphericalG (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma christoffel_eq_staticSphericalChristoffel (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : f (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (hf_diff : DifferentiableAt ℝ f (x 1)) :
     ∀ k i j, christoffel (staticSphericalMetric f) (staticSphericalMetricInv f) x k i j
-      = staticSphericalG f x k i j := by
+      = staticSphericalChristoffel f x k i j := by
   intro k i j
   fin_cases k <;> fin_cases i <;> fin_cases j <;>
-    simp [christoffel, staticSphericalG, staticSphericalMetricInv,
+    simp [christoffel, staticSphericalChristoffel, staticSphericalMetricInv,
       pd_metric_theta, pd_metric_r f x hf_diff hf]
   all_goals field_simp [hr, hf, hsin]
 
-/-- Neighbourhood equality promotes `christoffel = staticSphericalG` to coordinate partial
+/-- Neighbourhood equality promotes `christoffel = staticSphericalChristoffel` to coordinate partial
 derivatives along every axis `μ`. -/
-lemma pd_christoffel_eq_pd_staticSphericalG (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma pd_christoffel_eq_pd_staticSphericalChristoffel (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : f (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ f s) (μ a b c : Fin 4) :
     pd μ (fun y => christoffel (staticSphericalMetric f) (staticSphericalMetricInv f) y a b c) x
-      = pd μ (fun y => staticSphericalG f y a b c) x := by
+      = pd μ (fun y => staticSphericalChristoffel f y a b c) x := by
   fin_cases μ
   · have heq : (fun s : ℝ =>
         christoffel (staticSphericalMetric f) (staticSphericalMetricInv f)
           (Function.update x 0 s) a b c)
-        =ᶠ[nhds (x 0)] (fun s : ℝ => staticSphericalG f (Function.update x 0 s) a b c) :=
+        =ᶠ[nhds (x 0)] (fun s : ℝ => staticSphericalChristoffel f (Function.update x 0 s) a b c) :=
       Filter.Eventually.of_forall (fun s =>
-        christoffel_eq_staticSphericalG f (Function.update x 0 s) hr hf hsin
+        christoffel_eq_staticSphericalChristoffel f (Function.update x 0 s) hr hf hsin
           hf_diff.self_of_nhds a b c)
     exact Filter.EventuallyEq.deriv_eq heq
   · have hr' : ∀ᶠ s in nhds (x 1), s ≠ 0 := eventually_ne_nhds hr
@@ -303,9 +309,10 @@ lemma pd_christoffel_eq_pd_staticSphericalG (f : ℝ → ℝ) (x : Fin 4 → ℝ
     have heq : (fun s : ℝ =>
         christoffel (staticSphericalMetric f) (staticSphericalMetricInv f)
           (Function.update x 1 s) a b c)
-        =ᶠ[nhds (x 1)] (fun s : ℝ => staticSphericalG f (Function.update x 1 s) a b c) := by
+        =ᶠ[nhds (x 1)] (fun s :
+          ℝ => staticSphericalChristoffel f (Function.update x 1 s) a b c) := by
       filter_upwards [hr', hf', hf_diff] with s hs1 hs2 hs3
-      exact christoffel_eq_staticSphericalG f (Function.update x 1 s)
+      exact christoffel_eq_staticSphericalChristoffel f (Function.update x 1 s)
         (by simpa using hs1) (by simpa using hs2) (by simpa using hsin)
         (by simpa using hs3) a b c
     exact Filter.EventuallyEq.deriv_eq heq
@@ -314,18 +321,19 @@ lemma pd_christoffel_eq_pd_staticSphericalG (f : ℝ → ℝ) (x : Fin 4 → ℝ
     have heq : (fun s : ℝ =>
         christoffel (staticSphericalMetric f) (staticSphericalMetricInv f)
           (Function.update x 2 s) a b c)
-        =ᶠ[nhds (x 2)] (fun s : ℝ => staticSphericalG f (Function.update x 2 s) a b c) := by
+        =ᶠ[nhds (x 2)] (fun s :
+          ℝ => staticSphericalChristoffel f (Function.update x 2 s) a b c) := by
       filter_upwards [hsin'] with s hs
-      exact christoffel_eq_staticSphericalG f (Function.update x 2 s)
+      exact christoffel_eq_staticSphericalChristoffel f (Function.update x 2 s)
         (by simpa using hr) (by simpa using hf) (by simpa using hs)
         (by simpa using hf_diff.self_of_nhds) a b c
     exact Filter.EventuallyEq.deriv_eq heq
   · have heq : (fun s : ℝ =>
         christoffel (staticSphericalMetric f) (staticSphericalMetricInv f)
           (Function.update x 3 s) a b c)
-        =ᶠ[nhds (x 3)] (fun s : ℝ => staticSphericalG f (Function.update x 3 s) a b c) :=
+        =ᶠ[nhds (x 3)] (fun s : ℝ => staticSphericalChristoffel f (Function.update x 3 s) a b c) :=
       Filter.Eventually.of_forall (fun s =>
-        christoffel_eq_staticSphericalG f (Function.update x 3 s) hr hf hsin
+        christoffel_eq_staticSphericalChristoffel f (Function.update x 3 s) hr hf hsin
           hf_diff.self_of_nhds a b c)
     exact Filter.EventuallyEq.deriv_eq heq
 
@@ -335,9 +343,10 @@ lemma pd_christoffel_eq_pd_staticSphericalG (f : ℝ → ℝ) (x : Fin 4 → ℝ
 
 -/
 
-/-- Closed-form partial-derivative table `∂_μ staticSphericalG^k_{ij}` across all 256 index
-tuples `(μ, k, i, j)`. -/
-noncomputable def staticSphericalDG (f : ℝ → ℝ) (μ : Fin 4) (x : Fin 4 → ℝ)
+/-- Closed-form partial-derivative table `∂_μ staticSphericalChristoffel^k_{ij}` across all
+256 index tuples `(μ, k, i, j)`, separating scalar differentiation from `Pipeline.riemann`
+assembly. -/
+noncomputable def staticSphericalChristoffelDeriv (f : ℝ → ℝ) (μ : Fin 4) (x : Fin 4 → ℝ)
     (k i j : Fin 4) : ℝ :=
   if μ = 1 then
     (if k = 0 ∧ ((i = 1 ∧ j = 0) ∨ (i = 0 ∧ j = 1)) then
@@ -366,69 +375,74 @@ noncomputable def staticSphericalDG (f : ℝ → ℝ) (μ : Fin 4) (x : Fin 4 �
 
 private lemma pd_G_r_001 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hf : f (x 1) ≠ 0)
     (hf1 : DifferentiableAt ℝ f (x 1)) (hf2 : DifferentiableAt ℝ (deriv f) (x 1)) :
-    pd 1 (fun y => staticSphericalG f y 0 0 1) x = staticSphericalDG f 1 x 0 0 1 := by
-  have hfun : (fun s : ℝ => staticSphericalG f (Function.update x 1 s) 0 0 1)
+    pd 1 (fun y => staticSphericalChristoffel f y 0 0 1) x
+      = staticSphericalChristoffelDeriv f 1 x 0 0 1 := by
+  have hfun : (fun s : ℝ => staticSphericalChristoffel f (Function.update x 1 s) 0 0 1)
       = fun s : ℝ => deriv f s / (2 * f s) := by
     funext s
-    simp [staticSphericalG]
+    simp [staticSphericalChristoffel]
   have h2f : 2 * f (x 1) ≠ 0 := mul_ne_zero (by norm_num) hf
   have hd : HasDerivAt (fun s : ℝ => deriv f s / (2 * f s))
       ((deriv (deriv f) (x 1) * (2 * f (x 1)) - deriv f (x 1) * (2 * deriv f (x 1)))
         / (2 * f (x 1)) ^ 2) (x 1) := by
     convert hf2.hasDerivAt.div (hf1.hasDerivAt.const_mul 2) h2f using 1
   rw [pd, hfun, hd.deriv]
-  simp [staticSphericalDG]
+  simp [staticSphericalChristoffelDeriv]
   field_simp [hf]
 
 private lemma pd_G_r_100 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hf1 : DifferentiableAt ℝ f (x 1))
     (hf2 : DifferentiableAt ℝ (deriv f) (x 1)) :
-    pd 1 (fun y => staticSphericalG f y 1 0 0) x = staticSphericalDG f 1 x 1 0 0 := by
-  have hfun : (fun s : ℝ => staticSphericalG f (Function.update x 1 s) 1 0 0)
+    pd 1 (fun y => staticSphericalChristoffel f y 1 0 0) x
+      = staticSphericalChristoffelDeriv f 1 x 1 0 0 := by
+  have hfun : (fun s : ℝ => staticSphericalChristoffel f (Function.update x 1 s) 1 0 0)
       = fun s : ℝ => f s * deriv f s / 2 := by
     funext s
-    simp [staticSphericalG]
+    simp [staticSphericalChristoffel]
   have hd : HasDerivAt (fun s : ℝ => f s * deriv f s / 2)
       ((deriv f (x 1) * deriv f (x 1) + f (x 1) * deriv (deriv f) (x 1)) / 2) (x 1) := by
     convert (hf1.hasDerivAt.mul hf2.hasDerivAt).div_const 2 using 1
   rw [pd, hfun, hd.deriv]
-  simp [staticSphericalDG]
+  simp [staticSphericalChristoffelDeriv]
   ring
 
 private lemma pd_G_r_111 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hf : f (x 1) ≠ 0)
     (hf1 : DifferentiableAt ℝ f (x 1)) (hf2 : DifferentiableAt ℝ (deriv f) (x 1)) :
-    pd 1 (fun y => staticSphericalG f y 1 1 1) x = staticSphericalDG f 1 x 1 1 1 := by
-  have hfun : (fun s : ℝ => staticSphericalG f (Function.update x 1 s) 1 1 1)
+    pd 1 (fun y => staticSphericalChristoffel f y 1 1 1) x
+      = staticSphericalChristoffelDeriv f 1 x 1 1 1 := by
+  have hfun : (fun s : ℝ => staticSphericalChristoffel f (Function.update x 1 s) 1 1 1)
       = fun s : ℝ => -(deriv f s / (2 * f s)) := by
     funext s
-    simp [staticSphericalG]
+    simp [staticSphericalChristoffel]
   have h2f : 2 * f (x 1) ≠ 0 := mul_ne_zero (by norm_num) hf
   have hd : HasDerivAt (fun s : ℝ => -(deriv f s / (2 * f s)))
       (-((deriv (deriv f) (x 1) * (2 * f (x 1)) - deriv f (x 1) * (2 * deriv f (x 1)))
         / (2 * f (x 1)) ^ 2)) (x 1) := by
     convert (hf2.hasDerivAt.div (hf1.hasDerivAt.const_mul 2) h2f).neg using 1
   rw [pd, hfun, hd.deriv]
-  simp [staticSphericalDG]
+  simp [staticSphericalChristoffelDeriv]
   field_simp [hf]
 
 private lemma pd_G_r_122 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hf1 : DifferentiableAt ℝ f (x 1)) :
-    pd 1 (fun y => staticSphericalG f y 1 2 2) x = staticSphericalDG f 1 x 1 2 2 := by
-  have hfun : (fun s : ℝ => staticSphericalG f (Function.update x 1 s) 1 2 2)
+    pd 1 (fun y => staticSphericalChristoffel f y 1 2 2) x
+      = staticSphericalChristoffelDeriv f 1 x 1 2 2 := by
+  have hfun : (fun s : ℝ => staticSphericalChristoffel f (Function.update x 1 s) 1 2 2)
       = fun s : ℝ => -(s * f s) := by
     funext s
-    simp [staticSphericalG]
+    simp [staticSphericalChristoffel]
   have hd : HasDerivAt (fun s : ℝ => -(s * f s))
       (-(1 * f (x 1) + x 1 * deriv f (x 1))) (x 1) := by
     convert ((hasDerivAt_id (x 1)).mul hf1.hasDerivAt).neg using 2 <;> simp
   rw [pd, hfun, hd.deriv]
-  simp [staticSphericalDG]
+  simp [staticSphericalChristoffelDeriv]
   ring
 
 private lemma pd_G_r_133 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hf1 : DifferentiableAt ℝ f (x 1)) :
-    pd 1 (fun y => staticSphericalG f y 1 3 3) x = staticSphericalDG f 1 x 1 3 3 := by
-  have hfun : (fun s : ℝ => staticSphericalG f (Function.update x 1 s) 1 3 3)
+    pd 1 (fun y => staticSphericalChristoffel f y 1 3 3) x
+      = staticSphericalChristoffelDeriv f 1 x 1 3 3 := by
+  have hfun : (fun s : ℝ => staticSphericalChristoffel f (Function.update x 1 s) 1 3 3)
       = fun s : ℝ => -(s * (Real.sin (x 2) ^ 2 * f s)) := by
     funext s
-    simp [staticSphericalG]
+    simp [staticSphericalChristoffel]
     ring
   have hd : HasDerivAt (fun s : ℝ => -(s * (Real.sin (x 2) ^ 2 * f s)))
       (-(1 * (Real.sin (x 2) ^ 2 * f (x 1))
@@ -436,37 +450,39 @@ private lemma pd_G_r_133 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hf1 : Differenti
     convert ((hasDerivAt_id (x 1)).mul (hf1.hasDerivAt.const_mul (Real.sin (x 2) ^ 2))).neg
       using 2 <;> simp
   rw [pd, hfun, hd.deriv]
-  simp [staticSphericalDG]
+  simp [staticSphericalChristoffelDeriv]
   ring
 
 private lemma pd_G_r_inv (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (k i j : Fin 4)
     (hmatch : (k = 2 ∧ ((i = 1 ∧ j = 2) ∨ (i = 2 ∧ j = 1)))
       ∨ (k = 3 ∧ ((i = 1 ∧ j = 3) ∨ (i = 3 ∧ j = 1)))) :
-    pd 1 (fun y => staticSphericalG f y k i j) x = staticSphericalDG f 1 x k i j := by
+    pd 1 (fun y => staticSphericalChristoffel f y k i j) x
+      = staticSphericalChristoffelDeriv f 1 x k i j := by
   have hderiv : deriv (fun s : ℝ => 1 / s) (x 1) = -1 / (x 1) ^ 2 := by
     have hfun : (fun s : ℝ => 1 / s) = fun s : ℝ => s⁻¹ := by funext s; simp [one_div]
     rw [hfun, (hasDerivAt_inv hr).deriv]
     ring
   rcases hmatch with ⟨rfl, ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩⟩ | ⟨rfl, ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩⟩
-  · have hfun : (fun s : ℝ => staticSphericalG f (Function.update x 1 s) 2 1 2)
-        = fun s : ℝ => 1 / s := by funext s; simp [staticSphericalG]
-    rw [pd, hfun, hderiv]; simp [staticSphericalDG]
-  · have hfun : (fun s : ℝ => staticSphericalG f (Function.update x 1 s) 2 2 1)
-        = fun s : ℝ => 1 / s := by funext s; simp [staticSphericalG]
-    rw [pd, hfun, hderiv]; simp [staticSphericalDG]
-  · have hfun : (fun s : ℝ => staticSphericalG f (Function.update x 1 s) 3 1 3)
-        = fun s : ℝ => 1 / s := by funext s; simp [staticSphericalG]
-    rw [pd, hfun, hderiv]; simp [staticSphericalDG]
-  · have hfun : (fun s : ℝ => staticSphericalG f (Function.update x 1 s) 3 3 1)
-        = fun s : ℝ => 1 / s := by funext s; simp [staticSphericalG]
-    rw [pd, hfun, hderiv]; simp [staticSphericalDG]
+  · have hfun : (fun s : ℝ => staticSphericalChristoffel f (Function.update x 1 s) 2 1 2)
+        = fun s : ℝ => 1 / s := by funext s; simp [staticSphericalChristoffel]
+    rw [pd, hfun, hderiv]; simp [staticSphericalChristoffelDeriv]
+  · have hfun : (fun s : ℝ => staticSphericalChristoffel f (Function.update x 1 s) 2 2 1)
+        = fun s : ℝ => 1 / s := by funext s; simp [staticSphericalChristoffel]
+    rw [pd, hfun, hderiv]; simp [staticSphericalChristoffelDeriv]
+  · have hfun : (fun s : ℝ => staticSphericalChristoffel f (Function.update x 1 s) 3 1 3)
+        = fun s : ℝ => 1 / s := by funext s; simp [staticSphericalChristoffel]
+    rw [pd, hfun, hderiv]; simp [staticSphericalChristoffelDeriv]
+  · have hfun : (fun s : ℝ => staticSphericalChristoffel f (Function.update x 1 s) 3 3 1)
+        = fun s : ℝ => 1 / s := by funext s; simp [staticSphericalChristoffel]
+    rw [pd, hfun, hderiv]; simp [staticSphericalChristoffelDeriv]
 
 private lemma pd_G_t_133 (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
-    pd 2 (fun y => staticSphericalG f y 1 3 3) x = staticSphericalDG f 2 x 1 3 3 := by
-  have hfun : (fun s : ℝ => staticSphericalG f (Function.update x 2 s) 1 3 3)
+    pd 2 (fun y => staticSphericalChristoffel f y 1 3 3) x
+      = staticSphericalChristoffelDeriv f 2 x 1 3 3 := by
+  have hfun : (fun s : ℝ => staticSphericalChristoffel f (Function.update x 2 s) 1 3 3)
       = fun s : ℝ => -(x 1 * Real.sin s ^ 2 * f (x 1)) := by
     funext s
-    simp [staticSphericalG]
+    simp [staticSphericalChristoffel]
   have hsinSq : HasDerivAt (fun s : ℝ => Real.sin s ^ 2)
       (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := by
     convert (Real.hasDerivAt_sin (x 2)).pow 2 using 1
@@ -475,27 +491,29 @@ private lemma pd_G_t_133 (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
   have hderiv : deriv (fun s : ℝ => -(x 1 * Real.sin s ^ 2 * f (x 1))) (x 2)
       = -(x 1 * (2 * Real.sin (x 2) * Real.cos (x 2)) * f (x 1)) := hd.deriv
   rw [pd, hfun, hderiv]
-  simp [staticSphericalDG]
+  simp [staticSphericalChristoffelDeriv]
 
 private lemma pd_G_t_233 (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
-    pd 2 (fun y => staticSphericalG f y 2 3 3) x = staticSphericalDG f 2 x 2 3 3 := by
-  have hfun : (fun s : ℝ => staticSphericalG f (Function.update x 2 s) 2 3 3)
+    pd 2 (fun y => staticSphericalChristoffel f y 2 3 3) x
+      = staticSphericalChristoffelDeriv f 2 x 2 3 3 := by
+  have hfun : (fun s : ℝ => staticSphericalChristoffel f (Function.update x 2 s) 2 3 3)
       = fun s : ℝ => -(Real.sin s * Real.cos s) := by
     funext s
-    simp [staticSphericalG]
+    simp [staticSphericalChristoffel]
   have hd : HasDerivAt (fun s : ℝ => -(Real.sin s * Real.cos s))
       (Real.sin (x 2) ^ 2 - Real.cos (x 2) ^ 2) (x 2) := by
     convert ((Real.hasDerivAt_sin (x 2)).mul (Real.hasDerivAt_cos (x 2))).neg using 1
     ring
   rw [pd, hfun, hd.deriv]
-  simp [staticSphericalDG]
+  simp [staticSphericalChristoffelDeriv]
 
 private lemma pd_G_t_323 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hsin : Real.sin (x 2) ≠ 0) :
-    pd 2 (fun y => staticSphericalG f y 3 2 3) x = staticSphericalDG f 2 x 3 2 3 := by
-  have hfun : (fun s : ℝ => staticSphericalG f (Function.update x 2 s) 3 2 3)
+    pd 2 (fun y => staticSphericalChristoffel f y 3 2 3) x
+      = staticSphericalChristoffelDeriv f 2 x 3 2 3 := by
+  have hfun : (fun s : ℝ => staticSphericalChristoffel f (Function.update x 2 s) 3 2 3)
       = fun s : ℝ => Real.cos s / Real.sin s := by
     funext s
-    simp [staticSphericalG]
+    simp [staticSphericalChristoffel]
   have hsc : Real.sin (x 2) ^ 2 + Real.cos (x 2) ^ 2 = 1 := Real.sin_sq_add_cos_sq (x 2)
   have hd : HasDerivAt (fun s : ℝ => Real.cos s / Real.sin s)
       (-1 / Real.sin (x 2) ^ 2) (x 2) := by
@@ -505,29 +523,34 @@ private lemma pd_G_t_323 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hsin : Real.sin 
     convert h using 1
     rw [h1]
   rw [pd, hfun, hd.deriv]
-  simp [staticSphericalDG]
+  simp [staticSphericalChristoffelDeriv]
 
 private lemma pd_G_eq_03 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (μ k i j : Fin 4)
     (hμ : μ = 0 ∨ μ = 3) :
-    pd μ (fun y => staticSphericalG f y k i j) x = staticSphericalDG f μ x k i j := by
+    pd μ (fun y => staticSphericalChristoffel f y k i j) x
+      = staticSphericalChristoffelDeriv f μ x k i j := by
   rcases hμ with rfl | rfl
-  · fin_cases k <;> fin_cases i <;> fin_cases j <;> simp [pd, staticSphericalG, staticSphericalDG]
-  · fin_cases k <;> fin_cases i <;> fin_cases j <;> simp [pd, staticSphericalG, staticSphericalDG]
+  · fin_cases k <;> fin_cases i <;> fin_cases j <;> simp [pd, staticSphericalChristoffel,
+    staticSphericalChristoffelDeriv]
+  · fin_cases k <;> fin_cases i <;> fin_cases j <;> simp [pd, staticSphericalChristoffel,
+    staticSphericalChristoffelDeriv]
 
 private lemma pd_G_eq_2 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hsin : Real.sin (x 2) ≠ 0)
     (k i j : Fin 4) :
-    pd 2 (fun y => staticSphericalG f y k i j) x = staticSphericalDG f 2 x k i j := by
+    pd 2 (fun y => staticSphericalChristoffel f y k i j) x
+      = staticSphericalChristoffelDeriv f 2 x k i j := by
   fin_cases k <;> fin_cases i <;> fin_cases j <;>
     first
     | exact pd_G_t_133 f x
     | exact pd_G_t_233 f x
     | exact pd_G_t_323 f x hsin
-    | simp [pd, staticSphericalG, staticSphericalDG]
+    | simp [pd, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
 
 private lemma pd_G_eq_1 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : f (x 1) ≠ 0)
     (hf1 : DifferentiableAt ℝ f (x 1)) (hf2 : DifferentiableAt ℝ (deriv f) (x 1))
     (k i j : Fin 4) :
-    pd 1 (fun y => staticSphericalG f y k i j) x = staticSphericalDG f 1 x k i j := by
+    pd 1 (fun y => staticSphericalChristoffel f y k i j) x
+      = staticSphericalChristoffelDeriv f 1 x k i j := by
   fin_cases k <;> fin_cases i <;> fin_cases j <;>
     first
     | exact pd_G_r_001 f x hf hf1 hf2
@@ -536,15 +559,16 @@ private lemma pd_G_eq_1 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (
     | exact pd_G_r_122 f x hf1
     | exact pd_G_r_133 f x hf1
     | exact pd_G_r_inv x hr _ _ _ (by decide)
-    | simp [pd, staticSphericalG, staticSphericalDG]
+    | simp [pd, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
 
-/-- Complete identification of all 256 partial derivatives of `staticSphericalG` with
-`staticSphericalDG`. -/
-lemma pd_staticSphericalG_eq_staticSphericalDG (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+/-- Complete identification of all 256 partial derivatives of `staticSphericalChristoffel` with
+`staticSphericalChristoffelDeriv`. -/
+lemma pd_staticSphericalChristoffel_eq_deriv (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : f (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf1 : DifferentiableAt ℝ f (x 1)) (hf2 : DifferentiableAt ℝ (deriv f) (x 1))
     (μ k i j : Fin 4) :
-    pd μ (fun y => staticSphericalG f y k i j) x = staticSphericalDG f μ x k i j := by
+    pd μ (fun y => staticSphericalChristoffel f y k i j) x
+      = staticSphericalChristoffelDeriv f μ x k i j := by
   fin_cases μ
   · exact pd_G_eq_03 f x 0 k i j (Or.inl rfl)
   · exact pd_G_eq_1 f x hr hf hf1 hf2 k i j
@@ -558,57 +582,59 @@ lemma pd_staticSphericalG_eq_staticSphericalDG (f : ℝ → ℝ) (x : Fin 4 → 
 -/
 
 /-- The pipeline Riemann tensor of `staticSphericalMetric f` equals
-`riemannFromData (staticSphericalG f) (staticSphericalDG f)` across all 256 components. -/
+`riemannFromData (staticSphericalChristoffel f) (staticSphericalChristoffelDeriv f)` across all
+256 components. -/
 lemma riemann_staticSpherical_eq_data (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : f (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ f s)
     (hf2 : DifferentiableAt ℝ (deriv f) (x 1)) (ρ σ μ ν : Fin 4) :
     riemann (staticSphericalMetric f) (staticSphericalMetricInv f) x ρ σ μ ν
-      = riemannFromData (staticSphericalG f) (staticSphericalDG f) x ρ σ μ ν := by
+      = riemannFromData (staticSphericalChristoffel f) (staticSphericalChristoffelDeriv f) x ρ σ μ
+          ν := by
   rw [riemann_eq_riemannFromData]
   have hf1 : DifferentiableAt ℝ f (x 1) := hf_diff.self_of_nhds
   have h1 : pd μ (fun y =>
       christoffel (staticSphericalMetric f) (staticSphericalMetricInv f) y ρ ν σ) x
-      = staticSphericalDG f μ x ρ ν σ :=
-    (pd_christoffel_eq_pd_staticSphericalG f x hr hf hsin hf_diff μ ρ ν σ).trans
-      (pd_staticSphericalG_eq_staticSphericalDG f x hr hf hsin hf1 hf2 μ ρ ν σ)
+      = staticSphericalChristoffelDeriv f μ x ρ ν σ :=
+    (pd_christoffel_eq_pd_staticSphericalChristoffel f x hr hf hsin hf_diff μ ρ ν σ).trans
+      (pd_staticSphericalChristoffel_eq_deriv f x hr hf hsin hf1 hf2 μ ρ ν σ)
   have h2 : pd ν (fun y =>
       christoffel (staticSphericalMetric f) (staticSphericalMetricInv f) y ρ μ σ) x
-      = staticSphericalDG f ν x ρ μ σ :=
-    (pd_christoffel_eq_pd_staticSphericalG f x hr hf hsin hf_diff ν ρ μ σ).trans
-      (pd_staticSphericalG_eq_staticSphericalDG f x hr hf hsin hf1 hf2 ν ρ μ σ)
-  simp only [riemannFromData, h1, h2, christoffel_eq_staticSphericalG f x hr hf hsin hf1]
+      = staticSphericalChristoffelDeriv f ν x ρ μ σ :=
+    (pd_christoffel_eq_pd_staticSphericalChristoffel f x hr hf hsin hf_diff ν ρ μ σ).trans
+      (pd_staticSphericalChristoffel_eq_deriv f x hr hf hsin hf1 hf2 ν ρ μ σ)
+  simp only [riemannFromData, h1, h2, christoffel_eq_staticSphericalChristoffel f x hr hf hsin hf1]
 
 private lemma ricci_ss_00 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : f (x 1) ≠ 0)
     (hsin : Real.sin (x 2) ≠ 0) (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ f s)
     (hf2 : DifferentiableAt ℝ (deriv f) (x 1)) :
-    ricciOf (staticSphericalMetric f) (staticSphericalMetricInv f) x 0 0
+    ricciTensorOf (staticSphericalMetric f) (staticSphericalMetricInv f) x 0 0
       = f (x 1) * (deriv (deriv f) (x 1) / 2 + deriv f (x 1) / x 1) := by
-  simp [ricciOf, Fin.sum_univ_four,
+  simp [ricciTensorOf, Fin.sum_univ_four,
     riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-    riemannFromData, staticSphericalG, staticSphericalDG]
+    riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
   field_simp [hr, hf]
   ring
 
 private lemma ricci_ss_11 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : f (x 1) ≠ 0)
     (hsin : Real.sin (x 2) ≠ 0) (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ f s)
     (hf2 : DifferentiableAt ℝ (deriv f) (x 1)) :
-    ricciOf (staticSphericalMetric f) (staticSphericalMetricInv f) x 1 1
+    ricciTensorOf (staticSphericalMetric f) (staticSphericalMetricInv f) x 1 1
       = -(deriv (deriv f) (x 1) / 2 + deriv f (x 1) / x 1) / f (x 1) := by
-  simp [ricciOf, Fin.sum_univ_four,
+  simp [ricciTensorOf, Fin.sum_univ_four,
     riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-    riemannFromData, staticSphericalG, staticSphericalDG]
+    riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
   field_simp [hr, hf]
   ring
 
 private lemma ricci_ss_22 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : f (x 1) ≠ 0)
     (hsin : Real.sin (x 2) ≠ 0) (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ f s)
     (hf2 : DifferentiableAt ℝ (deriv f) (x 1)) :
-    ricciOf (staticSphericalMetric f) (staticSphericalMetricInv f) x 2 2
+    ricciTensorOf (staticSphericalMetric f) (staticSphericalMetricInv f) x 2 2
       = 1 - f (x 1) - x 1 * deriv f (x 1) := by
-  simp [ricciOf, Fin.sum_univ_four,
+  simp [ricciTensorOf, Fin.sum_univ_four,
     riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-    riemannFromData, staticSphericalG, staticSphericalDG]
+    riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
   field_simp [hr, hf, hsin]
   rw [Real.sin_sq (x 2)]
   ring
@@ -616,21 +642,21 @@ private lemma ricci_ss_22 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
 private lemma ricci_ss_33 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : f (x 1) ≠ 0)
     (hsin : Real.sin (x 2) ≠ 0) (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ f s)
     (hf2 : DifferentiableAt ℝ (deriv f) (x 1)) :
-    ricciOf (staticSphericalMetric f) (staticSphericalMetricInv f) x 3 3
+    ricciTensorOf (staticSphericalMetric f) (staticSphericalMetricInv f) x 3 3
       = (1 - f (x 1) - x 1 * deriv f (x 1)) * Real.sin (x 2) ^ 2 := by
-  simp [ricciOf, Fin.sum_univ_four,
+  simp [ricciTensorOf, Fin.sum_univ_four,
     riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-    riemannFromData, staticSphericalG, staticSphericalDG]
+    riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
   field_simp [hr, hf, hsin]
   ring
 
 /-- Complete coordinate-pipeline Ricci tensor for any static spherically symmetric metric
 `ds² = -f(r) dt² + f(r)⁻¹ dr² + r² dΩ²`. -/
-lemma ricciOf_staticSpherical (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma ricciTensorOf_staticSpherical (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : f (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ f s)
     (hf2 : DifferentiableAt ℝ (deriv f) (x 1)) (σ ν : Fin 4) :
-    ricciOf (staticSphericalMetric f) (staticSphericalMetricInv f) x σ ν
+    ricciTensorOf (staticSphericalMetric f) (staticSphericalMetricInv f) x σ ν
       = if σ = ν then
           if σ = 0 then f (x 1) * (deriv (deriv f) (x 1) / 2 + deriv f (x 1) / x 1)
           else if σ = 1 then -(deriv (deriv f) (x 1) / 2 + deriv f (x 1) / x 1) / f (x 1)
@@ -639,67 +665,67 @@ lemma ricciOf_staticSpherical (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 �
         else 0 := by
   fin_cases σ <;> fin_cases ν
   · simpa using ricci_ss_00 f x hr hf hsin hf_diff hf2
-  · simp [ricciOf, Fin.sum_univ_four,
+  · simp [ricciTensorOf, Fin.sum_univ_four,
       riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalG, staticSphericalDG]
-  · simp [ricciOf, Fin.sum_univ_four,
+      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four,
       riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalG, staticSphericalDG]
-  · simp [ricciOf, Fin.sum_univ_four,
+      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four,
       riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalG, staticSphericalDG]
-  · simp [ricciOf, Fin.sum_univ_four,
+      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four,
       riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalG, staticSphericalDG]
+      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
   · simpa using ricci_ss_11 f x hr hf hsin hf_diff hf2
-  · simp [ricciOf, Fin.sum_univ_four,
+  · simp [ricciTensorOf, Fin.sum_univ_four,
       riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalG, staticSphericalDG]
-  · simp [ricciOf, Fin.sum_univ_four,
+      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four,
       riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalG, staticSphericalDG]
-  · simp [ricciOf, Fin.sum_univ_four,
+      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four,
       riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalG, staticSphericalDG]
-  · simp [ricciOf, Fin.sum_univ_four,
+      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four,
       riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalG, staticSphericalDG]
+      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
     ring
   · simpa using ricci_ss_22 f x hr hf hsin hf_diff hf2
-  · simp [ricciOf, Fin.sum_univ_four,
+  · simp [ricciTensorOf, Fin.sum_univ_four,
       riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalG, staticSphericalDG]
-  · simp [ricciOf, Fin.sum_univ_four,
+      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four,
       riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalG, staticSphericalDG]
-  · simp [ricciOf, Fin.sum_univ_four,
+      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four,
       riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalG, staticSphericalDG]
-  · simp [ricciOf, Fin.sum_univ_four,
+      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four,
       riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalG, staticSphericalDG]
+      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
   · simpa using ricci_ss_33 f x hr hf hsin hf_diff hf2
 
-/-- Scalar curvature computed by `scalarOf` for `staticSphericalMetric f`:
+/-- Scalar curvature computed by `ricciScalarOf` for `staticSphericalMetric f`:
 `S = -f'' - 4 f'/r + 2 (1 - f) / r²`. -/
-lemma scalarOf_staticSpherical (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma ricciScalarOf_staticSpherical (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : f (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ f s)
     (hf2 : DifferentiableAt ℝ (deriv f) (x 1)) :
-    scalarOf (staticSphericalMetric f) (staticSphericalMetricInv f) x
+    ricciScalarOf (staticSphericalMetric f) (staticSphericalMetricInv f) x
       = -deriv (deriv f) (x 1) - 4 * deriv f (x 1) / x 1 + 2 * (1 - f (x 1)) / (x 1) ^ 2 := by
-  simp only [scalarOf, ricciOf_staticSpherical f x hr hf hsin hf_diff hf2]
+  simp only [ricciScalarOf, ricciTensorOf_staticSpherical f x hr hf hsin hf_diff hf2]
   simp only [Fin.sum_univ_four, staticSphericalMetricInv, Fin.reduceEq, ↓reduceIte,
     Fin.isValue, mul_zero, add_zero, zero_add]
   field_simp [hr, hf, hsin]
   ring
 
-/-- Einstein tensor computed by `einsteinOf` for `staticSphericalMetric f`. -/
-lemma einsteinOf_staticSpherical (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+/-- Einstein tensor computed by `einsteinTensorOf` for `staticSphericalMetric f`. -/
+lemma einsteinTensorOf_staticSpherical (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : f (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ f s)
     (hf2 : DifferentiableAt ℝ (deriv f) (x 1)) (i j : Fin 4) :
-    einsteinOf (staticSphericalMetric f) (staticSphericalMetricInv f) x i j
+    einsteinTensorOf (staticSphericalMetric f) (staticSphericalMetricInv f) x i j
       = if i = j then
           if i = 0 then f (x 1) * (1 - f (x 1) - x 1 * deriv f (x 1)) / (x 1) ^ 2
           else if i = 1 then -(1 - f (x 1) - x 1 * deriv f (x 1)) / ((x 1) ^ 2 * f (x 1))
@@ -707,8 +733,8 @@ lemma einsteinOf_staticSpherical (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1
           else (x 1) ^ 2 * Real.sin (x 2) ^ 2
             * (deriv (deriv f) (x 1) / 2 + deriv f (x 1) / x 1)
         else 0 := by
-  simp only [einsteinOf, ricciOf_staticSpherical f x hr hf hsin hf_diff hf2,
-    scalarOf_staticSpherical f x hr hf hsin hf_diff hf2, staticSphericalMetric]
+  simp only [einsteinTensorOf, ricciTensorOf_staticSpherical f x hr hf hsin hf_diff hf2,
+    ricciScalarOf_staticSpherical f x hr hf hsin hf_diff hf2, staticSphericalMetric]
   fin_cases i <;> fin_cases j <;> simp
   · field_simp [hr]; ring
   · field_simp [hr, hf]; ring

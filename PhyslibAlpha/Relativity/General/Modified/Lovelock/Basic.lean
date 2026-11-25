@@ -27,13 +27,13 @@ dimensions while contrasting with non-zero 5D dynamics on constant-curvature spa
 
 ## ii. Key results
 
-- `AlgCurvature`, `AlgCurvature.gaussBonnetScalar`, `AlgCurvature.gaussBonnetTensor` : algebraic
+- `AlgCurvature`, `AlgCurvature.gaussBonnetScalar`, `AlgCurvature.lanczosTensor` : algebraic
   `(2,2)` curvature structure, quadratic Gauss–Bonnet invariant, and Lanczos tensor `H^i_j`.
 - `lovelockContract5`, `lovelockContract5_eq_zero_of_lt`,
-  `lovelockContract5_eq_neg_eight_gaussBonnet` : 5-index contraction and `L^i_j = -8 H^i_j`.
-- `gaussBonnetTensor_eq_zero_of_lt_five`, `gaussBonnetTensor_four_eq_zero` : 4D Bach–Lanczos
+  `lovelockContract5_eq_neg_eight_lanczos` : 5-index contraction and `L^i_j = -8 H^i_j`.
+- `bach_lanczos_lt_five`, `bach_lanczos_four` : 4D Bach–Lanczos
   vanishing theorem.
-- `constCurv`, `gaussBonnetScalar_constCurv_four`, `gaussBonnetTensor_constCurv_five` : 4D
+- `constCurv`, `gaussBonnetScalar_constCurv_four`, `lanczosTensor_constCurv_five` : 4D
   topological invariant vs non-zero 5D variation.
 
 ## iii. Table of contents
@@ -70,8 +70,10 @@ open Equiv
 
 -/
 
-/-- Algebraic `(2,2)` mixed Riemann curvature tensor `R^{ab}_{cd}` in `n` dimensions, carrying
-antisymmetry in both the upper index pair `(a, b)` and the lower index pair `(c, d)`. -/
+/-- Abstract algebraic `(2,2)` mixed Riemann curvature tensor `R^{ab}_{cd}` in `n` dimensions,
+carrying antisymmetry in `(a, b)` and `(c, d)`. Kept separate from `RiemannTensor` because the
+Bach–Lanczos dimension-dependent vanishing theorem depends only on algebraic pair antisymmetry and
+the mixed index structure `R^{ab}_{cd}` rather than metric lowering or the Bianchi identity. -/
 structure AlgCurvature (n : ℕ) where
   /-- Mixed `(2,2)` curvature components `R^{ab}_{cd}`. -/
   rUp : Fin n → Fin n → Fin n → Fin n → ℝ
@@ -85,12 +87,12 @@ def AlgCurvature.ricciMixed {n : ℕ} (C : AlgCurvature n) (i j : Fin n) : ℝ :
   ∑ b : Fin n, C.rUp i b j b
 
 /-- Scalar curvature `R = ∑_{a,b} R^{ab}_{ab}`. -/
-def AlgCurvature.scalarCurv {n : ℕ} (C : AlgCurvature n) : ℝ :=
+def AlgCurvature.ricciScalar {n : ℕ} (C : AlgCurvature n) : ℝ :=
   ∑ a : Fin n, ∑ b : Fin n, C.rUp a b a b
 
 /-- Trace of the squared Ricci tensor equals the scalar curvature: `∑_i R^i_i = R`. -/
 lemma AlgCurvature.trace_ricciMixed {n : ℕ} (C : AlgCurvature n) :
-    (∑ i : Fin n, C.ricciMixed i i) = C.scalarCurv := by
+    (∑ i : Fin n, C.ricciMixed i i) = C.ricciScalar := by
   rfl
 
 /-- Quadratic Ricci invariant `R^a_b R^b_a`. -/
@@ -103,14 +105,14 @@ def AlgCurvature.riemannSq {n : ℕ} (C : AlgCurvature n) : ℝ :=
 
 /-- Quadratic Gauss–Bonnet scalar density `𝒢 = R² - 4 R^a_b R^b_a + R^{cd}_{ab} R^{ab}_{cd}`. -/
 def AlgCurvature.gaussBonnetScalar {n : ℕ} (C : AlgCurvature n) : ℝ :=
-  C.scalarCurv ^ 2 - 4 * C.ricciSq + C.riemannSq
+  C.ricciScalar ^ 2 - 4 * C.ricciSq + C.riemannSq
 
 /-- Mixed `(1,1)` Lanczos–Bach–Gauss–Bonnet variation tensor
 `H^i_j = -½ δ^i_j 𝒢 + 2 R R^i_j - 4 R^i_c R^c_j - 4 R^{ic}_{jb} R^b_c + 2 R^{cd}_{jb} R^{ib}_{cd}`.
 -/
-noncomputable def AlgCurvature.gaussBonnetTensor {n : ℕ} (C : AlgCurvature n) (i j : Fin n) : ℝ :=
+noncomputable def AlgCurvature.lanczosTensor {n : ℕ} (C : AlgCurvature n) (i j : Fin n) : ℝ :=
   -(1 / 2) * (if i = j then C.gaussBonnetScalar else 0)
-    + 2 * C.scalarCurv * C.ricciMixed i j
+    + 2 * C.ricciScalar * C.ricciMixed i j
     - 4 * (∑ c : Fin n, C.ricciMixed i c * C.ricciMixed c j)
     - 4 * (∑ b : Fin n, ∑ c : Fin n, C.rUp i c j b * C.ricciMixed b c)
     + 2 * (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp c d j b * C.rUp i b c d)
@@ -123,7 +125,8 @@ noncomputable def AlgCurvature.gaussBonnetTensor {n : ℕ} (C : AlgCurvature n) 
 
 /-- Five-index Lovelock Kronecker contraction
 `L^i_j = ∑_{a,b,c,d} ∑_{p ∈ S_5} sgn(p) δ^{v_{p(0)}}_j R^{v_{p(1)} v_{p(2)}}_{a b}
-R^{v_{p(3)} v_{p(4)}}_{c d}` with `v = (i, a, b, c, d)`. -/
+R^{v_{p(3)} v_{p(4)}}_{c d}` with `v = (i, a, b, c, d)`, isolating the algebraic antisymmetrized
+contraction so dimension-dependent Bach–Lanczos vanishing reduces to `S_5` coset combinatorics. -/
 noncomputable def lovelockContract5 {n : ℕ} (C : AlgCurvature n) (i j : Fin n) : ℝ :=
   ∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
     ∑ p : Perm (Fin 5), ((Perm.sign p : ℤ) : ℝ) *
@@ -290,8 +293,8 @@ private lemma fiber_zero_sum {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
           - C.rUp b d a b * C.rUp a c c d + C.rUp c d a b * C.rUp a b c d))
       = 4 * (if i = j then C.gaussBonnetScalar else 0) := by
   have h1 : (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp a b a b * C.rUp c d c d)
-      = C.scalarCurv ^ 2 := by
-    unfold AlgCurvature.scalarCurv
+      = C.ricciScalar ^ 2 := by
+    unfold AlgCurvature.ricciScalar
     rw [sq]
     simp_rw [Finset.sum_mul, Finset.mul_sum]
   have h2 : (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp a c a b * C.rUp b d c d)
@@ -334,13 +337,13 @@ private lemma fiber_one_sum {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
       (C.rUp i b j b * C.rUp c d c d - C.rUp i c j b * C.rUp b d c d
         + C.rUp i d j b * C.rUp b c c d + C.rUp b c j b * C.rUp i d c d
         - C.rUp b d j b * C.rUp i c c d + C.rUp c d j b * C.rUp i b c d))
-      = C.scalarCurv * C.ricciMixed i j
+      = C.ricciScalar * C.ricciMixed i j
         - 2 * (∑ c : Fin n, C.ricciMixed i c * C.ricciMixed c j)
         - 2 * (∑ b : Fin n, ∑ c : Fin n, C.rUp i c j b * C.ricciMixed b c)
         + (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp c d j b * C.rUp i b c d) := by
   have h1 : (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp i b j b * C.rUp c d c d)
-      = C.scalarCurv * C.ricciMixed i j := by
-    unfold AlgCurvature.scalarCurv AlgCurvature.ricciMixed
+      = C.ricciScalar * C.ricciMixed i j := by
+    unfold AlgCurvature.ricciScalar AlgCurvature.ricciMixed
     simp_rw [Finset.mul_sum, Finset.sum_mul]
     refine Finset.sum_congr rfl fun b _ => Finset.sum_congr rfl fun c _ =>
       Finset.sum_congr rfl fun d _ => by ring
@@ -382,8 +385,8 @@ private lemma fiber_one_sum {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
 
 /-- The 5-index Lovelock Kronecker contraction equals `-8` times the Gauss–Bonnet variation tensor
 `H^i_j` in every dimension `n`. -/
-lemma lovelockContract5_eq_neg_eight_gaussBonnet {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
-    lovelockContract5 C i j = -8 * C.gaussBonnetTensor i j := by
+lemma lovelockContract5_eq_neg_eight_lanczos {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
+    lovelockContract5 C i j = -8 * C.lanczosTensor i j := by
   unfold lovelockContract5
   have hperm : ∀ a b c d : Fin n,
       (∑ p : Perm (Fin 5), ((Perm.sign p : ℤ) : ℝ) *
@@ -491,7 +494,7 @@ lemma lovelockContract5_eq_neg_eight_gaussBonnet {n : ℕ} (C : AlgCurvature n) 
           (C.rUp i b a b * C.rUp c d c d - C.rUp i c a b * C.rUp b d c d
             + C.rUp i d a b * C.rUp b c c d + C.rUp b c a b * C.rUp i d c d
             - C.rUp b d a b * C.rUp i c c d + C.rUp c d a b * C.rUp i b c d)))
-      = -4 * (C.scalarCurv * C.ricciMixed i j
+      = -4 * (C.ricciScalar * C.ricciMixed i j
         - 2 * (∑ c : Fin n, C.ricciMixed i c * C.ricciMixed c j)
         - 2 * (∑ b : Fin n, ∑ c : Fin n, C.rUp i c j b * C.ricciMixed b c)
         + (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp c d j b * C.rUp i b c d)) := by
@@ -572,22 +575,22 @@ lemma lovelockContract5_eq_neg_eight_gaussBonnet {n : ℕ} (C : AlgCurvature n) 
       C.antisymm34 a i d c, C.antisymm12 d i a b]
     ring
   rw [hf4, hf3, hf2, hf1]
-  unfold AlgCurvature.gaussBonnetTensor
+  unfold AlgCurvature.lanczosTensor
   ring
 
 /-- Bach–Lanczos theorem in arbitrary dimension `n < 5`: the Gauss–Bonnet variation tensor
 `H^i_j` vanishes identically whenever `n < 5`. -/
-lemma gaussBonnetTensor_eq_zero_of_lt_five {n : ℕ} (hn : n < 5) (C : AlgCurvature n)
-    (i j : Fin n) : C.gaussBonnetTensor i j = 0 := by
-  have h1 := lovelockContract5_eq_neg_eight_gaussBonnet C i j
+lemma bach_lanczos_lt_five {n : ℕ} (hn : n < 5) (C : AlgCurvature n)
+    (i j : Fin n) : C.lanczosTensor i j = 0 := by
+  have h1 := lovelockContract5_eq_neg_eight_lanczos C i j
   have h0 := lovelockContract5_eq_zero_of_lt hn C i j
   linarith
 
 /-- Bach–Lanczos theorem in four dimensions: the Gauss–Bonnet variation tensor `H^i_j` vanishes
 identically for every algebraic curvature tensor on a 4D spacetime. -/
-lemma gaussBonnetTensor_four_eq_zero (C : AlgCurvature 4) (i j : Fin 4) :
-    C.gaussBonnetTensor i j = 0 :=
-  gaussBonnetTensor_eq_zero_of_lt_five (by decide) C i j
+lemma bach_lanczos_four (C : AlgCurvature 4) (i j : Fin 4) :
+    C.lanczosTensor i j = 0 :=
+  bach_lanczos_lt_five (by decide) C i j
 
 /-- Constant-curvature model `R^{ab}_{cd} = κ (δ^a_c δ^b_d - δ^a_d δ^b_c)` in `n` dimensions. -/
 def constCurv (n : ℕ) (κ : ℝ) : AlgCurvature n where
@@ -601,7 +604,7 @@ def constCurv (n : ℕ) (κ : ℝ) : AlgCurvature n where
 topological density `𝒢 = 24 κ²`, even though its metric variation `H^i_j` vanishes identically. -/
 lemma gaussBonnetScalar_constCurv_four (κ : ℝ) :
     (constCurv 4 κ).gaussBonnetScalar = 24 * κ ^ 2 := by
-  unfold AlgCurvature.gaussBonnetScalar AlgCurvature.scalarCurv AlgCurvature.ricciSq
+  unfold AlgCurvature.gaussBonnetScalar AlgCurvature.ricciScalar AlgCurvature.ricciSq
     AlgCurvature.riemannSq AlgCurvature.ricciMixed constCurv
   simp only [Fin.sum_univ_four, Fin.isValue, Fin.reduceEq, ↓reduceIte]
   ring
@@ -617,7 +620,7 @@ private lemma ricciMixed_constCurv_five (κ : ℝ) (i j : Fin 5) :
     ring
 
 private lemma scalarCurv_constCurv_five (κ : ℝ) :
-    (constCurv 5 κ).scalarCurv = 20 * κ := by
+    (constCurv 5 κ).ricciScalar = 20 * κ := by
   rw [← AlgCurvature.trace_ricciMixed]
   simp only [ricciMixed_constCurv_five, Fin.sum_univ_five, ↓reduceIte]
   ring
@@ -633,10 +636,10 @@ private lemma gaussBonnetScalar_constCurv_five (κ : ℝ) :
 
 /-- In `n = 5`, the Gauss–Bonnet variation tensor `H^i_j` is dynamically non-trivial: on a 5D
 constant-curvature space it evaluates to `H^i_i = -12 κ²`. -/
-lemma gaussBonnetTensor_constCurv_five (κ : ℝ) (i : Fin 5) :
-    (constCurv 5 κ).gaussBonnetTensor i i = -12 * κ ^ 2 := by
+lemma lanczosTensor_constCurv_five (κ : ℝ) (i : Fin 5) :
+    (constCurv 5 κ).lanczosTensor i i = -12 * κ ^ 2 := by
   have hi : i = 0 ∨ i = 1 ∨ i = 2 ∨ i = 3 ∨ i = 4 := by fin_cases i <;> decide
-  unfold AlgCurvature.gaussBonnetTensor
+  unfold AlgCurvature.lanczosTensor
   rw [gaussBonnetScalar_constCurv_five, scalarCurv_constCurv_five]
   simp only [ricciMixed_constCurv_five]
   unfold constCurv

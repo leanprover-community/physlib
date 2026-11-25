@@ -17,13 +17,13 @@ the inverse metric.
 
 ## i. Overview
 
-This module defines the scalar curvature `scalarCurv M R` as the full contraction of `M.ginv` with
+This module defines the scalar curvature `ricciScalar M R` as the full contraction of `M.ginv` with
 `ricci M R` and shows that it agrees definitionally with `metricTrace M (ricci M R)`.
 
 ## ii. Key results
 
-- `scalarCurv` : scalar curvature `S = ∑ i j, g^{ij} Ric_{ij}`.
-- `scalarCurv_eq_metricTrace` : `scalarCurv` is the metric trace of `ricci`.
+- `ricciScalar` : scalar curvature `S = ∑ i j, g^{ij} Ric_{ij}`.
+- `ricciScalar_eq_metricTrace` : `ricciScalar` is the metric trace of `ricci`.
 
 ## iii. Table of contents
 
@@ -47,11 +47,11 @@ namespace GeneralRelativity
 -/
 
 /-- Scalar curvature `S = ∑ i j, g^{ij} Ric_{ij}`. -/
-noncomputable def scalarCurv {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) : ℝ :=
+noncomputable def ricciScalar {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) : ℝ :=
   ∑ i, ∑ j, M.ginv i j * ricci M R i j
 
 /-- Scalar curvature is the metric trace of the Ricci tensor. -/
-lemma scalarCurv_eq_metricTrace {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) :
-    scalarCurv M R = metricTrace M (ricci M R) := rfl
+lemma ricciScalar_eq_metricTrace {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) :
+    ricciScalar M R = metricTrace M (ricci M R) := rfl
 
 end GeneralRelativity

@@ -17,7 +17,7 @@ import Mathlib.Tactic.Ring
 # Flat FLRW teleparallel torsion and the boundary equivalence `R_LC = -T + B`
 
 Diagonal comoving flat FLRW tetrad, Weitzenböck Hubble connection, torsion scalar `T = 6 H²`,
-and exact equivalence `scalarOf = -T + B` with `FLRW.scalarOf_flrw`.
+and exact equivalence `ricciScalarOf = -T + B` with `FLRW.ricciScalarOf_flrw`.
 
 ## i. Overview
 
@@ -29,8 +29,8 @@ computed by the metric pipeline satisfies `R_LC = -T + B`.
 
 - `flrwTetrad`, `flrwTetradInv`, `flrwTetrad_mul_inv` : diagonal flat FLRW comoving tetrad.
 - `flrwWeitzenbock_hubble` : spatial Weitzenböck connection equals Hubble parameter `a'/a`.
-- `flrwTorsionScalar`, `flrwBoundaryTerm`, `scalarOf_flrw_flat_eq_neg_torsion_add_boundary` :
-  exact equivalence `R_LC = -T + B` bridged to `FLRW.scalarOf_flrw`.
+- `flrwTorsionScalar`, `flrwBoundaryTerm`, `ricciScalarOf_flrw_flat_eq_neg_torsion_add_boundary` :
+  exact equivalence `R_LC = -T + B` bridged to `FLRW.ricciScalarOf_flrw`.
 
 ## iii. Table of contents
 
@@ -115,15 +115,15 @@ noncomputable def flrwBoundaryTerm (a : ℝ → ℝ) (t : ℝ) : ℝ :=
   6 * (deriv (deriv a) t / a t + 2 * (deriv a t / a t) ^ 2)
 
 /-- Exact teleparallel-to-Levi-Civita scalar curvature equivalence on flat FLRW spacetime (`k = 0`):
-`scalarOf (flrwMetric a 0) (flrwMetricInv a 0) x = -T + B`. -/
-lemma scalarOf_flrw_flat_eq_neg_torsion_add_boundary (a : ℝ → ℝ) (x : Fin 4 → ℝ)
+`ricciScalarOf (flrwMetric a 0) (flrwMetricInv a 0) x = -T + B`. -/
+lemma ricciScalarOf_flrw_flat_eq_neg_torsion_add_boundary (a : ℝ → ℝ) (x : Fin 4 → ℝ)
     (ha : a (x 0) ≠ 0) (hr : x 1 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ a t)
     (ha2 : DifferentiableAt ℝ (deriv a) (x 0)) :
-    scalarOf (flrwMetric a 0) (flrwMetricInv a 0) x =
+    ricciScalarOf (flrwMetric a 0) (flrwMetricInv a 0) x =
       -flrwTorsionScalar a (x 0) + flrwBoundaryTerm a (x 0) := by
   have hkr : 1 - 0 * (x 1) ^ 2 ≠ 0 := by norm_num
-  rw [scalarOf_flrw a 0 x ha hr hkr hsin ha_diff ha2]
+  rw [ricciScalarOf_flrw a 0 x ha hr hkr hsin ha_diff ha2]
   unfold flrwTorsionScalar flrwBoundaryTerm
   ring
 

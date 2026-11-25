@@ -30,7 +30,8 @@ reduction to Schwarzschild at `a = 0`.
 
 ## ii. Key results
 
-- `KerrSpacetime`, `sigma`, `delta`, `bigB` : Kerr spacetime structure and Boyer–Lindquist
+- `KerrSpacetime`, `sigma`, `delta`, `kerrAxialFactor` : Kerr spacetime structure and
+  Boyer–Lindquist
   auxiliary functions `Σ`, `Δ`, and `B`.
 - `kerrMetric`, `kerrMetricInv`, `kerrMetricTensor` : Kerr metric and inverse `MetricTensor 4`.
 - `horizonPlus`, `horizonMinus`, `delta_horizonPlus`, `kerr_extremal` : event horizons `r±`.
@@ -76,23 +77,26 @@ noncomputable def sigma (a r θ : ℝ) : ℝ := r ^ 2 + a ^ 2 * Real.cos θ ^ 2
 /-- Boyer–Lindquist horizon function `Δ = r² - 2 M r + a²`. -/
 noncomputable def delta (M a r : ℝ) : ℝ := r ^ 2 - 2 * M * r + a ^ 2
 
-/-- Boyer–Lindquist auxiliary function `B = (r² + a²)² - a² Δ sin² θ`. -/
-noncomputable def bigB (M a r θ : ℝ) : ℝ :=
+/-- Boyer–Lindquist axial metric factor `(r² + a²)² - a² Δ sin² θ` (often denoted `A` in
+Misner–Thorne–Wheeler and Chandrasekhar), factored out because it governs both `g_{φφ}` and
+`g^{tt}` and appears directly in the `(t, φ)` block determinant identity. -/
+noncomputable def kerrAxialFactor (M a r θ : ℝ) : ℝ :=
   (r ^ 2 + a ^ 2) ^ 2 - a ^ 2 * delta M a r * Real.sin θ ^ 2
 
 /-- Alternative expansion of `B`: `B = Σ (r² + a²) + 2 M a² r sin² θ`. -/
-lemma bigB_eq_sigma (M a r θ : ℝ) :
-    bigB M a r θ = sigma a r θ * (r ^ 2 + a ^ 2) + 2 * M * a ^ 2 * r * Real.sin θ ^ 2 := by
-  simp only [bigB, sigma, delta]
+lemma kerrAxialFactor_eq_sigma (M a r θ : ℝ) :
+    kerrAxialFactor M a r θ
+      = sigma a r θ * (r ^ 2 + a ^ 2) + 2 * M * a ^ 2 * r * Real.sin θ ^ 2 := by
+  simp only [kerrAxialFactor, sigma, delta]
   rw [Real.sin_sq θ]
   ring
 
 /-- Algebraic identity governing the determinant of the `(t, φ)` metric block:
 `(Σ - 2 M r) B + 4 M² a² r² sin² θ = Σ² Δ`. -/
 lemma kerr_tphi_det_id (M a r θ : ℝ) :
-    (sigma a r θ - 2 * M * r) * bigB M a r θ + 4 * M ^ 2 * a ^ 2 * r ^ 2 * Real.sin θ ^ 2
+    (sigma a r θ - 2 * M * r) * kerrAxialFactor M a r θ + 4 * M ^ 2 * a ^ 2 * r ^ 2 * Real.sin θ ^ 2
       = sigma a r θ ^ 2 * delta M a r := by
-  simp only [sigma, delta, bigB]
+  simp only [sigma, delta, kerrAxialFactor]
   rw [Real.sin_sq θ]
   ring
 
@@ -101,7 +105,7 @@ lemma kerr_tphi_det_id (M a r θ : ℝ) :
 noncomputable def kerrMetric (M a : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
   let sig := sigma a (x 1) (x 2)
   let del := delta M a (x 1)
-  let bval := bigB M a (x 1) (x 2)
+  let bval := kerrAxialFactor M a (x 1) (x 2)
   let s2 := Real.sin (x 2) ^ 2
   fun i j =>
     if i = 0 ∧ j = 0 then -(1 - 2 * M * x 1 / sig)
@@ -115,7 +119,7 @@ noncomputable def kerrMetric (M a : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
 noncomputable def kerrMetricInv (M a : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
   let sig := sigma a (x 1) (x 2)
   let del := delta M a (x 1)
-  let bval := bigB M a (x 1) (x 2)
+  let bval := kerrAxialFactor M a (x 1) (x 2)
   let s2 := Real.sin (x 2) ^ 2
   fun i j =>
     if i = 0 ∧ j = 0 then -(bval / (sig * del))
@@ -233,12 +237,12 @@ lemma kerrMetric_00_ergosphere {M a : ℝ} (x : Fin 4 → ℝ)
 
 /-- Zero-angular-momentum observer (ZAMO) frame-dragging angular velocity
 `ω = -g_{tφ} / g_{φφ} = 2 M a r / B`. -/
-noncomputable def frameDraggingOmega (M a r θ : ℝ) : ℝ := 2 * M * a * r / bigB M a r θ
+noncomputable def frameDraggingOmega (M a r θ : ℝ) : ℝ := 2 * M * a * r / kerrAxialFactor M a r θ
 
 /-- Agreement of `-g_{tφ} / g_{φφ}` with `frameDraggingOmega M a r θ`. -/
 lemma kerr_zamo_omega_eq (M a : ℝ) (x : Fin 4 → ℝ)
     (hsig : sigma a (x 1) (x 2) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
-    (hB : bigB M a (x 1) (x 2) ≠ 0) :
+    (hB : kerrAxialFactor M a (x 1) (x 2) ≠ 0) :
     -(kerrMetric M a x 0 3 / kerrMetric M a x 3 3)
       = frameDraggingOmega M a (x 1) (x 2) := by
   simp only [kerrMetric, frameDraggingOmega, Fin.isValue, Fin.reduceEq, and_false, and_true,
@@ -251,7 +255,7 @@ lemma frameDraggingOmega_horizonPlus {M a : ℝ} (ha : a ^ 2 ≤ M ^ 2) (θ : �
     frameDraggingOmega M a (horizonPlus M a) θ
       = 2 * M * a * horizonPlus M a / (horizonPlus M a ^ 2 + a ^ 2) ^ 2 := by
   have hdel : delta M a (horizonPlus M a) = 0 := delta_horizonPlus ha
-  simp [frameDraggingOmega, bigB, hdel]
+  simp [frameDraggingOmega, kerrAxialFactor, hdel]
 
 /-!
 
@@ -280,7 +284,7 @@ lemma kerrMetric_zero_spin (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
       and_self, or_self]
     field_simp [hr2]
   · simp [kerrMetric, hs0]
-  · simp only [kerrMetric, hs0, bigB, Fin.isValue]
+  · simp only [kerrMetric, hs0, kerrAxialFactor, Fin.isValue]
     norm_num
     field_simp [hr2]
 

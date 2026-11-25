@@ -92,7 +92,7 @@ lemma kkGaugeJacobian_pullback (g4 : Tensor2 4) (A dlam : Fin 4 → ℝ) (φ : �
   ext i j
   fin_cases i <;> fin_cases j <;>
     simp [Matrix.mul_apply, Matrix.transpose_apply, Fin.sum_univ_five,
-      kkMetric, metric4Ext, kkGaugeJacobian, potExt] <;>
+      kkMetric, metric4Ext, kkGaugeJacobian, extendedPotential] <;>
     ring
 
 end KaluzaKlein

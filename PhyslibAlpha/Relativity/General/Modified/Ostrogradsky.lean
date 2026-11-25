@@ -35,7 +35,8 @@ contrasting it with a standard positive-definite quadratic kinetic term.
 
 - `HigherDerivModel` : benchmark higher-derivative harmonic oscillator model with mass `m`.
 - `kineticMatrix`, `kineticMatrix_degenerate` : singular Hessian `diag(0, 1)` in `(q̇, q̈)`.
-- `hamiltonian`, `hamiltonian_add`, `unbounded_below` : linearity in `p₁` and unboundedness
+- `hamiltonian`, `hamiltonian_add`, `ostrogradsky_unbounded_below` : linearity in `p₁` and
+  unboundedness
   below whenever `v ≠ 0`.
 - `kinetic_bounded`, `kinetic_zero_iff` : positivity and non-degeneracy of a standard first-order
   quadratic kinetic term.
@@ -88,8 +89,8 @@ lemma kineticMatrix_degenerate :
     kineticMatrix 0 0 * kineticMatrix 1 1 - kineticMatrix 0 1 * kineticMatrix 1 0 = 0 := by
   simp [kineticMatrix]
 
-/-- The Ostrogradsky Hamiltonian for `L = (1/2) q̈² - (1/2) m² q²`, with `p₁` conjugate to `q̇`
-and `p₂ = q̈`. -/
+/-- Canonical Ostrogradsky Hamiltonian for the higher-derivative toy model
+`L = (1/2) q̈² - (1/2) m² q²`, with `p₁` conjugate to `q̇` and `p₂ = q̈`. -/
 noncomputable def hamiltonian (v a p₁ p₂ q m : ℝ) : ℝ :=
   p₁ * v + p₂ * a - a ^ 2 / 2 + m ^ 2 * q ^ 2 / 2
 
@@ -101,7 +102,7 @@ lemma hamiltonian_add (v a p₁ p₂ q m t : ℝ) :
 
 /-- The Ostrogradsky ghost: for any non-zero velocity `v ≠ 0`, the Hamiltonian is unbounded
 below as a function of `p₁`. -/
-lemma unbounded_below (v a p₂ q m : ℝ) (hv : v ≠ 0) :
+lemma ostrogradsky_unbounded_below (v a p₂ q m : ℝ) (hv : v ≠ 0) :
     ∀ B : ℝ, ∃ p₁ : ℝ, hamiltonian v a p₁ p₂ q m < B := by
   intro B
   have h : (B - 1 - (p₂ * a - a ^ 2 / 2 + m ^ 2 * q ^ 2 / 2)) / v * v

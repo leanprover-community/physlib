@@ -24,7 +24,7 @@ eigenvalues directly from the Schwarzschild–de Sitter lapse `f = 1 - 2M/r - Λ
 
 ## i. Overview
 
-With `f = 1 - 2M/r - Λr²/3` (`sdsF`) and `n = f'/2 = M/r² - Λr/3` (`sdsHalf`), the mixed
+With `f = 1 - 2M/r - Λr²/3` (`sdsF`) and `n = f'/2 = M/r² - Λr/3` (`sdsLapseHalfDeriv`), the mixed
 radial Christoffel symbols are `Γ^t_{tr} = n / f` and `Γ^r_{rr} = -n / f`. Differentiating
 these expressions yields all six independent Riemann components for general `Λ`:
 
@@ -39,7 +39,7 @@ leaving the Weyl tidal field unchanged.
 
 ## ii. Key results
 
-- `SchwarzschildDeSitterSpacetime`, `sdsMetric`, `sdsMetricInv`, `sdsF`, `sdsHalf` :
+- `SchwarzschildDeSitterSpacetime`, `sdsMetric`, `sdsMetricInv`, `sdsF`, `sdsLapseHalfDeriv` :
   Schwarzschild–de Sitter spacetime structure, coordinate metric, inverse, and lapse.
 - `sdsF_zero_lambda` : reduction to `schwarzschildF` at `Λ = 0`.
 - `riemann_t_rtr_sds`, `riemann_t_thetatheta_sds`, `riemann_t_phitphi_sds`,
@@ -84,8 +84,9 @@ structure SchwarzschildDeSitterSpacetime where
 /-- The Schwarzschild–de Sitter lapse function `f = 1 - 2M / r - Λ r² / 3`. -/
 noncomputable def sdsF (M Λ r : ℝ) : ℝ := 1 - 2 * M / r - Λ * r ^ 2 / 3
 
-/-- Half the radial derivative of the lapse, `n = f'/2 = M / r² - Λ r / 3`. -/
-noncomputable def sdsHalf (M Λ r : ℝ) : ℝ := M / r ^ 2 - Λ * r / 3
+/-- Half the radial derivative of the lapse, `n = f'/2 = M / r² - Λ r / 3`, factored out so
+rational Christoffel and Riemann component expressions avoid repeated factor-of-2 cancellation. -/
+noncomputable def sdsLapseHalfDeriv (M Λ r : ℝ) : ℝ := M / r ^ 2 - Λ * r / 3
 
 /-- The Schwarzschild–de Sitter metric in `(t, r, θ, φ)` coordinates. -/
 noncomputable def sdsMetric (M Λ : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
@@ -113,7 +114,7 @@ lemma sdsF_zero_lambda (M r : ℝ) : sdsF M 0 r = Schwarzschild.schwarzschildF M
 
 /-- `f = 1 - 2M/r - Λr²/3` is differentiable away from `r = 0` with `f' = 2 n`. -/
 lemma hasDerivAt_sdsF (M Λ r : ℝ) (hr : r ≠ 0) :
-    HasDerivAt (fun s : ℝ => sdsF M Λ s) (2 * sdsHalf M Λ r) r := by
+    HasDerivAt (fun s : ℝ => sdsF M Λ s) (2 * sdsLapseHalfDeriv M Λ r) r := by
   have h1 : HasDerivAt (fun s : ℝ => 1 - 2 * M / s) (2 * M / r ^ 2) r :=
     Schwarzschild.hasDerivAt_gtt M r hr
   have h2 : HasDerivAt (fun s : ℝ => Λ / 3 * s ^ 2) (Λ / 3 * (2 * r)) r := by
@@ -125,54 +126,54 @@ lemma hasDerivAt_sdsF (M Λ r : ℝ) (hr : r ≠ 0) :
     funext s
     simp [sdsF, Pi.sub_apply]
     ring
-  have hval : 2 * M / r ^ 2 - Λ / 3 * (2 * r) = 2 * sdsHalf M Λ r := by
-    simp [sdsHalf]
+  have hval : 2 * M / r ^ 2 - Λ / 3 * (2 * r) = 2 * sdsLapseHalfDeriv M Λ r := by
+    simp [sdsLapseHalfDeriv]
     ring
   rw [← hfun, hval] at h
   exact h
 
 /-- `f' = 2 n` as an identity for `deriv`. -/
 lemma deriv_sdsF (M Λ r : ℝ) (hr : r ≠ 0) :
-    deriv (fun s : ℝ => sdsF M Λ s) r = 2 * sdsHalf M Λ r :=
+    deriv (fun s : ℝ => sdsF M Λ s) r = 2 * sdsLapseHalfDeriv M Λ r :=
   (hasDerivAt_sdsF M Λ r hr).deriv
 
 /-- `n = M/r² - Λr/3` is differentiable away from `r = 0` with `n' = -2M/r³ - Λ/3`. -/
-lemma hasDerivAt_sdsHalf (M Λ r : ℝ) (hr : r ≠ 0) :
-    HasDerivAt (fun s : ℝ => sdsHalf M Λ s) (-2 * M / r ^ 3 - Λ / 3) r := by
+lemma hasDerivAt_sdsLapseHalfDeriv (M Λ r : ℝ) (hr : r ≠ 0) :
+    HasDerivAt (fun s : ℝ => sdsLapseHalfDeriv M Λ s) (-2 * M / r ^ 3 - Λ / 3) r := by
   have h1 : HasDerivAt (fun s : ℝ => M / s ^ 2) (-2 * M / r ^ 3) r :=
-    Schwarzschild.slope_hasDerivAt M r hr
+    Schwarzschild.potential_second_hasDerivAt M r hr
   have h2 : HasDerivAt (fun s : ℝ => Λ / 3 * s) (Λ / 3) r := by
     simpa using (hasDerivAt_id r).const_mul (Λ / 3)
   have h := h1.sub h2
-  have hfun : (fun s : ℝ => sdsHalf M Λ s)
+  have hfun : (fun s : ℝ => sdsLapseHalfDeriv M Λ s)
       = (fun s : ℝ => M / s ^ 2) - fun s : ℝ => Λ / 3 * s := by
     funext s
-    simp [sdsHalf, Pi.sub_apply]
+    simp [sdsLapseHalfDeriv, Pi.sub_apply]
     ring
   rw [← hfun] at h
   exact h
 
 /-- `n' = -2M/r³ - Λ/3` as an identity for `deriv`. -/
-lemma deriv_sdsHalf (M Λ r : ℝ) (hr : r ≠ 0) :
-    deriv (fun s : ℝ => sdsHalf M Λ s) r = -2 * M / r ^ 3 - Λ / 3 :=
-  (hasDerivAt_sdsHalf M Λ r hr).deriv
+lemma deriv_sdsLapseHalfDeriv (M Λ r : ℝ) (hr : r ≠ 0) :
+    deriv (fun s : ℝ => sdsLapseHalfDeriv M Λ s) r = -2 * M / r ^ 3 - Λ / 3 :=
+  (hasDerivAt_sdsLapseHalfDeriv M Λ r hr).deriv
 
 /-- `Γ^t_{tr} = (1/2) g^{tt} ∂_r g_{tt} = n / f`. -/
 lemma gammaTtr_sds (M Λ r : ℝ) (hf : sdsF M Λ r ≠ 0) :
-    (1 / 2 : ℝ) * (-(sdsF M Λ r)⁻¹) * (-(2 * sdsHalf M Λ r))
-      = sdsHalf M Λ r / sdsF M Λ r := by
+    (1 / 2 : ℝ) * (-(sdsF M Λ r)⁻¹) * (-(2 * sdsLapseHalfDeriv M Λ r))
+      = sdsLapseHalfDeriv M Λ r / sdsF M Λ r := by
   field_simp [hf]
 
 /-- `∂_r (f⁻¹) = -2 n / f²`. -/
 lemma deriv_sdsF_inv (M Λ r : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0) :
     deriv (fun s : ℝ => (sdsF M Λ s)⁻¹) r
-      = -(2 * sdsHalf M Λ r) / (sdsF M Λ r) ^ 2 :=
+      = -(2 * sdsLapseHalfDeriv M Λ r) / (sdsF M Λ r) ^ 2 :=
   (hasDerivAt_sdsF M Λ r hr).inv hf |>.deriv
 
 /-- `Γ^r_{rr} = (1/2) g^{rr} ∂_r g_{rr} = -n / f`. -/
 lemma gammaRrr_sds (M Λ r : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0) :
     (1 / 2 : ℝ) * (sdsF M Λ r) * deriv (fun s : ℝ => (sdsF M Λ s)⁻¹) r
-      = -sdsHalf M Λ r / sdsF M Λ r := by
+      = -sdsLapseHalfDeriv M Λ r / sdsF M Λ r := by
   rw [deriv_sdsF_inv M Λ r hr hf]
   field_simp [hf]
 
@@ -195,73 +196,73 @@ lemma gammaRphiphi_sds (M Λ r th : ℝ) :
 
 /-- The `t r t r` Riemann component for Schwarzschild–de Sitter: `(2M/r³ + Λ/3)/f`. -/
 lemma riemann_t_rtr_sds (M Λ r : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0) :
-    -(deriv (fun s : ℝ => sdsHalf M Λ s / sdsF M Λ s) r)
-      + (sdsHalf M Λ r / sdsF M Λ r) * (-(sdsHalf M Λ r / sdsF M Λ r))
-      - (sdsHalf M Λ r / sdsF M Λ r) ^ 2
+    -(deriv (fun s : ℝ => sdsLapseHalfDeriv M Λ s / sdsF M Λ s) r)
+      + (sdsLapseHalfDeriv M Λ r / sdsF M Λ r) * (-(sdsLapseHalfDeriv M Λ r / sdsF M Λ r))
+      - (sdsLapseHalfDeriv M Λ r / sdsF M Λ r) ^ 2
       = (2 * M / r ^ 3 + Λ / 3) / sdsF M Λ r := by
-  have hq : deriv (fun s : ℝ => sdsHalf M Λ s / sdsF M Λ s) r
+  have hq : deriv (fun s : ℝ => sdsLapseHalfDeriv M Λ s / sdsF M Λ s) r
       = (-2 * M / r ^ 3 - Λ / 3) / sdsF M Λ r
-          - sdsHalf M Λ r * (2 * sdsHalf M Λ r) / (sdsF M Λ r) ^ 2 := by
-    have h := (hasDerivAt_sdsHalf M Λ r hr).div (hasDerivAt_sdsF M Λ r hr) hf
-    have hfun : (fun s : ℝ => sdsHalf M Λ s / sdsF M Λ s)
-        = (fun s : ℝ => sdsHalf M Λ s) / fun s : ℝ => sdsF M Λ s := rfl
+          - sdsLapseHalfDeriv M Λ r * (2 * sdsLapseHalfDeriv M Λ r) / (sdsF M Λ r) ^ 2 := by
+    have h := (hasDerivAt_sdsLapseHalfDeriv M Λ r hr).div (hasDerivAt_sdsF M Λ r hr) hf
+    have hfun : (fun s : ℝ => sdsLapseHalfDeriv M Λ s / sdsF M Λ s)
+        = (fun s : ℝ => sdsLapseHalfDeriv M Λ s) / fun s : ℝ => sdsF M Λ s := rfl
     rw [hfun, h.deriv]
     field_simp [hf]
   have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
   have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
   rw [hq]
   field_simp [hf, hr]
-  unfold sdsHalf
+  unfold sdsLapseHalfDeriv
   field_simp [hr, hr2, hr3]
   ring
 
 /-- The `t θ t θ` Riemann component for Schwarzschild–de Sitter: `Λ r² / 3 - M / r`. -/
 lemma riemann_t_thetatheta_sds (M Λ r : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0) :
-    (sdsHalf M Λ r / sdsF M Λ r) * (-(r * sdsF M Λ r))
+    (sdsLapseHalfDeriv M Λ r / sdsF M Λ r) * (-(r * sdsF M Λ r))
       = Λ * r ^ 2 / 3 - M / r := by
   have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
   have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
   field_simp [hf, hr]
-  unfold sdsHalf
+  unfold sdsLapseHalfDeriv
   field_simp [hr, hr2, hr3]
   ring
 
 /-- The `t φ t φ` Riemann component for Schwarzschild–de Sitter: `(Λ r² / 3 - M / r) sin²θ`. -/
 lemma riemann_t_phitphi_sds (M Λ r th : ℝ) (hr : r ≠ 0)
     (hf : sdsF M Λ r ≠ 0) :
-    (sdsHalf M Λ r / sdsF M Λ r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
+    (sdsLapseHalfDeriv M Λ r / sdsF M Λ r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
       = (Λ * r ^ 2 / 3 - M / r) * Real.sin th ^ 2 := by
   have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
   have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
   field_simp [hf, hr]
-  unfold sdsHalf
+  unfold sdsLapseHalfDeriv
   field_simp [hr, hr2, hr3]
   ring
 
 /-- The `r θ r θ` Riemann component for Schwarzschild–de Sitter: `Λ r² / 3 - M / r`. -/
 lemma riemann_r_thetar_sds (M Λ r : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0) :
-    (-(sdsF M Λ r) - r * (2 * sdsHalf M Λ r))
-      + (-(sdsHalf M Λ r) / sdsF M Λ r) * (-(r * sdsF M Λ r))
+    (-(sdsF M Λ r) - r * (2 * sdsLapseHalfDeriv M Λ r))
+      + (-(sdsLapseHalfDeriv M Λ r) / sdsF M Λ r) * (-(r * sdsF M Λ r))
       - (-(r * sdsF M Λ r)) * (1 / r)
       = Λ * r ^ 2 / 3 - M / r := by
   have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
   have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
   field_simp [hf, hr]
-  unfold sdsHalf
+  unfold sdsLapseHalfDeriv
   field_simp [hr, hr2, hr3]
   ring
 
 /-- The `r φ r φ` Riemann component for Schwarzschild–de Sitter: `(Λ r² / 3 - M / r) sin²θ`. -/
 lemma riemann_r_phirphi_sds (M Λ r th : ℝ) (hr : r ≠ 0)
     (hf : sdsF M Λ r ≠ 0) :
-    (-(sdsF M Λ r) - r * (2 * sdsHalf M Λ r)) * Real.sin th ^ 2
-      + (-(sdsHalf M Λ r) / sdsF M Λ r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
+    (-(sdsF M Λ r) - r * (2 * sdsLapseHalfDeriv M Λ r)) * Real.sin th ^ 2
+      + (-(sdsLapseHalfDeriv M Λ r) / sdsF M Λ r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
       - (-(r * Real.sin th ^ 2 * sdsF M Λ r)) * (1 / r)
       = (Λ * r ^ 2 / 3 - M / r) * Real.sin th ^ 2 := by
   have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
   have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
   field_simp [hf, hr]
-  unfold sdsHalf
+  unfold sdsLapseHalfDeriv
   field_simp [hr, hr2, hr3]
   ring
 
@@ -280,19 +281,19 @@ lemma riemann_theta_phitheta_sds (M Λ r th : ℝ) (hr : r ≠ 0)
 conjunction. -/
 lemma riemann_components_sds (M Λ r th : ℝ) (hr : r ≠ 0)
     (hf : sdsF M Λ r ≠ 0) (hsin : Real.sin th ≠ 0) :
-    (-(deriv (fun s : ℝ => sdsHalf M Λ s / sdsF M Λ s) r)
-        + (sdsHalf M Λ r / sdsF M Λ r) * (-(sdsHalf M Λ r / sdsF M Λ r))
-        - (sdsHalf M Λ r / sdsF M Λ r) ^ 2
+    (-(deriv (fun s : ℝ => sdsLapseHalfDeriv M Λ s / sdsF M Λ s) r)
+        + (sdsLapseHalfDeriv M Λ r / sdsF M Λ r) * (-(sdsLapseHalfDeriv M Λ r / sdsF M Λ r))
+        - (sdsLapseHalfDeriv M Λ r / sdsF M Λ r) ^ 2
         = (2 * M / r ^ 3 + Λ / 3) / sdsF M Λ r)
-      ∧ ((sdsHalf M Λ r / sdsF M Λ r) * (-(r * sdsF M Λ r))
+      ∧ ((sdsLapseHalfDeriv M Λ r / sdsF M Λ r) * (-(r * sdsF M Λ r))
           = Λ * r ^ 2 / 3 - M / r)
-      ∧ ((sdsHalf M Λ r / sdsF M Λ r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
+      ∧ ((sdsLapseHalfDeriv M Λ r / sdsF M Λ r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
           = (Λ * r ^ 2 / 3 - M / r) * Real.sin th ^ 2)
-      ∧ ((-(sdsF M Λ r) - r * (2 * sdsHalf M Λ r))
-            + (-(sdsHalf M Λ r) / sdsF M Λ r) * (-(r * sdsF M Λ r))
+      ∧ ((-(sdsF M Λ r) - r * (2 * sdsLapseHalfDeriv M Λ r))
+            + (-(sdsLapseHalfDeriv M Λ r) / sdsF M Λ r) * (-(r * sdsF M Λ r))
             - (-(r * sdsF M Λ r)) * (1 / r) = Λ * r ^ 2 / 3 - M / r)
-      ∧ ((-(sdsF M Λ r) - r * (2 * sdsHalf M Λ r)) * Real.sin th ^ 2
-            + (-(sdsHalf M Λ r) / sdsF M Λ r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
+      ∧ ((-(sdsF M Λ r) - r * (2 * sdsLapseHalfDeriv M Λ r)) * Real.sin th ^ 2
+            + (-(sdsLapseHalfDeriv M Λ r) / sdsF M Λ r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
             - (-(r * Real.sin th ^ 2 * sdsF M Λ r)) * (1 / r)
           = (Λ * r ^ 2 / 3 - M / r) * Real.sin th ^ 2)
       ∧ ((Real.sin th ^ 2 - Real.cos th ^ 2)

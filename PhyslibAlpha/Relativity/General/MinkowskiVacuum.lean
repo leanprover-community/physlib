@@ -26,7 +26,7 @@ Christoffel symbols, Riemann tensor, and Einstein tensor vanish identically.
 ## ii. Key results
 
 - `minkowskiCoordinateMetric` : four-dimensional Minkowski spacetime as a `CoordinateMetric 4`.
-- `minkowski_ricci_eq_zero`, `minkowski_scalarCurv_eq_zero`, `minkowski_einstein_eq_zero` :
+- `minkowski_ricci_eq_zero`, `minkowski_ricciScalar_eq_zero`, `minkowski_einstein_eq_zero` :
   Minkowski spacetime is Ricci flat, scalar flat, and a vacuum solution of `G = 0`.
 - `Pipeline.minkowski_christoffel`, `Pipeline.minkowski_riemann`, `Pipeline.minkowski_einstein`,
   `Pipeline.minkowski_riemannFromData` : Minkowski spacetime as a computed pipeline vacuum
@@ -62,13 +62,13 @@ lemma minkowski_ricci_eq_zero : ricci minkowski (RiemannTensor.flat 4) = 0 :=
   ricci_flat 4 minkowski
 
 /-- The flat curvature tensor on Minkowski spacetime has zero scalar curvature. -/
-lemma minkowski_scalarCurv_eq_zero : scalarCurv minkowski (RiemannTensor.flat 4) = 0 := by
-  simp [scalarCurv]
+lemma minkowski_ricciScalar_eq_zero : ricciScalar minkowski (RiemannTensor.flat 4) = 0 := by
+  simp [ricciScalar]
 
 /-- Minkowski spacetime is a vacuum solution of the Einstein equations. -/
 lemma minkowski_einstein_eq_zero : einstein minkowski (RiemannTensor.flat 4) = 0 := by
   ext i j
-  simp [einstein, minkowski_scalarCurv_eq_zero]
+  simp [einstein, minkowski_ricciScalar_eq_zero]
 
 /-- `G = 0` and `Ric = 0` agree on Minkowski spacetime. -/
 lemma minkowski_vacuum_iff_ricci_flat :
@@ -87,25 +87,28 @@ noncomputable def minkowskiCoordinateMetric : CoordinateMetric 4 where
   g := minkowskiG
   ginv := minkowskiG
   domain := Set.univ
-  symm := fun _ => eta4_symm
-  inv_left := fun _ _ => eta4_mul_self
-  inv_right := fun _ _ => eta4_mul_self
+  symm := fun _ => minkowskiMetric4_symm
+  inv_left := fun _ _ => minkowskiMetric4_mul_self
+  inv_right := fun _ _ => minkowskiMetric4_mul_self
 
 /-- The pipeline produces vanishing Christoffel symbols for Minkowski spacetime. -/
 lemma Pipeline.minkowski_christoffel (x : Fin 4 → ℝ) (k i j : Fin 4) :
     Pipeline.christoffel Pipeline.minkowskiG Pipeline.minkowskiG x k i j = 0 :=
-  Pipeline.christoffel_const Pipeline.minkowskiG Pipeline.minkowskiG eta4 (fun _ => rfl) x k i j
+  Pipeline.christoffel_const Pipeline.minkowskiG Pipeline.minkowskiG minkowskiMetric4 (fun _ =>
+      rfl) x k i j
 
 /-- The pipeline produces vanishing Riemann curvature for Minkowski spacetime. -/
 lemma Pipeline.minkowski_riemann (x : Fin 4 → ℝ) (ρ σ μ ν : Fin 4) :
     Pipeline.riemann Pipeline.minkowskiG Pipeline.minkowskiG x ρ σ μ ν = 0 :=
-  Pipeline.riemann_const Pipeline.minkowskiG Pipeline.minkowskiG eta4 (fun _ => rfl) x ρ σ μ ν
+  Pipeline.riemann_const Pipeline.minkowskiG Pipeline.minkowskiG minkowskiMetric4 (fun _ => rfl) x
+      ρ σ μ ν
 
 /-- Minkowski spacetime is a vacuum solution of the Einstein equations (`G_{ij} = 0`), computed
 from the metric rather than assumed. -/
 lemma Pipeline.minkowski_einstein (x : Fin 4 → ℝ) (i j : Fin 4) :
-    Pipeline.einsteinOf Pipeline.minkowskiG Pipeline.minkowskiG x i j = 0 :=
-  Pipeline.einsteinOf_const Pipeline.minkowskiG Pipeline.minkowskiG eta4 (fun _ => rfl) x i j
+    Pipeline.einsteinTensorOf Pipeline.minkowskiG Pipeline.minkowskiG x i j = 0 :=
+  Pipeline.einsteinTensorOf_const Pipeline.minkowskiG Pipeline.minkowskiG minkowskiMetric4 (fun _
+      => rfl) x i j
 
 /-- The data form returns zero curvature on Minkowski spacetime. -/
 lemma Pipeline.minkowski_riemannFromData (x : Fin 4 → ℝ) (ρ σ μ ν : Fin 4) :

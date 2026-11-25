@@ -17,13 +17,15 @@ Conformal transformations `g̃ = φ g` preserving nondegeneracy and inverse symm
 ## i. Overview
 
 A conformal rescaling multiplies a spacetime metric `g` by a nowhere-vanishing scalar factor `φ`.
-This module defines the rescaled metric and inverse components (`conformalG` and `conformalGinv`),
+This module defines the rescaled metric and inverse components (`conformalRescaleMetric` and
+`conformalRescaleMetricInv`),
 proves their two-sided inverse relations, and packages the rescaled `MetricTensor` as
 `conformalMetric`.
 
 ## ii. Key results
 
-- `conformalG`, `conformalGinv` : componentwise conformal rescalings of a metric and its inverse.
+- `conformalRescaleMetric`, `conformalRescaleMetricInv` : componentwise conformal rescalings of a
+  metric and its inverse.
 - `conformalG_mul`, `conformalGinv_mul` : two-sided inverse relations for `φ ≠ 0`.
 - `conformalMetric` : conformal rescaling `g̃ = φ g` packaged as a `MetricTensor`.
 
@@ -48,49 +50,54 @@ namespace GeneralRelativity
 
 -/
 
-/-- Componentwise conformal rescaling of a metric, `g̃ = φ g`. -/
-def conformalG {n : ℕ} (g : Tensor2 n) (φ : ℝ) : Tensor2 n := fun i j => φ * g i j
+/-- Componentwise conformal rescaling of a metric, `g̃ = φ g`. Kept as a standalone matrix
+operation separately from `conformalMetric` so coordinate metric fields such as `nordstromMetric`
+can reuse the formula before packaging a `MetricTensor`. -/
+def conformalRescaleMetric {n : ℕ} (g : Tensor2 n) (φ : ℝ) : Tensor2 n := fun i j => φ * g i j
 
-/-- The corresponding inverse components, `g̃⁻¹ = φ⁻¹ g⁻¹`. -/
-noncomputable def conformalGinv {n : ℕ} (ginv : Tensor2 n) (φ : ℝ) : Tensor2 n :=
+/-- Corresponding inverse metric components `g̃⁻¹ = φ⁻¹ g⁻¹`, kept alongside
+`conformalRescaleMetric` for coordinate metric fields prior to `MetricTensor` bundling. -/
+noncomputable def conformalRescaleMetricInv {n : ℕ} (ginv : Tensor2 n) (φ : ℝ) : Tensor2 n :=
   fun i j => φ⁻¹ * ginv i j
 
 /-- The rescaled metric times its rescaled inverse equals the identity. -/
 lemma conformalG_mul {n : ℕ} (M : MetricTensor n) (φ : ℝ) (hφ : φ ≠ 0) :
-    conformalG M.g φ * conformalGinv M.ginv φ = 1 := by
+    conformalRescaleMetric M.g φ * conformalRescaleMetricInv M.ginv φ = 1 := by
   ext i j
   rw [Matrix.mul_apply]
   have hterm : ∀ k,
-      conformalG M.g φ i k * conformalGinv M.ginv φ k j = M.g i k * M.ginv k j := by
+      conformalRescaleMetric M.g φ i k * conformalRescaleMetricInv M.ginv φ k j
+        = M.g i k * M.ginv k j := by
     intro k
-    simp only [conformalG, conformalGinv]
+    simp only [conformalRescaleMetric, conformalRescaleMetricInv]
     calc (φ * M.g i k) * (φ⁻¹ * M.ginv k j)
         = (φ * φ⁻¹) * (M.g i k * M.ginv k j) := by ring
       _ = M.g i k * M.ginv k j := by rw [mul_inv_cancel₀ hφ, one_mul]
   have h1 : (∑ k, M.g i k * M.ginv k j) = (1 : Tensor2 n) i j := by
     have hinv := congrFun (congrFun M.inv_left i) j
     simpa only [Matrix.mul_apply] using hinv
-  have hsum : (∑ k, conformalG M.g φ i k * conformalGinv M.ginv φ k j)
+  have hsum : (∑ k, conformalRescaleMetric M.g φ i k * conformalRescaleMetricInv M.ginv φ k j)
       = ∑ k, M.g i k * M.ginv k j := Finset.sum_congr rfl (fun k _ => hterm k)
   rw [hsum]
   exact h1
 
 /-- The rescaled inverse times the rescaled metric equals the identity. -/
 lemma conformalGinv_mul {n : ℕ} (M : MetricTensor n) (φ : ℝ) (hφ : φ ≠ 0) :
-    conformalGinv M.ginv φ * conformalG M.g φ = 1 := by
+    conformalRescaleMetricInv M.ginv φ * conformalRescaleMetric M.g φ = 1 := by
   ext i j
   rw [Matrix.mul_apply]
   have hterm : ∀ k,
-      conformalGinv M.ginv φ i k * conformalG M.g φ k j = M.ginv i k * M.g k j := by
+      conformalRescaleMetricInv M.ginv φ i k * conformalRescaleMetric M.g φ k j
+        = M.ginv i k * M.g k j := by
     intro k
-    simp only [conformalG, conformalGinv]
+    simp only [conformalRescaleMetric, conformalRescaleMetricInv]
     calc (φ⁻¹ * M.ginv i k) * (φ * M.g k j)
         = (φ⁻¹ * φ) * (M.ginv i k * M.g k j) := by ring
       _ = M.ginv i k * M.g k j := by rw [inv_mul_cancel₀ hφ, one_mul]
   have h1 : (∑ k, M.ginv i k * M.g k j) = (1 : Tensor2 n) i j := by
     have hinv := congrFun (congrFun M.inv_right i) j
     simpa only [Matrix.mul_apply] using hinv
-  have hsum : (∑ k, conformalGinv M.ginv φ i k * conformalG M.g φ k j)
+  have hsum : (∑ k, conformalRescaleMetricInv M.ginv φ i k * conformalRescaleMetric M.g φ k j)
       = ∑ k, M.ginv i k * M.g k j := Finset.sum_congr rfl (fun k _ => hterm k)
   rw [hsum]
   exact h1
@@ -99,8 +106,8 @@ lemma conformalGinv_mul {n : ℕ} (M : MetricTensor n) (φ : ℝ) (hφ : φ ≠ 
 Jordan-to-Einstein frame transformation. -/
 noncomputable def conformalMetric {n : ℕ} (M : MetricTensor n) (φ : ℝ) (hφ : φ ≠ 0) :
     MetricTensor n where
-  g := conformalG M.g φ
-  ginv := conformalGinv M.ginv φ
+  g := conformalRescaleMetric M.g φ
+  ginv := conformalRescaleMetricInv M.ginv φ
   symm := by
     intro i j
     show φ * M.g i j = φ * M.g j i

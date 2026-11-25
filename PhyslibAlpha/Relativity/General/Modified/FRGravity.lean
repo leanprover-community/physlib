@@ -31,10 +31,12 @@ with mass squared `1 / (3 f''(R))`.
 
 This module formalises:
 
-- the algebraic part `fieldEqn` of the `f(R)` field equation and its reduction to `G + Λ g` when
+- the algebraic part `algebraicFieldEqn` of the `f(R)` field equation and its reduction to `G + Λ
+  g` when
   `f(R) = R - 2 Λ` (`linear_is_einstein`);
-- the `n`-dimensional trace identity `f'(S) S - (n/2) f(S) + (n - 1) □f' = 0` (`trace_fieldEqn`)
-  and its four-dimensional `3 □f'` specialisation (`trace_fieldEqn_four`);
+- the `n`-dimensional trace identity `f'(S) S - (n/2) f(S) + (n - 1) □f' = 0`
+  (`trace_algebraicFieldEqn`)
+  and its four-dimensional `3 □f'` specialisation (`trace_algebraicFieldEqn_four`);
 - Starobinsky's `R + α R²` Legendre potential `(φ - 1)² / (8 α)`, scalar mass `m² = 1 / (6 α)`,
   and the Einstein-frame plateau `U(φ) = (1 - 1/φ)² / (16 α) → 1 / (16 α)` as `φ → ∞`.
 
@@ -42,9 +44,11 @@ This module formalises:
 
 - `FRTheory` : `f(R)` gravity model specified by its Lagrangian function `f` and derivative
   `df`.
-- `fieldEqn`, `linear_is_einstein` : algebraic `f(R)` equations and recovery of `G + Λ g`.
-- `trace_fieldEqn`, `trace_fieldEqn_four` : trace equation showing the propagating scalar mode.
-- `starobinskyPotential`, `phi_inverse`, `potential_eq`, `mass_sq`, `not_gr` : Starobinsky
+- `algebraicFieldEqn`, `linear_is_einstein` : algebraic `f(R)` equations and recovery of `G + Λ g`.
+- `trace_algebraicFieldEqn`, `trace_algebraicFieldEqn_four` : trace equation showing the
+  propagating scalar mode.
+- `starobinskyPotential`, `starobinsky_scalar_inversion`, `potential_eq`, `mass_sq`,
+  `starobinsky_nonconstant_deriv` : Starobinsky
   `R + α R²` potential and scalar degree of freedom.
 - `einsteinFrameV`, `starobinsky_einsteinFrame_form`, `starobinsky_plateau` : Einstein-frame
   conformal potential and asymptotic slow-roll plateau.
@@ -89,50 +93,51 @@ structure FRTheory where
 
 /-- The algebraic part `f'(S) Ric_{ij} - (1/2) f(S) g_{ij}` of the metric-formalism `f(R)`
 field equations (exact when `f'` is constant so `-∇_i ∇_j f' + g_{ij} □f'` vanishes). -/
-noncomputable def fieldEqn (f df : ℝ → ℝ) {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) :
+noncomputable def algebraicFieldEqn (f df : ℝ → ℝ) {n : ℕ} (M : MetricTensor n) (R :
+  RiemannTensor n) :
     Tensor2 n :=
-  fun i j => df (scalarCurv M R) * ricci M R i j - (1 / 2) * f (scalarCurv M R) * M.g i j
+  fun i j => df (ricciScalar M R) * ricci M R i j - (1 / 2) * f (ricciScalar M R) * M.g i j
 
 /-- `f(R) = R - 2 Λ` reduces exactly to general relativity with cosmological constant `Λ`,
 `G + Λ g`. -/
 lemma linear_is_einstein {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) (Λ : ℝ) :
-    fieldEqn (fun S => S - 2 * Λ) (fun _ => 1) M R
+    algebraicFieldEqn (fun S => S - 2 * Λ) (fun _ => 1) M R
       = fun i j => einstein M R i j + Λ * M.g i j := by
   funext i j
-  simp only [fieldEqn, einstein]
+  simp only [algebraicFieldEqn, einstein]
   ring
 
 /-- Trace of the metric-formalism `f(R)` field equation in `n` dimensions:
 `f'(S) S - (n/2) f(S) + (n - 1) □f'`. -/
-lemma trace_fieldEqn {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) (f df : ℝ → ℝ)
+lemma trace_algebraicFieldEqn {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) (f df : ℝ → ℝ)
     (box : ℝ) (d2 : Tensor2 n) (hbox : metricTrace M d2 = box) :
-    metricTrace M (fun i j => df (scalarCurv M R) * ricci M R i j
-        - (1 / 2) * f (scalarCurv M R) * M.g i j + (M.g i j * box - d2 i j))
-      = df (scalarCurv M R) * scalarCurv M R
-        - (1 / 2) * f (scalarCurv M R) * (n : ℝ) + ((n : ℝ) - 1) * box := by
+    metricTrace M (fun i j => df (ricciScalar M R) * ricci M R i j
+        - (1 / 2) * f (ricciScalar M R) * M.g i j + (M.g i j * box - d2 i j))
+      = df (ricciScalar M R) * ricciScalar M R
+        - (1 / 2) * f (ricciScalar M R) * (n : ℝ) + ((n : ℝ) - 1) * box := by
   have hcomm : (fun i j => M.g i j * box) = fun i j => box * M.g i j := by
     funext i j
     ring
   have h1 := metricTrace_add_fun M
-    (fun i j => df (scalarCurv M R) * ricci M R i j - (1 / 2) * f (scalarCurv M R) * M.g i j)
+    (fun i j => df (ricciScalar M R) * ricci M R i j - (1 / 2) * f (ricciScalar M R) * M.g i j)
     (fun i j => M.g i j * box - d2 i j)
   have h2 := metricTrace_sub_fun M
-    (fun i j => df (scalarCurv M R) * ricci M R i j)
-    (fun i j => (1 / 2) * f (scalarCurv M R) * M.g i j)
+    (fun i j => df (ricciScalar M R) * ricci M R i j)
+    (fun i j => (1 / 2) * f (ricciScalar M R) * M.g i j)
   have h3 := metricTrace_sub_fun M (fun i j => M.g i j * box) d2
-  have h4 := metricTrace_smul M (df (scalarCurv M R)) (ricci M R)
+  have h4 := metricTrace_smul M (df (ricciScalar M R)) (ricci M R)
   have h5 := metricTrace_mul_g M box
-  have h6 := metricTrace_mul_g M ((1 / 2) * f (scalarCurv M R))
-  rw [h1, h2, h3, hcomm, h5, h6, h4, ← scalarCurv_eq_metricTrace, hbox]
+  have h6 := metricTrace_mul_g M ((1 / 2) * f (ricciScalar M R))
+  rw [h1, h2, h3, hcomm, h5, h6, h4, ← ricciScalar_eq_metricTrace, hbox]
   ring
 
 /-- In four dimensions, the trace equation becomes `f'(S) S - 2 f(S) + 3 □f' = 0`. -/
-lemma trace_fieldEqn_four (M : MetricTensor 4) (R : RiemannTensor 4) (f df : ℝ → ℝ)
+lemma trace_algebraicFieldEqn_four (M : MetricTensor 4) (R : RiemannTensor 4) (f df : ℝ → ℝ)
     (box : ℝ) (d2 : Tensor2 4) (hbox : metricTrace M d2 = box) :
-    metricTrace M (fun i j => df (scalarCurv M R) * ricci M R i j
-        - (1 / 2) * f (scalarCurv M R) * M.g i j + (M.g i j * box - d2 i j))
-      = df (scalarCurv M R) * scalarCurv M R - 2 * f (scalarCurv M R) + 3 * box := by
-  rw [trace_fieldEqn M R f df box d2 hbox]
+    metricTrace M (fun i j => df (ricciScalar M R) * ricci M R i j
+        - (1 / 2) * f (ricciScalar M R) * M.g i j + (M.g i j * box - d2 i j))
+      = df (ricciScalar M R) * ricciScalar M R - 2 * f (ricciScalar M R) + 3 * box := by
+  rw [trace_algebraicFieldEqn M R f df box d2 hbox]
   push_cast
   ring
 
@@ -147,7 +152,7 @@ lemma trace_fieldEqn_four (M : MetricTensor 4) (R : RiemannTensor 4) (f df : ℝ
 noncomputable def starobinskyPotential (α φ : ℝ) : ℝ := (φ - 1) ^ 2 / (8 * α)
 
 /-- Inversion of `φ = 1 + 2 α R`: `R = (φ - 1) / (2 α)`. -/
-lemma phi_inverse (α φ : ℝ) (hα : α ≠ 0) :
+lemma starobinsky_scalar_inversion (α φ : ℝ) (hα : α ≠ 0) :
     1 + 2 * α * ((φ - 1) / (2 * α)) = φ := by
   have h2 : (2 : ℝ) * α ≠ 0 := mul_ne_zero (by norm_num) hα
   field_simp
@@ -174,7 +179,7 @@ lemma mass_sq (α : ℝ) (hα : α ≠ 0) : 3 * (2 * α) * (1 / (6 * α)) = 1 :=
 
 /-- For `α ≠ 0`, `f'(S) = 1 + 2 α S` is non-constant, so `R + α R²` propagates an extra scalar
 degree of freedom beyond general relativity. -/
-lemma not_gr (α : ℝ) (hα : α ≠ 0) : ∃ S : ℝ, 1 + 2 * α * S ≠ 1 := by
+lemma starobinsky_nonconstant_deriv (α : ℝ) (hα : α ≠ 0) : ∃ S : ℝ, 1 + 2 * α * S ≠ 1 := by
   refine ⟨1 / (2 * α), ?_⟩
   have h : 2 * α * (1 / (2 * α)) = 1 := by
     have h2 : (2 : ℝ) * α ≠ 0 := mul_ne_zero (by norm_num) hα
@@ -224,9 +229,9 @@ lemma starobinsky_plateau (α : ℝ) (hα : α ≠ 0) :
   simpa using hmul
 
 /-- The algebraic metric-formalism `f(R)` field equation tensor evaluated on `(M, R)`. -/
-noncomputable def FRTheory.fieldEqn (T : FRTheory) {n : ℕ} (M : MetricTensor n)
+noncomputable def FRTheory.algebraicFieldEqn (T : FRTheory) {n : ℕ} (M : MetricTensor n)
     (R : RiemannTensor n) : Tensor2 n :=
-  FRGravity.fieldEqn T.f T.df M R
+  FRGravity.algebraicFieldEqn T.f T.df M R
 
 end FRGravity
 

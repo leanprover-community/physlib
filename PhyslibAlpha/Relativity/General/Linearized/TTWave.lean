@@ -105,7 +105,7 @@ lemma ttWave_lorenz_gauge (hPlus hCross : ℝ) (f : ℝ → ℝ) (x : Fin 4 → 
     have hfun : (fun y : Fin 4 → ℝ => -(hPlus * f (y 0 - y 3)))
         = fun y => (-hPlus) * f (y 0 - y 3) := funext fun y => by ring
     rw [hfun, pd_2_wave]
-  simp only [lorenzGaugeCond, lorenzDiv, htr, Fin.sum_univ_four, eta4_apply]
+  simp only [lorenzGaugeCond, lorenzDiv, htr, Fin.sum_univ_four, minkowskiMetric4_apply]
   fin_cases j <;>
     simp only [ttWave] <;> norm_num
   · simp [hc0]
@@ -157,7 +157,7 @@ private lemma boxEta_wave (c : ℝ) (f : ℝ → ℝ) (hf : ContDiff ℝ 2 f) (x
     funext fun y => pd_1_wave c f y
   have hc2 : pd (2 : Fin 4) (fun y : Fin 4 → ℝ => c * f (y 0 - y 3)) = fun _ => 0 :=
     funext fun y => pd_2_wave c f y
-  simp only [boxEta, Fin.sum_univ_four, eta4_apply, h0eq, hc1, hc2, h3eq]
+  simp only [boxEta, Fin.sum_univ_four, minkowskiMetric4_apply, h0eq, hc1, hc2, h3eq]
   rw [pd_0_wave c (deriv f) hf2 x, pd_3_wave (-c) (deriv f) hf2 x, pd_const, pd_const]
   norm_num
 

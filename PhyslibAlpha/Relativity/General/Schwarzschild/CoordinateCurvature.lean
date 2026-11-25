@@ -28,7 +28,8 @@ equations `G = 0`.
 - `schwarzschildG`, `schwarzschildGinv` : Schwarzschild coordinate metric and inverse fields.
 - `sdsMetric_zero_lambda`, `sdsMetricInv_zero_lambda` : reduction from `sdsMetric` at `Λ = 0`.
 - `riemann_schwarzschild_components` : all six independent Schwarzschild Riemann components.
-- `ricciOf_schwarzschild`, `scalarOf_schwarzschild`, `einsteinOf_schwarzschild` : pipeline
+- `ricciTensorOf_schwarzschild`, `ricciScalarOf_schwarzschild`, `einsteinTensorOf_schwarzschild` :
+  pipeline
   vacuum solution theorems.
 
 ## iii. Table of contents
@@ -113,35 +114,35 @@ lemma riemann_schwarzschild_components (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 �
 
 /-- Metric-level Ricci flatness for Schwarzschild: `Ric = 0` directly from `schwarzschildG` and
 `schwarzschildGinv`. -/
-lemma ricciOf_schwarzschild (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma ricciTensorOf_schwarzschild (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : Schwarzschild.schwarzschildF M (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (σ ν : Fin 4) :
-    ricciOf (schwarzschildG M) (schwarzschildGinv M) x σ ν = 0 := by
+    ricciTensorOf (schwarzschildG M) (schwarzschildGinv M) x σ ν = 0 := by
   have hf0 : sdsF M 0 (x 1) ≠ 0 := by
     rwa [sdsF_zero_lambda]
-  have h := ricciOf_sds M 0 x hr hf0 hsin σ ν
+  have h := ricciTensorOf_sds M 0 x hr hf0 hsin σ ν
   rw [sdsMetric_zero_lambda, sdsMetricInv_zero_lambda] at h
   simpa using h
 
 /-- Metric-level vanishing scalar curvature for Schwarzschild: `S = 0`. -/
-lemma scalarOf_schwarzschild (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma ricciScalarOf_schwarzschild (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : Schwarzschild.schwarzschildF M (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
-    scalarOf (schwarzschildG M) (schwarzschildGinv M) x = 0 := by
+    ricciScalarOf (schwarzschildG M) (schwarzschildGinv M) x = 0 := by
   have hf0 : sdsF M 0 (x 1) ≠ 0 := by
     rwa [sdsF_zero_lambda]
-  have h := scalarOf_sds M 0 x hr hf0 hsin
+  have h := ricciScalarOf_sds M 0 x hr hf0 hsin
   rw [sdsMetric_zero_lambda, sdsMetricInv_zero_lambda] at h
   simpa using h
 
 /-- Metric-level vacuum Einstein equation for Schwarzschild: `G_{ij} = 0` directly from
 `g = diag(-f, 1/f, r², r² sin²θ)`. -/
-lemma einsteinOf_schwarzschild (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma einsteinTensorOf_schwarzschild (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : Schwarzschild.schwarzschildF M (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (i j : Fin 4) :
-    einsteinOf (schwarzschildG M) (schwarzschildGinv M) x i j = 0 := by
+    einsteinTensorOf (schwarzschildG M) (schwarzschildGinv M) x i j = 0 := by
   have hf0 : sdsF M 0 (x 1) ≠ 0 := by
     rwa [sdsF_zero_lambda]
-  have h := einsteinOf_sds M 0 x hr hf0 hsin i j
+  have h := einsteinTensorOf_sds M 0 x hr hf0 hsin i j
   rw [sdsMetric_zero_lambda, sdsMetricInv_zero_lambda] at h
   simpa using h
 

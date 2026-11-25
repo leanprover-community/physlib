@@ -39,13 +39,15 @@ spherical coordinates `x = (t, r, θ, φ)` has metric:
 
 Whereas `Physlib.Cosmology.FLRW` takes the two Friedmann equations as postulated ODEs for
 `U : Cosmology.FLRW`, this module **derives** them directly from the Einstein tensor
-`einsteinOf (flrwMetric a k) (flrwMetricInv a k)`:
+`einsteinTensorOf (flrwMetric a k) (flrwMetricInv a k)`:
 
 1. Computes all 64 Christoffel symbols and all 256 Christoffel partial derivatives through
-   `GeneralRelativity.Pipeline` (`christoffel_eq_flrwG`, `pd_flrwG_eq_flrwDG`).
-2. Obtains exact closed-form `ricciOf_flrw`, `scalarOf_flrw`, and `einsteinOf_flrw`.
+   `GeneralRelativity.Pipeline` (`christoffel_eq_flrwChristoffel`, `pd_flrwChristoffel_eq_deriv`).
+2. Obtains exact closed-form `ricciTensorOf_flrw`, `ricciScalarOf_flrw`, and
+`einsteinTensorOf_flrw`.
 3. Proves equivalence between `G_{ij} + Λ g_{ij} = 8 π G T_{ij}` (for a comoving perfect fluid `T`)
-   and the two Friedmann equations in geometric units `c = 1` (`einsteinOf_flrw_iff_friedmann`).
+   and the two Friedmann equations in geometric units `c = 1`
+   (`einsteinTensorOf_flrw_iff_friedmann`).
 4. Bridges `U : Cosmology.FLRW` to `flrwScaleFn U := fun τ => U.a ⟨τ⟩` via
    `Time.hasDerivAt_mk_of_differentiableAt`, deducing `U.FriedmannSolution F Λ G 1` (and
    consequently covariant energy-momentum conservation `continuityEquation`) directly from the
@@ -55,10 +57,13 @@ Whereas `Physlib.Cosmology.FLRW` takes the two Friedmann equations as postulated
 
 - `FLRWSpacetime`, `flrwMetric`, `flrwMetricInv`, `flrwMetricTensor` : FLRW spacetime
   structure, coordinate metric, inverse, and `MetricTensor 4`.
-- `flrwG`, `flrwDG`, `riemann_flrw_eq_data` : Christoffel and partial-derivative bridge.
-- `ricciOf_flrw`, `scalarOf_flrw`, `einsteinOf_flrw` : metric-pipeline curvature tensors.
-- `perfectFluidT`, `einsteinOf_flrw_iff_friedmann` : Einstein–Friedmann equivalence (`c = 1`).
-- `flrwScaleFn`, `einsteinOf_flrw_iff_cosmology_friedmann`, `friedmannSolution_of_einsteinOf_flrw` :
+- `flrwChristoffel`, `flrwChristoffelDeriv`, `riemann_flrw_eq_data` : Christoffel and
+  partial-derivative bridge.
+- `ricciTensorOf_flrw`, `ricciScalarOf_flrw`, `einsteinTensorOf_flrw` : metric-pipeline curvature
+  tensors.
+- `perfectFluidT`, `einsteinTensorOf_flrw_iff_friedmann` : Einstein–Friedmann equivalence (`c = 1`).
+- `flrwScaleFn`, `einsteinTensorOf_flrw_iff_cosmology_friedmann`,
+  `friedmannSolution_of_einsteinTensorOf_flrw` :
   direct bridge to `Physlib.Cosmology.FLRW`.
 
 ## iii. Table of contents
@@ -166,8 +171,9 @@ noncomputable def flrwMetricTensor (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → �
 
 -/
 
-/-- Closed-form Christoffel symbols `Γ^m_{ij}` of the FLRW metric. -/
-noncomputable def flrwG (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (m i j : Fin 4) : ℝ :=
+/-- Closed-form Christoffel symbols `Γ^m_{ij}` of the FLRW metric, factored out from
+`Pipeline.christoffel` so symbolic time derivatives of `a(t)` remain isolated from index sums. -/
+noncomputable def flrwChristoffel (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (m i j : Fin 4) : ℝ :=
   if m = 0 then
     (if i = 1 ∧ j = 1 then a (x 0) * deriv a (x 0) / (1 - k * (x 1) ^ 2)
      else if i = 2 ∧ j = 2 then a (x 0) * deriv a (x 0) * (x 1) ^ 2
@@ -190,8 +196,9 @@ noncomputable def flrwG (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (m i j :
      else if (i = 2 ∧ j = 3) ∨ (i = 3 ∧ j = 2) then Real.cos (x 2) / Real.sin (x 2)
      else 0)
 
-/-- Complete partial-derivative table `∂_μ flrwG^m_{ij}` across all 256 index tuples. -/
-noncomputable def flrwDG (a : ℝ → ℝ) (k : ℝ) (μ : Fin 4) (x : Fin 4 → ℝ)
+/-- Complete partial-derivative table `∂_μ flrwChristoffel^m_{ij}` across all 256 index tuples,
+decoupling scalar derivative evaluation from `Pipeline.riemann` assembly. -/
+noncomputable def flrwChristoffelDeriv (a : ℝ → ℝ) (k : ℝ) (μ : Fin 4) (x : Fin 4 → ℝ)
     (m i j : Fin 4) : ℝ :=
   if μ = 0 then
     (if m = 0 ∧ i = 1 ∧ j = 1 then
@@ -358,32 +365,34 @@ private lemma pd_flrw_theta (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (c d
     | exact pd_flrw_theta_33 a k x
     | simp [pd, flrwMetric]
 
-/-- All 64 Christoffel symbols computed by `christoffel` match `flrwG`. -/
-lemma christoffel_eq_flrwG (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
+/-- All 64 Christoffel symbols computed by `christoffel` match `flrwChristoffel`. -/
+lemma christoffel_eq_flrwChristoffel (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : DifferentiableAt ℝ a (x 0)) :
-    ∀ m i j, christoffel (flrwMetric a k) (flrwMetricInv a k) x m i j = flrwG a k x m i j := by
+    ∀ m i j, christoffel (flrwMetric a k) (flrwMetricInv a k) x m i j
+      = flrwChristoffel a k x m i j := by
   intro m i j
   fin_cases m <;> fin_cases i <;> fin_cases j <;>
-    simp [christoffel, flrwG, flrwMetricInv, pd_flrw_t a k x ha_diff,
+    simp [christoffel, flrwChristoffel, flrwMetricInv, pd_flrw_t a k x ha_diff,
       pd_flrw_r a k x hkr, pd_flrw_theta a k x]
   all_goals field_simp [ha, hr, hkr, hsin]
 
-/-- Neighbourhood equality promotes `christoffel = flrwG` to partial derivatives along every
+/-- Neighbourhood equality promotes `christoffel = flrwChristoffel` to partial derivatives along
+every
 coordinate axis `μ`. -/
 lemma pd_christoffel_eq_pd_flrwG (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ a t) (μ m i j : Fin 4) :
     pd μ (fun y => christoffel (flrwMetric a k) (flrwMetricInv a k) y m i j) x
-      = pd μ (fun y => flrwG a k y m i j) x := by
+      = pd μ (fun y => flrwChristoffel a k y m i j) x := by
   fin_cases μ
   · have ha_cont : ContinuousAt a (x 0) := ha_diff.self_of_nhds.continuousAt
     have ha' : ∀ᶠ t in nhds (x 0), a t ≠ 0 := ha_cont.eventually_ne ha
     have heq : (fun s : ℝ =>
         christoffel (flrwMetric a k) (flrwMetricInv a k) (Function.update x 0 s) m i j)
-        =ᶠ[nhds (x 0)] (fun s : ℝ => flrwG a k (Function.update x 0 s) m i j) := by
+        =ᶠ[nhds (x 0)] (fun s : ℝ => flrwChristoffel a k (Function.update x 0 s) m i j) := by
       filter_upwards [ha', ha_diff] with s hs1 hs2
-      exact christoffel_eq_flrwG a k (Function.update x 0 s)
+      exact christoffel_eq_flrwChristoffel a k (Function.update x 0 s)
         (by simpa using hs1) (by simpa using hr) (by simpa using hkr) (by simpa using hsin)
         (by simpa using hs2) m i j
     exact Filter.EventuallyEq.deriv_eq heq
@@ -392,9 +401,9 @@ lemma pd_christoffel_eq_pd_flrwG (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ)
     have hkr' : ∀ᶠ s in nhds (x 1), 1 - k * s ^ 2 ≠ 0 := hkr_cont.eventually_ne hkr
     have heq : (fun s : ℝ =>
         christoffel (flrwMetric a k) (flrwMetricInv a k) (Function.update x 1 s) m i j)
-        =ᶠ[nhds (x 1)] (fun s : ℝ => flrwG a k (Function.update x 1 s) m i j) := by
+        =ᶠ[nhds (x 1)] (fun s : ℝ => flrwChristoffel a k (Function.update x 1 s) m i j) := by
       filter_upwards [hr', hkr'] with s hs1 hs2
-      exact christoffel_eq_flrwG a k (Function.update x 1 s)
+      exact christoffel_eq_flrwChristoffel a k (Function.update x 1 s)
         (by simpa using ha) (by simpa using hs1) (by simpa using hs2) (by simpa using hsin)
         (by simpa using ha_diff.self_of_nhds) m i j
     exact Filter.EventuallyEq.deriv_eq heq
@@ -402,58 +411,59 @@ lemma pd_christoffel_eq_pd_flrwG (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ)
       Real.continuous_sin.continuousAt.eventually_ne hsin
     have heq : (fun s : ℝ =>
         christoffel (flrwMetric a k) (flrwMetricInv a k) (Function.update x 2 s) m i j)
-        =ᶠ[nhds (x 2)] (fun s : ℝ => flrwG a k (Function.update x 2 s) m i j) := by
+        =ᶠ[nhds (x 2)] (fun s : ℝ => flrwChristoffel a k (Function.update x 2 s) m i j) := by
       filter_upwards [hsin'] with s hs
-      exact christoffel_eq_flrwG a k (Function.update x 2 s)
+      exact christoffel_eq_flrwChristoffel a k (Function.update x 2 s)
         (by simpa using ha) (by simpa using hr) (by simpa using hkr) (by simpa using hs)
         (by simpa using ha_diff.self_of_nhds) m i j
     exact Filter.EventuallyEq.deriv_eq heq
   · have heq : (fun s : ℝ =>
         christoffel (flrwMetric a k) (flrwMetricInv a k) (Function.update x 3 s) m i j)
-        =ᶠ[nhds (x 3)] (fun s : ℝ => flrwG a k (Function.update x 3 s) m i j) :=
+        =ᶠ[nhds (x 3)] (fun s : ℝ => flrwChristoffel a k (Function.update x 3 s) m i j) :=
       Filter.Eventually.of_forall (fun s =>
-        christoffel_eq_flrwG a k (Function.update x 3 s) ha hr hkr hsin ha_diff.self_of_nhds
+        christoffel_eq_flrwChristoffel a k (Function.update x 3 s) ha hr hkr hsin
+            ha_diff.self_of_nhds
           m i j)
     exact Filter.EventuallyEq.deriv_eq heq
 
 private lemma pd_flrwG_0_011 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ)
     (ha1 : DifferentiableAt ℝ a (x 0)) (ha2 : DifferentiableAt ℝ (deriv a) (x 0)) :
-    pd 0 (fun y => flrwG a k y 0 1 1) x = flrwDG a k 0 x 0 1 1 := by
-  have hfun : (fun s : ℝ => flrwG a k (Function.update x 0 s) 0 1 1)
+    pd 0 (fun y => flrwChristoffel a k y 0 1 1) x = flrwChristoffelDeriv a k 0 x 0 1 1 := by
+  have hfun : (fun s : ℝ => flrwChristoffel a k (Function.update x 0 s) 0 1 1)
       = fun s : ℝ => (a s * deriv a s) / (1 - k * (x 1) ^ 2) := by
-    funext s; simp [flrwG]
+    funext s; simp [flrwChristoffel]
   have haa' : HasDerivAt (fun s : ℝ => a s * deriv a s)
       ((deriv a (x 0)) ^ 2 + a (x 0) * deriv (deriv a) (x 0)) (x 0) := by
     convert ha1.hasDerivAt.mul ha2.hasDerivAt using 1; ring
   rw [pd, hfun, (haa'.div_const (1 - k * (x 1) ^ 2)).deriv]
-  simp [flrwDG]
+  simp [flrwChristoffelDeriv]
 
 private lemma pd_flrwG_0_022 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ)
     (ha1 : DifferentiableAt ℝ a (x 0)) (ha2 : DifferentiableAt ℝ (deriv a) (x 0)) :
-    pd 0 (fun y => flrwG a k y 0 2 2) x = flrwDG a k 0 x 0 2 2 := by
-  have hfun : (fun s : ℝ => flrwG a k (Function.update x 0 s) 0 2 2)
+    pd 0 (fun y => flrwChristoffel a k y 0 2 2) x = flrwChristoffelDeriv a k 0 x 0 2 2 := by
+  have hfun : (fun s : ℝ => flrwChristoffel a k (Function.update x 0 s) 0 2 2)
       = fun s : ℝ => (a s * deriv a s) * (x 1) ^ 2 := by
-    funext s; simp [flrwG]
+    funext s; simp [flrwChristoffel]
   have haa' : HasDerivAt (fun s : ℝ => a s * deriv a s)
       ((deriv a (x 0)) ^ 2 + a (x 0) * deriv (deriv a) (x 0)) (x 0) := by
     convert ha1.hasDerivAt.mul ha2.hasDerivAt using 1; ring
   rw [pd, hfun, (haa'.mul_const ((x 1) ^ 2)).deriv]
-  simp [flrwDG]
+  simp [flrwChristoffelDeriv]
 
 private lemma pd_flrwG_0_033 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ)
     (ha1 : DifferentiableAt ℝ a (x 0)) (ha2 : DifferentiableAt ℝ (deriv a) (x 0)) :
-    pd 0 (fun y => flrwG a k y 0 3 3) x = flrwDG a k 0 x 0 3 3 := by
-  have hfun : (fun s : ℝ => flrwG a k (Function.update x 0 s) 0 3 3)
+    pd 0 (fun y => flrwChristoffel a k y 0 3 3) x = flrwChristoffelDeriv a k 0 x 0 3 3 := by
+  have hfun : (fun s : ℝ => flrwChristoffel a k (Function.update x 0 s) 0 3 3)
       = fun s : ℝ => (a s * deriv a s) * ((x 1) ^ 2 * Real.sin (x 2) ^ 2) := by
-    funext s; simp [flrwG, mul_assoc]
+    funext s; simp [flrwChristoffel, mul_assoc]
   have haa' : HasDerivAt (fun s : ℝ => a s * deriv a s)
       ((deriv a (x 0)) ^ 2 + a (x 0) * deriv (deriv a) (x 0)) (x 0) := by
     convert ha1.hasDerivAt.mul ha2.hasDerivAt using 1; ring
   rw [pd, hfun, (haa'.mul_const ((x 1) ^ 2 * Real.sin (x 2) ^ 2)).deriv]
-  have hval : flrwDG a k 0 x 0 3 3 =
+  have hval : flrwChristoffelDeriv a k 0 x 0 3 3 =
       ((deriv a (x 0)) ^ 2 + a (x 0) * deriv (deriv a) (x 0)) *
         (x 1) ^ 2 * Real.sin (x 2) ^ 2 := by
-    simp [flrwDG]
+    simp [flrwChristoffelDeriv]
   rw [hval]
   ring
 
@@ -463,49 +473,55 @@ private lemma pd_flrwG_0_H (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha :
     (hmatch : (m = 1 ∧ ((i = 0 ∧ j = 1) ∨ (i = 1 ∧ j = 0)))
       ∨ (m = 2 ∧ ((i = 0 ∧ j = 2) ∨ (i = 2 ∧ j = 0)))
       ∨ (m = 3 ∧ ((i = 0 ∧ j = 3) ∨ (i = 3 ∧ j = 0)))) :
-    pd 0 (fun y => flrwG a k y m i j) x = flrwDG a k 0 x m i j := by
+    pd 0 (fun y => flrwChristoffel a k y m i j) x = flrwChristoffelDeriv a k 0 x m i j := by
   have hH' : deriv (fun s : ℝ => deriv a s / a s) (x 0)
       = (deriv (deriv a) (x 0) * a (x 0) - (deriv a (x 0)) ^ 2) / (a (x 0)) ^ 2 := by
     convert (ha2.hasDerivAt.div ha1.hasDerivAt ha).deriv using 2
     ring
   rcases hmatch with ⟨rfl, ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩⟩ | ⟨rfl, ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩⟩ |
       ⟨rfl, ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩⟩
-  · have hfun : (fun s => flrwG a k (Function.update x 0 s) 1 0 1) = fun s => deriv a s / a s :=
-      funext fun s => by simp [flrwG]
-    rw [pd, hfun, hH']; simp [flrwDG]
-  · have hfun : (fun s => flrwG a k (Function.update x 0 s) 1 1 0) = fun s => deriv a s / a s :=
-      funext fun s => by simp [flrwG]
-    rw [pd, hfun, hH']; simp [flrwDG]
-  · have hfun : (fun s => flrwG a k (Function.update x 0 s) 2 0 2) = fun s => deriv a s / a s :=
-      funext fun s => by simp [flrwG]
-    rw [pd, hfun, hH']; simp [flrwDG]
-  · have hfun : (fun s => flrwG a k (Function.update x 0 s) 2 2 0) = fun s => deriv a s / a s :=
-      funext fun s => by simp [flrwG]
-    rw [pd, hfun, hH']; simp [flrwDG]
-  · have hfun : (fun s => flrwG a k (Function.update x 0 s) 3 0 3) = fun s => deriv a s / a s :=
-      funext fun s => by simp [flrwG]
-    rw [pd, hfun, hH']; simp [flrwDG]
-  · have hfun : (fun s => flrwG a k (Function.update x 0 s) 3 3 0) = fun s => deriv a s / a s :=
-      funext fun s => by simp [flrwG]
-    rw [pd, hfun, hH']; simp [flrwDG]
+  · have hfun : (fun s => flrwChristoffel a k (Function.update x 0 s) 1 0 1)
+    = fun s => deriv a s / a s :=
+      funext fun s => by simp [flrwChristoffel]
+    rw [pd, hfun, hH']; simp [flrwChristoffelDeriv]
+  · have hfun : (fun s => flrwChristoffel a k (Function.update x 0 s) 1 1 0)
+    = fun s => deriv a s / a s :=
+      funext fun s => by simp [flrwChristoffel]
+    rw [pd, hfun, hH']; simp [flrwChristoffelDeriv]
+  · have hfun : (fun s => flrwChristoffel a k (Function.update x 0 s) 2 0 2)
+    = fun s => deriv a s / a s :=
+      funext fun s => by simp [flrwChristoffel]
+    rw [pd, hfun, hH']; simp [flrwChristoffelDeriv]
+  · have hfun : (fun s => flrwChristoffel a k (Function.update x 0 s) 2 2 0)
+    = fun s => deriv a s / a s :=
+      funext fun s => by simp [flrwChristoffel]
+    rw [pd, hfun, hH']; simp [flrwChristoffelDeriv]
+  · have hfun : (fun s => flrwChristoffel a k (Function.update x 0 s) 3 0 3)
+    = fun s => deriv a s / a s :=
+      funext fun s => by simp [flrwChristoffel]
+    rw [pd, hfun, hH']; simp [flrwChristoffelDeriv]
+  · have hfun : (fun s => flrwChristoffel a k (Function.update x 0 s) 3 3 0)
+    = fun s => deriv a s / a s :=
+      funext fun s => by simp [flrwChristoffel]
+    rw [pd, hfun, hH']; simp [flrwChristoffelDeriv]
 
 private lemma pd_flrwG_eq_0 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
     (ha1 : DifferentiableAt ℝ a (x 0)) (ha2 : DifferentiableAt ℝ (deriv a) (x 0))
     (m i j : Fin 4) :
-    pd 0 (fun y => flrwG a k y m i j) x = flrwDG a k 0 x m i j := by
+    pd 0 (fun y => flrwChristoffel a k y m i j) x = flrwChristoffelDeriv a k 0 x m i j := by
   fin_cases m <;> fin_cases i <;> fin_cases j <;>
     first
     | exact pd_flrwG_0_011 a k x ha1 ha2
     | exact pd_flrwG_0_022 a k x ha1 ha2
     | exact pd_flrwG_0_033 a k x ha1 ha2
     | exact pd_flrwG_0_H a k x ha ha1 ha2 _ _ _ (by decide)
-    | simp [pd, flrwG, flrwDG]
+    | simp [pd, flrwChristoffel, flrwChristoffelDeriv]
 
 private lemma pd_flrwG_1_011 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (hkr : 1 - k * (x 1) ^ 2 ≠ 0) :
-    pd 1 (fun y => flrwG a k y 0 1 1) x = flrwDG a k 1 x 0 1 1 := by
-  have hfun : (fun s => flrwG a k (Function.update x 1 s) 0 1 1)
+    pd 1 (fun y => flrwChristoffel a k y 0 1 1) x = flrwChristoffelDeriv a k 1 x 0 1 1 := by
+  have hfun : (fun s => flrwChristoffel a k (Function.update x 1 s) 0 1 1)
       = fun s => (a (x 0) * deriv a (x 0)) * (1 - k * s ^ 2)⁻¹ := by
-    funext s; simp [flrwG, div_eq_mul_inv]
+    funext s; simp [flrwChristoffel, div_eq_mul_inv]
   have hden : HasDerivAt (fun s : ℝ => 1 - k * s ^ 2) (-2 * k * x 1) (x 1) := by
     convert (hasDerivAt_const (x 1) 1).sub ((hasDerivAt_pow 2 (x 1)).const_mul k) using 1
     ring
@@ -513,33 +529,33 @@ private lemma pd_flrwG_1_011 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (hk
       ((a (x 0) * deriv a (x 0)) * (-(-2 * k * x 1) / (1 - k * (x 1) ^ 2) ^ 2)) (x 1) := by
     convert (hden.inv hkr).const_mul (a (x 0) * deriv a (x 0)) using 1
   rw [pd, hfun, hd.deriv]
-  simp [flrwDG]
+  simp [flrwChristoffelDeriv]
   ring
 
 private lemma pd_flrwG_1_022 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) :
-    pd 1 (fun y => flrwG a k y 0 2 2) x = flrwDG a k 1 x 0 2 2 := by
-  have hfun : (fun s => flrwG a k (Function.update x 1 s) 0 2 2)
+    pd 1 (fun y => flrwChristoffel a k y 0 2 2) x = flrwChristoffelDeriv a k 1 x 0 2 2 := by
+  have hfun : (fun s => flrwChristoffel a k (Function.update x 1 s) 0 2 2)
       = fun s => (a (x 0) * deriv a (x 0)) * s ^ 2 := by
-    funext s; simp [flrwG]
+    funext s; simp [flrwChristoffel]
   rw [pd, hfun, ((hasDerivAt_pow 2 (x 1)).const_mul (a (x 0) * deriv a (x 0))).deriv]
-  simp [flrwDG]
+  simp [flrwChristoffelDeriv]
   ring
 
 private lemma pd_flrwG_1_033 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) :
-    pd 1 (fun y => flrwG a k y 0 3 3) x = flrwDG a k 1 x 0 3 3 := by
-  have hfun : (fun s => flrwG a k (Function.update x 1 s) 0 3 3)
+    pd 1 (fun y => flrwChristoffel a k y 0 3 3) x = flrwChristoffelDeriv a k 1 x 0 3 3 := by
+  have hfun : (fun s => flrwChristoffel a k (Function.update x 1 s) 0 3 3)
       = fun s => s ^ 2 * (a (x 0) * deriv a (x 0) * Real.sin (x 2) ^ 2) := by
-    funext s; simp [flrwG]; ring
+    funext s; simp [flrwChristoffel]; ring
   rw [pd, hfun,
     ((hasDerivAt_pow 2 (x 1)).mul_const (a (x 0) * deriv a (x 0) * Real.sin (x 2) ^ 2)).deriv]
-  simp [flrwDG]
+  simp [flrwChristoffelDeriv]
   ring
 
 private lemma pd_flrwG_1_111 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (hkr : 1 - k * (x 1) ^ 2 ≠ 0) :
-    pd 1 (fun y => flrwG a k y 1 1 1) x = flrwDG a k 1 x 1 1 1 := by
-  have hfun : (fun s => flrwG a k (Function.update x 1 s) 1 1 1)
+    pd 1 (fun y => flrwChristoffel a k y 1 1 1) x = flrwChristoffelDeriv a k 1 x 1 1 1 := by
+  have hfun : (fun s => flrwChristoffel a k (Function.update x 1 s) 1 1 1)
       = fun s => k * s / (1 - k * s ^ 2) := by
-    funext s; simp [flrwG]
+    funext s; simp [flrwChristoffel]
   have hden : HasDerivAt (fun s : ℝ => 1 - k * s ^ 2) (-2 * k * x 1) (x 1) := by
     convert (hasDerivAt_const (x 1) 1).sub ((hasDerivAt_pow 2 (x 1)).const_mul k) using 1
     ring
@@ -550,14 +566,14 @@ private lemma pd_flrwG_1_111 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (hk
       (x 1) := by
     convert hnum.div hden hkr using 1
   rw [pd, hfun, hd.deriv]
-  simp [flrwDG]
+  simp [flrwChristoffelDeriv]
   ring
 
 private lemma pd_flrwG_1_122 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) :
-    pd 1 (fun y => flrwG a k y 1 2 2) x = flrwDG a k 1 x 1 2 2 := by
-  have hfun : (fun s => flrwG a k (Function.update x 1 s) 1 2 2)
+    pd 1 (fun y => flrwChristoffel a k y 1 2 2) x = flrwChristoffelDeriv a k 1 x 1 2 2 := by
+  have hfun : (fun s => flrwChristoffel a k (Function.update x 1 s) 1 2 2)
       = fun s => -(s * (1 - k * s ^ 2)) := by
-    funext s; simp [flrwG]
+    funext s; simp [flrwChristoffel]
   have hden : HasDerivAt (fun s : ℝ => 1 - k * s ^ 2) (-2 * k * x 1) (x 1) := by
     convert (hasDerivAt_const (x 1) 1).sub ((hasDerivAt_pow 2 (x 1)).const_mul k) using 1
     ring
@@ -565,14 +581,14 @@ private lemma pd_flrwG_1_122 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) :
       (-(1 * (1 - k * (x 1) ^ 2) + x 1 * (-2 * k * x 1))) (x 1) := by
     convert ((hasDerivAt_id (x 1)).mul hden).neg using 2 <;> simp
   rw [pd, hfun, hd.deriv]
-  simp [flrwDG]
+  simp [flrwChristoffelDeriv]
   ring
 
 private lemma pd_flrwG_1_133 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) :
-    pd 1 (fun y => flrwG a k y 1 3 3) x = flrwDG a k 1 x 1 3 3 := by
-  have hfun : (fun s => flrwG a k (Function.update x 1 s) 1 3 3)
+    pd 1 (fun y => flrwChristoffel a k y 1 3 3) x = flrwChristoffelDeriv a k 1 x 1 3 3 := by
+  have hfun : (fun s => flrwChristoffel a k (Function.update x 1 s) 1 3 3)
       = fun s => -(s * (1 - k * s ^ 2)) * Real.sin (x 2) ^ 2 := by
-    funext s; simp [flrwG]
+    funext s; simp [flrwChristoffel]
   have hden : HasDerivAt (fun s : ℝ => 1 - k * s ^ 2) (-2 * k * x 1) (x 1) := by
     convert (hasDerivAt_const (x 1) 1).sub ((hasDerivAt_pow 2 (x 1)).const_mul k) using 1
     ring
@@ -580,8 +596,9 @@ private lemma pd_flrwG_1_133 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) :
       ((-(1 * (1 - k * (x 1) ^ 2) + x 1 * (-2 * k * x 1))) * Real.sin (x 2) ^ 2) (x 1) := by
     convert ((hasDerivAt_id (x 1)).mul hden).neg.mul_const (Real.sin (x 2) ^ 2) using 2 <;> simp
   rw [pd, hfun, hd.deriv]
-  have hval : flrwDG a k 1 x 1 3 3 = -(1 - 3 * k * (x 1) ^ 2) * Real.sin (x 2) ^ 2 := by
-    simp [flrwDG]
+  have hval : flrwChristoffelDeriv a k 1 x 1 3 3
+    = -(1 - 3 * k * (x 1) ^ 2) * Real.sin (x 2) ^ 2 := by
+    simp [flrwChristoffelDeriv]
   rw [hval]
   ring
 
@@ -589,28 +606,28 @@ private lemma pd_flrwG_1_inv (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (hr
     (m i j : Fin 4)
     (hmatch : (m = 2 ∧ ((i = 1 ∧ j = 2) ∨ (i = 2 ∧ j = 1)))
       ∨ (m = 3 ∧ ((i = 1 ∧ j = 3) ∨ (i = 3 ∧ j = 1)))) :
-    pd 1 (fun y => flrwG a k y m i j) x = flrwDG a k 1 x m i j := by
+    pd 1 (fun y => flrwChristoffel a k y m i j) x = flrwChristoffelDeriv a k 1 x m i j := by
   have hinv : deriv (fun s : ℝ => 1 / s) (x 1) = -1 / (x 1) ^ 2 := by
     rw [show (fun s : ℝ => 1 / s) = fun s : ℝ => s⁻¹ by funext s; simp [one_div]]
     rw [(hasDerivAt_inv hr).deriv]
     ring
   rcases hmatch with ⟨rfl, ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩⟩ | ⟨rfl, ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩⟩
-  · have hfun : (fun s => flrwG a k (Function.update x 1 s) 2 1 2) = fun s => 1 / s :=
-      funext fun s => by simp [flrwG]
-    rw [pd, hfun, hinv]; simp [flrwDG]
-  · have hfun : (fun s => flrwG a k (Function.update x 1 s) 2 2 1) = fun s => 1 / s :=
-      funext fun s => by simp [flrwG]
-    rw [pd, hfun, hinv]; simp [flrwDG]
-  · have hfun : (fun s => flrwG a k (Function.update x 1 s) 3 1 3) = fun s => 1 / s :=
-      funext fun s => by simp [flrwG]
-    rw [pd, hfun, hinv]; simp [flrwDG]
-  · have hfun : (fun s => flrwG a k (Function.update x 1 s) 3 3 1) = fun s => 1 / s :=
-      funext fun s => by simp [flrwG]
-    rw [pd, hfun, hinv]; simp [flrwDG]
+  · have hfun : (fun s => flrwChristoffel a k (Function.update x 1 s) 2 1 2) = fun s => 1 / s :=
+      funext fun s => by simp [flrwChristoffel]
+    rw [pd, hfun, hinv]; simp [flrwChristoffelDeriv]
+  · have hfun : (fun s => flrwChristoffel a k (Function.update x 1 s) 2 2 1) = fun s => 1 / s :=
+      funext fun s => by simp [flrwChristoffel]
+    rw [pd, hfun, hinv]; simp [flrwChristoffelDeriv]
+  · have hfun : (fun s => flrwChristoffel a k (Function.update x 1 s) 3 1 3) = fun s => 1 / s :=
+      funext fun s => by simp [flrwChristoffel]
+    rw [pd, hfun, hinv]; simp [flrwChristoffelDeriv]
+  · have hfun : (fun s => flrwChristoffel a k (Function.update x 1 s) 3 3 1) = fun s => 1 / s :=
+      funext fun s => by simp [flrwChristoffel]
+    rw [pd, hfun, hinv]; simp [flrwChristoffelDeriv]
 
 private lemma pd_flrwG_eq_1 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hkr : 1 - k * (x 1) ^ 2 ≠ 0) (m i j : Fin 4) :
-    pd 1 (fun y => flrwG a k y m i j) x = flrwDG a k 1 x m i j := by
+    pd 1 (fun y => flrwChristoffel a k y m i j) x = flrwChristoffelDeriv a k 1 x m i j := by
   fin_cases m <;> fin_cases i <;> fin_cases j <;>
     first
     | exact pd_flrwG_1_011 a k x hkr
@@ -620,25 +637,25 @@ private lemma pd_flrwG_eq_1 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (hr 
     | exact pd_flrwG_1_122 a k x
     | exact pd_flrwG_1_133 a k x
     | exact pd_flrwG_1_inv a k x hr _ _ _ (by decide)
-    | simp [pd, flrwG, flrwDG]
+    | simp [pd, flrwChristoffel, flrwChristoffelDeriv]
 
 private lemma pd_flrwG_2_033 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) :
-    pd 2 (fun y => flrwG a k y 0 3 3) x = flrwDG a k 2 x 0 3 3 := by
-  have hfun : (fun s => flrwG a k (Function.update x 2 s) 0 3 3)
+    pd 2 (fun y => flrwChristoffel a k y 0 3 3) x = flrwChristoffelDeriv a k 2 x 0 3 3 := by
+  have hfun : (fun s => flrwChristoffel a k (Function.update x 2 s) 0 3 3)
       = fun s => (a (x 0) * deriv a (x 0) * (x 1) ^ 2) * Real.sin s ^ 2 := by
-    funext s; simp [flrwG]
+    funext s; simp [flrwChristoffel]
   have hsinSq : HasDerivAt (fun s : ℝ => Real.sin s ^ 2)
       (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := by
     convert (Real.hasDerivAt_sin (x 2)).pow 2 using 1
     ring
   rw [pd, hfun, (hsinSq.const_mul (a (x 0) * deriv a (x 0) * (x 1) ^ 2)).deriv]
-  simp [flrwDG]
+  simp [flrwChristoffelDeriv]
 
 private lemma pd_flrwG_2_133 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) :
-    pd 2 (fun y => flrwG a k y 1 3 3) x = flrwDG a k 2 x 1 3 3 := by
-  have hfun : (fun s => flrwG a k (Function.update x 2 s) 1 3 3)
+    pd 2 (fun y => flrwChristoffel a k y 1 3 3) x = flrwChristoffelDeriv a k 2 x 1 3 3 := by
+  have hfun : (fun s => flrwChristoffel a k (Function.update x 2 s) 1 3 3)
       = fun s => -(x 1 * (1 - k * (x 1) ^ 2) * Real.sin s ^ 2) := by
-    funext s; simp [flrwG]
+    funext s; simp [flrwChristoffel]
   have hsinSq : HasDerivAt (fun s : ℝ => Real.sin s ^ 2)
       (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := by
     convert (Real.hasDerivAt_sin (x 2)).pow 2 using 1
@@ -647,27 +664,27 @@ private lemma pd_flrwG_2_133 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) :
       (-(x 1 * (1 - k * (x 1) ^ 2) * (2 * Real.sin (x 2) * Real.cos (x 2)))) (x 2) := by
     convert (hsinSq.const_mul (x 1 * (1 - k * (x 1) ^ 2))).neg using 1
   rw [pd, hfun, hd.deriv]
-  simp [flrwDG]
+  simp [flrwChristoffelDeriv]
 
 private lemma pd_flrwG_2_233 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) :
-    pd 2 (fun y => flrwG a k y 2 3 3) x = flrwDG a k 2 x 2 3 3 := by
-  have hfun : (fun s => flrwG a k (Function.update x 2 s) 2 3 3)
+    pd 2 (fun y => flrwChristoffel a k y 2 3 3) x = flrwChristoffelDeriv a k 2 x 2 3 3 := by
+  have hfun : (fun s => flrwChristoffel a k (Function.update x 2 s) 2 3 3)
       = fun s => -(Real.sin s * Real.cos s) := by
-    funext s; simp [flrwG]
+    funext s; simp [flrwChristoffel]
   have h := ((Real.hasDerivAt_sin (x 2)).mul (Real.hasDerivAt_cos (x 2))).neg
   have hderiv : deriv (fun s => -(Real.sin s * Real.cos s)) (x 2)
       = Real.sin (x 2) ^ 2 - Real.cos (x 2) ^ 2 := by
     convert h.deriv using 1
     ring
   rw [pd, hfun, hderiv]
-  simp [flrwDG]
+  simp [flrwChristoffelDeriv]
 
 private lemma pd_flrwG_2_323 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ)
     (hsin : Real.sin (x 2) ≠ 0) :
-    pd 2 (fun y => flrwG a k y 3 2 3) x = flrwDG a k 2 x 3 2 3 := by
-  have hfun : (fun s => flrwG a k (Function.update x 2 s) 3 2 3)
+    pd 2 (fun y => flrwChristoffel a k y 3 2 3) x = flrwChristoffelDeriv a k 2 x 3 2 3 := by
+  have hfun : (fun s => flrwChristoffel a k (Function.update x 2 s) 3 2 3)
       = fun s => Real.cos s / Real.sin s := by
-    funext s; simp [flrwG]
+    funext s; simp [flrwChristoffel]
   have hsc : Real.sin (x 2) ^ 2 + Real.cos (x 2) ^ 2 = 1 := Real.sin_sq_add_cos_sq (x 2)
   have h := (Real.hasDerivAt_cos (x 2)).div (Real.hasDerivAt_sin (x 2)) hsin
   have h1 : -Real.sin (x 2) * Real.sin (x 2) - Real.cos (x 2) * Real.cos (x 2) = -1 := by
@@ -676,45 +693,46 @@ private lemma pd_flrwG_2_323 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ)
     convert h.deriv using 1
     rw [h1]
   rw [pd, hfun, hderiv]
-  simp [flrwDG]
+  simp [flrwChristoffelDeriv]
 
 private lemma pd_flrwG_eq_2 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (hsin : Real.sin (x 2) ≠ 0)
     (m i j : Fin 4) :
-    pd 2 (fun y => flrwG a k y m i j) x = flrwDG a k 2 x m i j := by
+    pd 2 (fun y => flrwChristoffel a k y m i j) x = flrwChristoffelDeriv a k 2 x m i j := by
   fin_cases m <;> fin_cases i <;> fin_cases j <;> dsimp only <;>
     first
     | exact pd_flrwG_2_033 a k x
     | exact pd_flrwG_2_133 a k x
     | exact pd_flrwG_2_233 a k x
     | exact pd_flrwG_2_323 a k x hsin
-    | simp [pd, flrwG, flrwDG]
+    | simp [pd, flrwChristoffel, flrwChristoffelDeriv]
 
-/-- All 256 partial derivatives of `flrwG` match `flrwDG`. -/
-lemma pd_flrwG_eq_flrwDG (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
+/-- All 256 partial derivatives of `flrwChristoffel` match `flrwChristoffelDeriv`. -/
+lemma pd_flrwChristoffel_eq_deriv (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha1 : DifferentiableAt ℝ a (x 0)) (ha2 : DifferentiableAt ℝ (deriv a) (x 0))
     (μ m i j : Fin 4) :
-    pd μ (fun y => flrwG a k y m i j) x = flrwDG a k μ x m i j := by
+    pd μ (fun y => flrwChristoffel a k y m i j) x = flrwChristoffelDeriv a k μ x m i j := by
   fin_cases μ
   · exact pd_flrwG_eq_0 a k x ha ha1 ha2 m i j
   · exact pd_flrwG_eq_1 a k x hr hkr m i j
   · exact pd_flrwG_eq_2 a k x hsin m i j
-  · fin_cases m <;> fin_cases i <;> fin_cases j <;> simp [pd, flrwG, flrwDG]
+  · fin_cases m <;> fin_cases i <;> fin_cases j <;> simp [pd, flrwChristoffel, flrwChristoffelDeriv]
 
-/-- The pipeline Riemann tensor of `flrwMetric` equals `riemannFromData flrwG flrwDG`. -/
+/-- The pipeline Riemann tensor of `flrwMetric` equals `riemannFromData flrwChristoffel
+flrwChristoffelDeriv`. -/
 lemma riemann_flrw_eq_data (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ a t)
     (ha2 : DifferentiableAt ℝ (deriv a) (x 0)) (ρ σ μ ν : Fin 4) :
     riemann (flrwMetric a k) (flrwMetricInv a k) x ρ σ μ ν
-      = riemannFromData (flrwG a k) (flrwDG a k) x ρ σ μ ν := by
+      = riemannFromData (flrwChristoffel a k) (flrwChristoffelDeriv a k) x ρ σ μ ν := by
   rw [riemann_eq_riemannFromData]
   have ha1 := ha_diff.self_of_nhds
   have h1 := (pd_christoffel_eq_pd_flrwG a k x ha hr hkr hsin ha_diff μ ρ ν σ).trans
-    (pd_flrwG_eq_flrwDG a k x ha hr hkr hsin ha1 ha2 μ ρ ν σ)
+    (pd_flrwChristoffel_eq_deriv a k x ha hr hkr hsin ha1 ha2 μ ρ ν σ)
   have h2 := (pd_christoffel_eq_pd_flrwG a k x ha hr hkr hsin ha_diff ν ρ μ σ).trans
-    (pd_flrwG_eq_flrwDG a k x ha hr hkr hsin ha1 ha2 ν ρ μ σ)
-  simp only [riemannFromData, h1, h2, christoffel_eq_flrwG a k x ha hr hkr hsin ha1]
+    (pd_flrwChristoffel_eq_deriv a k x ha hr hkr hsin ha1 ha2 ν ρ μ σ)
+  simp only [riemannFromData, h1, h2, christoffel_eq_flrwChristoffel a k x ha hr hkr hsin ha1]
 
 /-!
 
@@ -726,10 +744,10 @@ private lemma ricci_flrw_00 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha 
     (hr : x 1 ≠ 0) (hkr : 1 - k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ a t)
     (ha2 : DifferentiableAt ℝ (deriv a) (x 0)) :
-    ricciOf (flrwMetric a k) (flrwMetricInv a k) x 0 0
+    ricciTensorOf (flrwMetric a k) (flrwMetricInv a k) x 0 0
       = -3 * deriv (deriv a) (x 0) / a (x 0) := by
-  simp [ricciOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-    riemannFromData, flrwG, flrwDG]
+  simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+    riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
   field_simp [ha]
   ring
 
@@ -737,11 +755,11 @@ private lemma ricci_flrw_11 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha 
     (hr : x 1 ≠ 0) (hkr : 1 - k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ a t)
     (ha2 : DifferentiableAt ℝ (deriv a) (x 0)) :
-    ricciOf (flrwMetric a k) (flrwMetricInv a k) x 1 1
+    ricciTensorOf (flrwMetric a k) (flrwMetricInv a k) x 1 1
       = (a (x 0) * deriv (deriv a) (x 0) + 2 * (deriv a (x 0)) ^ 2 + 2 * k)
           / (1 - k * (x 1) ^ 2) := by
-  simp [ricciOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-    riemannFromData, flrwG, flrwDG]
+  simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+    riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
   field_simp [ha, hr, hkr]
   ring
 
@@ -749,11 +767,11 @@ private lemma ricci_flrw_22 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha 
     (hr : x 1 ≠ 0) (hkr : 1 - k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ a t)
     (ha2 : DifferentiableAt ℝ (deriv a) (x 0)) :
-    ricciOf (flrwMetric a k) (flrwMetricInv a k) x 2 2
+    ricciTensorOf (flrwMetric a k) (flrwMetricInv a k) x 2 2
       = (a (x 0) * deriv (deriv a) (x 0) + 2 * (deriv a (x 0)) ^ 2 + 2 * k) * (x 1) ^ 2 := by
   have hkr' : 1 - (x 1) ^ 2 * k ≠ 0 := by rwa [mul_comm]
-  simp [ricciOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-    riemannFromData, flrwG, flrwDG]
+  simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+    riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
   field_simp [ha, hr, hkr, hkr', hsin]
   rw [Real.sin_sq (x 2)]
   ring
@@ -762,21 +780,21 @@ private lemma ricci_flrw_33 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha 
     (hr : x 1 ≠ 0) (hkr : 1 - k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ a t)
     (ha2 : DifferentiableAt ℝ (deriv a) (x 0)) :
-    ricciOf (flrwMetric a k) (flrwMetricInv a k) x 3 3
+    ricciTensorOf (flrwMetric a k) (flrwMetricInv a k) x 3 3
       = (a (x 0) * deriv (deriv a) (x 0) + 2 * (deriv a (x 0)) ^ 2 + 2 * k) * (x 1) ^ 2
           * Real.sin (x 2) ^ 2 := by
   have hkr' : 1 - (x 1) ^ 2 * k ≠ 0 := by rwa [mul_comm]
-  simp [ricciOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-    riemannFromData, flrwG, flrwDG]
+  simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+    riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
   field_simp [ha, hr, hkr, hkr', hsin]
   ring
 
 /-- Complete coordinate-pipeline Ricci tensor of the FLRW metric. -/
-lemma ricciOf_flrw (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
+lemma ricciTensorOf_flrw (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ a t)
     (ha2 : DifferentiableAt ℝ (deriv a) (x 0)) (σ ν : Fin 4) :
-    ricciOf (flrwMetric a k) (flrwMetricInv a k) x σ ν
+    ricciTensorOf (flrwMetric a k) (flrwMetricInv a k) x σ ν
       = if σ = ν then
           if σ = 0 then -3 * deriv (deriv a) (x 0) / a (x 0)
           else if σ = 1 then
@@ -790,61 +808,61 @@ lemma ricciOf_flrw (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0)
         else 0 := by
   fin_cases σ <;> fin_cases ν <;> dsimp only
   · exact ricci_flrw_00 a k x ha hr hkr hsin ha_diff ha2
-  · simp [ricciOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwG, flrwDG]
-  · simp [ricciOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwG, flrwDG]
-  · simp [ricciOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwG, flrwDG]
-  · simp [ricciOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwG, flrwDG]; ring
+  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]; ring
   · exact ricci_flrw_11 a k x ha hr hkr hsin ha_diff ha2
-  · simp [ricciOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwG, flrwDG]
-  · simp [ricciOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwG, flrwDG]
-  · simp [ricciOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwG, flrwDG]; ring
-  · simp [ricciOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwG, flrwDG]; ring
+  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]; ring
+  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]; ring
   · exact ricci_flrw_22 a k x ha hr hkr hsin ha_diff ha2
-  · simp [ricciOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwG, flrwDG]
-  · simp [ricciOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwG, flrwDG]
-  · simp [ricciOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwG, flrwDG]
-  · simp [ricciOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwG, flrwDG]
+  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
+  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
   · exact ricci_flrw_33 a k x ha hr hkr hsin ha_diff ha2
 
 /-- FLRW scalar curvature `S = 6 (a'' / a + (a' / a)² + k / a²)`. -/
-lemma scalarOf_flrw (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
+lemma ricciScalarOf_flrw (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ a t)
     (ha2 : DifferentiableAt ℝ (deriv a) (x 0)) :
-    scalarOf (flrwMetric a k) (flrwMetricInv a k) x
+    ricciScalarOf (flrwMetric a k) (flrwMetricInv a k) x
       = 6 * (deriv (deriv a) (x 0) / a (x 0) + (deriv a (x 0) / a (x 0)) ^ 2
           + k / (a (x 0)) ^ 2) := by
-  simp only [scalarOf, ricciOf_flrw a k x ha hr hkr hsin ha_diff ha2, flrwMetricInv,
+  simp only [ricciScalarOf, ricciTensorOf_flrw a k x ha hr hkr hsin ha_diff ha2, flrwMetricInv,
     Fin.sum_univ_four, Fin.reduceEq, ↓reduceIte, Fin.isValue, mul_zero, add_zero, zero_add]
   field_simp [ha, hr, hkr, hsin]
   ring
 
 /-- Complete FLRW Einstein tensor: `G_{00} = 3 ((a'/a)² + k/a²)` and
 `G_{ii} = -(2 a''/a + (a'/a)² + k/a²) g_{ii}` for spatial indices `i = 1, 2, 3`. -/
-lemma einsteinOf_flrw (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
+lemma einsteinTensorOf_flrw (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ a t)
     (ha2 : DifferentiableAt ℝ (deriv a) (x 0)) (i j : Fin 4) :
-    einsteinOf (flrwMetric a k) (flrwMetricInv a k) x i j
+    einsteinTensorOf (flrwMetric a k) (flrwMetricInv a k) x i j
       = if i = j then
           if i = 0 then 3 * ((deriv a (x 0) / a (x 0)) ^ 2 + k / (a (x 0)) ^ 2)
           else -(2 * (deriv (deriv a) (x 0) / a (x 0))
             + (deriv a (x 0) / a (x 0)) ^ 2 + k / (a (x 0)) ^ 2) * flrwMetric a k x i j
         else 0 := by
-  simp only [einsteinOf, ricciOf_flrw a k x ha hr hkr hsin ha_diff ha2,
-    scalarOf_flrw a k x ha hr hkr hsin ha_diff ha2, flrwMetric]
+  simp only [einsteinTensorOf, ricciTensorOf_flrw a k x ha hr hkr hsin ha_diff ha2,
+    ricciScalarOf_flrw a k x ha hr hkr hsin ha_diff ha2, flrwMetric]
   fin_cases i <;> fin_cases j <;> simp
   · field_simp [ha]; ring
   · field_simp [ha, hkr]; ring
@@ -864,12 +882,12 @@ def perfectFluidT (ρ p : ℝ) (g : Tensor2 4) : Tensor2 4 :=
 
 /-- Einstein's equation `G_{ij} + Λ g_{ij} = 8 π G T_{ij}` for the FLRW metric and a comoving
 perfect fluid is equivalent to the first- and second-order Friedmann equations (`c = 1`). -/
-lemma einsteinOf_flrw_iff_friedmann (a : ℝ → ℝ) (k Λ G ρ p : ℝ) (x : Fin 4 → ℝ)
+lemma einsteinTensorOf_flrw_iff_friedmann (a : ℝ → ℝ) (k Λ G ρ p : ℝ) (x : Fin 4 → ℝ)
     (ha : a (x 0) ≠ 0) (hr : x 1 ≠ 0) (hkr : 1 - k * (x 1) ^ 2 ≠ 0)
     (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ a t)
     (ha2 : DifferentiableAt ℝ (deriv a) (x 0)) :
-    (∀ i j, einsteinOf (flrwMetric a k) (flrwMetricInv a k) x i j + Λ * flrwMetric a k x i j
+    (∀ i j, einsteinTensorOf (flrwMetric a k) (flrwMetricInv a k) x i j + Λ * flrwMetric a k x i j
         = 8 * Real.pi * G * perfectFluidT ρ p (flrwMetric a k x) i j)
       ↔ ((deriv a (x 0) / a (x 0)) ^ 2
             = (8 * Real.pi * G / 3) * ρ - k / (a (x 0)) ^ 2 + Λ / 3)
@@ -881,8 +899,8 @@ lemma einsteinOf_flrw_iff_friedmann (a : ℝ → ℝ) (k Λ G ρ p : ℝ) (x : F
   · intro h
     have h00 := h 0 0
     have h11 := h 1 1
-    rw [einsteinOf_flrw a k x ha hr hkr hsin ha_diff ha2 0 0] at h00
-    rw [einsteinOf_flrw a k x ha hr hkr hsin ha_diff ha2 1 1] at h11
+    rw [einsteinTensorOf_flrw a k x ha hr hkr hsin ha_diff ha2 0 0] at h00
+    rw [einsteinTensorOf_flrw a k x ha hr hkr hsin ha_diff ha2 1 1] at h11
     simp [flrwMetric, perfectFluidT] at h00 h11
     have hf1 : (deriv a (x 0) / a (x 0)) ^ 2
         = (8 * Real.pi * G / 3) * ρ - k / (a (x 0)) ^ 2 + Λ / 3 := by
@@ -903,7 +921,7 @@ lemma einsteinOf_flrw_iff_friedmann (a : ℝ → ℝ) (k Λ G ρ p : ℝ) (x : F
     refine ⟨hf1, ?_⟩
     linarith
   · rintro ⟨hf1, hf2⟩ i j
-    rw [einsteinOf_flrw a k x ha hr hkr hsin ha_diff ha2 i j]
+    rw [einsteinTensorOf_flrw a k x ha hr hkr hsin ha_diff ha2 i j]
     have hcoef : -(2 * (deriv (deriv a) (x 0) / a (x 0))
         + (deriv a (x 0) / a (x 0)) ^ 2 + k / (a (x 0)) ^ 2) + Λ = 8 * Real.pi * G * p := by
       linarith
@@ -944,10 +962,10 @@ lemma hasDerivAt_deriv_flrwScaleFn (U : Cosmology.FLRW) {t : Time} (ht : t ∈ U
 /-- Bridge to `Physlib.Cosmology.FLRW`: the coordinate-pipeline Einstein equation for
 `flrwMetric (flrwScaleFn U) U.geometry.curvature` is equivalent to `FirstOrderFriedmann` and
 `SecondOrderFriedmann` (`c = 1`) at `t ∈ U.I`. -/
-lemma einsteinOf_flrw_iff_cosmology_friedmann (U : Cosmology.FLRW) (F : Cosmology.CosmicFluid)
+lemma einsteinTensorOf_flrw_iff_cosmology_friedmann (U : Cosmology.FLRW) (F : Cosmology.CosmicFluid)
     (Λ G : ℝ) {t : Time} (ht : t ∈ U.I) (x : Fin 4 → ℝ) (hx0 : x 0 = t.val) (hr : x 1 ≠ 0)
     (hkr : 1 - U.geometry.curvature * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
-    (∀ i j, einsteinOf (flrwMetric (flrwScaleFn U) U.geometry.curvature)
+    (∀ i j, einsteinTensorOf (flrwMetric (flrwScaleFn U) U.geometry.curvature)
           (flrwMetricInv (flrwScaleFn U) U.geometry.curvature) x i j
           + Λ * flrwMetric (flrwScaleFn U) U.geometry.curvature x i j
         = 8 * Real.pi * G * perfectFluidT (F.ρ t) (F.p t)
@@ -973,7 +991,7 @@ lemma einsteinOf_flrw_iff_cosmology_friedmann (U : Cosmology.FLRW) (F : Cosmolog
   have ha0_eq : flrwScaleFn U (x 0) = U.a t := by
     rw [hx0]
     rfl
-  rw [einsteinOf_flrw_iff_friedmann (flrwScaleFn U) U.geometry.curvature Λ G (F.ρ t) (F.p t) x
+  rw [einsteinTensorOf_flrw_iff_friedmann (flrwScaleFn U) U.geometry.curvature Λ G (F.ρ t) (F.p t) x
     ha hr hkr hsin ha_diff ha2]
   simp only [Cosmology.FLRW.FriedmannEquation.FirstOrderFriedmann,
     Cosmology.FLRW.FriedmannEquation.SecondOrderFriedmann, SpeedOfLight.val_one, one_pow,
@@ -982,38 +1000,38 @@ lemma einsteinOf_flrw_iff_cosmology_friedmann (U : Cosmology.FLRW) (F : Cosmolog
 /-- If the FLRW Einstein equation holds across `U.I` (say at a spatial chart point `r₀, θ₀`),
 then `U` and `F` form a `Cosmology.FLRW.FriedmannSolution F Λ G 1` (and hence automatically satisfy
 the fluid continuity equation by `Cosmology.FLRW.FriedmannSolution.continuityEquation`). -/
-lemma friedmannSolution_of_einsteinOf_flrw (U : Cosmology.FLRW) (F : Cosmology.CosmicFluid)
+lemma friedmannSolution_of_einsteinTensorOf_flrw (U : Cosmology.FLRW) (F : Cosmology.CosmicFluid)
     (Λ G r₀ θ₀ : ℝ) (hr : r₀ ≠ 0) (hkr : 1 - U.geometry.curvature * r₀ ^ 2 ≠ 0)
     (hsin : Real.sin θ₀ ≠ 0)
     (heinst : ∀ t ∈ U.I, ∀ i j,
       let x : Fin 4 → ℝ := ![t.val, r₀, θ₀, 0]
-      einsteinOf (flrwMetric (flrwScaleFn U) U.geometry.curvature)
+      einsteinTensorOf (flrwMetric (flrwScaleFn U) U.geometry.curvature)
           (flrwMetricInv (flrwScaleFn U) U.geometry.curvature) x i j
           + Λ * flrwMetric (flrwScaleFn U) U.geometry.curvature x i j
         = 8 * Real.pi * G * perfectFluidT (F.ρ t) (F.p t)
             (flrwMetric (flrwScaleFn U) U.geometry.curvature x) i j) :
     U.FriedmannSolution F Λ G 1 := by
   refine ⟨fun t ht => ?_, fun t ht => ?_⟩
-  · exact ((einsteinOf_flrw_iff_cosmology_friedmann U F Λ G ht ![t.val, r₀, θ₀, 0]
+  · exact ((einsteinTensorOf_flrw_iff_cosmology_friedmann U F Λ G ht ![t.val, r₀, θ₀, 0]
       rfl hr hkr hsin).mp (heinst t ht)).1
-  · exact ((einsteinOf_flrw_iff_cosmology_friedmann U F Λ G ht ![t.val, r₀, θ₀, 0]
+  · exact ((einsteinTensorOf_flrw_iff_cosmology_friedmann U F Λ G ht ![t.val, r₀, θ₀, 0]
       rfl hr hkr hsin).mp (heinst t ht)).2
 
-/-- Overload of `friedmannSolution_of_einsteinOf_flrw` taking the Newtonian constant as a
+/-- Overload of `friedmannSolution_of_einsteinTensorOf_flrw` taking the Newtonian constant as a
 `GravitationalConstant`. -/
-lemma friedmannSolution_of_einsteinOf_flrw_G (U : Cosmology.FLRW) (F : Cosmology.CosmicFluid)
+lemma friedmannSolution_of_einsteinTensorOf_flrw_G (U : Cosmology.FLRW) (F : Cosmology.CosmicFluid)
     (Λ : ℝ) (G : GravitationalConstant) (r₀ θ₀ : ℝ) (hr : r₀ ≠ 0)
     (hkr : 1 - U.geometry.curvature * r₀ ^ 2 ≠ 0)
     (hsin : Real.sin θ₀ ≠ 0)
     (heinst : ∀ t ∈ U.I, ∀ i j,
       let x : Fin 4 → ℝ := ![t.val, r₀, θ₀, 0]
-      einsteinOf (flrwMetric (flrwScaleFn U) U.geometry.curvature)
+      einsteinTensorOf (flrwMetric (flrwScaleFn U) U.geometry.curvature)
           (flrwMetricInv (flrwScaleFn U) U.geometry.curvature) x i j
           + Λ * flrwMetric (flrwScaleFn U) U.geometry.curvature x i j
         = 8 * Real.pi * G.val * perfectFluidT (F.ρ t) (F.p t)
             (flrwMetric (flrwScaleFn U) U.geometry.curvature x) i j) :
     U.FriedmannSolution F Λ G.val 1 :=
-  friedmannSolution_of_einsteinOf_flrw U F Λ G.val r₀ θ₀ hr hkr hsin heinst
+  friedmannSolution_of_einsteinTensorOf_flrw U F Λ G.val r₀ θ₀ hr hkr hsin heinst
 
 /-- The coordinate metric of an FLRW spacetime. -/
 noncomputable def FLRWSpacetime.metric (S : FLRWSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=

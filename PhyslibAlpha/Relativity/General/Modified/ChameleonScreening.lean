@@ -40,12 +40,13 @@ This module formalises both halves of the mechanism:
 ## ii. Key results
 
 - `ChameleonModel` : chameleon scalar model parameterized by density–mass coupling `c`.
-- `chameleonMass`, `range`, `yukawaRatio` : effective mass, Compton range, and Yukawa factor.
+- `chameleonMass`, `comptonRange`, `yukawaRatio` : effective mass, Compton range, and Yukawa factor.
 - `chameleonMass_mono`, `chameleon_range_shrinks`, `yukawaRatio_lt_half` : monotonicity and
   suppression beyond one Compton wavelength.
 - `thinShell`, `screeningFactor`, `thin_shell_suppressed`, `screeningFactor_eq_one_iff` :
   thin-shell cap `min Δ 1`.
-- `profile`, `hasDerivAt_profile`, `forceRatio_thin_shell`, `thin_shell_weak`,
+- `exteriorScalarProfile`, `hasDerivAt_exteriorScalarProfile`, `fifthForceRatio_thin_shell`,
+  `thin_shell_weak`,
   `thick_shell_strong` : exterior scalar profile and screened vs unscreened fifth-force bounds.
 
 ## iii. Table of contents
@@ -95,18 +96,18 @@ lemma chameleonMass_mono {ρ₁ ρ₂ c : ℝ} (hc : 0 ≤ c) (h : ρ₁ ≤ ρ�
   Real.sqrt_le_sqrt (mul_le_mul_of_nonneg_right h hc)
 
 /-- Compton wavelength `λ = 1 / m` of a scalar of mass `m`. -/
-noncomputable def range (m : ℝ) : ℝ := 1 / m
+noncomputable def comptonRange (m : ℝ) : ℝ := 1 / m
 
 /-- A heavier scalar has a shorter Compton range. -/
-lemma range_antitone {m₁ m₂ : ℝ} (h₁ : 0 < m₁) (h : m₁ ≤ m₂) :
-    range m₂ ≤ range m₁ :=
+lemma comptonRange_antitone {m₁ m₂ : ℝ} (h₁ : 0 < m₁) (h : m₁ ≤ m₂) :
+    comptonRange m₂ ≤ comptonRange m₁ :=
   one_div_le_one_div_of_le h₁ h
 
 /-- In a denser environment, the chameleon Compton range shrinks. -/
 lemma chameleon_range_shrinks {ρ₁ ρ₂ c : ℝ} (hpos : 0 < chameleonMass ρ₁ c)
     (hc : 0 ≤ c) (h : ρ₁ ≤ ρ₂) :
-    range (chameleonMass ρ₂ c) ≤ range (chameleonMass ρ₁ c) :=
-  range_antitone hpos (chameleonMass_mono hc h)
+    comptonRange (chameleonMass ρ₂ c) ≤ comptonRange (chameleonMass ρ₁ c) :=
+  comptonRange_antitone hpos (chameleonMass_mono hc h)
 
 /-- Yukawa suppression factor `e^{-x}` at dimensionless distance `x = r / λ`. -/
 noncomputable def yukawaRatio (x : ℝ) : ℝ := Real.exp (-x)
@@ -155,11 +156,11 @@ lemma screeningFactor_eq_one_iff (Δ : ℝ) : screeningFactor Δ = 1 ↔ 1 ≤ �
   min_eq_right_iff
 
 /-- Exterior scalar profile `φ(r) = φ∞ - Q / r` outside a spherical body. -/
-noncomputable def profile (φinf Q r : ℝ) : ℝ := φinf - Q / r
+noncomputable def exteriorScalarProfile (φinf Q r : ℝ) : ℝ := φinf - Q / r
 
 /-- The radial gradient of the exterior profile is `Q / r²`. -/
-lemma hasDerivAt_profile (φinf Q r : ℝ) (hr : r ≠ 0) :
-    HasDerivAt (profile φinf Q) (Q / r ^ 2) r := by
+lemma hasDerivAt_exteriorScalarProfile (φinf Q r : ℝ) (hr : r ≠ 0) :
+    HasDerivAt (exteriorScalarProfile φinf Q) (Q / r ^ 2) r := by
   change HasDerivAt (fun s : ℝ => φinf - Q / s) (Q / r ^ 2) r
   have hinv : HasDerivAt (fun s : ℝ => s⁻¹) (-1 / r ^ 2) r :=
     HasDerivAt.inv (hasDerivAt_id r) hr
@@ -174,39 +175,39 @@ lemma hasDerivAt_profile (φinf Q r : ℝ) (hr : r ≠ 0) :
   exact hsub
 
 /-- Fifth-force ratio `(Q / r²) / (Φ R / r²)` relative to Newtonian surface gravity. -/
-noncomputable def forceRatio (Q Phi R r : ℝ) : ℝ := (Q / r ^ 2) / (Phi * R / r ^ 2)
+noncomputable def fifthForceRatio (Q Phi R r : ℝ) : ℝ := (Q / r ^ 2) / (Phi * R / r ^ 2)
 
 /-- Away from `r = 0`, the fifth-force ratio simplifies to `Q / (Φ R)`. -/
-lemma forceRatio_eq (Q Phi R r : ℝ) (hr : r ≠ 0) :
-    forceRatio Q Phi R r = Q / (Phi * R) := by
-  simp only [forceRatio]
+lemma fifthForceRatio_eq (Q Phi R r : ℝ) (hr : r ≠ 0) :
+    fifthForceRatio Q Phi R r = Q / (Phi * R) := by
+  simp only [fifthForceRatio]
   have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
   field_simp
 
 /-- With thin-shell scalar charge `Q = Δ Φ R`, the exterior fifth force is `Δ` times gravity. -/
-lemma forceRatio_thin_shell (Δ Phi R r : ℝ) (h : Phi * R ≠ 0) (hr : r ≠ 0) :
-    forceRatio (Δ * Phi * R) Phi R r = Δ := by
+lemma fifthForceRatio_thin_shell (Δ Phi R r : ℝ) (h : Phi * R ≠ 0) (hr : r ≠ 0) :
+    fifthForceRatio (Δ * Phi * R) Phi R r = Δ := by
   have hPhi : Phi ≠ 0 := (mul_ne_zero_iff.mp h).1
   have hR : R ≠ 0 := (mul_ne_zero_iff.mp h).2
-  rw [forceRatio_eq _ Phi R r hr]
+  rw [fifthForceRatio_eq _ Phi R r hr]
   field_simp
 
 /-- The exterior profile evaluated at the stellar surface `r = R` gives `φ(R) = φ∞ - Δ Φ`. -/
-lemma profile_surface (φinf Δ Phi R : ℝ) (hR : R ≠ 0) :
-    profile φinf (Δ * Phi * R) R = φinf - Δ * Phi := by
-  simp only [profile]
+lemma exteriorScalarProfile_surface (φinf Δ Phi R : ℝ) (hR : R ≠ 0) :
+    exteriorScalarProfile φinf (Δ * Phi * R) R = φinf - Δ * Phi := by
+  simp only [exteriorScalarProfile]
   field_simp
 
 /-- Thin shell implies weak fifth force: `Δ ≤ ε` caps the fifth-force ratio at `ε`. -/
 lemma thin_shell_weak (Δ ε Phi R r : ℝ) (hPR : Phi * R ≠ 0) (hr : r ≠ 0)
-    (h : Δ ≤ ε) : forceRatio (Δ * Phi * R) Phi R r ≤ ε := by
-  rw [forceRatio_thin_shell Δ Phi R r hPR hr]
+    (h : Δ ≤ ε) : fifthForceRatio (Δ * Phi * R) Phi R r ≤ ε := by
+  rw [fifthForceRatio_thin_shell Δ Phi R r hPR hr]
   exact h
 
-/-- Thick shell implies an order-one unscreened fifth force (`1 ≤ forceRatio`). -/
+/-- Thick shell implies an order-one unscreened fifth force (`1 ≤ fifthForceRatio`). -/
 lemma thick_shell_strong (Δ Phi R r : ℝ) (hPR : Phi * R ≠ 0) (hr : r ≠ 0)
-    (h : 1 ≤ Δ) : 1 ≤ forceRatio (Δ * Phi * R) Phi R r := by
-  rw [forceRatio_thin_shell Δ Phi R r hPR hr]
+    (h : 1 ≤ Δ) : 1 ≤ fifthForceRatio (Δ * Phi * R) Phi R r := by
+  rw [fifthForceRatio_thin_shell Δ Phi R r hPR hr]
   exact h
 
 /-- Environment-dependent mass squared `m² = ρ c` of a `ChameleonModel`. -/

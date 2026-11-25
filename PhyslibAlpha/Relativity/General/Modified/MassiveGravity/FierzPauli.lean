@@ -73,11 +73,11 @@ structure FierzPauliTheory where
 
 /-- Minkowski trace `h = η^{ab} h_{ab}` of a rank-2 perturbation `h : Tensor2 4`. -/
 def hTraceEta (h : Tensor2 4) : ℝ :=
-  ∑ a : Fin 4, eta4 a a * h a a
+  ∑ a : Fin 4, minkowskiMetric4 a a * h a a
 
 /-- Full Minkowski quadratic contraction `h_{ab} h^{ab} = ∑_{a,b} η^{aa} η^{bb} (h_{ab})²`. -/
 def hContractionSq (h : Tensor2 4) : ℝ :=
-  ∑ a : Fin 4, ∑ b : Fin 4, eta4 a a * eta4 b b * h a b * h a b
+  ∑ a : Fin 4, ∑ b : Fin 4, minkowskiMetric4 a a * minkowskiMetric4 b b * h a b * h a b
 
 /-- General Lorentz-invariant quadratic graviton mass Lagrangian density
 `ℒ_mass(α) = -(m² / 4) (h_{ab} h^{ab} + α h²)`. The Fierz–Pauli tuning is `α = -1`. -/
@@ -87,22 +87,23 @@ noncomputable def fierzPauliLagrangian (m α : ℝ) (h : Tensor2 4) : ℝ :=
 /-- Mass-term contribution to the linearized field equations:
 `M_{ij}(α) = (m² / 2) (h_{ij} + α η_{ij} h)`. -/
 noncomputable def fpMassTensor (m α : ℝ) (h : Tensor2 4) : Tensor2 4 :=
-  fun i j => (m ^ 2 / 2) * (h i j + α * eta4 i j * hTraceEta h)
+  fun i j => (m ^ 2 / 2) * (h i j + α * minkowskiMetric4 i j * hTraceEta h)
 
 /-- Minkowski trace of the general mass tensor:
 `η^{ij} M_{ij}(α) = (m² / 2) (1 + 4 α) h`. -/
 lemma fpMassTensor_trace (m α : ℝ) (h : Tensor2 4) :
-    (∑ i : Fin 4, eta4 i i * fpMassTensor m α h i i) =
+    (∑ i : Fin 4, minkowskiMetric4 i i * fpMassTensor m α h i i) =
       (m ^ 2 / 2) * (1 + 4 * α) * hTraceEta h := by
   unfold fpMassTensor hTraceEta
-  simp only [Fin.sum_univ_four, eta4_apply]
+  simp only [Fin.sum_univ_four, minkowskiMetric4_apply]
   norm_num
   ring
 
 /-- At the Fierz–Pauli ghost-free point `α = -1`, the trace of the mass tensor is
 `-(3 / 2) m² h`. -/
 lemma fpMassTensor_trace_tuned (m : ℝ) (h : Tensor2 4) :
-    (∑ i : Fin 4, eta4 i i * fpMassTensor m (-1) h i i) = -(3 / 2) * m ^ 2 * hTraceEta h := by
+    (∑ i : Fin 4, minkowskiMetric4 i i * fpMassTensor m (-1) h i i)
+      = -(3 / 2) * m ^ 2 * hTraceEta h := by
   rw [fpMassTensor_trace]
   ring
 
@@ -114,7 +115,7 @@ lemma longitudinal_time_ghost_free_iff (α ϕdd : ℝ) (hϕ : ϕdd ≠ 0) :
     hContractionSq (fun i j => if i = 0 ∧ j = 0 then ϕdd else 0)
       + α * hTraceEta (fun i j => if i = 0 ∧ j = 0 then ϕdd else 0) ^ 2 = 0 ↔ α = -1 := by
   unfold hContractionSq hTraceEta
-  simp only [Fin.sum_univ_four, eta4_apply]
+  simp only [Fin.sum_univ_four, minkowskiMetric4_apply]
   norm_num
   constructor
   · intro h
@@ -131,7 +132,7 @@ lemma longitudinal_time_ghost_free_iff (α ϕdd : ℝ) (hϕ : ϕdd ≠ 0) :
 vanish), any non-zero Fierz–Pauli mass `m ≠ 0` at `α = -1` forces the metric perturbation to be
 traceless (`h = 0`). -/
 lemma fp_traceless_of_zero_trace_source (m : ℝ) (hm : m ≠ 0) (h : Tensor2 4)
-    (htr : (∑ i : Fin 4, eta4 i i * fpMassTensor m (-1) h i i) = 0) :
+    (htr : (∑ i : Fin 4, minkowskiMetric4 i i * fpMassTensor m (-1) h i i) = 0) :
     hTraceEta h = 0 := by
   rw [fpMassTensor_trace_tuned] at htr
   have hm2 : m ^ 2 ≠ 0 := pow_ne_zero 2 hm

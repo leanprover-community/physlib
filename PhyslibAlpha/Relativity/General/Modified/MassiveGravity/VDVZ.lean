@@ -62,18 +62,18 @@ namespace MassiveGravity
 
 /-- Minkowski trace `T = η^{ab} T_{ab}` of a matter stress-energy tensor `T : Tensor2 4`. -/
 def stressTrace (T : Tensor2 4) : ℝ :=
-  ∑ a : Fin 4, eta4 a a * T a a
+  ∑ a : Fin 4, minkowskiMetric4 a a * T a a
 
 /-- Massless General Relativity spin-2 propagator residue contracted between two conserved
 stress-energy tensors `T₁, T₂`: `T₁_{ab} T₂^{ab} - ½ T₁ T₂`. -/
 noncomputable def grPropagatorCoupling (T1 T2 : Tensor2 4) : ℝ :=
-  (∑ a : Fin 4, ∑ b : Fin 4, eta4 a a * eta4 b b * T1 a b * T2 a b)
+  (∑ a : Fin 4, ∑ b : Fin 4, minkowskiMetric4 a a * minkowskiMetric4 b b * T1 a b * T2 a b)
     - (1 / 2) * stressTrace T1 * stressTrace T2
 
 /-- Massive Fierz–Pauli spin-2 propagator residue in the `m → 0` limit contracted between two
 conserved stress-energy tensors `T₁, T₂`: `T₁_{ab} T₂^{ab} - ⅓ T₁ T₂`. -/
 noncomputable def massivePropagatorCoupling (T1 T2 : Tensor2 4) : ℝ :=
-  (∑ a : Fin 4, ∑ b : Fin 4, eta4 a a * eta4 b b * T1 a b * T2 a b)
+  (∑ a : Fin 4, ∑ b : Fin 4, minkowskiMetric4 a a * minkowskiMetric4 b b * T1 a b * T2 a b)
     - (1 / 3) * stressTrace T1 * stressTrace T2
 
 /-- Stress-energy tensor of a static non-relativistic mass density `ρ`: `T_{00} = ρ`, all other
@@ -87,7 +87,7 @@ lemma vdvz_static_ratio (ρ1 ρ2 : ℝ) :
     massivePropagatorCoupling (staticSource ρ1) (staticSource ρ2) =
       (4 / 3) * grPropagatorCoupling (staticSource ρ1) (staticSource ρ2) := by
   unfold massivePropagatorCoupling grPropagatorCoupling stressTrace staticSource
-  simp only [Fin.sum_univ_four, eta4_apply]
+  simp only [Fin.sum_univ_four, minkowskiMetric4_apply]
   norm_num
   ring
 

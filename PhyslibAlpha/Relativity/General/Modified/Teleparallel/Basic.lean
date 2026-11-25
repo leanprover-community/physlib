@@ -79,11 +79,13 @@ structure Tetrad (n : ℕ) where
 
 /-- Weitzenböck affine connection `Γ^k_{ij} = ∑_A e_A^k ∂_i e^A_j` constructed from the inverse
 tetrad `einv A k = e_A^k` and tetrad partial derivatives `de i A j = ∂_i e^A_j`. -/
-def weitzenbockConn {n : ℕ} (einv : Tensor2 n) (de : Fin n → Tensor2 n) : Conn n :=
+def weitzenbockConn {n : ℕ} (einv : Tensor2 n) (de : Fin n → Tensor2 n) :
+    AffineConnection n :=
   fun k i j => ∑ A : Fin n, einv A k * de i A j
 
 /-- Weitzenböck torsion tensor `T^k_{ij} = Γ^k_{ij} - Γ^k_{ji}`. -/
-def weitzenbockTorsion {n : ℕ} (einv : Tensor2 n) (de : Fin n → Tensor2 n) : Conn n :=
+def weitzenbockTorsion {n : ℕ} (einv : Tensor2 n) (de : Fin n → Tensor2 n) :
+    AffineConnection n :=
   torsion (weitzenbockConn einv de)
 
 /-- Explicit tetrad-derivative formula for the Weitzenböck torsion:
@@ -104,7 +106,8 @@ lemma weitzenbockTorsion_antisymm {n : ℕ} (einv : Tensor2 n) (de : Fin n → T
 /-- Covariant teleparallel superpotential
 `S_{k i j} = ½ (g_{ip} T^p_{kj} - g_{jp} T^p_{ki} - g_{kp} T^p_{ij}) + g_{ki} T^m_{jm}
 - g_{kj} T^m_{im}`, antisymmetric in its last two indices `(i, j)`. -/
-noncomputable def superpotential (M : MetricTensor 4) (T : Conn 4) : Conn 4 :=
+noncomputable def superpotential (M : MetricTensor 4) (T : AffineConnection 4) :
+    AffineConnection 4 :=
   fun k i j =>
     (1 / 2) *
       ((∑ p : Fin 4, M.g i p * T p k j)
@@ -115,7 +118,7 @@ noncomputable def superpotential (M : MetricTensor 4) (T : Conn 4) : Conn 4 :=
 
 /-- Antisymmetry of the teleparallel superpotential in its last two indices `(i, j)` whenever
 `T` is antisymmetric in its lower indices. -/
-lemma superpotential_antisymm (M : MetricTensor 4) (T : Conn 4)
+lemma superpotential_antisymm (M : MetricTensor 4) (T : AffineConnection 4)
     (hT : ∀ k i j, T k i j = -T k j i) (k i j : Fin 4) :
     superpotential M T k i j = -superpotential M T k j i := by
   unfold superpotential
@@ -127,7 +130,7 @@ lemma superpotential_antisymm (M : MetricTensor 4) (T : Conn 4)
 
 /-- Quadratic teleparallel torsion scalar `T = ∑_{k,i,j} S_{k i j} T^k_{i j}` (in orthonormal or
 index-raised contraction). -/
-noncomputable def torsionScalar (M : MetricTensor 4) (T : Conn 4) : ℝ :=
+noncomputable def torsionScalar (M : MetricTensor 4) (T : AffineConnection 4) : ℝ :=
   ∑ k : Fin 4, ∑ p : Fin 4, ∑ i : Fin 4, ∑ j : Fin 4,
     M.ginv k p * superpotential M T p i j *
       (∑ q : Fin 4, ∑ r : Fin 4, M.ginv i q * M.ginv j r *

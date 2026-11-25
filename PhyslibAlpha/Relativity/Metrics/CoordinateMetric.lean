@@ -43,10 +43,11 @@ pipeline.
   regular domain and two-sided inverse proofs.
 - `Pipeline.pd`, `Pipeline.pd_eq_spaceTime_deriv`, `Pipeline.pd_comm` : coordinate partial
   derivative along index `μ`, bridge to `SpaceTime.deriv`, and Schwarz commutativity.
-- `Pipeline.christoffel`, `Pipeline.riemann`, `Pipeline.ricciOf`, `Pipeline.scalarOf`,
-  `Pipeline.einsteinOf` : coordinate pipeline from metric fields to the Einstein tensor.
-- `Pipeline.christoffel_const`, `Pipeline.riemann_const`, `Pipeline.ricciOf_const`,
-  `Pipeline.scalarOf_const`, `Pipeline.einsteinOf_const` : vanishing of all pipeline outputs
+- `Pipeline.christoffel`, `Pipeline.riemann`, `Pipeline.ricciTensorOf`, `Pipeline.ricciScalarOf`,
+  `Pipeline.einsteinTensorOf` : coordinate pipeline from metric fields to the Einstein tensor.
+- `Pipeline.christoffel_const`, `Pipeline.riemann_const`, `Pipeline.ricciTensorOf_const`,
+  `Pipeline.ricciScalarOf_const`, `Pipeline.einsteinTensorOf_const` : vanishing of all pipeline
+  outputs
   for any constant metric.
 - `Pipeline.riemannFromData`, `Pipeline.riemann_eq_riemannFromData` : data-parameterised Riemann
   evaluator and definitional equality with `riemann`.
@@ -300,19 +301,19 @@ noncomputable def riemann {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
           - christoffel g ginv x ρ ν l * christoffel g ginv x l μ σ)
 
 /-- The coordinate Ricci tensor `Ric_{σν} = ∑ ρ, R^ρ_{σρν}`. -/
-noncomputable def ricciOf {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
+noncomputable def ricciTensorOf {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     (x : Fin n → ℝ) (σ ν : Fin n) : ℝ :=
   ∑ ρ, riemann g ginv x ρ σ ρ ν
 
 /-- The coordinate scalar curvature `S = ∑ σ ν, g^{σν} Ric_{σν}`. -/
-noncomputable def scalarOf {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
+noncomputable def ricciScalarOf {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     (x : Fin n → ℝ) : ℝ :=
-  ∑ σ, ∑ ν, ginv x σ ν * ricciOf g ginv x σ ν
+  ∑ σ, ∑ ν, ginv x σ ν * ricciTensorOf g ginv x σ ν
 
 /-- The coordinate Einstein tensor `G_{ij} = Ric_{ij} - (1/2) S g_{ij}`. -/
-noncomputable def einsteinOf {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
+noncomputable def einsteinTensorOf {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     (x : Fin n → ℝ) (i j : Fin n) : ℝ :=
-  ricciOf g ginv x i j - (1 / 2) * scalarOf g ginv x * g x i j
+  ricciTensorOf g ginv x i j - (1 / 2) * ricciScalarOf g ginv x * g x i j
 
 /-- Alias for the Minkowski metric field in inertial coordinates. -/
 noncomputable abbrev minkowskiG : (Fin 4 → ℝ) → Tensor2 4 := GeneralRelativity.minkowskiG
@@ -356,32 +357,32 @@ lemma riemann_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tens
   ring
 
 /-- A constant metric is Ricci flat, as computed by the pipeline. -/
-lemma ricciOf_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
+lemma ricciTensorOf_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
     (hg : ∀ x, g x = G) (x : Fin n → ℝ) (σ ν : Fin n) :
-    ricciOf g ginv x σ ν = 0 := by
-  simp only [ricciOf]
+    ricciTensorOf g ginv x σ ν = 0 := by
+  simp only [ricciTensorOf]
   apply Finset.sum_eq_zero
   intro ρ _
   exact riemann_const g ginv G hg x ρ σ ρ ν
 
 /-- A constant metric has zero scalar curvature. -/
-lemma scalarOf_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
-    (hg : ∀ x, g x = G) (x : Fin n → ℝ) : scalarOf g ginv x = 0 := by
-  simp only [scalarOf]
+lemma ricciScalarOf_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
+    (hg : ∀ x, g x = G) (x : Fin n → ℝ) : ricciScalarOf g ginv x = 0 := by
+  simp only [ricciScalarOf]
   apply Finset.sum_eq_zero
   intro σ _
   apply Finset.sum_eq_zero
   intro ν _
-  rw [ricciOf_const g ginv G hg x σ ν]
+  rw [ricciTensorOf_const g ginv G hg x σ ν]
   ring
 
 /-- A constant metric is a vacuum solution of the Einstein equations (`G_{ij} = 0`), as computed
 by the pipeline. -/
-lemma einsteinOf_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
+lemma einsteinTensorOf_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
     (hg : ∀ x, g x = G) (x : Fin n → ℝ) (i j : Fin n) :
-    einsteinOf g ginv x i j = 0 := by
-  simp only [einsteinOf]
-  rw [ricciOf_const g ginv G hg x i j, scalarOf_const g ginv G hg x]
+    einsteinTensorOf g ginv x i j = 0 := by
+  simp only [einsteinTensorOf]
+  rw [ricciTensorOf_const g ginv G hg x i j, ricciScalarOf_const g ginv G hg x]
   ring
 
 /-!
@@ -431,18 +432,18 @@ noncomputable def CoordinateMetric.riemann {n : ℕ} (C : CoordinateMetric n)
   Pipeline.riemann C.g C.ginv x ρ σ μ ν
 
 /-- Ricci tensor of a `CoordinateMetric`. -/
-noncomputable def CoordinateMetric.ricciOf {n : ℕ} (C : CoordinateMetric n)
+noncomputable def CoordinateMetric.ricciTensorOf {n : ℕ} (C : CoordinateMetric n)
     (x : Fin n → ℝ) (σ ν : Fin n) : ℝ :=
-  Pipeline.ricciOf C.g C.ginv x σ ν
+  Pipeline.ricciTensorOf C.g C.ginv x σ ν
 
 /-- Scalar curvature of a `CoordinateMetric`. -/
-noncomputable def CoordinateMetric.scalarOf {n : ℕ} (C : CoordinateMetric n)
+noncomputable def CoordinateMetric.ricciScalarOf {n : ℕ} (C : CoordinateMetric n)
     (x : Fin n → ℝ) : ℝ :=
-  Pipeline.scalarOf C.g C.ginv x
+  Pipeline.ricciScalarOf C.g C.ginv x
 
 /-- Einstein tensor of a `CoordinateMetric`. -/
-noncomputable def CoordinateMetric.einsteinOf {n : ℕ} (C : CoordinateMetric n)
+noncomputable def CoordinateMetric.einsteinTensorOf {n : ℕ} (C : CoordinateMetric n)
     (x : Fin n → ℝ) (i j : Fin n) : ℝ :=
-  Pipeline.einsteinOf C.g C.ginv x i j
+  Pipeline.einsteinTensorOf C.g C.ginv x i j
 
 end GeneralRelativity

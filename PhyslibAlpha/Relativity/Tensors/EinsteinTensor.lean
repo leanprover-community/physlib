@@ -58,7 +58,7 @@ variable {n : ℕ}
 
 /-- The Einstein tensor `G_{ij} = Ric_{ij} - (1/2) S g_{ij}`. -/
 noncomputable def einstein (M : MetricTensor n) (R : RiemannTensor n) : Tensor2 n :=
-  fun i j => ricci M R i j - (1 / 2) * scalarCurv M R * M.g i j
+  fun i j => ricci M R i j - (1 / 2) * ricciScalar M R * M.g i j
 
 /-- The Einstein tensor is symmetric. -/
 lemma einstein_symm (M : MetricTensor n) (R : RiemannTensor n) : IsSymm (einstein M R) := by
@@ -68,32 +68,32 @@ lemma einstein_symm (M : MetricTensor n) (R : RiemannTensor n) : IsSymm (einstei
 
 /-- Metric trace of the Einstein tensor: `g^{ij} G_{ij} = (1 - n/2) S`. -/
 lemma metricTrace_einstein (M : MetricTensor n) (R : RiemannTensor n) :
-    metricTrace M (einstein M R) = (1 - (n : ℝ) / 2) * scalarCurv M R := by
+    metricTrace M (einstein M R) = (1 - (n : ℝ) / 2) * ricciScalar M R := by
   have hsplit : ∀ i,
-      (∑ j, M.ginv i j * (ricci M R i j - (1 / 2) * scalarCurv M R * M.g i j))
+      (∑ j, M.ginv i j * (ricci M R i j - (1 / 2) * ricciScalar M R * M.g i j))
         = (∑ j, M.ginv i j * ricci M R i j)
-          - (1 / 2) * scalarCurv M R * (∑ j, M.ginv i j * M.g i j) := by
+          - (1 / 2) * ricciScalar M R * (∑ j, M.ginv i j * M.g i j) := by
     intro i
     have hterm : ∀ j,
-        M.ginv i j * (ricci M R i j - (1 / 2) * scalarCurv M R * M.g i j)
+        M.ginv i j * (ricci M R i j - (1 / 2) * ricciScalar M R * M.g i j)
           = M.ginv i j * ricci M R i j
-            - (1 / 2) * scalarCurv M R * (M.ginv i j * M.g i j) := by
+            - (1 / 2) * ricciScalar M R * (M.ginv i j * M.g i j) := by
       intro j
       ring
     rw [Finset.sum_congr rfl (fun j _ => hterm j), Finset.sum_sub_distrib,
       ← Finset.mul_sum]
   simp only [metricTrace, einstein]
-  calc (∑ i, ∑ j, M.ginv i j * (ricci M R i j - (1 / 2) * scalarCurv M R * M.g i j))
+  calc (∑ i, ∑ j, M.ginv i j * (ricci M R i j - (1 / 2) * ricciScalar M R * M.g i j))
       = ∑ i, ((∑ j, M.ginv i j * ricci M R i j)
-          - (1 / 2) * scalarCurv M R * (∑ j, M.ginv i j * M.g i j)) :=
+          - (1 / 2) * ricciScalar M R * (∑ j, M.ginv i j * M.g i j)) :=
         Finset.sum_congr rfl (fun i _ => hsplit i)
     _ = (∑ i, ∑ j, M.ginv i j * ricci M R i j)
-          - (1 / 2) * scalarCurv M R * (∑ i, ∑ j, M.ginv i j * M.g i j) := by
+          - (1 / 2) * ricciScalar M R * (∑ i, ∑ j, M.ginv i j * M.g i j) := by
         rw [Finset.sum_sub_distrib, ← Finset.mul_sum]
-    _ = scalarCurv M R - (1 / 2) * scalarCurv M R * (n : ℝ) := by
+    _ = ricciScalar M R - (1 / 2) * ricciScalar M R * (n : ℝ) := by
         rw [sum_ginv_mul_g]
         rfl
-    _ = (1 - (n : ℝ) / 2) * scalarCurv M R := by ring
+    _ = (1 - (n : ℝ) / 2) * ricciScalar M R := by ring
 
 /-!
 
@@ -102,8 +102,8 @@ lemma metricTrace_einstein (M : MetricTensor n) (R : RiemannTensor n) :
 -/
 
 /-- In four dimensions, `G = 0` forces the scalar curvature to vanish. -/
-lemma scalarCurv_eq_zero_of_einstein_eq_zero (M : MetricTensor 4) (R : RiemannTensor 4)
-    (h : einstein M R = 0) : scalarCurv M R = 0 := by
+lemma ricciScalar_eq_zero_of_einstein_eq_zero (M : MetricTensor 4) (R : RiemannTensor 4)
+    (h : einstein M R = 0) : ricciScalar M R = 0 := by
   have htr : metricTrace M (einstein M R) = 0 := by
     rw [h]
     simp [metricTrace]
@@ -116,16 +116,16 @@ lemma vacuum_iff_ricci_flat (M : MetricTensor 4) (R : RiemannTensor 4) :
     einstein M R = 0 ↔ ricci M R = 0 := by
   constructor
   · intro h
-    have hS := scalarCurv_eq_zero_of_einstein_eq_zero M R h
+    have hS := ricciScalar_eq_zero_of_einstein_eq_zero M R h
     ext i j
-    have hij : ricci M R i j - (1 / 2) * scalarCurv M R * M.g i j = 0 := by
+    have hij : ricci M R i j - (1 / 2) * ricciScalar M R * M.g i j = 0 := by
       have hc := congrFun (congrFun h i) j
       simpa [einstein] using hc
     rw [hS] at hij
     simpa using hij
   · intro h
     ext i j
-    have hS : scalarCurv M R = 0 := by simp [scalarCurv, h]
+    have hS : ricciScalar M R = 0 := by simp [ricciScalar, h]
     simp [einstein, h, hS]
 
 /-- In four dimensions, the Einstein equation with cosmological constant `G + Λ g = 0` is
@@ -139,15 +139,15 @@ lemma einsteinSpace_iff (M : MetricTensor 4) (R : RiemannTensor 4) (Λ : ℝ) :
       simp [metricTrace, h]
     rw [metricTrace_add_fun (A := einstein M R) (B := fun i j => Λ * M.g i j),
       metricTrace_einstein, metricTrace_mul_g] at htr
-    have hS : scalarCurv M R = 4 * Λ := by linarith
+    have hS : ricciScalar M R = 4 * Λ := by linarith
     intro i j
     have hij := h i j
     simp only [einstein, hS] at hij
     linarith
   · intro h i j
-    have hS : scalarCurv M R = 4 * Λ := by
-      have htr : scalarCurv M R = metricTrace M (fun a b => Λ * M.g a b) := by
-        simp only [scalarCurv, metricTrace, h]
+    have hS : ricciScalar M R = 4 * Λ := by
+      have htr : ricciScalar M R = metricTrace M (fun a b => Λ * M.g a b) := by
+        simp only [ricciScalar, metricTrace, h]
       rw [htr, metricTrace_mul_g]
       ring
     simp only [einstein, h i j, hS]

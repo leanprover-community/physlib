@@ -118,7 +118,7 @@ lemma potential_hasDerivAt (M r : ℝ) (hr : r ≠ 0) :
   exact h'
 
 /-- Second radial derivative of the potential: `Φ'' = -2M / r³`. -/
-lemma slope_hasDerivAt (M r : ℝ) (hr : r ≠ 0) :
+lemma potential_second_hasDerivAt (M r : ℝ) (hr : r ≠ 0) :
     HasDerivAt (fun s : ℝ => M / s ^ 2) (-2 * M / r ^ 3) r := by
   have hnum : HasDerivAt (fun _ : ℝ => M) 0 r := hasDerivAt_const r M
   have hden : HasDerivAt (fun s : ℝ => s ^ 2) (2 * r) r := by

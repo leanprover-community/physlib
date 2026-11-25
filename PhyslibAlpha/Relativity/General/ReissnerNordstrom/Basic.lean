@@ -35,9 +35,9 @@ sourced by a radial Coulomb electric field `F_{01} = -Q / r²`, `F_{10} = Q / r�
 Feeding `rnMetric M Q` through `GeneralRelativity.StaticSpherical` and
 `GeneralRelativity.Pipeline`, this module proves:
 
-- `scalarOf_rn` : vanishing Ricci scalar `S = 0`, matching `maxwellStressEnergy_rn_trace_zero`
+- `ricciScalarOf_rn` : vanishing Ricci scalar `S = 0`, matching `maxwellStressEnergy_rn_trace_zero`
   (`g^{ij} T^{EM}_{ij} = 0` in 4D);
-- `einsteinOf_rn_eq_maxwell` : the full 4D electrovacuum Einstein–Maxwell field equations
+- `einsteinTensorOf_rn_eq_maxwell` : the full 4D electrovacuum Einstein–Maxwell field equations
   `G_{ij} = 8 π T^{EM}_{ij}` at every index pair `(i, j)`;
 - horizon theorems (`rnF_horizonPlus`, `rnF_horizonMinus`, extremal double root when `Q² = M²`,
   and positivity `0 < rnF` in the overcharged naked-singularity regime `M² < Q²`).
@@ -47,7 +47,8 @@ Feeding `rnMetric M Q` through `GeneralRelativity.StaticSpherical` and
 - `ReissnerNordstromSpacetime`, `rnF`, `rnMetric`, `rnMetricInv` : Reissner–Nordström
   spacetime structure, lapse function, and coordinate metric.
 - `maxwellF`, `maxwellStressEnergy` : radial electric field strength and Maxwell stress-energy.
-- `ricciOf_rn`, `scalarOf_rn`, `maxwellStressEnergy_rn_trace_zero`, `einsteinOf_rn_eq_maxwell` :
+- `ricciTensorOf_rn`, `ricciScalarOf_rn`, `maxwellStressEnergy_rn_trace_zero`,
+  `einsteinTensorOf_rn_eq_maxwell` :
   verified Einstein–Maxwell solution through `GeneralRelativity.Pipeline`.
 - `horizonPlus`, `horizonMinus`, `rnF_horizonPlus`, `rnF_horizonMinus`, `rnF_extremal`,
   `rnF_pos_of_overcharged` : Cauchy/event horizons, extremal coalescence, and overcharged regime.
@@ -202,9 +203,9 @@ noncomputable def ReissnerNordstromSpacetime.metricInv (S : ReissnerNordstromSpa
 -/
 
 /-- Metric-level Ricci tensor of the Reissner–Nordström spacetime computed via `Pipeline`. -/
-lemma ricciOf_rn (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : rnF M Q (x 1) ≠ 0)
+lemma ricciTensorOf_rn (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : rnF M Q (x 1) ≠ 0)
     (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
-    ricciOf (rnMetric M Q) (rnMetricInv M Q) x σ ν
+    ricciTensorOf (rnMetric M Q) (rnMetricInv M Q) x σ ν
       = if σ = ν then
           if σ = 0 then rnF M Q (x 1) * Q ^ 2 / (x 1) ^ 4
           else if σ = 1 then -(Q ^ 2 / ((x 1) ^ 4 * rnF M Q (x 1)))
@@ -217,7 +218,8 @@ lemma ricciOf_rn (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : rnF M Q 
     (hasDerivAt_deriv_rnF M Q (x 1) hr).deriv
   have hfdiff := eventually_differentiableAt_rnF M Q (x 1) hr
   have hf2diff := (hasDerivAt_deriv_rnF M Q (x 1) hr).differentiableAt
-  rw [rnMetric, rnMetricInv, ricciOf_staticSpherical (rnF M Q) x hr hf hsin hfdiff hf2diff σ ν,
+  rw [rnMetric, rnMetricInv,
+    ricciTensorOf_staticSpherical (rnF M Q) x hr hf hsin hfdiff hf2diff σ ν,
     hf1, hf2]
   fin_cases σ <;> fin_cases ν <;> simp
   · field_simp [hr]; ring
@@ -227,16 +229,16 @@ lemma ricciOf_rn (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : rnF M Q 
 
 /-- The Reissner–Nordström spacetime has identically vanishing scalar curvature (`S = 0`),
 reflecting conformal invariance of 4D Maxwell electromagnetism. -/
-lemma scalarOf_rn (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : rnF M Q (x 1) ≠ 0)
+lemma ricciScalarOf_rn (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : rnF M Q (x 1) ≠ 0)
     (hsin : Real.sin (x 2) ≠ 0) :
-    scalarOf (rnMetric M Q) (rnMetricInv M Q) x = 0 := by
+    ricciScalarOf (rnMetric M Q) (rnMetricInv M Q) x = 0 := by
   have hf1 : deriv (rnF M Q) (x 1) = 2 * M / (x 1) ^ 2 - 2 * Q ^ 2 / (x 1) ^ 3 :=
     (hasDerivAt_rnF M Q (x 1) hr).deriv
   have hf2 : deriv (deriv (rnF M Q)) (x 1) = -4 * M / (x 1) ^ 3 + 6 * Q ^ 2 / (x 1) ^ 4 :=
     (hasDerivAt_deriv_rnF M Q (x 1) hr).deriv
   have hfdiff := eventually_differentiableAt_rnF M Q (x 1) hr
   have hf2diff := (hasDerivAt_deriv_rnF M Q (x 1) hr).differentiableAt
-  rw [rnMetric, rnMetricInv, scalarOf_staticSpherical (rnF M Q) x hr hf hsin hfdiff hf2diff,
+  rw [rnMetric, rnMetricInv, ricciScalarOf_staticSpherical (rnF M Q) x hr hf hsin hfdiff hf2diff,
     hf1, hf2, rnF]
   field_simp [hr]
   ring
@@ -255,13 +257,13 @@ lemma maxwellStressEnergy_rn_trace_zero (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 
 
 /-- Electrovacuum Einstein–Maxwell equations verified directly through `GeneralRelativity.Pipeline`:
 `G_{ij} = 8 π T^{EM}_{ij}` at every coordinate index `(i, j)`. -/
-lemma einsteinOf_rn_eq_maxwell (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma einsteinTensorOf_rn_eq_maxwell (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : rnF M Q (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
-    einsteinOf (rnMetric M Q) (rnMetricInv M Q) x i j
+    einsteinTensorOf (rnMetric M Q) (rnMetricInv M Q) x i j
       = 8 * Real.pi
           * maxwellStressEnergy (rnMetric M Q x) (rnMetricInv M Q x) (maxwellF Q (x 1)) i j := by
   have hpi : Real.pi ≠ 0 := Real.pi_ne_zero
-  simp only [einsteinOf, ricciOf_rn M Q x hr hf hsin, scalarOf_rn M Q x hr hf hsin]
+  simp only [einsteinTensorOf, ricciTensorOf_rn M Q x hr hf hsin, ricciScalarOf_rn M Q x hr hf hsin]
   simp only [maxwellStressEnergy, maxwellStressEnergyRaw, maxwellFieldInvariant, rnMetric,
     rnMetricInv, staticSphericalMetric, staticSphericalMetricInv, maxwellF, Fin.sum_univ_four]
   fin_cases i <;> fin_cases j <;> simp

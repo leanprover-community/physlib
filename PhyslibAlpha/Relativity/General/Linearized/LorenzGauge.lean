@@ -57,7 +57,7 @@ open Pipeline
 
 /-- Lorenz (harmonic/de Donder) gauge divergence vector `∂^k h̄_{kj} = η^{kk} ∂_k h̄_{kj}`. -/
 noncomputable def lorenzDiv (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 → ℝ) (j : Fin 4) : ℝ :=
-  ∑ k : Fin 4, eta4 k k * pd k (fun y => traceReversed (h y) k j) x
+  ∑ k : Fin 4, minkowskiMetric4 k k * pd k (fun y => traceReversed (h y) k j) x
 
 /-- Lorenz gauge condition `lorenzDiv h x j = 0`. -/
 def lorenzGaugeCond (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 → ℝ) (j : Fin 4) : Prop :=
@@ -69,9 +69,9 @@ private lemma linChristoffel_trace (h : (Fin 4 → ℝ) → Tensor2 4) (y : Fin 
     (∑ r : Fin 4, linChristoffel h y r r i) = (1 / 2) * pd i (fun z => hTrace (h z)) y := by
   have heq : ∀ r, (fun z => h z r i) = fun z => h z i r := fun r => funext fun z => hsym z r i
   simp only [linChristoffel, heq, add_sub_cancel_right]
-  have hsum : (∑ r : Fin 4, (1 / 2) * eta4 r r * pd i (fun z => h z r r) y)
-      = (1 / 2) * pd i (fun z => ∑ r : Fin 4, eta4 r r * h z r r) y := by
-    rw [pd_sum i (fun r z => eta4 r r * h z r r) y
+  have hsum : (∑ r : Fin 4, (1 / 2) * minkowskiMetric4 r r * pd i (fun z => h z r r) y)
+      = (1 / 2) * pd i (fun z => ∑ r : Fin 4, minkowskiMetric4 r r * h z r r) y := by
+    rw [pd_sum i (fun r z => minkowskiMetric4 r r * h z r r) y
       (fun r => (slice_differentiableAt i (hh r r)).const_mul _), Finset.mul_sum]
     refine Finset.sum_congr rfl fun r _ => ?_
     rw [pd_const_mul, mul_assoc]
@@ -115,7 +115,7 @@ lemma linRicci_in_traceReversed (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 �
     linRicci h x i j = -(1 / 2) * boxEta (fun y => traceReversed (h y) i j) x
       + (1 / 2) * pd i (fun y => lorenzDiv h y j) x
       + (1 / 2) * pd j (fun y => lorenzDiv h y i) x
-      + (1 / 4) * eta4 i j * boxEta (fun y => hTrace (traceReversed (h y))) x := by
+      + (1 / 4) * minkowskiMetric4 i j * boxEta (fun y => hTrace (traceReversed (h y))) x := by
   let b : (Fin 4 → ℝ) → Tensor2 4 := fun y => traceReversed (h y)
   let T : (Fin 4 → ℝ) → ℝ := fun y => hTrace (b y)
   have nh : ∀ᶠ y in nhds x, ∀ a b', ContDiffAt ℝ 2 (fun z => h z a b') y := by
@@ -128,14 +128,15 @@ lemma linRicci_in_traceReversed (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 �
       ContDiffAt ℝ 2 T y := fun y hy => contDiffAt_hTrace fun a b' => hb_c2 y hy a b'
   have hc_eq : ∀ r,
       (fun y => linChristoffel h y r j i) =ᶠ[nhds x] fun y =>
-        (1 / 2) * eta4 r r * (pd i (fun z => b z r j) y
+        (1 / 2) * minkowskiMetric4 r r * (pd i (fun z => b z r j) y
           + pd j (fun z => b z r i) y - pd r (fun z => b z j i) y)
-          - (1 / 4) * eta4 r r * (eta4 r j * pd i T y + eta4 r i * pd j T y
-            - eta4 j i * pd r T y) := by
+          - (1 / 4) * minkowskiMetric4 r r * (minkowskiMetric4 r j * pd i T y
+            + minkowskiMetric4 r i * pd j T y
+            - minkowskiMetric4 j i * pd r T y) := by
     intro r
     filter_upwards [nh] with y hy
     have hcd : ∀ p q, (fun z => h z p q) = fun z =>
-        b z p q - (1 / 2) * eta4 p q * T z := by
+        b z p q - (1 / 2) * minkowskiMetric4 p q * T z := by
       intro p q; funext z
       have hi := congrArg (fun M => M p q) (traceReversed_involutive (h z))
       simpa [b, T, traceReversed] using hi.symm
@@ -154,21 +155,22 @@ lemma linRicci_in_traceReversed (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 �
   have hb_at : ∀ p q, ContDiffAt ℝ 2 (fun z => b z p q) x := hb_c2 x hh
   have hT_at : ContDiffAt ℝ 2 T x := hT_c2 x hh
   have hterm : ∀ r, pd r (fun y => linChristoffel h y r j i) x =
-      (1 / 2) * eta4 r r * pd i (pd r fun z => b z r j) x
-      + (1 / 2) * eta4 r r * pd j (pd r fun z => b z r i) x
-      - (1 / 2) * eta4 r r * pd r (pd r fun z => b z j i) x
-      - (1 / 4) * (eta4 r r * eta4 r j) * pd i (pd r T) x
-      - (1 / 4) * (eta4 r r * eta4 r i) * pd j (pd r T) x
-      + (1 / 4) * eta4 j i * (eta4 r r * pd r (pd r T) x) := by
+      (1 / 2) * minkowskiMetric4 r r * pd i (pd r fun z => b z r j) x
+      + (1 / 2) * minkowskiMetric4 r r * pd j (pd r fun z => b z r i) x
+      - (1 / 2) * minkowskiMetric4 r r * pd r (pd r fun z => b z j i) x
+      - (1 / 4) * (minkowskiMetric4 r r * minkowskiMetric4 r j) * pd i (pd r T) x
+      - (1 / 4) * (minkowskiMetric4 r r * minkowskiMetric4 r i) * pd j (pd r T) x
+      + (1 / 4) * minkowskiMetric4 j i * (minkowskiMetric4 r r * pd r (pd r T) x) := by
     intro r
     have db : ∀ p q μ, DifferentiableAt ℝ (pd μ fun z => b z p q) x :=
       fun p q μ => pd_differentiableAt μ (hb_at p q)
     have dT : ∀ μ, DifferentiableAt ℝ (pd μ T) x := fun μ => pd_differentiableAt μ hT_at
-    have h1 : DifferentiableAt ℝ (fun y => (1 / 2 : ℝ) * eta4 r r *
+    have h1 : DifferentiableAt ℝ (fun y => (1 / 2 : ℝ) * minkowskiMetric4 r r *
         (pd i (fun z => b z r j) y + pd j (fun z => b z r i) y - pd r (fun z => b z j i) y)) x :=
       (((db r j i).add (db r i j)).sub (db j i r)).const_mul _
-    have h2 : DifferentiableAt ℝ (fun y => (1 / 4 : ℝ) * eta4 r r *
-        (eta4 r j * pd i T y + eta4 r i * pd j T y - eta4 j i * pd r T y)) x :=
+    have h2 : DifferentiableAt ℝ (fun y => (1 / 4 : ℝ) * minkowskiMetric4 r r *
+        (minkowskiMetric4 r j * pd i T y
+          + minkowskiMetric4 r i * pd j T y - minkowskiMetric4 j i * pd r T y)) x :=
       ((((dT i).const_mul _).add ((dT j).const_mul _)).sub ((dT r).const_mul _)).const_mul _
     have d1 : DifferentiableAt ℝ (fun s => pd i (fun z => b z r j) (Function.update x r s))
         (x r) := slice_differentiableAt r (db r j i)
@@ -176,11 +178,14 @@ lemma linRicci_in_traceReversed (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 �
         (x r) := slice_differentiableAt r (db r i j)
     have d3 : DifferentiableAt ℝ (fun s => pd r (fun z => b z j i) (Function.update x r s))
         (x r) := slice_differentiableAt r (db j i r)
-    have dt1 : DifferentiableAt ℝ (fun s => eta4 r j * pd i T (Function.update x r s)) (x r) :=
+    have dt1 : DifferentiableAt ℝ (fun s => minkowskiMetric4 r j
+      * pd i T (Function.update x r s)) (x r) :=
       (slice_differentiableAt r (dT i)).const_mul _
-    have dt2 : DifferentiableAt ℝ (fun s => eta4 r i * pd j T (Function.update x r s)) (x r) :=
+    have dt2 : DifferentiableAt ℝ (fun s => minkowskiMetric4 r i
+      * pd j T (Function.update x r s)) (x r) :=
       (slice_differentiableAt r (dT j)).const_mul _
-    have dt3 : DifferentiableAt ℝ (fun s => eta4 j i * pd r T (Function.update x r s)) (x r) :=
+    have dt3 : DifferentiableAt ℝ (fun s => minkowskiMetric4 j i
+      * pd r T (Function.update x r s)) (x r) :=
       (slice_differentiableAt r (dT r)).const_mul _
     rw [pd_congr_nhds r x (hc_eq r), pd_sub r x (slice_differentiableAt r h1)
         (slice_differentiableAt r h2), pd_const_mul, pd_const_mul,
@@ -190,25 +195,27 @@ lemma linRicci_in_traceReversed (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 �
       pd_comm r i (hb_at r j), pd_comm r j (hb_at r i), pd_comm r i hT_at, pd_comm r j hT_at]
     ring
   have hdiv_j : pd i (fun y => lorenzDiv h y j) x
-      = ∑ r : Fin 4, eta4 r r * pd i (pd r fun z => b z r j) x := by
+      = ∑ r : Fin 4, minkowskiMetric4 r r * pd i (pd r fun z => b z r j) x := by
     simp only [lorenzDiv]
     rw [pd_sum i _ x fun r =>
       slice_differentiableAt i ((pd_differentiableAt r (hb_at r j)).const_mul _)]
-    refine Finset.sum_congr rfl fun r _ => pd_const_mul i (eta4 r r) x
+    refine Finset.sum_congr rfl fun r _ => pd_const_mul i (minkowskiMetric4 r r) x
   have hdiv_i : pd j (fun y => lorenzDiv h y i) x
-      = ∑ r : Fin 4, eta4 r r * pd j (pd r fun z => b z r i) x := by
+      = ∑ r : Fin 4, minkowskiMetric4 r r * pd j (pd r fun z => b z r i) x := by
     simp only [lorenzDiv]
     rw [pd_sum j _ x fun r =>
       slice_differentiableAt j ((pd_differentiableAt r (hb_at r i)).const_mul _)]
-    refine Finset.sum_congr rfl fun r _ => pd_const_mul j (eta4 r r) x
+    refine Finset.sum_congr rfl fun r _ => pd_const_mul j (minkowskiMetric4 r r) x
   have hbox_sym : boxEta (fun y => b y j i) x = boxEta (fun y => b y i j) x := by
     have hbs : (fun y => b y j i) = fun y => b y i j :=
       funext fun y => traceReversed_symm (hsym y) j i
     simp [hbs]
-  have hT_sub_j : (∑ r : Fin 4, (1 / 4 : ℝ) * (eta4 r r * eta4 r j) * pd i (pd r T) x)
+  have hT_sub_j : (∑ r : Fin 4,
+    (1 / 4 : ℝ) * (minkowskiMetric4 r r * minkowskiMetric4 r j) * pd i (pd r T) x)
       = (1 / 4) * pd i (pd j T) x := by
     fin_cases j <;> simp
-  have hT_sub_i : (∑ r : Fin 4, (1 / 4 : ℝ) * (eta4 r r * eta4 r i) * pd j (pd r T) x)
+  have hT_sub_i : (∑ r : Fin 4,
+    (1 / 4 : ℝ) * (minkowskiMetric4 r r * minkowskiMetric4 r i) * pd j (pd r T) x)
       = (1 / 4) * pd j (pd i T) x := by
     fin_cases i <;> simp
   have hT_comm : pd j (pd i T) x = pd i (pd j T) x := pd_comm j i hT_at
@@ -217,15 +224,15 @@ lemma linRicci_in_traceReversed (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 �
   change _ = -(1 / 2) * boxEta (fun y => b y i j) x
       + (1 / 2) * pd i (fun y => lorenzDiv h y j) x
       + (1 / 2) * pd j (fun y => lorenzDiv h y i) x
-      + (1 / 4) * eta4 i j * boxEta T x
-  rw [hdiv_j, hdiv_i, ← hbox_sym, eta4_symm j i, hT_sub_j, hT_sub_i, hT_comm]
-  have hs1 : (∑ r : Fin 4, (1 / 2 : ℝ) * eta4 r r * pd i (pd r fun z => b z r j) x)
-      = (1 / 2) * ∑ r : Fin 4, eta4 r r * pd i (pd r fun z => b z r j) x := by
+      + (1 / 4) * minkowskiMetric4 i j * boxEta T x
+  rw [hdiv_j, hdiv_i, ← hbox_sym, minkowskiMetric4_symm j i, hT_sub_j, hT_sub_i, hT_comm]
+  have hs1 : (∑ r : Fin 4, (1 / 2 : ℝ) * minkowskiMetric4 r r * pd i (pd r fun z => b z r j) x)
+      = (1 / 2) * ∑ r : Fin 4, minkowskiMetric4 r r * pd i (pd r fun z => b z r j) x := by
     rw [Finset.mul_sum]; refine Finset.sum_congr rfl fun _ _ => by ring
-  have hs2 : (∑ r : Fin 4, (1 / 2 : ℝ) * eta4 r r * pd j (pd r fun z => b z r i) x)
-      = (1 / 2) * ∑ r : Fin 4, eta4 r r * pd j (pd r fun z => b z r i) x := by
+  have hs2 : (∑ r : Fin 4, (1 / 2 : ℝ) * minkowskiMetric4 r r * pd j (pd r fun z => b z r i) x)
+      = (1 / 2) * ∑ r : Fin 4, minkowskiMetric4 r r * pd j (pd r fun z => b z r i) x := by
     rw [Finset.mul_sum]; refine Finset.sum_congr rfl fun _ _ => by ring
-  have hs3 : (∑ r : Fin 4, (1 / 2 : ℝ) * eta4 r r * pd r (pd r fun z => b z j i) x)
+  have hs3 : (∑ r : Fin 4, (1 / 2 : ℝ) * minkowskiMetric4 r r * pd r (pd r fun z => b z j i) x)
       = (1 / 2) * boxEta (fun y => b y j i) x := by
     simp only [boxEta, Finset.mul_sum]
     refine Finset.sum_congr rfl fun _ _ => by ring
@@ -237,27 +244,29 @@ private lemma linScalar_in_traceReversed (h : (Fin 4 → ℝ) → Tensor2 4) (x 
     (hsym : ∀ z a b, h z a b = h z b a)
     (hh : ∀ a b, ContDiffAt ℝ 2 (fun z => h z a b) x) :
     linScalar h x = (1 / 2) * boxEta (fun y => hTrace (traceReversed (h y))) x
-      + ∑ a : Fin 4, eta4 a a * pd a (fun y => lorenzDiv h y a) x := by
+      + ∑ a : Fin 4, minkowskiMetric4 a a * pd a (fun y => lorenzDiv h y a) x := by
   let b : (Fin 4 → ℝ) → Tensor2 4 := fun y => traceReversed (h y)
   let T : (Fin 4 → ℝ) → ℝ := fun y => hTrace (b y)
   have hb_at : ∀ p q, ContDiffAt ℝ 2 (fun z => b z p q) x := fun p q =>
     contDiffAt_traceReversed hh p q
-  have hbox_trace : (∑ i : Fin 4, eta4 i i * boxEta (fun y => b y i i) x) = boxEta T x := by
+  have hbox_trace : (∑ i : Fin 4, minkowskiMetric4 i i * boxEta (fun y => b y i i) x)
+    = boxEta T x := by
     simp only [boxEta, Finset.mul_sum]
     rw [Finset.sum_comm]
     refine Finset.sum_congr rfl fun μ _ => ?_
     have hdμ : ∀ i, DifferentiableAt ℝ (pd μ fun y => b y i i) x :=
       fun i => pd_differentiableAt μ (hb_at i i)
-    have hcongr : (fun y => ∑ i : Fin 4, eta4 i i * b y i i) = T := rfl
+    have hcongr : (fun y => ∑ i : Fin 4, minkowskiMetric4 i i * b y i i) = T := rfl
     have hpd1 : ∀ y, (∀ i, DifferentiableAt ℝ (fun z => b z i i) y) →
-        pd μ T y = ∑ i : Fin 4, eta4 i i * pd μ (fun z => b z i i) y := by
+        pd μ T y = ∑ i : Fin 4, minkowskiMetric4 i i * pd μ (fun z => b z i i) y := by
       intro y hy
       rw [← hcongr, pd_sum μ _ y fun i => (slice_differentiableAt μ (hy i)).const_mul _]
-      refine Finset.sum_congr rfl fun i _ => pd_const_mul μ (eta4 i i) y
+      refine Finset.sum_congr rfl fun i _ => pd_const_mul μ (minkowskiMetric4 i i) y
     have nh : ∀ᶠ y in nhds x, ∀ a b', ContDiffAt ℝ 2 (fun z => h z a b') y := by
       rw [Filter.eventually_all]; intro a; rw [Filter.eventually_all]; intro b'
       exact (hh a b').eventually (by simp)
-    have hev : pd μ T =ᶠ[nhds x] fun y => ∑ i : Fin 4, eta4 i i * pd μ (fun z => b z i i) y := by
+    have hev : pd μ T =ᶠ[nhds x] fun y => ∑ i : Fin 4,
+      minkowskiMetric4 i i * pd μ (fun z => b z i i) y := by
       filter_upwards [nh] with y hy
       exact hpd1 y fun i => (contDiffAt_traceReversed hy i i).differentiableAt (by norm_num)
     rw [pd_congr_nhds μ x hev,
@@ -265,31 +274,31 @@ private lemma linScalar_in_traceReversed (h : (Fin 4 → ℝ) → Tensor2 4) (x 
       Finset.mul_sum]
     refine Finset.sum_congr rfl fun i _ => ?_
     rw [pd_const_mul, mul_left_comm]
-  have heta_sq : (∑ i : Fin 4, eta4 i i * eta4 i i) = 4 := by
+  have heta_sq : (∑ i : Fin 4, minkowskiMetric4 i i * minkowskiMetric4 i i) = 4 := by
     simp [Fin.sum_univ_four]
     norm_num
   simp only [linScalar, linRicci_in_traceReversed h x hsym hh, mul_add,
     Finset.sum_add_distrib]
-  have h1 : (∑ i : Fin 4, eta4 i i * (-(1 / 2) * boxEta (fun y => b y i i) x))
+  have h1 : (∑ i : Fin 4, minkowskiMetric4 i i * (-(1 / 2) * boxEta (fun y => b y i i) x))
       = -(1 / 2) * boxEta T x := by
-    calc (∑ i : Fin 4, eta4 i i * (-(1 / 2) * boxEta (fun y => b y i i) x))
-        = -(1 / 2) * ∑ i : Fin 4, eta4 i i * boxEta (fun y => b y i i) x := by
+    calc (∑ i : Fin 4, minkowskiMetric4 i i * (-(1 / 2) * boxEta (fun y => b y i i) x))
+        = -(1 / 2) * ∑ i : Fin 4, minkowskiMetric4 i i * boxEta (fun y => b y i i) x := by
           rw [Finset.mul_sum]; refine Finset.sum_congr rfl fun _ _ => by ring
       _ = -(1 / 2) * boxEta T x := by rw [hbox_trace]
-  have h4 : (∑ i : Fin 4, eta4 i i * ((1 / 4) * eta4 i i * boxEta T x))
+  have h4 : (∑ i : Fin 4, minkowskiMetric4 i i * ((1 / 4) * minkowskiMetric4 i i * boxEta T x))
       = boxEta T x := by
-    calc (∑ i : Fin 4, eta4 i i * ((1 / 4) * eta4 i i * boxEta T x))
-        = (1 / 4) * (∑ i : Fin 4, eta4 i i * eta4 i i) * boxEta T x := by
+    calc (∑ i : Fin 4, minkowskiMetric4 i i * ((1 / 4) * minkowskiMetric4 i i * boxEta T x))
+        = (1 / 4) * (∑ i : Fin 4, minkowskiMetric4 i i * minkowskiMetric4 i i) * boxEta T x := by
           rw [Finset.mul_sum, Finset.sum_mul]; refine Finset.sum_congr rfl fun _ _ => by ring
       _ = boxEta T x := by rw [heta_sq]; ring
-  change (∑ i : Fin 4, eta4 i i * (-(1 / 2) * boxEta (fun y => b y i i) x))
-      + (∑ i : Fin 4, eta4 i i * ((1 / 2) * pd i (fun y => lorenzDiv h y i) x))
-      + (∑ i : Fin 4, eta4 i i * ((1 / 2) * pd i (fun y => lorenzDiv h y i) x))
-      + (∑ i : Fin 4, eta4 i i * ((1 / 4) * eta4 i i * boxEta T x))
-      = (1 / 2) * boxEta T x + ∑ a : Fin 4, eta4 a a * pd a (fun y => lorenzDiv h y a) x
+  change (∑ i : Fin 4, minkowskiMetric4 i i * (-(1 / 2) * boxEta (fun y => b y i i) x))
+      + (∑ i : Fin 4, minkowskiMetric4 i i * ((1 / 2) * pd i (fun y => lorenzDiv h y i) x))
+      + (∑ i : Fin 4, minkowskiMetric4 i i * ((1 / 2) * pd i (fun y => lorenzDiv h y i) x))
+      + (∑ i : Fin 4, minkowskiMetric4 i i * ((1 / 4) * minkowskiMetric4 i i * boxEta T x))
+      = (1 / 2) * boxEta T x + ∑ a : Fin 4, minkowskiMetric4 a a * pd a (fun y => lorenzDiv h y a) x
   rw [h1, h4]
-  have h2 : (∑ i : Fin 4, eta4 i i * ((1 / 2) * pd i (fun y => lorenzDiv h y i) x))
-      = (1 / 2) * ∑ a : Fin 4, eta4 a a * pd a (fun y => lorenzDiv h y a) x := by
+  have h2 : (∑ i : Fin 4, minkowskiMetric4 i i * ((1 / 2) * pd i (fun y => lorenzDiv h y i) x))
+      = (1 / 2) * ∑ a : Fin 4, minkowskiMetric4 a a * pd a (fun y => lorenzDiv h y a) x := by
     rw [Finset.mul_sum]; refine Finset.sum_congr rfl fun _ _ => by ring
   rw [h2]
   ring
@@ -302,7 +311,8 @@ lemma linEinstein_in_traceReversed (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 
     linEinstein h x i j = -(1 / 2) * boxEta (fun y => traceReversed (h y) i j) x
       + (1 / 2) * pd i (fun y => lorenzDiv h y j) x
       + (1 / 2) * pd j (fun y => lorenzDiv h y i) x
-      - (1 / 2) * eta4 i j * ∑ a : Fin 4, eta4 a a * pd a (fun y => lorenzDiv h y a) x := by
+      - (1 / 2) * minkowskiMetric4 i j * ∑ a : Fin 4,
+        minkowskiMetric4 a a * pd a (fun y => lorenzDiv h y a) x := by
   simp only [linEinstein, linRicci_in_traceReversed h x hsym hh i j,
     linScalar_in_traceReversed h x hsym hh]
   ring
