@@ -16,7 +16,8 @@ An operator on a Hilbert space is said to be *essentially self-adjoint* (ESA) if
 is self-adjoint. This module defines ESA operators and collects their basic properties.
 
 The spectral theory of ESA operators is very closely tied to that of self-adjoint operators,
-by virtue of their having a unique self-adjoint extension.
+by virtue of their having a unique self-adjoint extension. As such, it is often more convenient
+to define and work with ESA operators on simpler domains rather than their closures directly.
 
 ## ii. Key results
 
