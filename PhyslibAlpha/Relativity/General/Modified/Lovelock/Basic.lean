@@ -68,6 +68,9 @@ open Equiv
 
 ## A. Algebraic curvature tensors and Gauss–Bonnet invariants
 
+The quadratic Gauss–Bonnet scalar density `𝒢` and its variation tensor `H^i_j` (Lanczos tensor)
+depend solely on the algebraic pair antisymmetries of mixed curvature components `R^{ab}_{cd}`.
+
 -/
 
 /-- Abstract algebraic `(2,2)` mixed Riemann curvature tensor `R^{ab}_{cd}` in `n` dimensions,
@@ -120,6 +123,10 @@ noncomputable def AlgCurvature.lanczosTensor {n : ℕ} (C : AlgCurvature n) (i j
 /-!
 
 ## B. Five-index Lovelock contraction and four-dimensional vanishing
+
+By decomposing `lovelockContract5` into its `S_4` cosets via `perm_fin5_fiber_split` and
+contrasting `n ≤ 4` with `n = 5`, we isolate the Bach–Lanczos identity `-8 H^i_j = L^i_j = 0` in
+four spacetime dimensions.
 
 -/
 

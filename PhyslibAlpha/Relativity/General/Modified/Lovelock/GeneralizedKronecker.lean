@@ -65,6 +65,10 @@ open Equiv
 
 ## A. Generalized Kronecker delta and dimensional vanishing
 
+The antisymmetrized `k`-index generalized Kronecker delta encodes total antisymmetrization across
+`k` spacetime indices and vanishes identically whenever the spacetime dimension `n` is smaller than
+`k`.
+
 -/
 
 /-- Generalized `k`-index Kronecker delta `δ^{a_0 … a_{k-1}}_{b_0 … b_{k-1}}` in `n` dimensions,
@@ -109,6 +113,10 @@ lemma genKronecker_eq_zero_of_lt {n k : ℕ} (h : n < k) (a b : Fin k → Fin n)
 /-!
 
 ## B. Antisymmetric coset decompositions of `S_4` and `S_5`
+
+Splitting `S_5` by cosets of `S_4` (and `perm_fin4_split` factoring each pair-antisymmetric `S_4`
+contraction into six signed index pairings) turns the 120-term five-index Lovelock contraction into
+the five explicit curvature invariants forming the Lanczos tensor `H^i_j`.
 
 -/
 

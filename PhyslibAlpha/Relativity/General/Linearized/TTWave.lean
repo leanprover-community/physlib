@@ -53,6 +53,10 @@ open Pipeline
 
 ## A. Transverse-traceless gravitational waves
 
+A plane wave polarized orthogonally to its propagation direction (`+z`) automatically satisfies
+both tracelessness and the Lorenz gauge condition, solving the linearized vacuum Einstein
+equations.
+
 -/
 
 /-- Transverse-traceless (`TT`) plane gravitational wave propagating along the `+z` direction

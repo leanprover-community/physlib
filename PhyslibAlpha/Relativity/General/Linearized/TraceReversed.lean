@@ -56,6 +56,9 @@ open Pipeline
 
 ## A. Trace reversal and wave operator
 
+Trace-reversing the metric perturbation (`h̄_{ij} = h_{ij} - ½ η_{ij} h`) diagonalizes the
+principal part of the linearized Einstein equations into the flat d'Alembertian `□_η`.
+
 -/
 
 /-- Minkowski trace `h = η^{ij} h_{ij}` of a symmetric `(0,2)` metric perturbation. -/

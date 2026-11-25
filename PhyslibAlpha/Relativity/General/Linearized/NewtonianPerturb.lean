@@ -56,6 +56,9 @@ open Pipeline
 
 ## A. Weak-field Newtonian perturbation and Poisson limit
 
+For a static non-relativistic source generating the weak-field metric `diag(-(1+2Φ), 1-2Φ, ...)`,
+the Lorenz gauge holds automatically and the time–time Einstein equation reduces to `2 ∇² Φ`.
+
 -/
 
 /-- Weak-field isotropic Newtonian metric perturbation `h_{ij} = -2 Φ δ_{ij}` corresponding to

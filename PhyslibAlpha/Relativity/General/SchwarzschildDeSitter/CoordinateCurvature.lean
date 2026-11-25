@@ -76,6 +76,9 @@ open GeneralRelativity.StaticSpherical
 
 ## A. Christoffel and derivative tables
 
+Explicit tables for the Schwarzschild–de Sitter Christoffel connection and its partial derivatives
+factor out rational lapse algebra (`sdsF`, `sdsLapseHalfDeriv`) from generic summation loops.
+
 -/
 
 /-- Closed-form Schwarzschild–de Sitter Christoffel symbols in `(t, r, θ, φ)` coordinates,
@@ -136,6 +139,9 @@ noncomputable def sdsChristoffelDeriv (M Λ : ℝ) (μ : Fin 4) (x : Fin 4 → �
 
 ## B. Static-spherical reduction and Christoffel identification
 
+Recognizing `sdsMetric` as a `staticSphericalMetric` with lapse `sdsF M Λ` delegates the
+coordinate Christoffel and Ricci computations directly to `GeneralRelativity.StaticSpherical`.
+
 -/
 
 private lemma sdsMetric_eq_staticSpherical (M Λ : ℝ) :
@@ -191,9 +197,9 @@ lemma christoffel_eq_sdsChristoffel (M Λ : ℝ) (x : Fin 4 → ℝ) (hr : x 1 �
       (hasDerivAt_sdsF M Λ (x 1) hr).differentiableAt k i j,
     sdsChristoffel_eq_staticSpherical M Λ x hr k i j]
 
-/-- Because `r ≠ 0`, `f ≠ 0`, and `sin θ ≠ 0` are open conditions, `christoffel` and
-`sdsChristoffel`
-have the same coordinate partial derivatives along every coordinate axis. -/
+/-- Away from the central singularity (`r ≠ 0`), event and cosmological horizons (`f ≠ 0`), and
+polar axis (`sin θ ≠ 0`), every spacetime point has a regular neighborhood where `christoffel` and
+`sdsChristoffel` agree, so their coordinate partial derivatives match along every axis. -/
 lemma pd_christoffel_eq_pd_sdsChristoffel (M Λ : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : sdsF M Λ (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (μ a b c : Fin 4) :
     pd μ (fun y => christoffel (sdsMetric M Λ) (sdsMetricInv M Λ) y a b c) x
@@ -230,6 +236,9 @@ lemma pd_sdsChristoffel_eq_deriv (M Λ : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 
 /-!
 
 ## C. Metric-level Riemann, Ricci, scalar, and Einstein tensors
+
+Evaluating `riemann`, `ricciTensorOf`, `ricciScalarOf`, and `einsteinTensorOf` in the regular region
+verifies the cosmological Einstein-space equations `Ric_{ij} = Λ g_{ij}` and `G_{ij} = -Λ g_{ij}`.
 
 -/
 

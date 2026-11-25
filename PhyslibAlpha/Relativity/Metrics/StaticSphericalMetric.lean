@@ -89,6 +89,10 @@ open GeneralRelativity.Pipeline
 
 ## A. Metric, inverse, and MetricTensor bundle
 
+On a static spherically symmetric spacetime parameterized by a single radial lapse `f(r)`, the
+diagonal metric `diag(-f, f⁻¹, r², r² sin²θ)` is nondegenerate everywhere away from the origin
+(`r = 0`), horizons (`f = 0`), and polar axis (`sin θ = 0`).
+
 -/
 
 /-- A static spherically symmetric four-dimensional spacetime metric determined by a radial
@@ -162,6 +166,10 @@ noncomputable def staticSphericalMetricTensor (f : ℝ → ℝ) (x : Fin 4 → �
 /-!
 
 ## B. Christoffel symbols and metric partial derivatives
+
+Computing the coordinate derivatives of `g_{ij}(x)` evaluates every one of the 64 Levi-Civita
+Christoffel symbols into closed form `staticSphericalChristoffel f`, parametrized solely by `f` and
+its radial derivative `f'`.
 
 -/
 
@@ -340,6 +348,10 @@ lemma pd_christoffel_eq_pd_staticSphericalChristoffel (f : ℝ → ℝ) (x : Fin
 /-!
 
 ## C. Second-order Christoffel derivative table
+
+Differentiating each closed-form Christoffel symbol produces the complete 256-entry derivative table
+`staticSphericalChristoffelDeriv f`, isolating second-order radial derivatives `f''` from Riemann
+contraction loops.
 
 -/
 
@@ -578,6 +590,10 @@ lemma pd_staticSphericalChristoffel_eq_deriv (f : ℝ → ℝ) (x : Fin 4 → �
 /-!
 
 ## D. Ricci, scalar, and Einstein tensors through the pipeline
+
+Feeding `staticSphericalChristoffel f` and `staticSphericalChristoffelDeriv f` into
+`riemannFromData` computes the full coordinate-pipeline Ricci tensor, Ricci scalar
+`S = -f'' - 4 f'/r + 2(1 - f)/r²`, and Einstein tensor for any radial lapse `f(r)`.
 
 -/
 

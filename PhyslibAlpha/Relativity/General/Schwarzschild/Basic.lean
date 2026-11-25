@@ -77,6 +77,10 @@ namespace Schwarzschild
 
 ## A. The Schwarzschild lapse and radial Christoffel symbols
 
+From the Schwarzschild lapse `f = 1 - 2M/r` and diagonal inverse metric `diag(-f⁻¹, f, r⁻²,
+r⁻² sin⁻²θ)`, differentiating the radial metric components determines the mixed Christoffel symbols
+`Γ^t_{tr}` and `Γ^r_{rr}`.
+
 -/
 
 /-- Exterior Schwarzschild black hole spacetime parameterized by geometric mass `M`. -/
@@ -177,7 +181,9 @@ lemma hasDerivAt_gtt (M r : ℝ) (hr : r ≠ 0) :
   rw [← hfun, hval] at h
   exact h
 
-/-- `Γ^t_{tr} = (1/2) g^{tt} ∂_r g_tt = M / (r² f)`. -/
+/-- Because `g_tt = -f` depends only on `r`, the general formula
+`Γ^t_{tr} = (1/2) g^{tt} ∂_r g_{tt}` contracts `g^{tt} = -f⁻¹` against `-∂_r f = -2M/r²`, yielding
+`M / (r² f)`. -/
 lemma gammaTtr_from_metric (M r : ℝ) (hf : schwarzschildF M r ≠ 0) :
     (1 / 2 : ℝ) * (-(schwarzschildF M r)⁻¹) * (-(2 * M / r ^ 2))
       = M / (r ^ 2 * schwarzschildF M r) := by
@@ -192,7 +198,9 @@ lemma deriv_grr (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) :
   rw [h.deriv]
   field_simp
 
-/-- `Γ^r_{rr} = (1/2) g^{rr} ∂_r g_rr = -M / (r (r - 2M))`. -/
+/-- Contracting `g^{rr} = f` against the radial derivative `∂_r g_{rr} = ∂_r(f⁻¹) = -2M / (r - 2M)²`
+in `Γ^r_{rr} = (1/2) g^{rr} ∂_r g_{rr}` cancels one factor of `f = (r - 2M)/r` to yield
+`-M / (r (r - 2M))`. -/
 lemma gammaRrr_from_metric (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) :
     (1 / 2 : ℝ) * (schwarzschildF M r) * (-(2 * M) / (r - 2 * M) ^ 2)
       = -M / (r * (r - 2 * M)) := by
@@ -233,9 +241,15 @@ lemma deriv_gammaTtr (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) 
 
 ## B. Electric Riemann components and tidal eigenvalues
 
+Contracting the derivatives and quadratic products of the Christoffel symbols evaluates the radial
+and angular electric Riemann components, which in the static orthonormal frame recover the Newtonian
+tidal field `diag(0, -2M/r³, M/r³, M/r³)`.
+
 -/
 
-/-- The `t r t r` Riemann component from the metric: `R^t{}_{rtr} = 2M / (r³ f)`. -/
+/-- In the index formula `R^t{}_{rtr} = -∂_r Γ^t_{tr} + Γ^t_{tr} Γ^r_{rr} - (Γ^t_{tr})²` (where all
+time derivatives vanish), the radial derivative of `Γ^t_{tr} = M/(r² f)` combines with the two
+quadratic connection terms to produce `2M / (r³ f)`. -/
 lemma riemann_t_rtr_from_metric (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) :
     -(deriv (fun s : ℝ => M / (s ^ 2 * schwarzschildF M s)) r)
       + (M / (r ^ 2 * schwarzschildF M r)) * (-M / (r * (r - 2 * M)))
@@ -263,7 +277,8 @@ lemma gammaRthth_from_metric (M r : ℝ) :
     (1 / 2 : ℝ) * (schwarzschildF M r) * (-(2 * r)) = -(r * schwarzschildF M r) := by
   ring
 
-/-- The `t θ t θ` Riemann component from the metric: `R^t{}_{θtθ} = Γ^t_{tr} Γ^r_{θθ} = -M / r`. -/
+/-- Since `∂_t Γ = ∂_θ Γ^t_{θθ} = 0` and only `Γ^r_{θθ}` enters the intermediate sum, the Riemann
+formula simplifies to the single connection product `R^t{}_{θtθ} = Γ^t_{tr} Γ^r_{θθ} = -M / r`. -/
 lemma riemann_t_thetatheta_from_metric (M r : ℝ) (hr : r ≠ 0)
     (hf : schwarzschildF M r ≠ 0) :
     (M / (r ^ 2 * schwarzschildF M r)) * (-(r * schwarzschildF M r)) = -M / r := by
@@ -283,6 +298,9 @@ lemma electric_thetatheta_from_metric (M r : ℝ) (hr : r ≠ 0)
 /-!
 
 ## C. Remaining independent Riemann components
+
+Combining the angular metric derivatives `∂_r(r²)` and `∂_θ(r² sin²θ)` evaluates the azimuthal
+and purely spatial Riemann components directly from the coordinate metric.
 
 -/
 
@@ -307,7 +325,8 @@ lemma gammaRphiphi_from_metric (M r th : ℝ) :
       = -(r * Real.sin th ^ 2 * schwarzschildF M r) := by
   ring
 
-/-- The `t φ t φ` Riemann component: `-(M / r) sin²θ`. -/
+/-- By the azimuthal factor `sin²θ` in `g_{φφ} = r² sin²θ`, contracting `Γ^t_{tr} = M / (r² f)`
+with `Γ^r_{φφ} = -r f sin²θ` in `R^t{}_{φtφ} = Γ^t_{tr} Γ^r_{φφ}` yields `-(M / r) sin²θ`. -/
 lemma riemann_t_phitphi_from_metric (M r th : ℝ) (hr : r ≠ 0)
     (hf : schwarzschildF M r ≠ 0) :
     (M / (r ^ 2 * schwarzschildF M r))
@@ -327,7 +346,9 @@ lemma gammaRthth_mul_gammaThetar (M r : ℝ) (hr : r ≠ 0) :
     (-(r * schwarzschildF M r)) * (1 / r) = -schwarzschildF M r := by
   field_simp
 
-/-- The `r θ r θ` Riemann component: `-M / r`. -/
+/-- Evaluating `R^r{}_{θrθ} = ∂_r Γ^r_{θθ} + Γ^r_{rr} Γ^r_{θθ} - Γ^r_{θθ} Γ^θ_{rθ}` adds the
+radial derivative `-f - r f'` of `Γ^r_{θθ} = -r f` to the two quadratic connection products to give
+`-M / r`. -/
 lemma riemann_r_thetar_from_metric (M r : ℝ) (hr : r ≠ 0)
     (hf : schwarzschildF M r ≠ 0) :
     (-(schwarzschildF M r) - 2 * M / r)
@@ -352,7 +373,8 @@ lemma gammaRphiphi_mul_gammaPhirphi (M r th : ℝ) (hr : r ≠ 0) :
       = -Real.sin th ^ 2 * schwarzschildF M r := by
   field_simp
 
-/-- The `r φ r φ` Riemann component: `-(M / r) sin²θ`. -/
+/-- By spherical symmetry, the `(r, φ, r, φ)` component multiplies the `(r, θ, r, θ)` formula
+`∂_r Γ^r_{φφ} + Γ^r_{rr} Γ^r_{φφ} - Γ^r_{φφ} Γ^φ_{rφ}` by `sin²θ` to yield `-(M / r) sin²θ`. -/
 lemma riemann_r_phirphi_from_metric (M r th : ℝ) (hr : r ≠ 0)
     (hf : schwarzschildF M r ≠ 0) :
     (-(Real.sin th ^ 2) * (schwarzschildF M r + 2 * M / r))
@@ -379,7 +401,9 @@ lemma gammaPhiphitheta_from_metric (r th : ℝ) (hr : r ≠ 0)
       = Real.cos th / Real.sin th := by
   field_simp
 
-/-- The `θ φ θ φ` Riemann component: `(2M / r) sin²θ`. -/
+/-- Evaluating `R^θ{}_{φθφ} = ∂_θ Γ^θ_{φφ} + Γ^θ_{rθ} Γ^r_{φφ} - Γ^θ_{φφ} Γ^φ_{θφ}` combines the
+angular curvature `1 - f(r)` of constant-`r` spheres with the metric lapse to give
+`(2M / r) sin²θ`. -/
 lemma riemann_theta_phitheta_from_metric (M r th : ℝ) (hr : r ≠ 0)
     (hsin : Real.sin th ≠ 0) :
     (Real.sin th ^ 2 - Real.cos th ^ 2)
@@ -430,6 +454,9 @@ lemma electric_phiphi_from_metric (M r th : ℝ) (hr : r ≠ 0)
 /-!
 
 ## D. Assembled curvature and electric part statements
+
+For convenient downstream matching, we package the orthonormal-frame tidal eigenvalues and the
+remaining coordinate Riemann components into conjunctions.
 
 -/
 

@@ -27,9 +27,10 @@ curvature `K`. The normal components of `G = 0` impose the Hamiltonian constrain
 
 This module formalises the constraint functions, their reductions under a moment of time
 symmetry (`K = 0`) and maximal slicing (`tr K = 0`), a concrete flat vacuum data set
-(`flatData`), and a non-vacuum example (`squeezedData` with `H = 2`) proving that the
-constraints are nontrivial. Global development existence (Choquet–Bruhat–Geroch) is quasilinear
-hyperbolic PDE theory and is neither formalised nor axiomatised here.
+(`flatData`), and a non-vacuum example with anisotropic extrinsic curvature
+(`anisotropicSliceData` with `H = 2`) proving that the constraints are nontrivial. Global
+development existence (Choquet–Bruhat–Geroch) is quasilinear hyperbolic PDE theory and is neither
+formalised nor axiomatised here.
 
 ## ii. Key results
 
@@ -41,7 +42,8 @@ hyperbolic PDE theory and is neither formalised nor axiomatised here.
 - `InitialData.hamiltonianConstraint_eq_of_trace_zero` : maximal-slicing reduction `H = ³R - K_ij
   K^ij`.
 - `flatData_isVacuum` : flat `ℝ³` with `K = 0` satisfies both vacuum constraints.
-- `squeezedData_ham_ne_zero` : `K = diag(1, 1, 0)` on flat `ℝ³` has `H = 2 ≠ 0`.
+- `anisotropicSliceData_hamiltonianConstraint_ne_zero` : anisotropic extrinsic curvature
+  `K = diag(1, 1, 0)` on flat `ℝ³` yields Hamiltonian constraint `H = 2 ≠ 0`.
 
 ## iii. Table of contents
 
@@ -63,6 +65,9 @@ namespace GeneralRelativity
 /-!
 
 ## A. Initial data and constraint equations
+
+An ADM Cauchy slice packages the induced Riemannian 3-metric `h`, its spatial Riemann curvature
+`R3`, and the extrinsic curvature `K_{ij}` measuring how the slice embeds into 4D spacetime.
 
 -/
 
@@ -97,6 +102,9 @@ def IsVacuumData (D : InitialData) (dK : Fin 3 → Tensor2 3) : Prop :=
 /-!
 
 ## B. Moment of time symmetry and maximal slicing reductions
+
+At a moment of time symmetry (`K = 0`) or maximal slicing (`tr K = 0`), the Hamiltonian constraint
+simplifies directly into algebraic conditions on the spatial scalar curvature `³R`.
 
 -/
 
@@ -137,6 +145,10 @@ lemma momConstraint_zero_of_dK_zero (dK : Fin 3 → Tensor2 3)
 
 ## C. Concrete vacuum and non-vacuum data
 
+Flat Euclidean `ℝ³` with zero extrinsic curvature solves both vacuum constraints, whereas a
+spatially flat slice carrying anisotropic extrinsic curvature violates the vacuum Hamiltonian
+constraint.
+
 -/
 
 /-- The Euclidean metric on `Fin 3`. -/
@@ -169,30 +181,36 @@ lemma flatData_mom_zero : ∀ i, momentumConstraint (fun _ => 0) i = 0 :=
 lemma flatData_isVacuum : flatData.IsVacuumData (fun _ => 0) :=
   ⟨flatData_ham_zero, flatData_mom_zero⟩
 
-/-- Extrinsic curvature `diag(1, 1, 0)` on flat space. -/
-def squeezedK : Tensor2 3 := !![(1 : ℝ), 0, 0; 0, 1, 0; 0, 0, 0]
+/-- Anisotropic extrinsic curvature `K = diag(1, 1, 0)` on flat Euclidean space, representing a
+spatial slice contracting or expanding along two axes but not the third. -/
+def anisotropicExtrinsicCurvature : Tensor2 3 := !![(1 : ℝ), 0, 0; 0, 1, 0; 0, 0, 0]
 
-/-- Symmetry of `squeezedK`. -/
-lemma squeezedK_symm : IsSymm squeezedK := by
+/-- Symmetry of `anisotropicExtrinsicCurvature`. -/
+lemma anisotropicExtrinsicCurvature_symm : IsSymm anisotropicExtrinsicCurvature := by
   intro i j
-  fin_cases i <;> fin_cases j <;> simp [squeezedK]
+  fin_cases i <;> fin_cases j <;> simp [anisotropicExtrinsicCurvature]
 
-/-- Flat space with `K = diag(1, 1, 0)`. -/
-def squeezedData : InitialData where
+/-- Non-vacuum ADM test slice on flat Euclidean `ℝ³` with anisotropic extrinsic curvature
+`K = diag(1, 1, 0)`. -/
+def anisotropicSliceData : InitialData where
   h := euclid3
   R3 := RiemannTensor.flat 3
-  K := squeezedK
-  Ksymm := squeezedK_symm
+  K := anisotropicExtrinsicCurvature
+  Ksymm := anisotropicExtrinsicCurvature_symm
 
-/-- The Hamiltonian constraint of `squeezedData` equals `(tr K)² - K_ij K^ij = 4 - 2 = 2`. -/
-lemma squeezedData_hamiltonianConstraint : squeezedData.hamiltonianConstraint = 2 := by
-  simp [InitialData.hamiltonianConstraint, squeezedData, euclid3, squeezedK, ricciScalar,
-    Fin.sum_univ_three]
+/-- The Hamiltonian constraint of `anisotropicSliceData` equals
+`(tr K)² - K_ij K^ij = 4 - 2 = 2`. -/
+lemma anisotropicSliceData_hamiltonianConstraint :
+    anisotropicSliceData.hamiltonianConstraint = 2 := by
+  simp [InitialData.hamiltonianConstraint, anisotropicSliceData, euclid3,
+    anisotropicExtrinsicCurvature, ricciScalar, Fin.sum_univ_three]
   norm_num
 
-/-- Thus the vacuum constraints are not automatic even on flat space. -/
-lemma squeezedData_ham_ne_zero : squeezedData.hamiltonianConstraint ≠ 0 := by
-  rw [squeezedData_hamiltonianConstraint]
+/-- Non-vanishing Hamiltonian constraint (`H = 2 ≠ 0`), showing that the ADM vacuum constraints
+are non-trivial even on spatially flat slices. -/
+lemma anisotropicSliceData_hamiltonianConstraint_ne_zero :
+    anisotropicSliceData.hamiltonianConstraint ≠ 0 := by
+  rw [anisotropicSliceData_hamiltonianConstraint]
   norm_num
 
 end GeneralRelativity

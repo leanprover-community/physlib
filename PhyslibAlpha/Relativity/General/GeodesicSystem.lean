@@ -15,24 +15,26 @@ Local existence and uniqueness for the geodesic equation via Picard–Lindelöf.
 
 ## i. Overview
 
-Given Christoffel symbols `Γ` on a chart modeled on a Banach space `E`, bundled in
-`GeodesicSystem E`, the second-order geodesic equation `γ'' = -Γ(γ)(γ', γ')` reduces to the
-first-order autonomous system `z' = (z.2, -Γ(z.1)(z.2, z.2))` on `E × E`. When `Γ` is `C¹`,
-Mathlib's Picard–Lindelöf theorem yields local existence around any initial position and velocity
-`(x₀, v₀)`, as well as uniqueness under an explicit Lipschitz bound on the geodesic vector
-field. In flat space (`Γ = 0`), straight lines `t ↦ x₀ + t • v₀` solve the geodesic equation.
+On a local coordinate chart `E` modeling spacetime positions and tangent velocities, a geodesic
+connection `Γ` governs the free-fall equation of motion `γ'' = -Γ(γ)(γ', γ')`, bundled in
+`GeodesicSystem E`. Rewriting this second-order trajectory law as a first-order autonomous flow
+`z' = (z.2, -Γ(z.1)(z.2, z.2))` on `(position, velocity)` phase space shows that smooth (`C¹`)
+Christoffel symbols generate unique local particle trajectories from any initial position and
+velocity `(x₀, v₀)` via the Picard–Lindelöf theorem, reducing to unaccelerated straight-line motion
+`t ↦ x₀ + t • v₀` when the connection vanishes (`Γ = 0`).
 
 ## ii. Key results
 
-- `Christoffel`, `GeodesicSystem`, `IsGeodesic` : Christoffel field, geodesic system bundle, and
-  curve predicate.
-- `geodesicAccel`, `geodesicField` : geodesic acceleration and first-order ODE vector field on
+- `Christoffel`, `GeodesicSystem`, `IsGeodesic` : coordinate connection field, geodesic system
+  bundle, and free-fall trajectory predicate.
+- `geodesicAccel`, `geodesicField` : geodesic acceleration and phase-space equations of motion on
   `E × E`.
-- `geodesic_ivp_exists` : local existence of a geodesic solution on some `(-ε, ε)` for `C¹`
-  Christoffel symbols.
-- `geodesic_ivp_exists_curve` : split curve-and-velocity form of local geodesic existence.
-- `geodesic_ivp_unique` : uniqueness on `[a, b]` inside a Lipschitz ball.
-- `flat_geodesic` : straight lines solve the flat-space geodesic equation.
+- `geodesic_ivp_exists` : local existence of a particle trajectory on some proper-time interval
+  `(-ε, ε)` for smooth (`C¹`) Christoffel symbols.
+- `geodesic_ivp_exists_curve` : position-and-velocity form of local geodesic existence.
+- `geodesic_ivp_unique` : uniqueness of free-fall trajectories on `[a, b]` within a bounded region
+  of phase space where the geodesic flow is Lipschitz.
+- `flat_geodesic` : inertial straight-line trajectories in flat spacetime (`Γ = 0`).
 
 ## iii. Table of contents
 
@@ -61,13 +63,18 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 ## A. The geodesic system and vector field
 
+On a local coordinate patch `E`, the Christoffel symbols act quadratically on the tangent velocity
+`v` to determine the gravitational acceleration `-Γ(x)(v, v)`, casting the second-order geodesic
+equation as a first-order flow on position–velocity phase space.
+
 -/
 
-/-- Christoffel symbols on a chart, represented as a field of continuous bilinear maps. -/
+/-- Christoffel symbols on a local coordinate chart `E`, coupling pairs of tangent-velocity vectors
+quadratically into gravitational acceleration. -/
 abbrev Christoffel (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] :=
   E → E →L[ℝ] E →L[ℝ] E
 
-/-- A geodesic system on a chart `E`, carrying its Christoffel connection field. -/
+/-- A geodesic system on a local coordinate chart `E`, carrying its Christoffel connection field. -/
 structure GeodesicSystem (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] where
   /-- Christoffel symbols determining the geodesic acceleration `-Γ(x)(v, v)`. -/
   christoffel : Christoffel E
@@ -99,7 +106,8 @@ lemma geodesicField_apply (Γ : Christoffel E) (x v : E) :
 private lemma geodesicField_eq_fun (Γ : Christoffel E) :
     geodesicField Γ = fun z => (z.2, -Γ z.1 z.2 z.2) := rfl
 
-/-- The geodesic vector field inherits `C¹` regularity from the Christoffel symbols. -/
+/-- Smooth (`C¹`) variation of the Christoffel symbols ensures the phase-space geodesic flow is `C¹`
+and thus locally well-posed for particle trajectories. -/
 lemma contDiffAt_geodesicField (Γ : E → E →L[ℝ] E →L[ℝ] E) {x₀ v₀ : E}
     (hΓ : ContDiffAt ℝ 1 Γ x₀) :
     ContDiffAt ℝ 1 (geodesicField Γ) (x₀, v₀) := by
@@ -109,6 +117,9 @@ lemma contDiffAt_geodesicField (Γ : E → E →L[ℝ] E →L[ℝ] E) {x₀ v₀
 /-!
 
 ## B. Local existence and uniqueness
+
+Because smooth Christoffel symbols give a locally Lipschitz phase-space flow, initial position and
+velocity uniquely fix the freely falling particle trajectory over short affine-parameter intervals.
 
 -/
 
@@ -142,8 +153,9 @@ lemma geodesic_ivp_exists_curve [CompleteSpace E] (Γ : Christoffel E) (hΓ : Co
   · simpa using congrArg Prod.fst hz0
   · simpa using congrArg Prod.snd hz0
 
-/-- Uniqueness for the geodesic Cauchy problem: two solutions agreeing at `t₀ ∈ (a, b)` that
-remain in a ball where `geodesicField Γ` is `K`-Lipschitz coincide on `[a, b]`. -/
+/-- Uniqueness for the geodesic Cauchy problem: two free-fall trajectories passing through the
+same event and velocity at affine parameter `t₀ ∈ (a, b)` coincide across `[a, b]` as long as they
+remain in a phase-space neighborhood where the gravitational force field is `K`-Lipschitz. -/
 lemma geodesic_ivp_unique (Γ : Christoffel E) {K : NNReal} {a b t₀ : ℝ}
     {c : E × E} {R : ℝ}
     (hLip : ∀ t ∈ Ioo a b, LipschitzOnWith K (geodesicField Γ) (closedBall c R))
@@ -161,6 +173,9 @@ lemma geodesic_ivp_unique (Γ : Christoffel E) {K : NNReal} {a b t₀ : ℝ}
 /-!
 
 ## C. Flat-space straight lines
+
+In Minkowski spacetime or any inertial chart (`Γ = 0`), free particles experience no gravitational
+acceleration and follow unaccelerated straight worldlines `x₀ + t • v₀`.
 
 -/
 

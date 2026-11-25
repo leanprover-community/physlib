@@ -13,7 +13,7 @@ import Mathlib.Tactic.Ring
 
 /-!
 
-# Upper-unitriangular veilbein factorization of the Kaluza–Klein metric
+# Upper-unitriangular vielbein factorization of the Kaluza–Klein metric
 
 Congruence factorization `G = U diag(g4, φ²) Uᵀ` with `det U = 1`.
 
@@ -55,6 +55,9 @@ namespace KaluzaKlein
 /-!
 
 ## A. Triangular factorization and determinant
+
+Factoring the gauge potential `A_μ` into a unitriangular shear matrix isolates the determinant
+contribution of the fifth-dimensional dilaton `φ`.
 
 -/
 

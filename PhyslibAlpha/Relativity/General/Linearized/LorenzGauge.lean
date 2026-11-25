@@ -53,6 +53,10 @@ open Pipeline
 
 ## A. Lorenz gauge and wave equation reduction
 
+Using Schwarz symmetry `∂_μ ∂_ν = ∂_ν ∂_μ` on the second derivatives of `h̄` cancels the mixed
+cross terms and scalar trace, reducing `linEinstein` in Lorenz gauge `∂^k h̄_{kj} = 0` to the
+flat-space gravitational wave operator `-(1/2) □_η h̄_{ij}`.
+
 -/
 
 /-- Lorenz (harmonic/de Donder) gauge divergence vector `∂^k h̄_{kj} = η^{kk} ∂_k h̄_{kj}`. -/

@@ -57,6 +57,9 @@ open Pipeline
 
 ## A. Linearized connection and curvature tensors
 
+Perturbing flat Minkowski spacetime by `g = η + h` linearizes the Christoffel symbols and
+curvature tensors in first-order partial derivatives of `h`.
+
 -/
 
 /-- Linearized Christoffel symbols `Γ^k_{ij} = ½ η^{km} (∂_j h_{mi} + ∂_i h_{mj} - ∂_m h_{ij})`. -/
@@ -100,6 +103,10 @@ noncomputable def linEinstein (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 →
 /-!
 
 ## B. Linearized diffeomorphism gauge invariance
+
+Commutativity of second partial derivatives `∂_μ ∂_ν = ∂_ν ∂_μ` causes pure-gauge metric shifts
+`δh_{ij} = ∂_i ξ_j + ∂_j ξ_i` to drop out of the linearized Riemann, Ricci, and Einstein tensors,
+establishing linearized diffeomorphism gauge invariance.
 
 -/
 

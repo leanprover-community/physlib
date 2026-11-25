@@ -43,7 +43,8 @@ local solutions by the Picard-Lindelöf theorem, reducing to straight lines when
 vanishes [12]. In the Arnowitt-Deser-Misner 3+1 initial-value formulation, spatial slices carry a
 Riemannian 3-metric and symmetric extrinsic curvature tensor K_{{ij}} subject to the Hamiltonian and
 momentum constraint equations, which simplify on time-symmetric (K_{{ij}} = 0) and maximal (tr K = 0)
-slices and distinguish flat vacuum data from non-trivial squeezed initial data [13]. Around the
+slices and distinguish flat vacuum data from non-vacuum initial data with anisotropic extrinsic
+curvature [13]. Around the
 Minkowski background g = η + h, first-order perturbation theory defines the trace-reversed
 perturbation h̄_{{ij}} = h_{{ij}} - ½ η_{{ij}} h and wave operator □_η [14], the linearized Christoffel
 symbols, Riemann tensor, Ricci tensor, and Einstein tensor with diffeomorphism gauge invariance
@@ -58,20 +59,21 @@ are simultaneously equal to 1 {{1}}. [19]
 
 Flat Minkowski spacetime has vanishing Ricci tensor, scalar curvature, and Einstein tensor both
 algebraically and through the coordinate differential pipeline [20]. A general static spherically
-symmetric metric with lapse profile A(r) and radial profile B(r) = A(r)⁻¹ has explicit Christoffel
-symbols and diagonal/off-diagonal Ricci components evaluated through the coordinate differential
-pipeline {{2}}. [21] Specializing to the Schwarzschild exterior metric with f(r) = 1 - 2 M / r yields
-the orthonormal Weyl electric tidal curvature frame, Kretschmann scalar 48 M² / r⁶ [22], exact
-metric-derivative Christoffel and Riemann components [23], and full coordinate-pipeline vacuum
-flatness [24], while the interior incompressible fluid sphere exhibits the Tolman-Oppenheimer-Volkoff
-pressure profile and Buchdahl compactness bound r_s < (8 / 9) R [25]. Including a cosmological
-constant Λ in the Schwarzschild-de Sitter (Kottler) metric f(r) = 1 - 2 M / r - Λ r² / 3 yields
-constant-curvature de Sitter frame components, Kretschmann invariant 48 M² / r⁶ + 8 Λ² / 3, frame
-Bianchi conservation [26], Λ-independent Weyl electric eigenvalues [27], and full coordinate-pipeline
-verification of R_{{ij}} = Λ g_{{ij}}, R = 4 Λ, and G_{{ij}} = -Λ g_{{ij}} [28]. Adding electric charge yields
-the Reissner-Nordström electrovacuum metric f(r) = 1 - r_s / r + r_Q² / r², the radial
-Coulomb-Maxwell field strength tensor F_{{ab}}, and the trace-free electromagnetic stress-energy tensor
-satisfying the Einstein-Maxwell equations through the coordinate pipeline [29]. Rotating black holes
+symmetric metric with radial lapse profile f(r) (line element diag(-f(r), f(r)⁻¹, r², r² sin²θ))
+has explicit Christoffel symbols and diagonal/off-diagonal Ricci components evaluated through the
+coordinate differential pipeline {{2}}. [21] Specializing to the Schwarzschild exterior metric with
+f(r) = 1 - 2 M / r yields the orthonormal Weyl electric tidal curvature frame, Kretschmann scalar
+48 M² / r⁶ [22], exact metric-derivative Christoffel and Riemann components [23], and full
+coordinate-pipeline vacuum flatness [24], while the interior incompressible fluid sphere exhibits the
+Tolman-Oppenheimer-Volkoff pressure profile and Buchdahl compactness bound r_s < (8 / 9) R [25].
+Including a cosmological constant Λ in the Schwarzschild-de Sitter (Kottler) metric
+f(r) = 1 - 2 M / r - Λ r² / 3 yields constant-curvature de Sitter frame components, Kretschmann
+invariant 48 M² / r⁶ + 8 Λ² / 3, frame Bianchi conservation [26], Λ-independent Weyl electric
+eigenvalues [27], and full coordinate-pipeline verification of R_{{ij}} = Λ g_{{ij}}, R = 4 Λ, and
+G_{{ij}} = -Λ g_{{ij}} [28]. Adding electric charge yields the Reissner-Nordström electrovacuum metric
+f(r) = 1 - 2 M / r + Q² / r², the radial Coulomb-Maxwell field strength tensor F_{{ab}}, and the
+trace-free electromagnetic stress-energy tensor satisfying the Einstein-Maxwell equations through the
+coordinate pipeline [29]. Rotating black holes
 are represented by the axisymmetric Kerr metric in Boyer-Lindquist coordinates (t, r, θ, φ) with
 spin a, polynomial functions Σ = r² + a² cos²θ and Δ = r² - r_s r + a², and exact block inverse
 metric [30], all 64 Levi-Civita Christoffel symbols [31], and full differential pipeline
@@ -101,7 +103,7 @@ because the variation of the cubic action under constant-gradient shifts is a to
 whereas shift symmetry forbids a non-trivial potential term [38]. Chameleon scalar-tensor theories
 feature an effective mass squared that grows monotonically with ambient matter density, shrinking
 the Yukawa interaction range and suppressing fifth forces for screened bodies via the thin-shell
-factor ΔR / R [39].
+suppression parameter Δ = |δφ| / (2 β M_pl |Φ_N|) [39].
 
 ### Torsion, teleparallel, higher-dimensional, Lorentz-violating, massive, and PPN formalisms
 
@@ -121,7 +123,7 @@ n ≤ 4, and contrasts the four-dimensional topological invariant with the non-v
 five-dimensional variation [45]. Five-dimensional Kaluza-Klein theory unifies four-dimensional
 General Relativity and Maxwell electromagnetism inside a 5D metric G_{{AB}} built from g_{{μν}}, the
 gauge potential A_μ, and a dilaton φ, establishing the exact 5D inverse metric [46],
-unit-determinant upper-triangular veilbein congruence factorization [47], diffeomorphism-to-U(1)
+unit-determinant upper-triangular vielbein congruence factorization [47], diffeomorphism-to-U(1)
 gauge equivalence under compact-circle shifts [48], and four-dimensional Maxwell stress-energy
 tracelessness together with the Kaluza miracle R^{{(5)}} = R^{{(4)}} - ¼ F_{{ab}} F^{{ab}} [49].
 Einstein-Aether theory breaks local Lorentz boost invariance with a unit-timelike vector field u^a
@@ -179,7 +181,7 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
     `geodesic_ivp_exists_curve`, `geodesic_ivp_unique`, `flat_geodesic`
 13. PhyslibAlpha/Relativity/General/InitialData.lean — `InitialData`, `momentumConstraint`, `hamiltonianConstraint`,
     `IsVacuumData`, `hamiltonianConstraint_eq_ricciScalar_of_K_zero`, `hamiltonianConstraint_eq_of_trace_zero`, `euclid3`,
-    `flatData_isVacuum`, `squeezedData_hamiltonianConstraint`
+    `flatData_isVacuum`, `anisotropicSliceData_hamiltonianConstraint`
 14. PhyslibAlpha/Relativity/General/Linearized/TraceReversed.lean — `hTrace`, `hTrace_eq_metricTrace`,
     `traceReversed`, `traceReversed_trace`, `traceReversed_involutive`, `boxEta`
 15. PhyslibAlpha/Relativity/General/Linearized/LinearizedCurvature.lean — `linChristoffel`,

@@ -92,6 +92,10 @@ open GeneralRelativity.Pipeline
 
 ## A. Metric, inverse, and MetricTensor bundle
 
+In comoving coordinates `(t, r, θ, φ)`, the spatially homogeneous and isotropic FLRW line element
+is diagonal, invertible whenever the scale factor `a(t)`, radius `r`, `1 - k r²`, and `sin θ` are
+non-zero.
+
 -/
 
 /-- Comoving Friedmann–Lemaître–Robertson–Walker (FLRW) spacetime parameterized by a scale
@@ -168,6 +172,10 @@ noncomputable def flrwMetricTensor (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → �
 /-!
 
 ## B. Christoffel symbols and derivative tables
+
+Evaluating `Pipeline.christoffel` and its partial derivatives isolates the Hubble-rate terms
+`a' / a`, spatial curvature factor `1 - k r²`, and angular factors across all 256 index
+combinations.
 
 -/
 
@@ -738,6 +746,9 @@ lemma riemann_flrw_eq_data (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha :
 
 ## C. Metric-level Ricci, scalar, and Einstein tensors
 
+Contracting the closed-form FLRW Riemann tensor yields the diagonal Ricci components, scalar
+curvature `S = 6 (a''/a + (a'/a)² + k/a²)`, and Einstein tensor directly from the metric.
+
 -/
 
 private lemma ricci_flrw_00 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
@@ -871,6 +882,9 @@ lemma einsteinTensorOf_flrw (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha 
 /-!
 
 ## D. Equivalence with the Friedmann equations and Physlib Cosmology
+
+Equating the pipeline Einstein tensor with comoving perfect-fluid stress-energy directly recovers
+the first and second Friedmann equations of `Cosmology.FLRW`.
 
 -/
 

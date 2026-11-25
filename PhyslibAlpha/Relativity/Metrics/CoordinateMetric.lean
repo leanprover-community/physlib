@@ -76,6 +76,9 @@ namespace GeneralRelativity
 
 ## A. Coordinate metric bundles
 
+A `CoordinateMetric` bundles a coordinate-dependent metric tensor field `g_{ij}(x)` together with
+its inverse `g^{ij}(x)` and the regular chart domain where both matrices remain nondegenerate.
+
 -/
 
 /-- A coordinate-chart metric field `g` paired with its inverse `ginv` and regularity domain. -/
@@ -107,6 +110,10 @@ namespace Pipeline
 /-!
 
 ## B. Coordinate partial derivatives and metric pipeline
+
+Coordinate partial derivatives `pd μ` define the Levi-Civita connection `Γ^k_{ij}`, Riemann
+curvature `R^ρ_{σμν}`, Ricci tensor, scalar curvature, and Einstein tensor directly from metric
+components on the regular chart.
 
 -/
 
@@ -321,6 +328,9 @@ noncomputable abbrev minkowskiG : (Fin 4 → ℝ) → Tensor2 4 := GeneralRelati
 
 ## C. Flatness of constant metrics
 
+When all metric components are constant across spacetime, every partial derivative vanishes and the
+pipeline automatically produces zero connection, Riemann, Ricci, and Einstein curvature.
+
 -/
 
 /-- A constant metric has vanishing Christoffel symbols at every point. -/
@@ -387,6 +397,10 @@ lemma einsteinTensorOf_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) 
 /-!
 
 ## D. Curvature from Christoffel data
+
+The helper `riemannFromData` decouples explicit closed-form tables of Christoffel symbols `Γ` and
+their derivatives `∂Γ` from the metric pipeline's nested partial derivatives, letting spacetime
+modules verify algebraic curvature formulas without re-differentiating raw inverse-metric sums.
 
 -/
 
