@@ -74,7 +74,6 @@ Results
   - C.1. Unbounded operators
   - C.2. Symmetric operators
   - C.3. Self-adjoint operators
-  - C.4. Essentially self-adjoint operators
 
 ## iv. References
 
