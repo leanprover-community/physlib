@@ -55,11 +55,11 @@ structure ReferenceFrame (d : ℕ) where
   /-- The point assigned coordinate zero at each time. -/
   origin : Time → Space d
   /-- The spatial origin is smooth. -/
-  origin_smooth : ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, EuclideanSpace ℝ (Fin d)) ∞ origin
+  origin_smooth : ContMDiff 𝓘(ℝ) (𝓡 d) ∞ origin
   /-- The basis used to turn displacement vectors into coordinate components at each time. -/
   basis : Time → Module.Basis (Fin d) ℝ (EuclideanSpace ℝ (Fin d))
   /-- Each basis vector is smooth. -/
-  basis_smooth : ∀ i, ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, EuclideanSpace ℝ (Fin d)) ∞ (basis · i)
+  basis_smooth : ∀ i, ContMDiff 𝓘(ℝ) (𝓡 d) ∞ (basis · i)
   /-- The pairwise inner products of the basis vectors are constant in time. -/
   gram_matrix_constant : (Matrix.gram ℝ <| basis ·).IsConst
 
@@ -77,7 +77,7 @@ def Orthonormal : Prop :=
 
 /-- The geometric velocity of the frame's origin at time coordinate `t`. -/
 def velocity (t : ℝ) : EuclideanSpace ℝ (Fin d) :=
-  mfderiv 𝓘(ℝ, ℝ) 𝓘(ℝ, EuclideanSpace ℝ (Fin d)) frame.origin (frame.timeEquiv t) (1 : ℝ)
+  mfderiv 𝓘(ℝ) (𝓡 d) frame.origin (frame.timeEquiv t) (1 : ℝ)
 
 /-!
 ## B. Inertial reference frames
