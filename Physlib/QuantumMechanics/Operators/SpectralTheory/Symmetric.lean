@@ -5,6 +5,7 @@ Authors: Adam Bornemann, Gregory J. Loges
 -/
 module
 
+public import Physlib.QuantumMechanics.Operators.EssentiallySelfAdjoint
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.Basic
 /-!
 
