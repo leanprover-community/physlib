@@ -44,7 +44,6 @@ Notation:
   - B.1. Position vector
   - B.2. Radius powers (regularized)
   - B.3. Radius powers
-    - B.3.1. As limit of regularized operators
 
 ## iv. References
 
