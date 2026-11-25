@@ -77,22 +77,23 @@ lemma maxwellStressEnergy_trace_zero (M : MetricTensor 4) (F : Tensor2 4) :
     (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b * maxwellStressEnergy M F a b) = 0 := by
   simpa [metricTrace, maxwellStressEnergy] using maxwellStressEnergyRaw_trace_zero M F
 
-/-- Fifth-dimension `(4, 4)` Kaluza–Klein Ricci component in the unit-dilaton (`φ = 1`)
-specialization `R^{(5)}_{44} = ¼ F_{ab} F^{ab}`, factored out to isolate the scalar
-dimensional-reduction step of the Kaluza miracle. -/
+-- Factored out to isolate the scalar dimensional-reduction step of the Kaluza miracle.
+/-- Fifth-dimension `(4, 4)` Kaluza–Klein Ricci component `R^{(5)}_{44} = ¼ F_{ab} F^{ab}` in
+the constant unit-dilaton (`φ = 1`) compactification. -/
 noncomputable def kkRicci44 (M : MetricTensor 4) (F : Tensor2 4) : ℝ :=
   (1 / 4) * maxwellF2 M F
 
-/-- Horizontal 4D Kaluza–Klein Ricci components in the unit-dilaton (`φ = 1`) specialization
-`R^{(5)}_{ab} = R^{(4)}_{ab} - ½ g^{cd} F_{ac} F_{bd}`, factored out to separate the horizontal
-4D curvature shift cleanly from the full 5D trace. -/
+-- Factored out to separate the horizontal 4D curvature shift from the full 5D trace.
+/-- Horizontal four-dimensional Kaluza–Klein Ricci tensor
+`R^{(5)}_{ab} = R^{(4)}_{ab} - ½ g^{cd} F_{ac} F_{bd}` in the unit-dilaton (`φ = 1`)
+compactification. -/
 noncomputable def kkRicci4D (M : MetricTensor 4) (R4 : Tensor2 4) (F : Tensor2 4)
     (a b : Fin 4) : ℝ :=
   R4 a b - (1 / 2) * ∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * F a c * F b d
 
-/-- Five-dimensional Kaluza–Klein scalar curvature in the unit-dilaton (`φ = 1`) specialization
-`R^{(5)} = g^{ab} R^{(5)}_{ab} + R^{(5)}_{44}`, packaged so `kaluza_miracle` states the 5D-to-4D
-reduction cleanly. -/
+-- Packaged separately so `kaluza_miracle` states the 5D-to-4D curvature reduction cleanly.
+/-- Five-dimensional Kaluza–Klein scalar curvature `R^{(5)} = g^{ab} R^{(5)}_{ab} + R^{(5)}_{44}`
+in the unit-dilaton (`φ = 1`) compactification. -/
 noncomputable def kkScalar5D (M : MetricTensor 4) (R4 : Tensor2 4) (F : Tensor2 4) : ℝ :=
   (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b * kkRicci4D M R4 F a b) + kkRicci44 M F
 

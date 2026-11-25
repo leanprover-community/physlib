@@ -91,6 +91,14 @@ noncomputable def chameleonMassSq (ρ c : ℝ) : ℝ := ρ * c
 /-- The chameleon scalar mass `m = √(ρ c)`. -/
 noncomputable def chameleonMass (ρ c : ℝ) : ℝ := Real.sqrt (ρ * c)
 
+/-- Environment-dependent mass squared `m² = ρ c` of a `ChameleonModel`. -/
+noncomputable def ChameleonModel.massSq (M : ChameleonModel) (ρ : ℝ) : ℝ :=
+  chameleonMassSq ρ M.c
+
+/-- Environment-dependent chameleon mass `m = √(ρ c)` of a `ChameleonModel`. -/
+noncomputable def ChameleonModel.mass (M : ChameleonModel) (ρ : ℝ) : ℝ :=
+  chameleonMass ρ M.c
+
 /-- A denser environment produces a heavier chameleon scalar. -/
 lemma chameleonMass_mono {ρ₁ ρ₂ c : ℝ} (hc : 0 ≤ c) (h : ρ₁ ≤ ρ₂) :
     chameleonMass ρ₁ c ≤ chameleonMass ρ₂ c :=
@@ -213,14 +221,6 @@ lemma thick_shell_strong (Δ Phi R r : ℝ) (hPR : Phi * R ≠ 0) (hr : r ≠ 0)
     (h : 1 ≤ Δ) : 1 ≤ fifthForceRatio (Δ * Phi * R) Phi R r := by
   rw [fifthForceRatio_thin_shell Δ Phi R r hPR hr]
   exact h
-
-/-- Environment-dependent mass squared `m² = ρ c` of a `ChameleonModel`. -/
-noncomputable def ChameleonModel.massSq (M : ChameleonModel) (ρ : ℝ) : ℝ :=
-  chameleonMassSq ρ M.c
-
-/-- Environment-dependent chameleon mass `m = √(ρ c)` of a `ChameleonModel`. -/
-noncomputable def ChameleonModel.mass (M : ChameleonModel) (ρ : ℝ) : ℝ :=
-  chameleonMass ρ M.c
 
 end ChameleonScreening
 

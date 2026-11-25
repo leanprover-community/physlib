@@ -430,12 +430,14 @@ lemma einsteinTensorOf_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) 
 
 ## D. Curvature from Christoffel data
 
-The helper `riemannFromData` decouples explicit closed-form tables of Christoffel symbols `Γ` and
-their derivatives `∂Γ` from the metric pipeline's nested partial derivatives, letting spacetime
-modules verify algebraic curvature formulas without re-differentiating raw inverse-metric sums.
+The Riemann curvature tensor evaluated directly from a supplied connection `Γ` and coordinate
+derivative table `∂Γ` reproduces `riemann` whenever `(Γ, ∂Γ)` matches the Levi-Civita data of
+a coordinate metric.
 
 -/
 
+-- Decouples explicit closed-form tables of Christoffel symbols and derivatives from the nested
+-- partial derivatives in `Pipeline.riemann`, avoiding re-differentiating inverse-metric sums.
 /-- The Riemann tensor evaluated from supplied Christoffel symbols `G` and partial derivatives
 `dG`: `R^ρ_{σμν} = ∂_μ Γ^ρ_{νσ} - ∂_ν Γ^ρ_{μσ} + Γ^ρ_{μλ} Γ^λ_{νσ} - Γ^ρ_{νλ} Γ^λ_{μσ}`. -/
 noncomputable def riemannFromData {n : ℕ}

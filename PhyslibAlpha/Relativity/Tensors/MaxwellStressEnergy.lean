@@ -20,12 +20,13 @@ component bridge to Physlib's `Electromagnetism.ElectromagneticPotential.toField
 
 ## i. Overview
 
-Both the Reissner–Nordström electrovacuum solution and Kaluza–Klein dimensional reduction rely on
-the four-dimensional Maxwell stress-energy tensor. Factoring out `maxwellFieldInvariant` and
-`maxwellStressEnergyRaw` eliminates duplicate definitions across those modules and provides one
-reusable tracelessness proof `maxwellStressEnergyRaw_trace_zero`. We also connect the
-component-level representation `Tensor2 4` to Physlib's `toFieldStrength` via
-`emFieldStrengthComponents`.
+In four spacetime dimensions, classical electromagnetism has stress-energy tensor
+`T^{EM}_{ab} = g^{cd} F_{ac} F_{bd} - ¼ g_{ab} F_{cd} F^{cd}` in Heaviside–Lorentz units.
+Contraction with the inverse metric `g^{ab}` yields the conformal trace identity
+`g^{ab} T^{EM}_{ab} = 0`, a hallmark of classical scale invariance in four dimensions that underlies
+vanishing scalar curvature `S = 0` for electrovacuum solutions such as Reissner–Nordström spacetime
+and the Einstein–Maxwell sector of Kaluza–Klein reduction. In inertial Minkowski coordinates,
+`F_{ab}` is expressed directly in terms of Physlib's `ElectromagneticPotential.toFieldStrength`.
 
 ## ii. Key results
 
@@ -62,7 +63,7 @@ F_{ab} F_{cd}`. -/
 def maxwellFieldInvariant {n : ℕ} (ginv F : Tensor2 n) : ℝ :=
   ∑ a, ∑ b, ∑ c, ∑ d, ginv a c * ginv b d * F a b * F c d
 
-/-- Raw (Heaviside–Lorentz, unitless) 4D electromagnetic stress-energy tensor
+/-- Unitless Heaviside–Lorentz four-dimensional electromagnetic stress-energy tensor
 `T^{EM}_{ab} = g^{cd} F_{ac} F_{bd} - ¼ g_{ab} F_{cd} F^{cd}`. -/
 noncomputable def maxwellStressEnergyRaw (g ginv F : Tensor2 4) : Tensor2 4 :=
   fun a b =>

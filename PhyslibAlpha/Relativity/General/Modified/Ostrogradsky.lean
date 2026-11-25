@@ -94,6 +94,10 @@ lemma kineticMatrix_degenerate :
 noncomputable def hamiltonian (v a p₁ p₂ q m : ℝ) : ℝ :=
   p₁ * v + p₂ * a - a ^ 2 / 2 + m ^ 2 * q ^ 2 / 2
 
+/-- Canonical Ostrogradsky Hamiltonian evaluated for a `HigherDerivModel`. -/
+noncomputable def HigherDerivModel.hamiltonian (H : HigherDerivModel) (v a p₁ p₂ q : ℝ) : ℝ :=
+  Ostrogradsky.hamiltonian v a p₁ p₂ q H.m
+
 /-- Shifting `p₁` by `t` translates the Ostrogradsky Hamiltonian linearly by `t * v`. -/
 lemma hamiltonian_add (v a p₁ p₂ q m t : ℝ) :
     hamiltonian v a (p₁ + t) p₂ q m = hamiltonian v a p₁ p₂ q m + t * v := by
@@ -132,10 +136,6 @@ lemma kinetic_zero_iff (m x : ℝ) (hm : 0 < m) : m * x ^ 2 / 2 = 0 ↔ x = 0 :=
     · exact (pow_eq_zero_iff (n := 2) (by norm_num)).mp h3
   · rintro rfl
     ring
-
-/-- Canonical Ostrogradsky Hamiltonian evaluated for a `HigherDerivModel`. -/
-noncomputable def HigherDerivModel.hamiltonian (H : HigherDerivModel) (v a p₁ p₂ q : ℝ) : ℝ :=
-  Ostrogradsky.hamiltonian v a p₁ p₂ q H.m
 
 end Ostrogradsky
 

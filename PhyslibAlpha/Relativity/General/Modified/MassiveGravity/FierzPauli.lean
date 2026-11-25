@@ -20,10 +20,14 @@ and on-shell tracelessness of massive spin-2 perturbations.
 
 ## i. Overview
 
-Giving the graviton a non-zero mass `m > 0` on a Minkowski reference background `η` requires a
-quadratic potential built from `h_{ab} h^{ab}` and `h² = (η^{ab} h_{ab})²`. Only the
-Fierz–Pauli tuning `α = -1` eliminates the sixth Boulware–Deser ghost degree of freedom and forces
-`h = 0` on shell for `m ≠ 0`.
+Giving a spin-2 graviton a non-zero mass `m > 0` on a Minkowski reference background `η` requires
+adding a Lorentz-invariant quadratic mass term built from `h_{ab} h^{ab}` and `h² = (η^{ab}
+h_{ab})²`. For a generic mixing coefficient `α ≠ -1`, the longitudinal Stueckelberg mode
+`h_{00} = ϕ''` retains a non-zero `-(m²/4)(1 + α) (ϕ'')²` mass-induced fourth-order time
+derivative—the linearized precursor of the pathological sixth Boulware–Deser ghost degree of
+freedom. Only the Fierz–Pauli tuning `α = -1` cancels this longitudinal ghost contribution and
+forces the five healthy massive polarizations via the on-shell tracelessness constraint `h = 0` for
+`m ≠ 0`.
 
 ## ii. Key results
 
@@ -85,6 +89,14 @@ noncomputable def fierzPauliLagrangian (m α : ℝ) (h : Tensor2 4) : ℝ :=
 noncomputable def fpMassTensor (m α : ℝ) (h : Tensor2 4) : Tensor2 4 :=
   fun i j => (m ^ 2 / 2) * (h i j + α * minkowskiMetric4 i j * metricTrace minkowski h)
 
+/-- Fierz–Pauli quadratic graviton mass Lagrangian evaluated for a `FierzPauliTheory`. -/
+noncomputable def FierzPauliTheory.lagrangian (T : FierzPauliTheory) (h : Tensor2 4) : ℝ :=
+  fierzPauliLagrangian T.m T.α h
+
+/-- Fierz–Pauli mass-term variation tensor evaluated for a `FierzPauliTheory`. -/
+noncomputable def FierzPauliTheory.massTensor (T : FierzPauliTheory) (h : Tensor2 4) : Tensor2 4 :=
+  fpMassTensor T.m T.α h
+
 /-- Minkowski trace of the general mass tensor:
 `η^{ij} M_{ij}(α) = (m² / 2) (1 + 4 α) h`. -/
 lemma fpMassTensor_trace (m α : ℝ) (h : Tensor2 4) :
@@ -102,10 +114,9 @@ lemma fpMassTensor_trace_tuned (m : ℝ) (h : Tensor2 4) :
   rw [fpMassTensor_trace]
   ring
 
-/-- Longitudinal kinetic-mass decoupling criterion: for a 1D plane-wave longitudinal mode
-`h_{00} = ϕ''`, all other components `0`, the quadratic mass combination `h_{ab} h^{ab} + α h²`
-vanishes (preventing a fourth-order time-derivative Boulware–Deser ghost) if and only if
-`α = -1`. -/
+/-- Ghost cancellation on a longitudinal plane wave: for a 1D mode `h_{00} = ϕ''` with all other
+components zero, the quadratic mass combination `h_{ab} h^{ab} + α h²` vanishes (eliminating the
+sixth scalar ghost degree of freedom) if and only if `α = -1`. -/
 lemma longitudinal_time_ghost_free_iff (α ϕdd : ℝ) (hϕ : ϕdd ≠ 0) :
     hContractionSq (fun i j => if i = 0 ∧ j = 0 then ϕdd else 0)
       + α * metricTrace minkowski (fun i j => if i = 0 ∧ j = 0 then ϕdd else 0) ^ 2 = 0
@@ -137,14 +148,6 @@ lemma fp_traceless_of_zero_trace_source (m : ℝ) (hm : m ≠ 0) (h : Tensor2 4)
   rcases mul_eq_zero.mp hfac with h1 | h2
   · exfalso; apply hm2; linarith
   · exact h2
-
-/-- Fierz–Pauli quadratic graviton mass Lagrangian evaluated for a `FierzPauliTheory`. -/
-noncomputable def FierzPauliTheory.lagrangian (T : FierzPauliTheory) (h : Tensor2 4) : ℝ :=
-  fierzPauliLagrangian T.m T.α h
-
-/-- Fierz–Pauli mass-term variation tensor evaluated for a `FierzPauliTheory`. -/
-noncomputable def FierzPauliTheory.massTensor (T : FierzPauliTheory) (h : Tensor2 4) : Tensor2 4 :=
-  fpMassTensor T.m T.α h
 
 end MassiveGravity
 

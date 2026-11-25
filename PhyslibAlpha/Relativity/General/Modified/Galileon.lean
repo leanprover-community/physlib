@@ -81,6 +81,10 @@ structure CubicGalileon where
 acceleration `a = φ''`. -/
 def cubicGalileonDensity (v a : ℝ → ℝ) (t : ℝ) : ℝ := v t ^ 2 * a t
 
+/-- Scaled 1D cubic Galileon density `c₃ (φ')² φ''` for a `CubicGalileon` model. -/
+def CubicGalileon.density (C : CubicGalileon) (v a : ℝ → ℝ) (t : ℝ) : ℝ :=
+  C.c3 * cubicGalileonDensity v a t
+
 /-- In one dimension, the cubic Galileon density `(φ')² φ''` is the total derivative
 `d/dt ((φ')³ / 3)`. -/
 lemma cubic_total_derivative (v a : ℝ → ℝ) (t : ℝ) (hv : HasDerivAt v (a t) t) :
@@ -103,10 +107,6 @@ lemma shift_forbids_potential (V : ℝ → ℝ) (h : ∀ φ c, V (φ + c) = V φ
   have hsub : φ₁ + (φ₂ - φ₁) = φ₂ := by ring
   rw [hsub] at h'
   exact h'.symm
-
-/-- Scaled 1D cubic Galileon density `c₃ (φ')² φ''` for a `CubicGalileon` model. -/
-def CubicGalileon.density (C : CubicGalileon) (v a : ℝ → ℝ) (t : ℝ) : ℝ :=
-  C.c3 * cubicGalileonDensity v a t
 
 end Galileon
 

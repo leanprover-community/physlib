@@ -129,6 +129,14 @@ noncomputable def kerrMetricInv (M a : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
     else if i = 3 ∧ j = 3 then (sig - 2 * M * x 1) / (sig * del * s2)
     else 0
 
+/-- The Boyer–Lindquist metric of a Kerr spacetime. -/
+noncomputable def KerrSpacetime.metric (K : KerrSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
+  kerrMetric K.M K.a x
+
+/-- The inverse Boyer–Lindquist metric of a Kerr spacetime. -/
+noncomputable def KerrSpacetime.metricInv (K : KerrSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
+  kerrMetricInv K.M K.a x
+
 /-- Symmetry of the Boyer–Lindquist Kerr metric `kerrMetric`. -/
 lemma kerrMetric_symm (M a : ℝ) (x : Fin 4 → ℝ) : IsSymm (kerrMetric M a x) :=
   Matrix.IsSymm.ext fun i j => by
@@ -287,14 +295,6 @@ lemma kerrMetric_zero_spin (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
   · simp only [kerrMetric, hs0, kerrAxialFactor, Fin.isValue]
     norm_num
     field_simp [hr2]
-
-/-- The Boyer–Lindquist metric of a Kerr spacetime. -/
-noncomputable def KerrSpacetime.metric (K : KerrSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
-  kerrMetric K.M K.a x
-
-/-- The inverse Boyer–Lindquist metric of a Kerr spacetime. -/
-noncomputable def KerrSpacetime.metricInv (K : KerrSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
-  kerrMetricInv K.M K.a x
 
 end Kerr
 

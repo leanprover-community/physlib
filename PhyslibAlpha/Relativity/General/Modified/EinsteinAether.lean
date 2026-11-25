@@ -31,9 +31,11 @@ general quadratic derivative action is parameterized by four dimensionless coupl
 Linearizing around flat Minkowski spacetime with rest-frame aether `u = (1, 0, 0, 0)` yields three
 propagating radiative modes (spin-2 tensor, spin-1 vector, and spin-0 scalar) with distinct
 squared propagation speeds `s₂², s₁², s₀²`, together with a renormalized effective Newtonian
-constant `G_N = G_bare / (1 - c₁₄ / 2)`. Focusing on this algebraic constraint/dispersion-relation
-layer keeps the theory's observational parameter bounds independent of a full coordinate-chart
-Euler–Lagrange solver.
+constant `G_N = G_bare / (1 - c₁₄ / 2)`. Multi-messenger observation of the binary neutron-star
+merger gravitational wave `GW170817` and its electromagnetic counterpart `GRB 170817A` constrained
+the tensor propagation speed to `|s₂ - 1| ≲ 10⁻¹⁵`, requiring `c₁ + c₃ ≈ 0`. Focusing on this
+algebraic dispersion-relation layer keeps the theory's observational parameter bounds independent of
+a full coordinate-chart Euler–Lagrange solver.
 
 ## ii. Key results
 

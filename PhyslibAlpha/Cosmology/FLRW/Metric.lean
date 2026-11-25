@@ -132,6 +132,14 @@ noncomputable def flrwMetricInv (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) 
       else ((a (x 0)) ^ 2 * (x 1) ^ 2 * Real.sin (x 2) ^ 2)⁻¹
     else 0
 
+/-- The coordinate metric of an FLRW spacetime. -/
+noncomputable def FLRWSpacetime.metric (S : FLRWSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
+  flrwMetric S.a S.k x
+
+/-- The inverse coordinate metric of an FLRW spacetime. -/
+noncomputable def FLRWSpacetime.metricInv (S : FLRWSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
+  flrwMetricInv S.a S.k x
+
 /-- Symmetry of `flrwMetric`. -/
 lemma flrwMetric_symm (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) : IsSymm (flrwMetric a k x) := by
   ext i j
@@ -179,8 +187,10 @@ combinations.
 
 -/
 
-/-- Closed-form Christoffel symbols `Γ^m_{ij}` of the FLRW metric, factored out from
-`Pipeline.christoffel` so symbolic time derivatives of `a(t)` remain isolated from index sums. -/
+-- Factored out separately from `Pipeline.christoffel` so symbolic time derivatives of `a(t)`
+-- remain isolated from metric-inverse index sums.
+/-- Closed-form Levi-Civita Christoffel symbols `Γ^m_{ij}` of the FLRW metric in comoving
+coordinates `(t, r, θ, φ)`. -/
 noncomputable def flrwChristoffel (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (m i j : Fin 4) : ℝ :=
   if m = 0 then
     (if i = 1 ∧ j = 1 then a (x 0) * deriv a (x 0) / (1 - k * (x 1) ^ 2)
@@ -204,8 +214,9 @@ noncomputable def flrwChristoffel (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ
      else if (i = 2 ∧ j = 3) ∨ (i = 3 ∧ j = 2) then Real.cos (x 2) / Real.sin (x 2)
      else 0)
 
-/-- Complete partial-derivative table `∂_μ flrwChristoffel^m_{ij}` across all 256 index tuples,
-decoupling scalar derivative evaluation from `Pipeline.riemann` assembly. -/
+-- Decouples scalar derivative evaluation from `Pipeline.riemann` assembly.
+/-- Complete partial-derivative table `∂_μ Γ^m_{ij}` of the FLRW Christoffel symbols across all
+256 coordinate and connection index tuples. -/
 noncomputable def flrwChristoffelDeriv (a : ℝ → ℝ) (k : ℝ) (μ : Fin 4) (x : Fin 4 → ℝ)
     (m i j : Fin 4) : ℝ :=
   if μ = 0 then
@@ -1070,14 +1081,6 @@ lemma friedmannSolution_of_einsteinTensorOf_flrw_G (U : Cosmology.FLRW) (F : Cos
             (flrwMetric (flrwScaleFn U) U.geometry.curvature x) i j) :
     U.FriedmannSolution F Λ G.val 1 :=
   friedmannSolution_of_einsteinTensorOf_flrw U F Λ G.val r₀ θ₀ hr hkr hsin heinst
-
-/-- The coordinate metric of an FLRW spacetime. -/
-noncomputable def FLRWSpacetime.metric (S : FLRWSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
-  flrwMetric S.a S.k x
-
-/-- The inverse coordinate metric of an FLRW spacetime. -/
-noncomputable def FLRWSpacetime.metricInv (S : FLRWSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
-  flrwMetricInv S.a S.k x
 
 end FLRW
 

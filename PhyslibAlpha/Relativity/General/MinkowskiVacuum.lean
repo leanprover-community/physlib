@@ -18,10 +18,11 @@ algebraically (`RiemannTensor.flat 4`) and through the coordinate differential p
 
 ## i. Overview
 
-Combining the Minkowski `MetricTensor 4` (`minkowski`) and constant coordinate metric field
-(`minkowskiCoordinateMetric`) with `EinsteinTensor` and `CoordinateMetric`, this module proves
-that Minkowski spacetime is Ricci flat, scalar flat, and solves `G = 0`, and that its pipeline
-Christoffel symbols, Riemann tensor, and Einstein tensor vanish identically.
+In global inertial coordinates `(t, x, y, z)` on `ℝ⁴`, flat Minkowski spacetime carries the
+constant Lorentzian metric `η = diag(-1, 1, 1, 1)`. Because every metric component is position
+independent, all Levi-Civita connection coefficients `Γ^k_{ij}` vanish identically, so the
+Riemann curvature, Ricci tensor, scalar curvature, and Einstein tensor all vanish identically
+and Minkowski spacetime solves the vacuum Einstein equations `G_{ij} = 0`.
 
 ## ii. Key results
 
@@ -112,7 +113,8 @@ lemma Pipeline.minkowski_einstein (x : Fin 4 → ℝ) (i j : Fin 4) :
   Pipeline.einsteinTensorOf_const Pipeline.minkowskiMetricField Pipeline.minkowskiMetricField
     minkowskiMetric4 (fun _ => rfl) x i j
 
-/-- The data form returns zero curvature on Minkowski spacetime. -/
+/-- Explicit Christoffel-data evaluation of the Riemann tensor vanishes identically on flat
+Minkowski spacetime. -/
 lemma Pipeline.minkowski_riemannFromData (x : Fin 4 → ℝ) (ρ σ μ ν : Fin 4) :
     Pipeline.riemannFromData
       (Pipeline.christoffel Pipeline.minkowskiMetricField Pipeline.minkowskiMetricField)

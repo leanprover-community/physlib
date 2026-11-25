@@ -332,8 +332,8 @@ lemma pd_kerrMetric_eq (M a : ℝ) (μ : Fin 4) (x : Fin 4 → ℝ)
 
 -/
 
-/-- Closed-form Levi-Civita Christoffel symbols `Γ^k_{ij}` of the Boyer–Lindquist Kerr metric,
-factored out from `Pipeline.christoffel` so rational derivative reductions remain tractable. -/
+-- Factored out from `Pipeline.christoffel` so rational derivative reductions remain tractable.
+/-- Closed-form Levi-Civita Christoffel symbols `Γ^k_{ij}` of the Boyer–Lindquist Kerr metric. -/
 noncomputable def kerrChristoffel (M a : ℝ) (x : Fin 4 → ℝ) (k i j : Fin 4) : ℝ :=
   let r := x 1
   let c := Real.cos (x 2)
@@ -485,8 +485,9 @@ lemma eventually_christoffel_kerr_eq (M a : ℝ) (x : Fin 4 → ℝ)
   filter_upwards [hmem] with y ⟨hySig, hyDel, hyS⟩
   exact christoffel_kerr_eq M a y hySig hyDel hyS k i j
 
-/-- Contracted Kerr Christoffel trace `∑ ρ, Γ^ρ_{ρ μ} = ∂_μ ln(Σ sin θ)`, factored out as an
-auxiliary scalar table because contracted derivatives reduce the vacuum Ricci proof. -/
+-- Factored out as an auxiliary scalar table because contracted derivatives simplify the vacuum
+-- Ricci calculation.
+/-- Contracted Boyer–Lindquist Kerr Christoffel trace `∑ ρ, Γ^ρ_{ρ μ} = ∂_μ ln(Σ sin θ)`. -/
 noncomputable def kerrChristoffelTrace (a : ℝ) (x : Fin 4 → ℝ) (μ : Fin 4) : ℝ :=
   if μ = 1 then 2 * x 1 / sigma a (x 1) (x 2)
   else if μ = 2 then

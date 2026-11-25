@@ -86,6 +86,14 @@ noncomputable def yukawaEnhancementFactor (α μ r : ℝ) : ℝ := 1 + α * (1 -
 /-- The MOG gravitational potential `-(G M / r) · yukawaEnhancementFactor α μ r`. -/
 noncomputable def potential (G M α μ r : ℝ) : ℝ := -((G * M) / r) * yukawaEnhancementFactor α μ r
 
+/-- The MOG enhancement factor evaluated for a `MOGTheory`. -/
+noncomputable def MOGTheory.yukawaEnhancementFactor (T : MOGTheory) (r : ℝ) : ℝ :=
+  MOG.yukawaEnhancementFactor T.α T.μ r
+
+/-- The MOG gravitational potential evaluated for a `MOGTheory`. -/
+noncomputable def MOGTheory.potential (T : MOGTheory) (G M r : ℝ) : ℝ :=
+  MOG.potential G M T.α T.μ r
+
 /-!
 
 ## B. Bounds, Newtonian limits, and asymptotic behaviour
@@ -132,14 +140,6 @@ lemma yukawaEnhancementFactor_tendsto_atTop (α μ : ℝ) (hμ : 0 < μ) :
       Filter.atTop (nhds (1 + α * (1 - 0))) :=
     tendsto_const_nhds.add (tendsto_const_nhds.mul (tendsto_const_nhds.sub hexp))
   simpa [yukawaEnhancementFactor] using h1
-
-/-- The MOG enhancement factor evaluated for a `MOGTheory`. -/
-noncomputable def MOGTheory.yukawaEnhancementFactor (T : MOGTheory) (r : ℝ) : ℝ :=
-  MOG.yukawaEnhancementFactor T.α T.μ r
-
-/-- The MOG gravitational potential evaluated for a `MOGTheory`. -/
-noncomputable def MOGTheory.potential (T : MOGTheory) (G M r : ℝ) : ℝ :=
-  MOG.potential G M T.α T.μ r
 
 /-- The MOG gravitational potential taking the Newtonian constant as a
 `GravitationalConstant`. -/

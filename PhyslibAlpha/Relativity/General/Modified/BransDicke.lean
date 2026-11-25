@@ -21,18 +21,20 @@ import Mathlib.Topology.Order.Basic
 
 # Brans–Dicke scalar–tensor theory
 
-PPN parameter `γ`, effective gravitational coupling, bounds, and the general-relativity limit
-`ω → ∞`.
+Parameterized post-Newtonian (PPN) parameter `γ`, effective gravitational coupling, solar-system
+Shapiro delay bounds, and the general-relativity limit `ω → ∞`.
 
 ## i. Overview
 
 In Brans–Dicke gravity, a massless scalar field `φ` couples non-minimally to the Ricci scalar
-with dimensionless parameter `ω`. In the weak-field post-Newtonian expansion, light deflection and
-Shapiro time delay are governed by `γ(ω) = (1 + ω) / (2 + ω)`, while the effective Newton
-constant scales as `coupling(ω) = (4 + 2ω) / (3 + 2ω)`.
+with dimensionless Dicke parameter `ω`. In the weak-field parameterized post-Newtonian (PPN)
+expansion, space curvature produced by unit rest mass scales with `γ(ω) = (1 + ω) / (2 + ω)`,
+while the effective gravitational constant scales as `coupling(ω) = (4 + 2ω) / (3 + 2ω)`. Precision
+Doppler tracking of the Cassini spacecraft near solar conjunction measured the Shapiro gravitational
+time delay to constrain `|γ - 1| ≲ 2.3 × 10⁻⁵`, forcing `ω > 40000` in Solar-System tests.
 
 This module formalises `gamma` and `coupling`, proves `1/2 < γ < 1` for `ω > 0`, establishes the
-Cassini solar-system bound `ω > 40000 ⇒ 1 - γ < 1/40000`, proves the `ω → ∞` limit `γ → 1`,
+Cassini Shapiro time-delay bound `ω > 40000 ⇒ 1 - γ < 1/40000`, proves the `ω → ∞` limit `γ → 1`,
 exhibits `ω = 0` (`γ = 1/2`) as the metric `f(R)` value, proves `1 ≤ coupling ω ≤ 4/3` for
 `ω ≥ 0`, and records the ghost pole at `ω = -3/2`.
 
@@ -79,6 +81,9 @@ structure BransDickeTheory where
 
 /-- The Brans–Dicke PPN parameter `γ = (1 + ω) / (2 + ω)`. -/
 noncomputable def gamma (ω : ℝ) : ℝ := (1 + ω) / (2 + ω)
+
+/-- The Brans–Dicke PPN parameter `γ` of a `BransDickeTheory`. -/
+noncomputable def BransDickeTheory.gamma (T : BransDickeTheory) : ℝ := BransDicke.gamma T.ω
 
 /-- `γ = 1 - 1 / (2 + ω)`: the deviation from general relativity is reciprocal in `2 + ω`. -/
 lemma gamma_eq_one_sub (ω : ℝ) (h : 2 + ω ≠ 0) : gamma ω = 1 - 1 / (2 + ω) := by
@@ -144,9 +149,6 @@ lemma coupling_bounds (ω : ℝ) (hω : 0 ≤ ω) : 1 ≤ coupling ω ∧ coupli
   have hinv_pos : (0 : ℝ) < 1 / (3 + 2 * ω) := by positivity
   rw [coupling_eq_one_add ω (by linarith)]
   constructor <;> linarith
-
-/-- The Brans–Dicke PPN parameter `γ` of a `BransDickeTheory`. -/
-noncomputable def BransDickeTheory.gamma (T : BransDickeTheory) : ℝ := BransDicke.gamma T.ω
 
 /-- The effective gravitational coupling ratio of a `BransDickeTheory`. -/
 noncomputable def BransDickeTheory.coupling (T : BransDickeTheory) : ℝ := BransDicke.coupling T.ω

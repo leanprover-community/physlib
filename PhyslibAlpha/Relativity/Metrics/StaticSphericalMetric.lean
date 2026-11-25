@@ -173,9 +173,10 @@ its radial derivative `f'`.
 
 -/
 
-/-- Closed-form Christoffel symbols `Γ^k_{ij}` of `staticSphericalMetric f` in `(t, r, θ, φ)`
-coordinates. Factored out separately from `Pipeline.christoffel` so symbolic radial
-differentiation avoids differentiating 4-term metric-inverse sums at each step. -/
+-- Factored out separately from `Pipeline.christoffel` so symbolic radial differentiation avoids
+-- differentiating 4-term metric-inverse sums at each step.
+/-- Closed-form Levi-Civita Christoffel symbols `Γ^k_{ij}` of `staticSphericalMetric f` in
+`(t, r, θ, φ)` coordinates. -/
 noncomputable def staticSphericalChristoffel (f : ℝ → ℝ) (x : Fin 4 → ℝ) (k i j : Fin 4) : ℝ :=
   if k = 0 then
     (if (i = 1 ∧ j = 0) ∨ (i = 0 ∧ j = 1) then deriv f (x 1) / (2 * f (x 1)) else 0)
@@ -347,9 +348,9 @@ contraction loops.
 
 -/
 
-/-- Closed-form partial-derivative table `∂_μ staticSphericalChristoffel^k_{ij}` across all
-256 index tuples `(μ, k, i, j)`, separating scalar differentiation from `Pipeline.riemann`
-assembly. -/
+-- Separates scalar differentiation from `Pipeline.riemann` assembly.
+/-- Closed-form partial-derivative table `∂_μ Γ^k_{ij}` of `staticSphericalChristoffel f` across
+all 256 coordinate and connection index tuples `(μ, k, i, j)`. -/
 noncomputable def staticSphericalChristoffelDeriv (f : ℝ → ℝ) (μ : Fin 4) (x : Fin 4 → ℝ)
     (k i j : Fin 4) : ℝ :=
   if μ = 1 then

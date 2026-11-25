@@ -101,6 +101,21 @@ noncomputable def rnMetric (M Q : ℝ) : (Fin 4 → ℝ) → Tensor2 4 :=
 noncomputable def rnMetricInv (M Q : ℝ) : (Fin 4 → ℝ) → Tensor2 4 :=
   staticSphericalMetricInv (rnLapse M Q)
 
+/-- The lapse function `rnLapse` of a Reissner–Nordström spacetime. -/
+noncomputable def ReissnerNordstromSpacetime.lapse (S : ReissnerNordstromSpacetime)
+    (r : ℝ) : ℝ :=
+  rnLapse S.M S.Q r
+
+/-- The coordinate metric of a Reissner–Nordström spacetime. -/
+noncomputable def ReissnerNordstromSpacetime.metric (S : ReissnerNordstromSpacetime)
+    (x : Fin 4 → ℝ) : Tensor2 4 :=
+  rnMetric S.M S.Q x
+
+/-- The inverse coordinate metric of a Reissner–Nordström spacetime. -/
+noncomputable def ReissnerNordstromSpacetime.metricInv (S : ReissnerNordstromSpacetime)
+    (x : Fin 4 → ℝ) : Tensor2 4 :=
+  rnMetricInv S.M S.Q x
+
 /-- `rnMetric M Q` is definitionally `staticSphericalMetric (rnLapse M Q)`. -/
 lemma rnMetric_eq_staticSpherical (M Q : ℝ) :
     rnMetric M Q = staticSphericalMetric (rnLapse M Q) := rfl
@@ -200,21 +215,6 @@ lemma maxwellF_antisymm (Q r : ℝ) (i j : Fin 4) : maxwellF Q r i j = -maxwellF
 F_{ab} F^{ab})` in Gaussian-cgs/geometrized units (`G = c = 1`). -/
 noncomputable def maxwellStressEnergy (g ginv F : Tensor2 4) : Tensor2 4 :=
   fun i j => (1 / (4 * Real.pi)) * maxwellStressEnergyRaw g ginv F i j
-
-/-- The lapse function `rnLapse` of a Reissner–Nordström spacetime. -/
-noncomputable def ReissnerNordstromSpacetime.lapse (S : ReissnerNordstromSpacetime)
-    (r : ℝ) : ℝ :=
-  rnLapse S.M S.Q r
-
-/-- The coordinate metric of a Reissner–Nordström spacetime. -/
-noncomputable def ReissnerNordstromSpacetime.metric (S : ReissnerNordstromSpacetime)
-    (x : Fin 4 → ℝ) : Tensor2 4 :=
-  rnMetric S.M S.Q x
-
-/-- The inverse coordinate metric of a Reissner–Nordström spacetime. -/
-noncomputable def ReissnerNordstromSpacetime.metricInv (S : ReissnerNordstromSpacetime)
-    (x : Fin 4 → ℝ) : Tensor2 4 :=
-  rnMetricInv S.M S.Q x
 
 /-!
 

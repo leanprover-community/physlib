@@ -98,6 +98,12 @@ noncomputable def algebraicFieldEqn (f df : ℝ → ℝ) {n : ℕ} (M : MetricTe
     Tensor2 n :=
   fun i j => df (ricciScalar M R) * ricci M R i j - (1 / 2) * f (ricciScalar M R) * M.g i j
 
+/-- The algebraic metric-formalism `f(R)` field equation tensor evaluated on the metric tensor `M`
+and Riemann curvature tensor `R`. -/
+noncomputable def FRTheory.algebraicFieldEqn (T : FRTheory) {n : ℕ} (M : MetricTensor n)
+    (R : RiemannTensor n) : Tensor2 n :=
+  FRGravity.algebraicFieldEqn T.f T.df M R
+
 /-- `f(R) = R - 2 Λ` reduces exactly to general relativity with cosmological constant `Λ`,
 `G + Λ g`. -/
 lemma linear_is_einstein {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) (Λ : ℝ) :
@@ -107,8 +113,11 @@ lemma linear_is_einstein {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) (�
   simp only [algebraicFieldEqn, einstein]
   ring
 
-/-- Trace of the metric-formalism `f(R)` field equation in `n` dimensions:
-`f'(S) S - (n/2) f(S) + (n - 1) □f'`. -/
+/-- Trace of the metric-formalism `f(R)` field equation `df(S) Ric_{ij} - ½ f(S) g_{ij} +
+(g_{ij} □f' - ∇_i ∇_j f')` in `n` dimensions: evaluating `g^{ij} (...)` yields the dynamical
+scalar-trace identity `f'(S) S - (n/2) f(S) + (n - 1) □f' = κ T`. Unlike the algebraic trace of GR,
+for non-linear `f(R)` the `□f'` term propagates the additional scalaron degree of freedom unless
+`n = 1` or curvature is constant (`□f' = 0`). -/
 lemma trace_algebraicFieldEqn {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) (f df : ℝ → ℝ)
     (box : ℝ) (d2 : Tensor2 n) (hbox : metricTrace M d2 = box) :
     metricTrace M (fun i j => df (ricciScalar M R) * ricci M R i j
@@ -131,7 +140,10 @@ lemma trace_algebraicFieldEqn {n : ℕ} (M : MetricTensor n) (R : RiemannTensor 
   rw [h1, h2, h3, hcomm, h5, h6, h4, ← ricciScalar_eq_metricTrace, hbox]
   ring
 
-/-- In four dimensions, the trace equation becomes `f'(S) S - 2 f(S) + 3 □f' = 0`. -/
+/-- Four-dimensional trace of the `f(R)` field equation, `f'(S) S - 2 f(S) + 3 □f' = κ T`:
+reduces in vacuum with constant curvature (`□f' = 0`) to the algebraic condition
+`f'(S) S = 2 f(S)` for maximally symmetric de Sitter solutions, while `□f' ≠ 0` drives the
+propagating scalar mode absent in `f(R) = R - 2 Λ`. -/
 lemma trace_algebraicFieldEqn_four (M : MetricTensor 4) (R : RiemannTensor 4) (f df : ℝ → ℝ)
     (box : ℝ) (d2 : Tensor2 4) (hbox : metricTrace M d2 = box) :
     metricTrace M (fun i j => df (ricciScalar M R) * ricci M R i j
@@ -220,12 +232,6 @@ lemma starobinsky_plateau (α : ℝ) (hα : α ≠ 0) :
     exact starobinsky_einsteinFrame_form α φ hα (by linarith)
   refine Filter.Tendsto.congr' heq.symm ?_
   simpa using hmul
-
-/-- The algebraic metric-formalism `f(R)` field equation tensor evaluated on the metric tensor `M`
-and Riemann curvature tensor `R`. -/
-noncomputable def FRTheory.algebraicFieldEqn (T : FRTheory) {n : ℕ} (M : MetricTensor n)
-    (R : RiemannTensor n) : Tensor2 n :=
-  FRGravity.algebraicFieldEqn T.f T.df M R
 
 end FRGravity
 

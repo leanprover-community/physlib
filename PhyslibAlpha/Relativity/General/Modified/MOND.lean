@@ -96,6 +96,12 @@ noncomputable def deepAccel (a₀ gN : ℝ) : ℝ := Real.sqrt (a₀ * gN)
 /-- The MOND interpolating relation `μ(a / a₀) * a = g_N`. -/
 def Relation (μ : ℝ → ℝ) (a₀ a gN : ℝ) : Prop := μ (a / a₀) * a = gN
 
+/-- Deep-MOND acceleration `√(a₀ g_N)` for a `MONDTheory`. -/
+noncomputable def MONDTheory.deepAccel (T : MONDTheory) (gN : ℝ) : ℝ := MOND.deepAccel T.a0 gN
+
+/-- The MOND interpolating relation `μ(a / a₀) * a = g_N` for a `MONDTheory`. -/
+def MONDTheory.Relation (T : MONDTheory) (μ : ℝ → ℝ) (a gN : ℝ) : Prop := MOND.Relation μ T.a0 a gN
+
 /-- Newtonian limit: where the interpolating function saturates at `1`, MOND reproduces
 Newtonian acceleration `a = g_N`. -/
 lemma newtonian_limit (μ : ℝ → ℝ) {a₀ a gN : ℝ} (hμ : μ (a / a₀) = 1)
@@ -173,12 +179,6 @@ lemma simpleMu_tendsto_atTop :
 /-- Newtonian point-mass acceleration `newtonAccel` taking a `GravitationalConstant`. -/
 noncomputable def newtonAccel_G (G : GravitationalConstant) (M r : ℝ) : ℝ :=
   newtonAccel G.val M r
-
-/-- Deep-MOND acceleration `√(a₀ g_N)` for a `MONDTheory`. -/
-noncomputable def MONDTheory.deepAccel (T : MONDTheory) (gN : ℝ) : ℝ := MOND.deepAccel T.a0 gN
-
-/-- The MOND interpolating relation `μ(a / a₀) * a = g_N` for a `MONDTheory`. -/
-def MONDTheory.Relation (T : MONDTheory) (μ : ℝ → ℝ) (a gN : ℝ) : Prop := MOND.Relation μ T.a0 a gN
 
 open scoped Classical in
 /-- In Physlib's classical reference frame, the norm of `pairGravityAcceleration` between

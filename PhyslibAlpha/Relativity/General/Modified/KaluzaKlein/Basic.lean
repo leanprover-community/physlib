@@ -105,6 +105,10 @@ def metric4Ext (g4 : Tensor2 4) : Tensor2 5 :=
 def kkMetric (g4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ) : Tensor2 5 :=
   fun i j => metric4Ext g4 i j + φ ^ 2 * extendedPotential A i * extendedPotential A j
 
+/-- The 5D Kaluza–Klein metric of a `KaluzaKleinData` bundle. -/
+def KaluzaKleinData.metric (D : KaluzaKleinData) : Tensor2 5 :=
+  kkMetric D.M.g D.A D.φ
+
 @[simp]
 private lemma kkMetric_apply_lt_lt (g4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ)
     {i j : Fin 5} (hi : i.val < 4) (hj : j.val < 4) :
@@ -315,10 +319,6 @@ noncomputable def kkMetricTensor (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : 
   symm := kkMetric_symm M.g M.symm A φ
   inv_left := kkMetric_mul_kkMetricInv M A φ hφ
   inv_right := kkMetricInv_mul_kkMetric M A φ hφ
-
-/-- The 5D Kaluza–Klein metric of a `KaluzaKleinData` bundle. -/
-def KaluzaKleinData.metric (D : KaluzaKleinData) : Tensor2 5 :=
-  kkMetric D.M.g D.A D.φ
 
 /-- The inverse 5D Kaluza–Klein metric of a `KaluzaKleinData` bundle. -/
 noncomputable def KaluzaKleinData.metricInv (D : KaluzaKleinData) : Tensor2 5 :=

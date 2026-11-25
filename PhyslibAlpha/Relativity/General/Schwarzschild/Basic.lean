@@ -91,6 +91,10 @@ structure SchwarzschildSpacetime where
 /-- The Schwarzschild metric lapse function `f = 1 - 2M / r`. -/
 noncomputable def schwarzschildLapse (M r : ℝ) : ℝ := 1 - 2 * M / r
 
+/-- The lapse function `f(r) = 1 - 2M / r` of a Schwarzschild spacetime. -/
+noncomputable def SchwarzschildSpacetime.lapse (S : SchwarzschildSpacetime) (r : ℝ) : ℝ :=
+  schwarzschildLapse S.M r
+
 /-- Equational form of `schwarzschildLapse M r`. -/
 lemma schwarzschildLapse_eq (M r : ℝ) : schwarzschildLapse M r = 1 - 2 * M / r := rfl
 
@@ -103,6 +107,11 @@ lemma r_mul_schwarzschildLapse (M r : ℝ) (hr : r ≠ 0) :
 /-- The Schwarzschild metric in `(t, r, θ, φ)` coordinates with signature `(-, +, +, +)`. -/
 noncomputable def schwarzschildMetric (M : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
   StaticSpherical.staticSphericalMetric (schwarzschildLapse M) x
+
+/-- The coordinate metric of a Schwarzschild spacetime in `(t, r, θ, φ)` coordinates. -/
+noncomputable def SchwarzschildSpacetime.metric (S : SchwarzschildSpacetime)
+    (x : Fin 4 → ℝ) : Tensor2 4 :=
+  schwarzschildMetric S.M x
 
 /-- The `tt` component of the Schwarzschild metric is `-(1 - 2M/r)`. -/
 lemma schwarzschildMetric_tt (M : ℝ) (x : Fin 4 → ℝ) :
@@ -487,15 +496,6 @@ lemma riemann_components_from_metric (M r th : ℝ) (hr : r ≠ 0)
    riemann_r_thetar_from_metric M r hr hf,
    riemann_r_phirphi_from_metric M r th hr hf,
    riemann_theta_phitheta_from_metric M r th hr hsin⟩
-
-/-- The lapse function `f(r) = 1 - 2M / r` of a Schwarzschild spacetime. -/
-noncomputable def SchwarzschildSpacetime.lapse (S : SchwarzschildSpacetime) (r : ℝ) : ℝ :=
-  schwarzschildLapse S.M r
-
-/-- The coordinate metric of a Schwarzschild spacetime in `(t, r, θ, φ)` coordinates. -/
-noncomputable def SchwarzschildSpacetime.metric (S : SchwarzschildSpacetime)
-    (x : Fin 4 → ℝ) : Tensor2 4 :=
-  schwarzschildMetric S.M x
 
 /-- With `M = r_s / 2`, the Schwarzschild lapse equals the exterior `g_tt` factor of the
 incompressible fluid sphere, `1 - r_s / r`. -/

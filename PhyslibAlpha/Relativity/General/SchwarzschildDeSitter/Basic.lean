@@ -86,6 +86,11 @@ structure SchwarzschildDeSitterSpacetime where
 /-- The Schwarzschild–de Sitter lapse function `f = 1 - 2M / r - Λ r² / 3`. -/
 noncomputable def sdsLapse (M Λ r : ℝ) : ℝ := 1 - 2 * M / r - Λ * r ^ 2 / 3
 
+/-- The lapse function `f(r) = 1 - 2M / r - Λ r² / 3` of a Schwarzschild–de Sitter spacetime. -/
+noncomputable def SchwarzschildDeSitterSpacetime.lapse (S : SchwarzschildDeSitterSpacetime)
+    (r : ℝ) : ℝ :=
+  sdsLapse S.M S.Λ r
+
 /-- Half the radial derivative of the lapse, `n = f'/2 = M / r² - Λ r / 3`, factored out so
 rational Christoffel and Riemann component expressions avoid repeated factor-of-2 cancellation. -/
 noncomputable def sdsLapseHalfDeriv (M Λ r : ℝ) : ℝ := M / r ^ 2 - Λ * r / 3
@@ -97,6 +102,16 @@ noncomputable def sdsMetric (M Λ : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
 /-- The inverse of the Schwarzschild–de Sitter metric in `(t, r, θ, φ)` coordinates. -/
 noncomputable def sdsMetricInv (M Λ : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
   StaticSpherical.staticSphericalMetricInv (sdsLapse M Λ) x
+
+/-- The coordinate metric of a Schwarzschild–de Sitter spacetime. -/
+noncomputable def SchwarzschildDeSitterSpacetime.metric (S : SchwarzschildDeSitterSpacetime)
+    (x : Fin 4 → ℝ) : Tensor2 4 :=
+  sdsMetric S.M S.Λ x
+
+/-- The inverse coordinate metric of a Schwarzschild–de Sitter spacetime. -/
+noncomputable def SchwarzschildDeSitterSpacetime.metricInv (S : SchwarzschildDeSitterSpacetime)
+    (x : Fin 4 → ℝ) : Tensor2 4 :=
+  sdsMetricInv S.M S.Λ x
 
 /-- At `Λ = 0`, the de Sitter lapse reduces to the Schwarzschild lapse. -/
 lemma sdsLapse_zero_lambda (M r : ℝ) : sdsLapse M 0 r = Schwarzschild.schwarzschildLapse M r := by
@@ -328,21 +343,6 @@ lemma weyl_phiphi_sds (M Λ r th : ℝ) (hr : r ≠ 0) (hf : sdsLapse M Λ r ≠
   rw [h33]
   field_simp [hr, hf, hsin]
   ring
-
-/-- The lapse function `f(r) = 1 - 2M / r - Λ r² / 3` of a Schwarzschild–de Sitter spacetime. -/
-noncomputable def SchwarzschildDeSitterSpacetime.lapse (S : SchwarzschildDeSitterSpacetime)
-    (r : ℝ) : ℝ :=
-  sdsLapse S.M S.Λ r
-
-/-- The coordinate metric of a Schwarzschild–de Sitter spacetime. -/
-noncomputable def SchwarzschildDeSitterSpacetime.metric (S : SchwarzschildDeSitterSpacetime)
-    (x : Fin 4 → ℝ) : Tensor2 4 :=
-  sdsMetric S.M S.Λ x
-
-/-- The inverse coordinate metric of a Schwarzschild–de Sitter spacetime. -/
-noncomputable def SchwarzschildDeSitterSpacetime.metricInv (S : SchwarzschildDeSitterSpacetime)
-    (x : Fin 4 → ℝ) : Tensor2 4 :=
-  sdsMetricInv S.M S.Λ x
 
 end SchwarzschildDeSitter
 

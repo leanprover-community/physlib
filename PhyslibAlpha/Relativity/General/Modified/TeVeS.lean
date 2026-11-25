@@ -87,6 +87,12 @@ noncomputable def metricInv (φ : ℝ) : Tensor2 4 :=
      0, 0, Real.exp (2 * φ), 0;
      0, 0, 0, Real.exp (2 * φ)]
 
+/-- The TeVeS physical (Jordan) metric of a `TeVeSMetric` configuration. -/
+noncomputable def TeVeSMetric.metric (T : TeVeSMetric) : Tensor2 4 := TeVeS.metric T.φ
+
+/-- The inverse TeVeS physical metric of a `TeVeSMetric` configuration. -/
+noncomputable def TeVeSMetric.metricInv (T : TeVeSMetric) : Tensor2 4 := TeVeS.metricInv T.φ
+
 /-- Symmetry of the TeVeS physical metric. -/
 lemma metric_symm (φ : ℝ) : IsSymm (metric φ) := by
   ext i j
@@ -132,12 +138,6 @@ noncomputable def metricTensor (φ : ℝ) : MetricTensor 4 where
   symm := metric_symm φ
   inv_left := metric_mul_inv φ
   inv_right := metricInv_mul φ
-
-/-- The TeVeS physical (Jordan) metric of a `TeVeSMetric` configuration. -/
-noncomputable def TeVeSMetric.metric (T : TeVeSMetric) : Tensor2 4 := TeVeS.metric T.φ
-
-/-- The inverse TeVeS physical metric of a `TeVeSMetric` configuration. -/
-noncomputable def TeVeSMetric.metricInv (T : TeVeSMetric) : Tensor2 4 := TeVeS.metricInv T.φ
 
 /-- Bundled `MetricTensor 4` of a `TeVeSMetric` configuration. -/
 noncomputable def TeVeSMetric.metricTensor (T : TeVeSMetric) : MetricTensor 4 :=
