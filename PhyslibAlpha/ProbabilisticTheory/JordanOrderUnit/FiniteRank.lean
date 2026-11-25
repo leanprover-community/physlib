@@ -41,7 +41,7 @@ each defining the expectation `a ↦ tr(ρ ∘ a)`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JordanAlgebra
 
@@ -128,4 +128,4 @@ end TraceDeterminant
 
 end JordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

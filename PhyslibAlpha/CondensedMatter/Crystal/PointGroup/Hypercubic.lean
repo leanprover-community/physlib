@@ -8,8 +8,6 @@ module
 public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Basic
 public import PhyslibAlpha.CondensedMatter.Crystal.BrillouinCoordinates
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Basic
-public import Mathlib.GroupTheory.Perm.Fin
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 

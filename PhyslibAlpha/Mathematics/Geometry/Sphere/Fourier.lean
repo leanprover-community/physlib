@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.Mathematics.Geometry.Sphere.Profile
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 /-!
 # Fourier transform of the sphere measure

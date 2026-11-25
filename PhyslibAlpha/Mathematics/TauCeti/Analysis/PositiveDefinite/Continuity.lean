@@ -6,8 +6,6 @@ Authors: The Tau Ceti contributors
 module
 
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.PositiveDefinite.Basic
-public import Mathlib.Topology.MetricSpace.Basic
-public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Continuity of positive-definite functions

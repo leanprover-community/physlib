@@ -7,12 +7,9 @@ module
 
 public import PhyslibAlpha.Mathematics.Calculus.IteratedFDerivBounds
 public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.DistributionSources
-public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.FreeEvolution
-public import PhyslibAlpha.Mathematics.Distribution.TimeSlice
 public import PhyslibAlpha.Mathematics.Distribution.SchwartzDensity
 public import PhyslibAlpha.Mathematics.Fourier.SchwartzDecay
 public import Mathlib.Analysis.Complex.OperatorNorm
-public import Mathlib.Analysis.LocallyConvex.HahnBanach
 
 /-!
 

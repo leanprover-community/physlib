@@ -5,7 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.Classical.Basic
 public import PhyslibAlpha.ProbabilisticTheory.Examples.Square
 public import PhyslibAlpha.ProbabilisticTheory.Classical.Compatibility
 
@@ -58,7 +57,7 @@ that every two yes/no measurements are compatible.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open TensorProduct Square
 
@@ -211,4 +210,4 @@ end Complete
 
 end Archimedean
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

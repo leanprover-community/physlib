@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.Quadratic.Fundamental
 public import PhyslibAlpha.ProbabilisticTheory.Algebra.Derivation
-public import Mathlib.Algebra.Lie.Basic
 
 /-!
 
@@ -41,7 +40,7 @@ derivations.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JordanAlgebra
 
@@ -229,4 +228,4 @@ end Inner
 
 end JordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

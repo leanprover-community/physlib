@@ -36,6 +36,7 @@ Matrix.det_exp
 Matrix.det_exp_real
 SM.SMNoGrav.One.accGravSatisfied
 StandardModel.HiggsField.Potential.isMinOn_iff_field_of_𝓵_pos
+StandardModel.HiggsVec.stabilizer_ofReal
 FieldSpecification.WickAlgebra.static_wick_theorem
 FieldSpecification.wicks_theorem
 FieldSpecification.WickAlgebra.wicks_theorem_normal_order
@@ -46,7 +47,6 @@ QuantumMechanics.OneDimension.HarmonicOscillator.eigenfunction_completeness
 LinearPMap.numericalRange_convex
 LinearPMap.inner_map_polarization'
 spaceTime.γ_anticomm
-spaceTime.γ.ofCliffordAlgebra_surjective
 Fermion.Dirac.gammaMatrix_anticomm
 Fermion.Dirac.gamma_anticomm
 lorentzAlgebra.exp_mem_lorentzGroup

@@ -41,7 +41,7 @@ below `(√(π² / 3 - 2) - 1)³`.
 
 namespace CondensedMatter
 namespace TightBindingChain
-open ProbabilisticTheory UnitalPositiveLinearMap
+open PhyslibAlpha.ProbabilisticTheory UnitalPositiveLinearMap
 
 /-!
 

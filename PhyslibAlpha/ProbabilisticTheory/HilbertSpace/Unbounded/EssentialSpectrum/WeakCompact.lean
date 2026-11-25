@@ -6,9 +6,7 @@ Authors: Tom Ole Diem, Adam Bornemann
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.Analysis.InnerProductSpace.Orthonormal
 public import Mathlib.Analysis.Normed.Operator.Compact.Basic
-public import Mathlib.Topology.Sequences
 
 /-!
 
@@ -43,7 +41,7 @@ weakly null sequence to a sequence converging to `0` in norm.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open Filter Topology
 open scoped InnerProductSpace
@@ -130,4 +128,4 @@ lemma _root_.IsCompactOperator.tendsto_norm_apply_of_weaklyNull
   rw [ha0, norm_zero] at hε_le
   exact absurd hε_le (not_le.mpr hε)
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

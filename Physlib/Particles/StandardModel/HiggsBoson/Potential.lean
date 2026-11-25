@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joseph Tooby-Smith
+Authors: Nikolai Kashcheev, Joseph Tooby-Smith
 -/
 module
 
@@ -9,9 +9,32 @@ public import Physlib.Particles.StandardModel.HiggsBoson.Basic
 /-!
 # The potential of the Higgs field
 
-We define the potential of the Higgs field.
+The classical Higgs potential, its bounds, and its extrema.
 
-We show that the potential is a smooth function on spacetime.
+## i. Overview
+
+The potential depends only on the squared norm of the field at a spacetime point. It is a
+polynomial of degree at most two in that squared norm, and constant fields realize every
+nonnegative squared norm. The bounds and extrema below compare values of the potential at
+points; they do not involve the kinetic term or an energy integral.
+
+## ii. Key results
+
+- `Potential.toFun_smooth`: the potential evaluated on a Higgs field is smooth.
+- `Potential.isBounded_iff`: the criterion for boundedness below.
+- `Potential.isMinOn_iff_field_of_𝓵_zero`: the minimizing field values at zero quartic coupling.
+
+## iii. Table of contents
+
+- A. The Higgs potential
+- B. Basic properties
+- C. The discriminant
+- D. Boundedness of the potential
+- E. Minimum and maximum
+
+## iv. References
+
+* None.
 
 -/
 
@@ -31,17 +54,16 @@ open SpaceTime
 
 /-!
 
-## The Higgs potential
+## A. The Higgs potential
 
 -/
 
-/-- The structure `Potential` is defined with two fields, `μ2` corresponding
-  to the mass-squared of the Higgs boson, and `l` corresponding to the coefficient
-  of the quartic term in the Higgs potential. Note that `l` is usually denoted `λ`. -/
+/-- The parameters of the classical Higgs potential. With `s` the squared norm of the field
+  value, the potential is `-μ2 * s + 𝓵 * s ^ 2`. -/
 structure Potential where
-  /-- The mass-squared of the Higgs boson. -/
+  /-- The mass parameter of the potential; its negative is the coefficient of the squared norm. -/
   μ2 : ℝ
-  /-- The quartic coupling of the Higgs boson. Usually denoted λ. -/
+  /-- The quartic coupling, usually denoted `λ`. -/
   𝓵 : ℝ
 
 namespace Potential
@@ -51,12 +73,16 @@ variable (P : Potential)
 TODO "Define a CoeFun instance for the Higgs Potential (or similar), instead of relying on
   `P.toFun`."
 
-/-- Given a element `P` of `Potential`, `P.toFun` is Higgs potential.
-  It is defined for a Higgs field `φ` and a spacetime point `x` as
-
-  `-μ² ‖φ‖_H^2 x + l * ‖φ‖_H^2 x * ‖φ‖_H^2 x`. -/
+/-- Evaluate the classical Higgs potential on the value of the field `φ` at the point `x`. -/
 def toFun (φ : HiggsField) (x : SpaceTime) : ℝ :=
   - P.μ2 * ‖φ‖_H^2 x + P.𝓵 * ‖φ‖_H^2 x * ‖φ‖_H^2 x
+
+/-- With zero quartic coupling and a nonnegative coefficient of the squared norm, each value
+  of the Higgs potential is nonnegative. -/
+private lemma toFun_nonneg_of_𝓵_zero (h𝓵 : P.𝓵 = 0) (hμ : P.μ2 ≤ 0) (φ : HiggsField)
+    (x : SpaceTime) : 0 ≤ P.toFun φ x := by
+  simpa only [toFun, h𝓵, zero_mul, add_zero] using
+    mul_nonneg (neg_nonneg.mpr hμ) (normSq_nonneg φ x)
 
 /-- The potential is smooth. -/
 lemma toFun_smooth (φ : HiggsField) :
@@ -65,7 +91,7 @@ lemma toFun_smooth (φ : HiggsField) :
   exact ((contMDiff_const (I' := 𝓘(ℝ, ℝ)) (M' := ℝ)).smul φ.normSq_smooth).neg.add
     (((contMDiff_const (I' := 𝓘(ℝ, ℝ)) (M' := ℝ)).smul φ.normSq_smooth).smul φ.normSq_smooth)
 
-/-- The Higgs potential formed by negating the mass squared and the quartic coupling. -/
+/-- The Higgs potential formed by negating both parameters. -/
 def neg : Potential where
   μ2 := - P.μ2
   𝓵 := - P.𝓵
@@ -83,7 +109,7 @@ lemma 𝓵_neg : P.neg.𝓵 = - P.𝓵 := by rfl
 
 /-!
 
-## Basic properties
+## B. Basic properties
 
 -/
 
@@ -109,8 +135,8 @@ lemma as_quad (φ : HiggsField) (x : SpaceTime) :
   simp only [toFun]
   ring
 
-/-- The Higgs potential is zero iff and only if the higgs field is zero, or the
-  higgs field has norm-squared `P.μ2 / P.𝓵`, assuming `P.𝓁 = 0`. -/
+/-- With nonzero quartic coupling, the potential vanishes exactly when the field value is zero
+  or has squared norm `P.μ2 / P.𝓵`. -/
 lemma toFun_eq_zero_iff (h : P.𝓵 ≠ 0) (φ : HiggsField) (x : SpaceTime) :
     P.toFun φ x = 0 ↔ φ x = 0 ∨ ‖φ‖_H^2 x = P.μ2 / P.𝓵 := by
   refine Iff.intro (fun hV => ?_) (fun hD => ?_)
@@ -128,7 +154,7 @@ lemma toFun_eq_zero_iff (h : P.𝓵 ≠ 0) (φ : HiggsField) (x : SpaceTime) :
 
 /-!
 
-## The discriminant
+## C. The discriminant
 
 -/
 
@@ -270,15 +296,11 @@ lemma pos_𝓵_sol_exists_iff (h𝓵 : 0 < P.𝓵) (c : ℝ) : (∃ φ x, P.toFu
 
 /-!
 
-## Boundedness of the potential
+## D. Boundedness of the potential
 
 -/
 
-/-- Given a element `P` of `Potential`, the proposition `IsBounded P` is true if and only if
-  there exists a real `c` such that for all Higgs fields `φ` and spacetime points `x`,
-  the Higgs potential corresponding to `φ` at `x` is greater then or equal to`c`. I.e.
-
-  `∀ Φ x, c ≤ P.toFun Φ x`. -/
+/-- The Higgs potential has a uniform lower bound over all field values at spacetime points. -/
 def IsBounded : Prop :=
   ∃ c, ∀ Φ x, c ≤ P.toFun Φ x
 
@@ -314,16 +336,37 @@ lemma isBounded_of_𝓵_pos (h : 0 < P.𝓵) : P.IsBounded := by
   have h2' := h2 φ x
   linarith
 
-/-- When there is no quartic coupling, the potential is bounded iff the mass squared is
-non-positive, i.e., for `P : Potential` then `P.IsBounded` iff `P.μ2 ≤ 0`. That is to say
-`- P.μ2 * ‖φ‖_H^2 x` is bounded below iff `P.μ2 ≤ 0`. -/
-informal_lemma isBounded_iff_of_𝓵_zero where
-  deps := [`StandardModel.HiggsField.Potential.IsBounded, `StandardModel.HiggsField.Potential]
-  tag := "6V2K5"
+/-- With zero quartic coupling, the Higgs potential is bounded below exactly when the
+coefficient `-P.μ2` of the squared norm is nonnegative. -/
+lemma isBounded_iff_of_𝓵_zero (h𝓵 : P.𝓵 = 0) : P.IsBounded ↔ P.μ2 ≤ 0 := by
+  constructor
+  · rintro ⟨b, hb⟩
+    by_contra! hμ
+    -- A constant field realizes a squared norm large enough to violate the proposed bound.
+    let s := (|b| + 1) / P.μ2
+    have hs : 0 ≤ s := div_nonneg (by positivity) hμ.le
+    have h := hb (HiggsField.const (HiggsVec.ofReal s)) 0
+    rw [toFun, const_normSq, HiggsVec.ofReal_normSq hs, h𝓵, zero_mul, zero_mul, add_zero] at h
+    have hprod : s * P.μ2 = |b| + 1 := div_mul_cancel₀ _ hμ.ne'
+    linarith [neg_abs_le b]
+  · intro hμ
+    exact ⟨0, P.toFun_nonneg_of_𝓵_zero h𝓵 hμ⟩
+
+/-- The Higgs potential is bounded below exactly when the quartic coupling is positive or is
+  zero with a nonnegative coefficient of the squared norm. -/
+lemma isBounded_iff : P.IsBounded ↔ 0 < P.𝓵 ∨ P.𝓵 = 0 ∧ P.μ2 ≤ 0 := by
+  constructor
+  · intro h
+    rcases eq_or_lt_of_le (P.isBounded_𝓵_nonneg h) with h𝓵 | h𝓵
+    · exact Or.inr ⟨h𝓵.symm, (P.isBounded_iff_of_𝓵_zero h𝓵.symm).mp h⟩
+    · exact Or.inl h𝓵
+  · rintro (h𝓵 | ⟨h𝓵, hμ⟩)
+    · exact P.isBounded_of_𝓵_pos h𝓵
+    · exact (P.isBounded_iff_of_𝓵_zero h𝓵).mpr hμ
 
 /-!
 
-## Minimum and maximum
+## E. Minimum and maximum
 
 -/
 
@@ -395,6 +438,33 @@ theorem isMinOn_iff_field_of_𝓵_pos (h𝓵 : 0 < P.𝓵) (φ : HiggsField) (x 
   by_cases hμ2 : 0 ≤ P.μ2
   · simpa [not_lt.mpr hμ2, hμ2] using P.isMinOn_iff_field_of_μSq_nonneg_𝓵_pos h𝓵 hμ2 φ x
   · simpa [hμ2, lt_of_not_ge hμ2] using P.isMinOn_iff_field_of_μSq_nonpos_𝓵_pos h𝓵 (by linarith) φ x
+
+/-- With zero quartic coupling, every field value minimizes the potential if the coefficient
+  of the squared norm is zero. If that coefficient is positive, only the zero field value
+  minimizes it. If the coefficient is negative, the potential has no minimum. -/
+lemma isMinOn_iff_field_of_𝓵_zero (h𝓵 : P.𝓵 = 0) (φ : HiggsField) (x : SpaceTime) :
+    IsMinOn (fun (ψ, y) => P.toFun ψ y) Set.univ (φ, x) ↔
+      P.μ2 = 0 ∨ (P.μ2 < 0 ∧ φ x = 0) := by
+  rw [isMinOn_univ_iff]
+  constructor
+  · intro hmin
+    have hb : P.IsBounded := ⟨P.toFun φ x, fun ψ y => hmin (ψ, y)⟩
+    rcases eq_or_lt_of_le ((P.isBounded_iff_of_𝓵_zero h𝓵).mp hb) with hμ | hμ
+    · exact Or.inl hμ
+    · refine Or.inr ⟨hμ, ?_⟩
+      have hle : -P.μ2 * ‖φ‖_H^2 x ≤ 0 := by
+        have h := hmin ((0 : HiggsField), x)
+        change P.toFun φ x ≤ P.toFun 0 x at h
+        rw [toFun_zero] at h
+        simpa only [toFun, h𝓵, zero_mul, add_zero] using h
+      have hs := le_antisymm (nonpos_of_mul_nonpos_right hle (neg_pos.mpr hμ)) (normSq_nonneg φ x)
+      simpa using hs
+  · rintro (hμ | ⟨hμ, hφ⟩) ⟨ψ, y⟩
+    · simp [toFun, h𝓵, hμ]
+    · change P.toFun φ x ≤ P.toFun ψ y
+      have hzero : P.toFun φ x = 0 := by simp [toFun, normSq, hφ]
+      rw [hzero]
+      exact P.toFun_nonneg_of_𝓵_zero h𝓵 hμ.le ψ y
 
 lemma isMaxOn_iff_isMinOn_neg (φ : HiggsField) (x : SpaceTime) :
     IsMaxOn (fun (φ, x) => P.toFun φ x) Set.univ (φ, x) ↔

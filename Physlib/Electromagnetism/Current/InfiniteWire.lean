@@ -46,6 +46,7 @@ namespace Electromagnetism
 open Physlib
 open Distribution SchwartzMap
 open Space MeasureTheory
+open SpaceTime
 
 namespace TempDistElectromagneticPotential
 
@@ -63,7 +64,7 @@ $$J(t, x, y, z) = (0, I δ((y, z)), 0, 0).$$
   along the `x`-axis. -/
 noncomputable def wireCurrentDensity (c : SpeedOfLight) :
     ℝ →ₗ[ℝ] TempDistLorentzCurrentDensity 3 where
-  toFun I := (SpaceTime.distTimeSlice c).symm <|
+  toFun I := (tempDistTimeSlice c).symm <|
     constantTime <|
     constantSliceDist 0
     (I • diracDelta' ℝ 0 (Lorentz.Vector.basis (Sum.inr 0)))
@@ -113,7 +114,7 @@ $$A(t, x, y, z) = \left(0, -\frac{μ_0 I}{2\pi} \log (\sqrt{y^2 + z^2}), 0, 0\ri
 /-- The electromagnetic potential of an infinite wire along the x-axis carrying a current `I`. -/
 noncomputable def infiniteWire (𝓕 : FreeSpace) (I : ℝ) :
     TempDistElectromagneticPotential 3 :=
-  (SpaceTime.distTimeSlice 𝓕.c).symm <|
+  (tempDistTimeSlice 𝓕.c).symm <|
   constantTime <|
   constantSliceDist 0
   ((- I * 𝓕.μ₀ / (2 * Real.pi)) • distOfFunction (fun (x : Space 2) =>
@@ -249,7 +250,7 @@ lemma infiniteWire_isExterma {𝓕 : FreeSpace} {I : ℝ} :
       simp [distDiv_apply_eq_sum_distDeriv]
       rw [add_comm]
       congr 1 <;>
-        simp [distDeriv_apply, fderivD_apply, distGrad_apply]
+        simp [Space.distDeriv_apply, fderivD_apply, distGrad_apply]
     rw [distGrad_distOfFunction_log_norm]
     simpa using distDiv_inv_pow_eq_dim (d := 2)
   all_goals

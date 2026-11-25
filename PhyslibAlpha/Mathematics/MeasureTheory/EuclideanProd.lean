@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-public import Mathlib.Analysis.InnerProductSpace.ProdL2
 
 /-!
 

@@ -43,7 +43,7 @@ measure.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder
 
@@ -51,7 +51,7 @@ namespace JB
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-open scoped selfAdjoint
+open scoped _root_.selfAdjoint
 
 /-! ## A. Jordan powers of a single element are ordinary powers -/
 
@@ -108,4 +108,4 @@ lemma variance_eq_integral_sq_sub (ω : 𝓢[ℂ, A]) (a : selfAdjoint A) :
 
 end JB
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

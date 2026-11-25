@@ -6,8 +6,8 @@ Authors: Cameron Lee
 module
 
 public import Mathlib.Analysis.Distribution.Distribution
-public import Physlib.SpaceAndTime.TimeAndSpace.ConstantTimeDist
-public import Physlib.SpaceAndTime.SpaceTime.TimeSlice
+public import Mathlib.Analysis.SpecialFunctions.Bernstein
+public import Physlib.SpaceAndTime.SpaceTime.Basic
 
 
 /-!

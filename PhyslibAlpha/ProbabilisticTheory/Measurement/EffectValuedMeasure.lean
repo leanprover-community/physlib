@@ -6,8 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
-public import Physlib.ProbabilisticTheory.Effect.Complement
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import PhyslibAlpha.ProbabilisticTheory.Effect.Complement
 
 /-!
 # Effect-valued measures
@@ -49,7 +48,7 @@ adding up to `1`, one for each outcome.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open Function
 
@@ -280,4 +279,4 @@ lemma coe_mapOutcome_apply (N : EffectValuedMeasure Ω' E) (f : Ω' → Ω) (hf 
 
 end EffectValuedMeasure
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

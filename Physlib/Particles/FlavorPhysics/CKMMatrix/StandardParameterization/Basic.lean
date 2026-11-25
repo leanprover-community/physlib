@@ -45,7 +45,7 @@ lemma standParamAsMatrix_unitary (θ₁₂ θ₁₃ θ₂₃ δ₁₃ : ℝ) :
     ((standParamAsMatrix θ₁₂ θ₁₃ θ₂₃ δ₁₃)ᴴ * standParamAsMatrix θ₁₂ θ₁₃ θ₂₃ δ₁₃) = 1 := by
   funext j i
   fin_cases j <;> fin_cases i <;>
-    simp only [standParamAsMatrix, mul_apply, Fin.sum_univ_three, conjTranspose_apply,
+    simp only [standParamAsMatrix, Matrix.mul_apply, Fin.sum_univ_three, conjTranspose_apply,
       cons_val', cons_val_zero, cons_val_one, cons_val_two, cons_val_fin_one, head_cons,
       head_fin_const, tail_cons, empty_val', RCLike.star_def, map_mul, map_sub, map_neg,
       ← exp_conj, conj_I, conj_ofReal, neg_mul, neg_neg, one_apply_eq, one_apply_ne, ne_eq,

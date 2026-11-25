@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.RetardedSolution
-public import Mathlib.Analysis.Fourier.Inversion
 public import PhyslibAlpha.ClassicalFieldTheory.WaveEquation.Kirchhoff.Propagator
 
 /-!

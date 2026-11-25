@@ -6,7 +6,6 @@ Authors: Kei Tsukamoto, Kento Mori, Hayata Yamasaki
 module
 
 public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.JensenOperatorInequality
-public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.LownerHeinzTheorem
 
 @[expose] public section
 

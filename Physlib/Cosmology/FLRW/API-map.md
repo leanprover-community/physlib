@@ -37,7 +37,8 @@ The first-order Friedmann equation (∂ₜ a / a)² = (8πG/3) ρ − k c² / a�
 scale factor and an energy density, with the curvature parameter explicit; the second-order
 Friedmann equation ∂ₜ ∂ₜ a / a = −(4πG/3) (ρ + 3 p / c²) + Λ c² / 3 involves a pressure as well
 and has no curvature term. The cosmological constant, Newton's constant and the speed of light
-appear explicitly in both. [8]
+appear explicitly in both; the speed of light is positive by construction, so no result needs a
+hypothesis on it. [8]
 
 A cosmic fluid is an energy density and a pressure, each a function of cosmic time; the empty
 fluid has zero density and pressure. [4] A model filled with a fluid solves the Friedmann equations

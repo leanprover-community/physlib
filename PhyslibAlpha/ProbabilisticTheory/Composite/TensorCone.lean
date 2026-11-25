@@ -6,10 +6,8 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.State.Separation
-public import Physlib.ProbabilisticTheory.OrderUnit.Cone
 public import PhyslibAlpha.Mathematics.Convex.DominatedCone
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
-public import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-!
 # Composite systems
@@ -64,7 +62,7 @@ minimal cone: its composites are unique.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open TensorProduct
 open scoped NNReal
@@ -80,10 +78,10 @@ abbrev Composite.tmul (x : E) (y : F) : Composite E F := x ⊗ₜ[ℝ] y
 
 /-! ## A. Slices and product functionals -/
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 namespace PositiveLinearMap
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 open TensorProduct
 open scoped NNReal
 variable {E F : Type*} [OrderUnitSpace E] [OrderUnitSpace F]
@@ -125,7 +123,7 @@ lemma tensor_apply_eq_lslice (φ : E →ₚ[ℝ] ℝ) (ψ : F →ₚ[ℝ] ℝ) (
 
 end PositiveLinearMap
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open TensorProduct
 open scoped NNReal
@@ -434,4 +432,4 @@ lemma mem_maxTensorCone_iff_rslice {z : E ⊗[ℝ] F} :
 
 end Archimedean
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

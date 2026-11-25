@@ -5,9 +5,6 @@ Authors: Eduardo Nava-Hernandez
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dimension.Constructions
-public import Mathlib.LinearAlgebra.Dimension.Finite
-public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Physlib.Relativity.PauliMatrices.Basic
 /-!
 

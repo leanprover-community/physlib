@@ -5,8 +5,6 @@ Authors: Daniel Leonforte
 -/
 module
 
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import PhyslibAlpha.Mathematics.RepresentationTheory.Sl2.CommutingActions
 public import PhyslibAlpha.Mathematics.RepresentationTheory.Sl2.TensorHighestWeight
 
@@ -72,7 +70,7 @@ def stringVec (m n k l : ℕ) : StandardSl2Module K m ⊗[K] StandardSl2Module K
 omit [CharZero K] in
 lemma tensorF_stringVec (k l : ℕ) :
     tensorF (K := K) m n (stringVec m n k l) = stringVec m n k (l + 1) := by
-  rw [stringVec, stringVec, pow_succ', Module.End.mul_apply]
+  rw [stringVec, stringVec, pow_succ', mul_apply_eq_comp]
 
 section String
 
@@ -100,7 +98,7 @@ lemma stringVec_eq_zero {l : ℕ} (hl : m + n - 2 * k < l) :
 
 omit hmn in
 lemma tensorE_stringVec_zero : tensorE (K := K) m n (stringVec m n k 0) = 0 := by
-  rw [stringVec, pow_zero, Module.End.one_apply, tensorE_hwVec hkm hkn]
+  rw [stringVec, pow_zero, one_apply_eq_self, tensorE_hwVec hkm hkn]
 
 end String
 
@@ -142,7 +140,7 @@ lemma separator_stringVec {k : ℕ} (hmn : 0 < m + n) (hkm : k ≤ m) (hkn : k �
     rw [tensorH_stringVec hmn hkm hkn, map_smul, tensorH_stringVec hmn hkm hkn, smul_smul]
     congr 1
     ring
-  simp only [separator, sepVal, LinearMap.add_apply, LinearMap.smul_apply, Module.End.mul_apply,
+  simp only [separator, sepVal, LinearMap.add_apply, LinearMap.smul_apply, mul_apply_eq_comp,
     hEF, hFE, hHH]
   rw [tensorH_stringVec hmn hkm hkn]
   module

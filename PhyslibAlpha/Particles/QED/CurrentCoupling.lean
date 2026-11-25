@@ -5,7 +5,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.Particles.QED.Lagrangian
 public import PhyslibAlpha.Particles.QED.FermionStatistics
 public import PhyslibAlpha.Particles.QED.GaugeInvariance
 public import PhyslibAlpha.Particles.QED.FieldStrength

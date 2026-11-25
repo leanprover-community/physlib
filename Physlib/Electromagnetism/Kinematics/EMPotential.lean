@@ -294,7 +294,8 @@ open ContDiff
 
 @[fun_prop]
 lemma differentiable_action {d} (Λ : LorentzGroup d) (A : ElectromagneticPotential d)
-    (hA : Differentiable ℝ A) : Differentiable ℝ (fun x => Λ • A (Λ⁻¹ • x)) := by
+    (hA : Differentiable ℝ A) : Differentiable ℝ (Λ • A).val := by
+  rw [action_val]
   exact (ContinuousLinearMap.differentiable (Lorentz.Vector.actionCLM Λ)).comp
     (hA.comp (ContinuousLinearMap.differentiable (Lorentz.Vector.actionCLM Λ⁻¹)))
 

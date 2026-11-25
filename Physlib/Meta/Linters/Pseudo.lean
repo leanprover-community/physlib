@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public meta import Physlib.Meta.Basic
+public meta import Lean.Attributes
 /-!
 
 # The `pseudo` attribute

@@ -6,10 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.Stinespring.Kernel
-public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.Analysis.InnerProductSpace.Completion
-public import Mathlib.Topology.Algebra.LinearMapCompletion
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
 /-!
@@ -47,7 +44,7 @@ commutative `A` this contains Naimark's dilation of a POVM.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder CStarAlgebra TensorProduct
 open ContinuousLinearMap
@@ -750,4 +747,4 @@ end Stinespring
 
 end
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

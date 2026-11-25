@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import Mathlib.Algebra.DirectSum.Module
-public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.Tactic.NoncommRing
 /-!

@@ -6,8 +6,6 @@ Authors: Robert Sneiderman
 module
 
 public import PhyslibAlpha.SpaceAndTime.Space.Surfaces.Ring
-public import Physlib.SpaceAndTime.Space.Integrals.Basic
-public import Mathlib.MeasureTheory.Integral.Prod
 /-!
 
 # Spherical cylinder surface in `Space 3`

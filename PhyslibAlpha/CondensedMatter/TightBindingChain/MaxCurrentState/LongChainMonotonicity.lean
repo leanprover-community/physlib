@@ -6,7 +6,6 @@ Authors: Eduardo Nava-Hernandez
 module
 
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.MaxCurrentState.LongChainLimit
-public import Mathlib.Analysis.Real.Pi.Bounds
 public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 public import Mathlib.Analysis.Calculus.Deriv.Pow
 /-!

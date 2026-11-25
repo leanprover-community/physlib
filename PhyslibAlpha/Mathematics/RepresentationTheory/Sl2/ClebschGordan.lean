@@ -5,10 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Algebra.DirectSum.Basic
-public import Mathlib.LinearAlgebra.Dimension.Free
 public import Mathlib.LinearAlgebra.DirectSum.Finite
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
 public import PhyslibAlpha.Mathematics.RepresentationTheory.Sl2.Construction
 
 /-!

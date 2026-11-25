@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.State.Basic
-public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.PositiveDual
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Topology.UnitInterval
 
@@ -43,7 +42,7 @@ two others, an extreme point of that convex set. A mixed state is one that is a 
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace UnitalPositiveLinearMap
 
@@ -168,4 +167,4 @@ lemma isMixed_iff_exists_mix_ne {ω : 𝓢[ℝ, E]} :
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

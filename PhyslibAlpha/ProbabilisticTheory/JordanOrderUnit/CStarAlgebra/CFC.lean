@@ -41,13 +41,13 @@ isometric.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JB
 
 variable {A : Type*} [CStarAlgebra A]
 
-open scoped selfAdjoint
+open scoped _root_.selfAdjoint
 
 /-!
 
@@ -134,4 +134,4 @@ end Order
 
 end JB
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

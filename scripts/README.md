@@ -12,6 +12,30 @@ The scripts are grouped by purpose:
 - `github/` : scripts run by GitHub workflows and bots.
 - `dev/` : tools for local development and maintenance.
 
+# Migrating deprecated declarations
+
+Run `lake exe migrate Physlib` to replace uses of deprecated declarations inside `Physlib`
+with their explicitly declared alternatives. With no arguments, `lake exe migrate` processes
+every top-level `lean_lib` in the Lake configuration. You can also name several libraries,
+for example `lake exe migrate Physlib QuantumInfo`. Source directories, root modules, and
+module globs come from Lake; dependencies are not migrated.
+
+The executable reuses `.ilean` references from the latest local build or restored cache when
+the build trace's source and reference hashes match the current files. For restored traces
+without source-hash entries, it checks Lake's current build-input hash with rebuilding disabled.
+Missing, stale, or unusable build data falls back to elaboration. Build imports first; no rebuild
+is needed just to refresh the migration data. Cached replacements use fully qualified names
+because the saved references do not include local scopes.
+
+Comments, strings, declaration names, and local variables are preserved. Deprecations with
+only a prose message are left alone. Each modified file is checked before writing; if elaboration
+fails, the file is left unchanged and the executable returns a nonzero exit status after processing
+the remaining files. Field notation whose replacement changes namespace is reported for
+manual migration. Review the resulting diff before committing.
+
+Run its integration tests with `lake build migrate` followed by
+`lake env python3 scripts/dev/test_migrate.py`. The tests use temporary Lake projects.
+
 # Linting Physlib
 
 `Linting` is the process of checking changes to the project

@@ -7,8 +7,6 @@ module
 
 public import PhyslibAlpha.CondensedMatter.Crystal.Symmetry
 public import Mathlib.Topology.Algebra.PontryaginDual
-public import Mathlib.GroupTheory.GroupAction.Quotient
-public import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 

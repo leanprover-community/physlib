@@ -56,6 +56,7 @@ namespace IsSymmetric
 open InnerProductSpace
 open Complex
 open Set
+open scoped Pointwise
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
 

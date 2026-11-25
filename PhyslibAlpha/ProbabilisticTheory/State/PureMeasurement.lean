@@ -6,9 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Binary
-public import PhyslibAlpha.Mathematics.Probability.Kernel.Factorization
 public import PhyslibAlpha.ProbabilisticTheory.State.Preparation
-public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 public import Mathlib.Probability.Independence.Basic
 public import Mathlib.Probability.Kernel.CompProdEqIff
 
@@ -64,7 +62,7 @@ trivial, with every expectation value almost surely independent of the roll.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory ProbabilityTheory UnitalPositiveLinearMap
 
@@ -269,4 +267,4 @@ lemma isMixed_iff_exists_sideInfo (hω : ω.IsNormal) :
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

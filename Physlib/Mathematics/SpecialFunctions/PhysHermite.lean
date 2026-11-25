@@ -48,7 +48,7 @@ and, up to numerical factors, satisfy all of the same properties.
 
 namespace Polynomial
 
-open Function Nat
+open Function Nat AddMonoidAlgebra
 
 /-!
 ## A. Recursive definition
@@ -113,8 +113,8 @@ lemma coeff_physHermite_succ_zero (n : ℕ) :
 
 lemma coeff_physHermite_succ_succ (n k : ℕ) : coeff (physHermite (n + 1)) (k + 1) =
     2 * coeff (physHermite n) k - (k + 2) * coeff (physHermite n) (k + 2) := by
-  rw [physHermite_succ, coeff_sub, smul_mul_assoc, coeff_smul, coeff_X_mul, coeff_derivative,
-    mul_comm]
+  rw [physHermite_succ, coeff_sub, smul_mul_assoc, coeff_smul_apply,
+      coeff_X_mul, coeff_derivative, mul_comm]
   norm_cast
 
 lemma coeff_physHermite_of_lt {n k : ℕ} (hnk : n < k) : coeff (physHermite n) k = 0 := by
@@ -461,13 +461,14 @@ lemma polynomial_mem_physHermite_span_induction (P : Polynomial ℤ) : (n : ℕ)
     · rwa [Submodule.smul_mem_iff] at hP'mem
       simp
     · exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨n + 1, rfl⟩)
+termination_by n _ => n
 decreasing_by
   rw [Polynomial.natDegree_lt_iff_degree_lt]
   · apply (Polynomial.degree_lt_iff_coeff_zero _ _).mpr
     intro m hm'
     simp only [coeff_physHermite_self, coeff_sub]
     change n + 1 ≤ m at hm'
-    rw [coeff_smul, coeff_smul]
+    rw [coeff_smul_apply, coeff_smul_apply]
     by_cases hm : m = n + 1
     · subst hm
       simp only [smul_eq_mul, coeff_physHermite_self]

@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
-public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import PhyslibAlpha.Mathematics.Distribution.SchwartzPointwise
 
 /-!

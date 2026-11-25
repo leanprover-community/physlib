@@ -90,6 +90,15 @@ lemma translateSchwartz_coe_eq {d : ℕ} (a : EuclideanSpace ℝ (Fin d))
   ext
   simp
 
+/-- In one dimension, translating by `a` subtracts the point `a` from the argument. -/
+lemma translateSchwartz_single_apply (a : ℝ) (η : 𝓢(Space 1, X)) (x : Space 1) :
+    translateSchwartz (EuclideanSpace.single 0 a) η x = η (x - oneEquiv.symm a) := by
+  rw [translateSchwartz_apply]
+  congr 2
+  ext i
+  fin_cases i
+  simp [oneEquiv_symm_apply]
+
 /-- The continuous linear map translating distributions. -/
 noncomputable def distTranslate {d : ℕ} (a : EuclideanSpace ℝ (Fin d)) :
     ((Space d) →d[ℝ] X) →ₗ[ℝ] ((Space d) →d[ℝ] X) where

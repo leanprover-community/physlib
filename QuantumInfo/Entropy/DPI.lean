@@ -6,8 +6,6 @@ Authors: Alex Meiburg
 module
 
 public import QuantumInfo.Entropy.Relative
-public import QuantumInfo.ForMathlib.HermitianMat.Sqrt
-public import QuantumInfo.ForMathlib.HermitianMat.LiebConcavity
 public import Mathlib.Data.Fintype.Shrink
 
 @[expose] public section
@@ -1159,7 +1157,7 @@ private lemma traceRight_mulVec_zero_of_vecTensorBasis_zero
   ext i
   simp_all [funext_iff, Matrix.mulVec, dotProduct]
   convert Finset.sum_congr rfl fun j _ => h j i j using 1
-  any_goals exact Finset.univ
+  on_goal 3 => exact Finset.univ
   · unfold Matrix.traceRight vecTensorBasis; simp [Finset.sum_ite]
     simp [Finset.sum_mul, Finset.sum_sigma']
     apply Finset.sum_bij (fun x _ => ⟨x.2, x.1, x.2⟩)

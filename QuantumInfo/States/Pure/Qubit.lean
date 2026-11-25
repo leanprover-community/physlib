@@ -6,6 +6,7 @@ Authors: Alex Meiburg
 module
 
 public import QuantumInfo.ForMathlib.HermitianMat.Unitary
+import Lean.Elab.Tactic.RCases
 
 /-!
 

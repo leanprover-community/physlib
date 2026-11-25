@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 public import PhyslibAlpha.SpaceAndTime.Space.Surfaces.SphericalShell
 public import Physlib.SpaceAndTime.Space.Translations
-public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 /-!
 
 # Ring surface in `Space 3`
@@ -138,8 +137,8 @@ lemma ringMeasure_prod_volume_map :
 @[simp]
 lemma ringMeasure_univ : ringMeasure Set.univ = ENNReal.ofReal ((2 : ℝ) * π) := by
   rw [ringMeasure, Measure.map_apply]
-  simp only [Set.preimage_univ, Measure.toSphere_apply_univ, finrank_eq_dim, Nat.cast_ofNat,
-    volume_metricBall_two, Nat.ofNat_nonneg, ENNReal.ofReal_mul, ENNReal.ofReal_ofNat]
+  · simp only [Set.preimage_univ, Measure.toSphere_apply_univ, finrank_eq_dim, Nat.cast_ofNat,
+      volume_metricBall_two, Nat.ofNat_nonneg, ENNReal.ofReal_mul, ENNReal.ofReal_ofNat]
   · fun_prop
   · exact MeasurableSet.univ
 

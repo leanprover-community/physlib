@@ -5,12 +5,9 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Observable
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Lie
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.QuantumChannel
-public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
 public import PhyslibAlpha.ProbabilisticTheory.Channel.Symmetry
-public import Mathlib.Algebra.Star.StarAlgHom
 
 /-!
 
@@ -52,13 +49,13 @@ dynamics; it can be transported along a `⋆`-isomorphism and induces dynamics o
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-! ## A. Action on observables -/
 
 section StarAlgEquivObservable
 
-open scoped selfAdjoint
+open scoped _root_.selfAdjoint
 
 variable {A : Type*} [Ring A] [StarRing A] [Module ℂ A] [StarModule ℂ A]
 
@@ -199,7 +196,7 @@ lemma AutomorphismGroup.ext {A : Type*} [Ring A] [StarRing A] [Module ℂ A]
 
 section AutomorphismGroupObservableDynamics
 
-open scoped selfAdjoint
+open scoped _root_.selfAdjoint
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -375,4 +372,4 @@ lemma AutomorphismGroup.conj_conj_symm (α : AutomorphismGroup A) (β : A ≃⋆
 
 end AutomorphismGroupConj
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

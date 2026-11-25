@@ -7,8 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.JB.GeneratedByOne.Spectrum
 public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
-public import Mathlib.Topology.ContinuousMap.Compact
-public import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
 
@@ -50,7 +48,7 @@ square roots, absolute values and positive and negative parts.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace NormedJordanAlgebra
 
@@ -81,8 +79,8 @@ lemma enorm_aeval_closedGenerator_eq_enorm_toContinuousMapOn [Nontrivial E]
     (a : E) (p : Polynomial ℝ) :
     ‖Polynomial.aeval (closedGenerator a) p‖ₑ =
       ‖p.toContinuousMapOn (jordanSpectrum a)‖ₑ := by
-  rw [enorm_eq_nnnorm, norm_aeval_closedGenerator a p,
-    ContinuousMap.enorm_eq_iSup_enorm, iSup_subtype]
+  rw [eNorm_eq_nnNorm, norm_aeval_closedGenerator a p,
+    ContinuousMap.eNorm_eq_iSup_eNorm, iSup_subtype]
   rfl
 
 /-- The polynomial functions on the intrinsic spectrum are dense in its real continuous-function
@@ -127,13 +125,13 @@ lemma aeval_closedGenerator_eq_of_toContinuousMapOn_eq [Nontrivial E] (a : E) {p
       Polynomial.toContinuousMapOnAlgHom (jordanSpectrum a) q) :
     Polynomial.aeval (closedGenerator a) p = Polynomial.aeval (closedGenerator a) q := by
   rw [← sub_eq_zero]
-  apply enorm_eq_zero.mp
+  apply eNorm_eq_zero.mp
   rw [← map_sub, enorm_aeval_closedGenerator_eq_enorm_toContinuousMapOn a]
   have hzero : Polynomial.toContinuousMapOnAlgHom (jordanSpectrum a) (p - q) = 0 := by
     rw [map_sub, h, sub_self]
   change ‖Polynomial.toContinuousMapOnAlgHom (jordanSpectrum a) (p - q)‖ₑ = 0
   rw [hzero]
-  rw [enorm_eq_nnnorm]
+  rw [eNorm_eq_nnNorm]
   simp
 
 /-- Polynomial evaluation descended to the subspace of polynomial functions on the intrinsic
@@ -175,7 +173,7 @@ noncomputable def polynomialCfcLinearIsometry [Nontrivial E]
     have h : ‖polynomialCfcLinearMap a f‖ₑ = ‖f‖ₑ :=
       enorm_polynomialCfcLinearMap a f
     exact congrArg (fun x : NNReal => (x : ℝ)) <|
-      ENNReal.coe_injective (by simpa only [enorm_eq_nnnorm] using h)
+      ENNReal.coe_injective (by simpa only [eNorm_eq_nnNorm] using h)
 
 /-- The descended polynomial calculus respects multiplication. -/
 lemma polynomialCfcLinearMap_mul [Nontrivial E] (a : E)
@@ -833,4 +831,4 @@ end
 
 end NormedJordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

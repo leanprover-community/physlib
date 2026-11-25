@@ -131,7 +131,7 @@ lemma log_smul_of_pos (A : HermitianMat d 𝕜) (hx : x ≠ 0) :
     (x • A).log = Real.log x • A.supportProj + A.log := by
   ext1
   convert! A.H.log_smul_of_ne_zero hx
-  simp [cfc, log, supportProj_eq_cfc]
+  simp [log, supportProj_eq_cfc]
 
 lemma log_smul {A : HermitianMat d 𝕜} {x : ℝ} (hx : x ≠ 0) [NonSingular A] :
     (x • A).log = Real.log x • 1 + A.log := by

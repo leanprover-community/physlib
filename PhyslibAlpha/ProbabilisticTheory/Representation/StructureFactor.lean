@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Bochner.DiscreteGroup
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Fourier.Pontryagin.Uniqueness
-public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Fourier.Pontryagin.Measure
 public import PhyslibAlpha.Mathematics.TauCeti.Topology.Algebra.PontryaginDual
 
 /-!
@@ -54,7 +53,7 @@ needed, and the algebra need not be a C⋆-algebra.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology
 open scoped ComplexOrder
@@ -189,6 +188,6 @@ end StructureFactor
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

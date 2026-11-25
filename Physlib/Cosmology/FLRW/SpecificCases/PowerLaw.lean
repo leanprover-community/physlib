@@ -85,17 +85,17 @@ noncomputable def FLRW.powerLaw (t₀ : Time) (ht₀ : 0 < t₀.val) (n : ℝ) :
 
 /-- The cosmic fluid of the flat power-law solution: the density `ρ = 3 n² / (8 π G t²)` imposed by
   the first-order Friedmann equation, and the pressure `p = w ρ c²`. -/
-noncomputable def CosmicFluid.powerLaw (n w G c : ℝ) : CosmicFluid :=
+noncomputable def CosmicFluid.powerLaw (n w G : ℝ) (c : SpeedOfLight) : CosmicFluid :=
   ⟨fun s => 3 * n ^ 2 / (8 * π * G * s.val ^ 2),
-    fun s => w * (3 * n ^ 2 / (8 * π * G * s.val ^ 2)) * c ^ 2⟩
+    fun s => w * (3 * n ^ 2 / (8 * π * G * s.val ^ 2)) * (c : ℝ) ^ 2⟩
 
 /-- The flat power-law model with `n ≠ 0`, filled with the fluid `CosmicFluid.powerLaw n w G c`
   where `1 + 3 w = 2 (1 - n) / n`, solves the Friedmann equations without cosmological constant on
   its interval `t > 0`. -/
 lemma FLRW.friedmannSolution_powerLaw {t₀ : Time} (ht₀ : 0 < t₀.val)
-    {n w G c : ℝ} (hG : 0 < G) (hc : 0 < c) (hn : n ≠ 0) (hw : 1 + 3 * w = 2 * (1 - n) / n) :
+    {n w G : ℝ} {c : SpeedOfLight} (hG : 0 < G) (hn : n ≠ 0) (hw : 1 + 3 * w = 2 * (1 - n) / n) :
     (FLRW.powerLaw t₀ ht₀ n).FriedmannSolution (CosmicFluid.powerLaw n w G c) 0 G c :=
   ⟨fun _ ht => powerLaw_firstOrderFriedmann ht₀ hG n ht,
-    fun _ ht => powerLaw_secondOrderFriedmann ht₀ hG hc hn hw ht⟩
+    fun _ ht => powerLaw_secondOrderFriedmann ht₀ hG hn hw ht⟩
 
 end Cosmology

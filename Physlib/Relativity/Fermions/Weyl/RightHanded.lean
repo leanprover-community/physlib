@@ -170,7 +170,7 @@ def rep : Representation ℂ SL(2,ℂ) RightHandedWeyl where
   map_mul' := fun M N => by
     ext1 x
     simp only [SpecialLinearGroup.coe_mul, RCLike.star_def, Matrix.map_mul, LinearMap.coe_mk,
-      AddHom.coe_mk, Module.End.mul_apply, LinearEquiv.apply_symm_apply, mulVec_mulVec]
+      AddHom.coe_mk, mul_apply_eq_comp, LinearEquiv.apply_symm_apply, mulVec_mulVec]
 
 lemma rep_apply (M : SL(2,ℂ)) (ψ : RightHandedWeyl) : rep M ψ = ⟨M.1.map star *ᵥ ψ.1⟩ := rfl
 

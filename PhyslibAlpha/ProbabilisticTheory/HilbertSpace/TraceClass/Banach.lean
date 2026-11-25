@@ -5,10 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.Basic
-public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.GeneralProduct
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.IdealNorm
-public import Mathlib.Analysis.Normed.Group.Seminorm
 public import Mathlib.Analysis.Normed.Group.Completeness
 
 /-!
@@ -47,7 +44,7 @@ which gives completeness.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace Topology Filter
 open Filter
@@ -415,6 +412,6 @@ noncomputable instance instCompleteSpace : CompleteSpace (TraceClass H) := by
 
 end TraceClass
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

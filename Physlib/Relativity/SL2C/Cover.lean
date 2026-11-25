@@ -63,7 +63,7 @@ lemma exists_unitary_toLorentzGroup_eq (Λ : LorentzGroup.Rotations 3) :
     (mem_specialOrthogonalGroup_iff.mp A.2).1
   have hn : A.1 0 2 ^ 2 + A.1 1 2 ^ 2 + A.1 2 2 ^ 2 = 1 := by
     have := congrFun (congrFun hA 2) 2
-    simp only [mul_apply, transpose_apply, Fin.sum_univ_three, one_apply_eq] at this
+    simp only [Matrix.mul_apply, transpose_apply, Fin.sum_univ_three, one_apply_eq] at this
     linarith
   obtain ⟨a, b, h, hab⟩ := exists_cayleyKleinRotation_apply_two (fun i => A.1 i 2) hn
   set B := (ofSpecialOrthogonal (d := 3)).symm (cayleyKleinRotation a b h)
@@ -73,10 +73,10 @@ lemma exists_unitary_toLorentzGroup_eq (Λ : LorentzGroup.Rotations 3) :
   set C := B⁻¹ * A
   have hC : ∀ i, C.1 i 2 = if i = 2 then 1 else 0 := fun i => by
     have := congrFun (congrFun hB' i) 2
-    simp only [mul_apply, transpose_apply, Fin.sum_univ_three, one_apply] at this ⊢
+    simp only [Matrix.mul_apply, transpose_apply, Fin.sum_univ_three, Matrix.one_apply] at this ⊢
     rw [← this]
     change (star B.1 * A.1) i 2 = _
-    simp only [mul_apply, star_apply, star_trivial, Fin.sum_univ_three, ← hab']
+    simp only [Matrix.mul_apply, star_apply, star_trivial, Fin.sum_univ_three, ← hab']
   have hC' : C.1 = !![C.1 0 0, C.1 0 1, 0; -C.1 0 1, C.1 0 0, 0; 0, 0, 1] :=
     GroupTheory.SO3.eq_of_apply_two
       ⟨C.1, (mem_specialOrthogonalGroup_iff.mp C.2).2,
@@ -86,7 +86,7 @@ lemma exists_unitary_toLorentzGroup_eq (Λ : LorentzGroup.Rotations 3) :
       (mem_specialOrthogonalGroup_iff.mp C.2).1
     rw [hC'] at h1
     have := congrFun (congrFun h1 0) 0
-    simp [mul_apply, Fin.sum_univ_three] at this
+    simp [Matrix.mul_apply, Fin.sum_univ_three] at this
     linarith
   obtain ⟨w, hw⟩ := IsAlgClosed.exists_pow_nat_eq (⟨C.1 0 0, C.1 0 1⟩ : ℂ) two_pos
   have hw1 : normSq w = 1 := by

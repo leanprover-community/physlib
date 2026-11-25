@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Jordan.Basic
 public import Mathlib.Basic.Real.Basic
-public import Mathlib.Algebra.Module.LinearMap.Basic
 
 /-!
 
@@ -40,7 +39,7 @@ Jordan product.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JordanAlgebra
 
@@ -133,4 +132,4 @@ end JordanHom
 
 end JordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

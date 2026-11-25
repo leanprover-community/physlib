@@ -5,8 +5,7 @@ Authors: Michal Mogielnicki
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Deriv
-public import Physlib.Mathematics.ForMathlib.FDerivCurry
+public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 
 /-!
 # Partial derivatives on products

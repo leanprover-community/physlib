@@ -5,57 +5,51 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.CondensedMatter.Crystal.Bonds
-public import Mathlib.GroupTheory.GroupAction.Hom
+public import Physlib.CondensedMatter.Crystal.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
 
 /-!
 # Symmetries of a crystal
 
-The symmetries of a crystal are the permutations of its sites that respect its translations.
+The operations that leave a crystal unchanged form its symmetry group.
 
 ## i. Overview
 
-A crystal is a pattern that repeats. Shift the whole crystal by one lattice step and it looks
-exactly the same. This translation symmetry is why momentum is conserved in a solid. It is also
-why the electrons of a crystal are described by waves labelled by a wavevector.
+A crystal looks the same after certain operations, its symmetries. The simplest are
+translations by lattice vectors. Other symmetries rotate or reflect the lattice, or exchange
+sites within a unit cell. In graphene, inversion through the centre of a bond exchanges the
+two carbon atoms of a unit cell.
 
-Other operations can leave the pattern looking the same, such as turning a square lattice by a
-quarter turn. This file defines the operations that keep the repetition intact: they move the
-sites around and turn each lattice step into another lattice step. They form a group. The
-translations are a normal subgroup of it.
+A symmetry permutes the sites and transforms the lattice vectors by an automorphism `A` of the
+translation group, so that
 
-Every site is a copy of a site in the reference cell, so such an operation is determined by where
-it sends the reference cell. When the cell has several sites, it can move them differently. For
-example, shifting a chain with two sites per cell by half a cell exchanges the two sites. It is
-not a translation by a lattice step.
+`φ (a +ᵥ x) = A a +ᵥ φ x`.
 
-A symmetry also moves the bonds between sites. A bond from the label `i` to the label `j` with
-displacement `δ` goes to the bond from `σ i` to `σ j` with displacement `A δ + bⱼ - bᵢ`, where `σ`
-is the permutation of the labels, `A` the lattice automorphism and `bᵢ` the offset at `i`. The
-symmetries that respect the bonds, the space group, are defined with the periodic graph.
+The same `A` applies everywhere in the crystal. For example, a quarter turn of a square lattice
+sends a step to the right to a step upwards.
+
+With one site per cell the symmetries are the affine equivalences of the sites. With several
+sites per cell a symmetry may also exchange the sites within a cell. The definition captures the
+periodic structure alone. It does not require symmetries to preserve distances, bonds or atomic
+species.
+
+Lattice translations form a normal subgroup of the symmetry group.
 
 ## ii. Key results
 
-- `Crystal.Symmetry` : a symmetry of a crystal, a group.
-- `Crystal.Symmetry.apply_eq` : a symmetry acts on every site through the image of the reference
-  cell and its lattice automorphism.
-- `Crystal.Symmetry.apply_eq_components` : a symmetry sends `⟨n, i⟩` to `⟨A n + bᵢ, σ i⟩`.
-- `Crystal.Symmetry.lattice_mul` : the lattice automorphism of a product is the composite.
-- `Crystal.Symmetry.labelHom` : the permutation of the labels by a symmetry, a homomorphism.
-- `Crystal.Symmetry.Offsets` : one lattice vector for each unit-cell label.
-- `Crystal.Symmetry.offset` : the cell in which a symmetry sends the reference site of a label.
-- `Crystal.Symmetry.translations` : the translations, a normal subgroup of the symmetries.
-- `Crystal.Symmetry.mapBond` : the image of a bond under a symmetry, an action on the bonds.
+- `Crystal.Symmetry` : a permutation of sites compatible with lattice translations.
+- `Crystal.Symmetry.latticeAut` : the induced automorphism of the translation group.
+- `Crystal.Symmetry.conj_translation` : conjugation transforms a translation by `a` into one
+  by `latticeAut a`.
+- `Crystal.Symmetry.translations` : the normal subgroup of lattice translations.
 
 ## iii. Table of contents
 
-- A. Symmetries
-  - A.1. Action on the sites
-  - A.2. Group structure
-  - A.3. Permutation of the labels
-  - A.4. Offsets
-- B. The translations
-- C. Action on bonds
+- A. Crystal symmetries
+- B. The symmetry group
+  - B.1. Composition and inverses
+  - B.2. Actions on sites and lattice vectors
+- C. Lattice translations
 
 ## iv. References
 
@@ -69,238 +63,139 @@ namespace Physlib.CondensedMatter.Crystal
 
 variable {G : Type*} [AddCommGroup G] [AddGroup.FG G]
 
-/-! ## A. Symmetries -/
+/-! ## A. Crystal symmetries -/
 
-/-- A symmetry of a crystal: an automorphism of the action of the translation group on the sites.
-It is an automorphism `lattice` of the translation group together with a bijection of the sites
-that carries the action along. -/
-structure Symmetry (C : Crystal G) where
-  /-- The automorphism of the translation group. -/
-  lattice : G ≃+ G
-  /-- The map of the sites, equivariant for `lattice`: it carries the action along. -/
-  toHom : AddActionHom ⇑lattice C.Site C.Site
-  /-- The map of the sites is a bijection. -/
-  bijective : Function.Bijective toHom
+/-- A permutation of crystal sites compatible with lattice translations.
+
+The site permutation `φ` and the automorphism `A = latticeAut` satisfy
+`φ (a +ᵥ x) = A a +ᵥ φ x` for every lattice vector `a` and site `x`. -/
+structure Symmetry (C : Crystal G) extends C.Site ≃ C.Site where
+  /-- The automorphism induced on the translation group by the site permutation. -/
+  latticeAut : G ≃+ G
+  /-- Translating a site by `a` translates its image by `latticeAut a`. -/
+  map_vadd' : ∀ (a : G) (x : C.Site), toEquiv (a +ᵥ x) = latticeAut a +ᵥ toEquiv x
 
 namespace Symmetry
 
 variable {C : Crystal G}
 
-/-! ### A.1. Action on the sites -/
+/-- The action on sites uniquely determines the action on lattice vectors. -/
+lemma latticeAut_eq_of_toEquiv_eq {φ ψ : Symmetry C} (h : φ.toEquiv = ψ.toEquiv) :
+    φ.latticeAut = ψ.latticeAut := by
+  obtain ⟨x⟩ := (inferInstance : Nonempty C.Site)
+  ext a
+  refine IsCancelVAdd.right_cancel _ _ (φ.toEquiv x) ?_
+  rw [← φ.map_vadd', h, ψ.map_vadd']
 
-/-- Symmetries with the same action on the sites are equal, since translations act freely. -/
-lemma ext' {φ ψ : Symmetry C} (h : ∀ x, φ.toHom x = ψ.toHom x) : φ = ψ := by
-  obtain ⟨x₀⟩ := (inferInstance : Nonempty C.Site)
-  have hA (a : G) : φ.lattice a = ψ.lattice a := by
-    refine IsCancelVAdd.right_cancel _ _ (φ.toHom x₀) ?_
-    rw [← map_vaddₛₗ φ.toHom, h (a +ᵥ x₀), map_vaddₛₗ ψ.toHom, h x₀]
-  obtain ⟨A, f, hf⟩ := φ
-  obtain ⟨B, g, hg⟩ := ψ
-  obtain rfl : A = B := AddEquiv.ext hA
-  obtain rfl : f = g := AddActionHom.ext h
-  rfl
+/-- A crystal symmetry is an equivalence of its sites. -/
+instance : EquivLike (Symmetry C) C.Site C.Site where
+  coe φ := φ.toEquiv
+  inv φ := φ.toEquiv.symm
+  left_inv φ := φ.toEquiv.left_inv
+  right_inv φ := φ.toEquiv.right_inv
+  coe_injective' φ ψ h _ := by
+    obtain ⟨e, A, hA⟩ := φ
+    obtain ⟨f, B, hB⟩ := ψ
+    obtain rfl : e = f := Equiv.coe_fn_injective h
+    obtain rfl : A = B :=
+      latticeAut_eq_of_toEquiv_eq (φ := ⟨e, A, hA⟩) (ψ := ⟨e, B, hB⟩) rfl
+    rfl
 
-/-- A symmetry acts on the sites. -/
-instance : FunLike (Symmetry C) C.Site C.Site where
-  coe φ := φ.toHom
-  coe_injective _ _ h := ext' (congrFun h)
+/-- Two symmetries are equal if they agree on every site. -/
+@[ext] lemma ext {φ ψ : Symmetry C} (h : ∀ x, φ x = ψ x) : φ = ψ := DFunLike.ext _ _ h
 
-/-- A symmetry is determined by its action on the sites. -/
-@[ext] lemma ext {φ ψ : Symmetry C} (h : ∀ x, φ x = ψ x) : φ = ψ := ext' h
+@[simp] lemma coe_toEquiv (φ : Symmetry C) : ⇑φ.toEquiv = φ := rfl
 
-/-- Mapping a translated site is translating the mapped site by the image of the vector. -/
-lemma map_vadd (φ : Symmetry C) (a : G) (x : C.Site) : φ (a +ᵥ x) = φ.lattice a +ᵥ φ x :=
-  map_vaddₛₗ φ.toHom a x
+/-- A symmetry maps the translation of a site by `a` to the translation of its image
+by `latticeAut a`. -/
+lemma map_vadd (φ : Symmetry C) (a : G) (x : C.Site) : φ (a +ᵥ x) = φ.latticeAut a +ᵥ φ x :=
+  φ.map_vadd' a x
 
-/-- A symmetry moves the site `⟨n, i⟩` by the lattice automorphism from the image of `⟨0, i⟩`. -/
-lemma apply_eq (φ : Symmetry C) (n : G) (i : C.UnitCell) :
-    φ ⟨n, i⟩ = ⟨φ.lattice n + (φ (Site.ref i)).cell, (φ (Site.ref i)).label⟩ := by
-  simpa [Site.vadd_def] using φ.map_vadd n (Site.ref i)
+/-! ## B. The symmetry group -/
 
-/-- A symmetry as a permutation of the sites. -/
-noncomputable def toEquiv (φ : Symmetry C) : C.Site ≃ C.Site := Equiv.ofBijective φ φ.bijective
+/-! ### B.1. Composition and inverses -/
 
-/-- Composing equivariant maps gives an equivariant map. -/
-lemma comp_map_vadd (φ ψ : Symmetry C) (a : G) (x : C.Site) :
-    (φ ∘ ψ) (a +ᵥ x) = (ψ.lattice.trans φ.lattice) a +ᵥ (φ ∘ ψ) x := by
-  rw [Function.comp_apply, ψ.map_vadd, φ.map_vadd]
-  rfl
-
-/-- The identity is equivariant for the identity automorphism. -/
-lemma id_map_vadd (a : G) (x : C.Site) : id (a +ᵥ x) = AddEquiv.refl G a +ᵥ id x := rfl
-
-/-- The inverse of an equivariant bijection is equivariant for the inverse automorphism. -/
-lemma symm_map_vadd (φ : Symmetry C) (a : G) (x : C.Site) :
-    φ.toEquiv.symm (a +ᵥ x) = φ.lattice.symm a +ᵥ φ.toEquiv.symm x :=
-  map_vaddₛₗ (φ.toHom.inverse' φ.toEquiv.symm φ.lattice.apply_symm_apply
-    φ.toEquiv.symm_apply_apply φ.toEquiv.apply_symm_apply) a x
-
-/-! ### A.2. Group structure -/
-
-/-- Symmetries form a group under composition. -/
-noncomputable instance (C : Crystal G) : Group (Symmetry C) where
-  mul φ ψ := ⟨ψ.lattice.trans φ.lattice, ⟨φ ∘ ψ, comp_map_vadd φ ψ⟩, φ.bijective.comp ψ.bijective⟩
-  one := ⟨AddEquiv.refl G, ⟨id, id_map_vadd⟩, Function.bijective_id⟩
-  inv φ := ⟨φ.lattice.symm, ⟨φ.toEquiv.symm, symm_map_vadd φ⟩, φ.toEquiv.symm.bijective⟩
+/-- Crystal symmetries form a group under composition of their site permutations. -/
+instance : Group (Symmetry C) where
+  mul φ ψ := ⟨ψ.toEquiv.trans φ.toEquiv, ψ.latticeAut.trans φ.latticeAut, fun a x => by
+    change φ (ψ (a +ᵥ x)) = φ.latticeAut (ψ.latticeAut a) +ᵥ φ (ψ x)
+    rw [ψ.map_vadd, φ.map_vadd]⟩
+  one := ⟨Equiv.refl _, AddEquiv.refl G, fun _ _ => rfl⟩
+  inv φ := ⟨φ.toEquiv.symm, φ.latticeAut.symm, fun a x => φ.toEquiv.injective (by
+    rw [φ.map_vadd', Equiv.apply_symm_apply, Equiv.apply_symm_apply, AddEquiv.apply_symm_apply])⟩
   mul_assoc _ _ _ := rfl
   one_mul _ := rfl
   mul_one _ := rfl
   inv_mul_cancel φ := ext φ.toEquiv.symm_apply_apply
 
-/-- The product of symmetries acts by composition. -/
 @[simp] lemma mul_apply (φ ψ : Symmetry C) (x : C.Site) : (φ * ψ) x = φ (ψ x) := rfl
 
-/-- The inverse of a symmetry undoes it. -/
+@[simp] lemma one_apply (x : C.Site) : (1 : Symmetry C) x = x := rfl
+
 @[simp] lemma inv_apply_apply (φ : Symmetry C) (x : C.Site) : φ⁻¹ (φ x) = x :=
   φ.toEquiv.symm_apply_apply x
 
-/-- A symmetry undoes its inverse. -/
 @[simp] lemma apply_inv_apply (φ : Symmetry C) (x : C.Site) : φ (φ⁻¹ x) = x :=
   φ.toEquiv.apply_symm_apply x
 
-/-- The permutation of the sites underlying a symmetry. -/
-noncomputable def toPerm (C : Crystal G) : Symmetry C →* Equiv.Perm C.Site where
-  toFun := toEquiv
-  map_one' := Equiv.ext (congrFun rfl)
-  map_mul' _ _ := Equiv.ext (congrFun rfl)
+/-! ### B.2. Actions on sites and lattice vectors -/
 
-/-- The lattice automorphism of a product is the composite of the lattice automorphisms. -/
-@[simp] lemma lattice_mul (φ ψ : Symmetry C) : (φ * ψ).lattice = φ.lattice + ψ.lattice := rfl
+@[simp] lemma latticeAut_mul (φ ψ : Symmetry C) :
+    (φ * ψ).latticeAut = ψ.latticeAut.trans φ.latticeAut := rfl
 
-/-- The identity symmetry has trivial lattice automorphism. -/
-@[simp] lemma lattice_one : (1 : Symmetry C).lattice = 0 := rfl
+@[simp] lemma latticeAut_one : (1 : Symmetry C).latticeAut = AddEquiv.refl G := rfl
 
-/-! ### A.3. Permutation of the labels -/
+@[simp] lemma latticeAut_inv (φ : Symmetry C) : φ⁻¹.latticeAut = φ.latticeAut.symm := rfl
 
-/-- The label of the image of `⟨n, i⟩` does not depend on the cell `n`. -/
-lemma label_apply (φ : Symmetry C) (n : G) (i : C.UnitCell) :
-    (φ ⟨n, i⟩).label = (φ (Site.ref i)).label := by
-  rw [apply_eq φ n i]
-
-/-- A symmetry permutes the labels: it sends `i` to the label of the image of `⟨0, i⟩`. -/
-instance : MulAction (Symmetry C) C.UnitCell where
-  smul φ i := (φ (Site.ref i)).label
+/-- The symmetry group acts on crystal sites by permutations. -/
+instance : MulAction (Symmetry C) C.Site where
+  smul φ x := φ x
   one_smul _ := rfl
-  mul_smul φ ψ i := label_apply φ (ψ (Site.ref i)).cell (ψ (Site.ref i)).label
+  mul_smul _ _ _ := rfl
 
-/-- The permutation of the labels by a symmetry, as a homomorphism. -/
-noncomputable def labelHom (C : Crystal G) : Symmetry C →* Equiv.Perm C.UnitCell :=
-  MulAction.toPermHom (Symmetry C) C.UnitCell
+@[simp] lemma smul_site (φ : Symmetry C) (x : C.Site) : φ • x = φ x := rfl
 
-/-- The label permutation of a symmetry sends `i` to the label of the image of `⟨0, i⟩`. -/
-lemma labelHom_apply (φ : Symmetry C) (i : C.UnitCell) :
-    labelHom C φ i = (φ (Site.ref i)).label := rfl
+/-- The symmetry group acts on lattice vectors by automorphisms of the translation group. -/
+instance : DistribMulAction (Symmetry C) G where
+  smul φ a := φ.latticeAut a
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+  smul_zero φ := map_zero φ.latticeAut
+  smul_add φ := map_add φ.latticeAut
 
-/-! ### A.4. Offsets -/
+@[simp] lemma smul_vector (φ : Symmetry C) (a : G) : φ • a = φ.latticeAut a := rfl
 
-/-- One lattice vector for each unit-cell label. Every symmetry has such offsets, and so does every
-shift. -/
-abbrev Offsets (C : Crystal G) := C.UnitCell → G
+/-! ## C. Lattice translations -/
 
-/-- The offsets of a symmetry: at the label `i` the cell in which the image of the reference site of
-`i` lies, as a lattice vector in `G`. -/
-def offset (φ : Symmetry C) : Offsets C := fun i => (φ (Site.ref i)).cell
-
-/-- A symmetry sends the site `⟨n, i⟩` to the cell `A n + bᵢ` with label `σ i`, where `A` is its
-lattice automorphism, `σ` its label permutation and `bᵢ` its offset at `i`. -/
-lemma apply_eq_components (φ : Symmetry C) (x : C.Site) :
-    φ x = ⟨φ.lattice x.cell + φ.offset x.label, labelHom C φ x.label⟩ :=
-  apply_eq φ x.cell x.label
-
-/-- The cell of the image of `⟨n, i⟩` is `A n + bᵢ`. -/
-lemma cell_apply (φ : Symmetry C) (x : C.Site) :
-    (φ x).cell = φ.lattice x.cell + φ.offset x.label :=
-  congrArg Site.cell (apply_eq_components φ x)
-
-/-! ## B. The translations -/
-
-/-- Translations commute, so translating is equivariant for the identity automorphism. -/
-lemma vadd_map_vadd (c b : G) (x : C.Site) : c +ᵥ (b +ᵥ x) = AddEquiv.refl G b +ᵥ (c +ᵥ x) :=
-  vadd_comm c b x
-
-/-- Translation as a homomorphism, with the lattice written multiplicatively. It is only used to
-form the subgroup of translations; use `translation`. -/
-noncomputable def translationHom (C : Crystal G) : Multiplicative G →* Symmetry C where
-  toFun a := ⟨AddEquiv.refl G, ⟨AddAction.toPerm (Multiplicative.toAdd a), vadd_map_vadd _⟩,
-    (AddAction.toPerm (Multiplicative.toAdd a)).bijective⟩
+/-- The group homomorphism sending each lattice vector to its translation symmetry. -/
+def translationHom (C : Crystal G) : Multiplicative G →* Symmetry C where
+  toFun a := ⟨AddAction.toPerm (Multiplicative.toAdd a), AddEquiv.refl G,
+    vadd_comm (Multiplicative.toAdd a)⟩
   map_one' := ext (zero_vadd G)
   map_mul' a b := ext (add_vadd (Multiplicative.toAdd a) (Multiplicative.toAdd b))
 
-/-- Translation by a lattice vector, as a symmetry. -/
-noncomputable def translation (C : Crystal G) (a : G) : Symmetry C :=
+/-- The symmetry that translates every site by the lattice vector `a`. -/
+def translation (C : Crystal G) (a : G) : Symmetry C :=
   translationHom C (Multiplicative.ofAdd a)
 
-/-- The translation by `a` moves a site by `a`. -/
 @[simp] lemma translation_apply (a : G) (x : C.Site) : translation C a x = a +ᵥ x := rfl
 
-/-- Translations add. -/
-lemma translation_add (a b : G) : translation C (a + b) = translation C a * translation C b :=
-  map_mul (translationHom C) (Multiplicative.ofAdd a) (Multiplicative.ofAdd b)
+@[simp] lemma latticeAut_translation (a : G) :
+    (translation C a).latticeAut = AddEquiv.refl G := rfl
 
-/-- Translation by zero is the identity. -/
-lemma translation_zero : translation C 0 = 1 := map_one (translationHom C)
-
-/-- The translations as a subgroup of the symmetries. -/
-noncomputable def translations (C : Crystal G) : Subgroup (Symmetry C) :=
-  (translationHom C).range
-
-/-- Translations have trivial lattice automorphism. -/
-@[simp] lemma lattice_translation (a : G) : (translation C a).lattice = 0 := rfl
-
-/-- Conjugating a translation by a symmetry translates by the image of the vector. -/
+/-- Conjugation by `φ` maps the translation by `a` to the translation by `φ.latticeAut a`. -/
 lemma conj_translation (φ : Symmetry C) (a : G) :
-    φ * translation C a * φ⁻¹ = translation C (φ.lattice a) := by
+    φ * translation C a * φ⁻¹ = translation C (φ.latticeAut a) := by
   ext x : 1
-  show φ (a +ᵥ φ⁻¹ x) = φ.lattice a +ᵥ x
-  rw [φ.map_vadd, apply_inv_apply]
+  rw [mul_apply, mul_apply, translation_apply, map_vadd, apply_inv_apply, translation_apply]
 
-/-- The translations are a normal subgroup of the symmetries. -/
+/-- The subgroup consisting of all lattice translations. -/
+def translations (C : Crystal G) : Subgroup (Symmetry C) := (translationHom C).range
+
 instance : (translations C).Normal where
   conj_mem := by
     rintro _ ⟨a, rfl⟩ φ
     exact ⟨_, (conj_translation φ (Multiplicative.toAdd a)).symm⟩
-
-/-! ## C. Action on bonds -/
-
-section Bonds
-
-variable (φ : Symmetry C)
-
-/-- The image of a bond under a crystal symmetry, with displacement `A δ + bⱼ - bᵢ`. -/
-noncomputable def mapBond (b : Bond C) : Bond C where
-  source := labelHom C φ b.source
-  target := labelHom C φ b.target
-  displacement := φ.lattice b.displacement + φ.offset b.target - φ.offset b.source
-
-/-- A symmetry maps sites connected by a bond to sites connected by its image. -/
-lemma mapBond_links {b : Bond C} {x y : C.Site} (h : b.Links x y) :
-    (φ.mapBond b).Links (φ x) (φ y) := by
-  obtain ⟨s, t, d⟩ := b
-  obtain ⟨n, i⟩ := x
-  obtain ⟨m, j⟩ := y
-  simp only [Bond.Links] at h
-  obtain ⟨rfl, rfl, rfl⟩ := h
-  exact ⟨label_apply φ n i, label_apply φ _ j, by
-    simp [mapBond, cell_apply, map_add, add_assoc]⟩
-
-/-- The image of a bond under a product is the iterated image. -/
-lemma mapBond_mul (ψ : Symmetry C) (b : Bond C) :
-    (φ * ψ).mapBond b = φ.mapBond (ψ.mapBond b) := by
-  have hl := b.links_reference
-  exact Bond.eq_of_links ((φ * ψ).mapBond_links hl) (φ.mapBond_links (ψ.mapBond_links hl))
-
-/-- The identity symmetry fixes every bond. -/
-lemma mapBond_one (b : Bond C) : (1 : Symmetry C).mapBond b = b := by
-  have hl := b.links_reference
-  exact Bond.eq_of_links ((1 : Symmetry C).mapBond_links hl) hl
-
-/-- The crystal symmetries act on the bonds. -/
-noncomputable instance : MulAction (Symmetry C) (Bond C) where
-  smul φ b := φ.mapBond b
-  one_smul := mapBond_one
-  mul_smul := mapBond_mul
-
-end Bonds
 
 end Symmetry
 

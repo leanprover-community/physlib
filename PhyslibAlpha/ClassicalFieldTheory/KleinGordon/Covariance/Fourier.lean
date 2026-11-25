@@ -8,7 +8,6 @@ module
 public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.Covariance.CausalKernel
 public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.RetardedKernel.Convolution
 public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.RetardedKernel.FourierForm
-public import PhyslibAlpha.Mathematics.Fourier.LinearChange
 
 /-!
 

@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.Observable
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Normed
-public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Algebra.Ring.IsFormallyReal
 
 /-!
@@ -57,7 +56,7 @@ in one class, and `JBAlgebra` adds completeness and the JB axioms.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-! ## A. Normed Jordan algebras -/
 
@@ -285,4 +284,4 @@ end Ordered
 
 end JBAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

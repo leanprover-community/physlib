@@ -38,7 +38,7 @@ order-unit space is quadratically positive when every `U_a` preserves the positi
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JordanAlgebra
 
@@ -92,4 +92,4 @@ lemma quadRep_monotone (a : E) : Monotone (U a) := by
 
 end JordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

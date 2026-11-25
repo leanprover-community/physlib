@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.RadialFunctions
 public import Mathlib.Analysis.Calculus.SmoothSeries
-public import Mathlib.Analysis.SpecialFunctions.Exponential
 
 /-!
 

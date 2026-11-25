@@ -5,13 +5,10 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.Classical.Basic
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Compatibility
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Bidual
 public import PhyslibAlpha.Mathematics.Order.PositiveDual.Majorant
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Interpolation
-public import Mathlib.Analysis.LocallyConvex.Separation
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # Classical theories are those without incompatibility
@@ -66,7 +63,7 @@ observables are complete, these give joint effects exactly.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped NNReal
 
@@ -96,10 +93,10 @@ lemma _root_.HasRieszDecomposition.jointlyMeasurable
 
 end Archimedean
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 namespace Bidual
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 open scoped NNReal
 variable {E : Type*} [OrderUnitSpace E]
 
@@ -462,7 +459,7 @@ lemma hasRieszDecomposition : HasRieszDecomposition (Bidual E) := by
 
 end Bidual
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped NNReal
 variable {E : Type*} [OrderUnitSpace E]
@@ -539,4 +536,4 @@ lemma isClassical_iff_jointlyMeasurable :
 
 end Complete
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

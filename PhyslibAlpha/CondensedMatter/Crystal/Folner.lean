@@ -5,13 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Order.Filter.Ultrafilter.Defs
-public import Mathlib.Data.Fintype.Pi
-public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Topology.Algebra.Order.Group
-public import Mathlib.Analysis.SpecificLimits.Basic
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Invariant
 
 /-!
@@ -24,8 +17,9 @@ The cubes `{0, …, n-1}^d` of the lattice `ℤ^d` satisfy the Følner condition
 
 A translation by `h` moves the cube `B_n = {0, …, n-1}^d` to a cube that overlaps `B_n` in
 `∏_j (n - |h_j|)` points, so the fraction of points not shared is `1 - ∏_j (1 - |h_j|/n)`, which
-tends to zero. This is the Følner condition (`ProbabilisticTheory.IsRightFolner`) that makes the
-averages of a state over the translations by the elements of `B_n` invariant in the limit.
+tends to zero. This is the Følner condition (`PhyslibAlpha.ProbabilisticTheory.IsRightFolner`)
+that makes the averages of a state over the translations by the elements of `B_n` invariant
+in the limit.
 
 ## ii. Key results
 
@@ -53,7 +47,7 @@ namespace CondensedMatter
 
 namespace Crystal
 
-open Finset Filter Topology ProbabilisticTheory
+open Finset Filter Topology PhyslibAlpha.ProbabilisticTheory
 
 /-! ## A. Cubes and their translates -/
 

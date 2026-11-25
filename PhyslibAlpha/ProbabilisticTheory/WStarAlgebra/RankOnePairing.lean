@@ -38,7 +38,7 @@ is a matrix coefficient. This recovers a predual element from its values on rank
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace
 
@@ -89,4 +89,4 @@ lemma tracePairing_rankOne_left (T : TraceClass H) (x y : H) :
 
 end TraceClass
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

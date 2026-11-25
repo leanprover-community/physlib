@@ -10,7 +10,6 @@ public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Lie
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.GNS
 public import Mathlib.Analysis.InnerProductSpace.GramMatrix
 public import Mathlib.Analysis.Matrix.Order
-public import Mathlib.Analysis.Matrix.PosDef
 
 /-!
 
@@ -67,14 +66,14 @@ This extends to `n` observables the equality case of two, `robertson_schrodinger
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace
 open ContinuousLinearMap
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-open scoped selfAdjoint
+open scoped _root_.selfAdjoint
 
 namespace UnitalPositiveLinearMap
 
@@ -269,7 +268,7 @@ lemma variances_pos_of_normalized_pairing (ω : 𝓢[ℂ, A]) (a b : Observable 
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 /-! ## E. A determinant bound for positive matrices -/
 
@@ -564,7 +563,7 @@ lemma card_le_two_mul_finrank_ker {G : Matrix n n ℂ} {S W : Matrix n n ℝ} (h
       have h := (h₁.add h₂).smul (Complex.zero_le_real.mpr (by norm_num : (0 : ℝ) ≤ 1 / 2))
       convert h using 1
       ext i j
-      simp only [smul_apply, add_apply, sub_apply, smul_eq_mul]
+      simp only [Matrix.smul_apply, Matrix.add_apply, Matrix.sub_apply, smul_eq_mul]
       push_cast
       ring
     rw [PosSemidef.posDef_iff_det_ne_zero (show A.PosSemidef from hS), hdetA,
@@ -585,9 +584,9 @@ end Matrix
 
 /-! ## F. Several observables -/
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
-open scoped ComplexOrder InnerProductSpace selfAdjoint
+open scoped ComplexOrder InnerProductSpace _root_.selfAdjoint
 open Matrix
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
@@ -640,4 +639,4 @@ lemma robertson_det [Fintype ι] [DecidableEq ι] (ω : 𝓢[ℂ, A]) (a : ι �
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
