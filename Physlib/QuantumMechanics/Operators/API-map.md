@@ -122,15 +122,16 @@ Hall {1}. The uncertainty bounds go back to Robertson {9} and Schrödinger {10}.
 3. Physlib/QuantumMechanics/Operators/Basic.lean — `IsSymmetric.isClosable`,
    `IsSymmetric.closure`, `IsSymmetric.add`, `IsSymmetric.pow`, `IsSelfAdjoint.isSymmetric`,
    `IsSelfAdjoint.isClosed`
-4. Physlib/QuantumMechanics/Operators/Basic.lean — `IsEssentiallySelfAdjoint`,
+4. Physlib/QuantumMechanics/Operators/EssentiallySelfAdjoint.lean — `IsEssentiallySelfAdjoint`,
    `IsEssentiallySelfAdjoint.isUnbounded`,
-   `IsEssentiallySelfAdjoint.unique_self_adjoint_extension`
+   `IsEssentiallySelfAdjoint.unique_self_adjoint_extension`,
+   `IsSymmetric.isEssentiallySelfAdjoint_iff`
 5. Physlib/QuantumMechanics/Operators/Basic.lean — `adjoint_smul`, `adjoint_neg`,
    `adjoint_antitone`, `adjoint_add_le_add_adjoint`,
    `adjoint_compRestricted_le_compRestricted_adjoint`, `IsUnbounded.adjoint`,
    `IsUnbounded.adjoint_closure_eq_adjoint`, `IsUnbounded.adjoint_adjoint_eq_closure`
 6. Physlib/QuantumMechanics/Operators/Basic.lean — `IsSymmetric.isSelfAdjoint_of_range_eq_top`,
-   `IsSymmetric.isSelfAdjoint_iff`, `IsSymmetric.isEssentiallySelfAdjoint_iff`
+   `IsSymmetric.isSelfAdjoint_iff`
 7. Physlib/QuantumMechanics/Operators/Basic.lean — `unitaryConj`,
    `mem_unitaryConj_domain_iff`, `unitaryConj_apply`, `IsFormalAdjoint.unitaryConj`,
    `HasDenseDomain.unitaryConj_dense_domain`, `unitaryConj_sub_smul_surjective`
