@@ -310,6 +310,7 @@ public import Physlib.ProbabilisticTheory.Basic
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Basic
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Channel
 public import Physlib.ProbabilisticTheory.CStarAlgebra.CompletelyPositive
+public import Physlib.ProbabilisticTheory.CStarAlgebra.Effect
 public import Physlib.ProbabilisticTheory.CStarAlgebra.State
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Traciality
 public import Physlib.ProbabilisticTheory.Channel.Basic
@@ -433,6 +434,7 @@ public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.Eigenfunc
 public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.Examples
 public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.TISE
 public import Physlib.QuantumMechanics.HilbertSpaces.Basic
+public import Physlib.QuantumMechanics.HilbertSpaces.Effect
 public import Physlib.QuantumMechanics.HilbertSpaces.FiniteTarget.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.Gaussians
