@@ -173,6 +173,7 @@ public import Physlib.Mathematics.ForMathlib.List
 public import Physlib.Mathematics.ForMathlib.List.InsertIdx
 public import Physlib.Mathematics.ForMathlib.List.InsertionSort
 public import Physlib.Mathematics.ForMathlib.LpStarOrder
+public import Physlib.Mathematics.ForMathlib.MeasurableEquiv
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Basic
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Unitary
 public import Physlib.Mathematics.ForMathlib.OrthogonalMatrix
@@ -323,6 +324,7 @@ public import Physlib.ProbabilisticTheory.Classical.Effect
 public import Physlib.ProbabilisticTheory.Classical.NormalChannel
 public import Physlib.ProbabilisticTheory.Classical.NormalState
 public import Physlib.ProbabilisticTheory.Classical.PureState
+public import Physlib.ProbabilisticTheory.Classical.Reversible
 public import Physlib.ProbabilisticTheory.Effect.Basic
 public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Physlib.ProbabilisticTheory.Effect.Convex
