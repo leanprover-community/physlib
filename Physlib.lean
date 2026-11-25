@@ -320,6 +320,7 @@ public import Physlib.ProbabilisticTheory.Channel.Reversible
 public import Physlib.ProbabilisticTheory.Classical.Basic
 public import Physlib.ProbabilisticTheory.Classical.Dirac
 public import Physlib.ProbabilisticTheory.Classical.Effect
+public import Physlib.ProbabilisticTheory.Classical.NormalChannel
 public import Physlib.ProbabilisticTheory.Classical.NormalState
 public import Physlib.ProbabilisticTheory.Classical.PureState
 public import Physlib.ProbabilisticTheory.Effect.Basic
