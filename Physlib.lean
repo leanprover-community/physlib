@@ -450,6 +450,7 @@ public import Physlib.QuantumMechanics.InfiniteSquareWell.Basic
 public import Physlib.QuantumMechanics.Operators.Basic
 public import Physlib.QuantumMechanics.Operators.Commutation
 public import Physlib.QuantumMechanics.Operators.Covariance
+public import Physlib.QuantumMechanics.Operators.EssentiallySelfAdjoint
 public import Physlib.QuantumMechanics.Operators.Examples
 public import Physlib.QuantumMechanics.Operators.OneDimension.Commutation
 public import Physlib.QuantumMechanics.Operators.OneDimension.Momentum

@@ -951,49 +951,4 @@ lemma IsSymmetric.isSelfAdjoint_of_range_eq_top [CompleteSpace H] (hsym : T.IsSy
   obtain rfl : w = (x : H) := sub_eq_zero.mp (hker (W - X) hdiff)
   exact ⟨hw, x.2, hxeq⟩
 
-/-!
-### C.4. Essentially self-adjoint operators
--/
-
-lemma IsEssentiallySelfAdjoint.hasDenseDomain [CompleteSpace H] (h : T.IsEssentiallySelfAdjoint) :
-    T.HasDenseDomain :=
-  hasDenseDomain_iff_closure_hasDenseDomain.mpr h.dense_domain
-
-lemma IsEssentiallySelfAdjoint.isSymmetric [CompleteSpace H] (h : T.IsEssentiallySelfAdjoint) :
-    T.IsSymmetric :=
-  (IsSelfAdjoint.isSymmetric h).of_le T.le_closure
-
-lemma IsEssentiallySelfAdjoint.isClosable [CompleteSpace H] (h : T.IsEssentiallySelfAdjoint) :
-    T.IsClosable :=
-  h.isSymmetric.isClosable h.hasDenseDomain
-
-lemma IsEssentiallySelfAdjoint.isUnbounded [CompleteSpace H] (h : T.IsEssentiallySelfAdjoint) :
-    T.IsUnbounded :=
-  h.isSymmetric.isUnbounded_iff_hasDenseDomain.mpr h.hasDenseDomain
-
-/-- The closure is the unique self-adjoint extension of an essentially self-adjoint operator. -/
-lemma IsEssentiallySelfAdjoint.unique_self_adjoint_extension [CompleteSpace H]
-    (h : T.IsEssentiallySelfAdjoint) {T₂ : H →ₗ.[ℂ] H} (h_le : T ≤ T₂) (h₂ : IsSelfAdjoint T₂) :
-    T₂ = T.closure := by
-  have h_cl : T₂.IsClosed := IsSelfAdjoint.isClosed h₂
-  have h_le' : T.closure ≤ T₂ := h_cl.closure_eq ▸ h_cl.isClosable.closure_mono h_le
-  exact eq_of_le_of_ge (h ▸ h₂ ▸ adjoint_antitone (Or.inl h.hasDenseDomain.closure) h_le') h_le'
-
-@[aesop safe apply]
-lemma IsEssentiallySelfAdjoint.smul [CompleteSpace H]
-    (h : T.IsEssentiallySelfAdjoint) {c : ℂ} (hc : c ≠ 0) (hc' : conj c = c) :
-    (c • T).IsEssentiallySelfAdjoint := by
-  simp_all [isEssentiallySelfAdjoint_def, isSelfAdjoint_def, closure_smul _ hc, adjoint_smul _ hc]
-
-@[aesop safe apply]
-lemma IsEssentiallySelfAdjoint.real_smul [CompleteSpace H]
-    (h : T.IsEssentiallySelfAdjoint) {r : ℝ} (hr : r ≠ 0) :
-    (r • T).IsEssentiallySelfAdjoint :=
-  h.smul (ofReal_ne_zero.mpr hr) (conj_ofReal r)
-
-@[aesop safe apply]
-lemma IsEssentiallySelfAdjoint.neg [CompleteSpace H] (h : T.IsEssentiallySelfAdjoint) :
-    (-T).IsEssentiallySelfAdjoint :=
-  neg_eq_neg_one_smul T ▸ h.smul (by norm_num) (by norm_num)
-
 end LinearPMap
