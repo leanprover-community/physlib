@@ -90,7 +90,7 @@ lemma angularMomentumCLM_apply {d : ℕ} (i j : Fin d) (ψ : 𝓢(Space d, ℂ))
 
 /-!
 
-### A.1 Antisymmetry
+### A.1. Antisymmetry
 
 -/
 
