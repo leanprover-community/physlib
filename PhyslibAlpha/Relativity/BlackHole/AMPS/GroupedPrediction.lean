@@ -116,10 +116,11 @@ lemma mean_error_of_moments [Nonempty I] (μ : Measure Ω) (n : I → ℕ) (k : 
 is at most twice the selected rank divided by the early dimension. Thus a large
 occupation event need not be treated as exponentially many separate tests. -/
 lemma mean_error_le_of_moments [Nonempty I] (μ : Measure Ω) (n : I → ℕ) (k : ℕ)
-    (ψ : Ω → Wave I (EuclideanSpace ℂ J)) (h : EnsembleMoments μ n k ψ) (hEL : L ≤ E) :
+    (ψ : Ω → Wave I (EuclideanSpace ℂ J)) (h : EnsembleMoments μ n k ψ)
+    (hLateLeEarly : L ≤ E) :
     (∫ ω, error n k (ψ ω) ∂μ) ≤ 2 * occupationRank n k / E := by
   have hL : 1 ≤ L := by exact_mod_cast Fintype.card_pos (α := I)
-  have hE : 0 < E := zero_lt_one.trans_le (hL.trans hEL)
+  have hE : 0 < E := zero_lt_one.trans_le (hL.trans hLateLeEarly)
   let m := occupationRank n k
   have hm : 0 ≤ m := Nat.cast_nonneg _
   have hmL : m ≤ L := by
@@ -138,9 +139,9 @@ lemma mean_error_le_of_moments [Nonempty I] (μ : Measure Ω) (n : I → ℕ) (k
     exact_mod_cast hnat
   have hnum : E * L * (L ^ 2 - 1) + m * L * (L ^ 2 - 4) + L ^ 2 + 2 ≤
       2 * E * L ^ 3 := by
-    have he : m * L ^ 3 ≤ E * L ^ 3 := by gcongr; exact hmL.trans hEL
-    have hlarge : L ^ 2 ≤ E * L := by nlinarith [mul_le_mul_of_nonneg_right hEL (by positivity :
-      0 ≤ L)]
+    have he : m * L ^ 3 ≤ E * L ^ 3 := by gcongr; exact hmL.trans hLateLeEarly
+    have hlarge : L ^ 2 ≤ E * L := by
+      nlinarith [mul_le_mul_of_nonneg_right hLateLeEarly (by positivity : 0 ≤ L)]
     have hml : 1 ≤ m * L := one_le_mul_of_one_le_of_one_le hm1 hL
     nlinarith only [he, hlarge, hml]
   have hden : E ^ 2 * L ^ 2 ≤ (E * L + 1) * (E * L + 2) := by
@@ -163,12 +164,12 @@ error is bounded using the grouped moments. The probability samples radiation
 states. The Born mass of the selected occupation is a separate random variable. -/
 lemma group_error_tail [Nonempty I] (μ : Measure Ω) (n : I → ℕ) (k : ℕ)
     (ψ : Ω → Wave I (EuclideanSpace ℂ J)) (h : EnsembleMoments μ n k ψ)
-    (hEL : L ≤ E) {t : ℝ} (ht : 0 < t) :
+    (hLateLeEarly : L ≤ E) {t : ℝ} (ht : 0 < t) :
     μ.real {ω | t ≤ error n k (ψ ω)} ≤ (2 * occupationRank n k / E) / t := by
   have he : ∀ᵐ ω ∂μ, 0 ≤ error n k (ψ ω) :=
     Filter.Eventually.of_forall fun ω => sq_nonneg _
   have hb := mul_meas_ge_le_integral_of_nonneg he (error_integrable μ n k ψ h) t
   exact (le_div_iff₀ ht).mpr (by rw [mul_comm]; exact hb.trans (mean_error_le_of_moments μ n k ψ
-    h hEL))
+    h hLateLeEarly))
 
 end AMPS.GroupedPrediction
