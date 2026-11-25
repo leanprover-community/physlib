@@ -6,7 +6,7 @@ Authors: Gregory J. Loges
 module
 
 public import Physlib.QuantumMechanics.Hydrogen.Basic
-public import Physlib.QuantumMechanics.Operators.AngularMomentum
+public import Physlib.QuantumMechanics.Operators.SpaceD.AngularMomentum
 /-!
 
 # Laplace-Runge-Lenz vector

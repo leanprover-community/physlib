@@ -6,8 +6,8 @@ Authors: Gregory J. Loges
 module
 
 public import Physlib.Mathematics.KroneckerDelta.Basic
-public import Physlib.QuantumMechanics.Operators.Position
-public import Physlib.QuantumMechanics.Operators.Momentum
+public import Physlib.QuantumMechanics.Operators.SpaceD.Position
+public import Physlib.QuantumMechanics.Operators.SpaceD.Momentum
 public import Mathlib.Algebra.Lie.OfAssociative
 /-!
 
