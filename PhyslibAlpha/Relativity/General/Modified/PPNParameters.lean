@@ -199,8 +199,7 @@ lemma bransDickePPN_isFullyConservative (ω : ℝ) : IsFullyConservative (bransD
 
 /-- At `ω = 0`, `bransDickePPN 0` coincides with `fRMetricPPN`. -/
 lemma bransDickePPN_zero_eq_fRMetricPPN : bransDickePPN 0 = fRMetricPPN := by
-  unfold bransDickePPN fRMetricPPN
-  rw [BransDicke.fR_gamma]
+  simp [bransDickePPN, fRMetricPPN, BransDicke.fR_gamma]
 
 /-!
 
@@ -210,52 +209,56 @@ lemma bransDickePPN_zero_eq_fRMetricPPN : bransDickePPN 0 = fRMetricPPN := by
 
 /-- Dimensionless gravitational light-deflection factor `(1 + γ) / 2` relative to the General
 Relativity deflection angle `4 G M / (c² b)`. -/
+@[simp]
 noncomputable def lightDeflectionFactor (P : PPNParameters) : ℝ :=
   (1 + P.gamma) / 2
 
 /-- Dimensionless Shapiro radar time-delay factor `(1 + γ) / 2` relative to General Relativity. -/
+@[simp]
 noncomputable def shapiroDelayFactor (P : PPNParameters) : ℝ :=
   (1 + P.gamma) / 2
 
 /-- Dimensionless perihelion precession factor `(2 + 2 γ - β) / 3` relative to the General
 Relativity advance `6 π G M / (c² a (1 - e²))` for a fully conservative theory. -/
+@[simp]
 noncomputable def perihelionPrecessionFactor (P : PPNParameters) : ℝ :=
   (2 + 2 * P.gamma - P.beta) / 3
 
 /-- The Nordtvedt parameter `η_N = 4 β - γ - 3 - (10/3) ξ - α₁ + (2/3) α₂ - (2/3) ζ₁ - (1/3) ζ₂`
 governing violations of the Strong Equivalence Principle (gravitational self-energy contribution to
 passive-to-active gravitational mass ratio) in lunar laser ranging. -/
+@[simp]
 noncomputable def nordtvedtParameter (P : PPNParameters) : ℝ :=
   4 * P.beta - P.gamma - 3 - (10 / 3) * P.xi - P.alpha1 + (2 / 3) * P.alpha2
     - (2 / 3) * P.zeta1 - (1 / 3) * P.zeta2
 
 /-- In General Relativity, the light-deflection factor is `1`. -/
 lemma lightDeflectionFactor_gr : lightDeflectionFactor grPPN = 1 := by
-  unfold lightDeflectionFactor grPPN
+  simp only [lightDeflectionFactor, grPPN]
   norm_num
 
 /-- In Nordström's conformally flat scalar gravity (`γ = -1`), gravitational light deflection
 vanishes identically (`(1 + γ)/2 = 0`). -/
 lemma lightDeflectionFactor_nordstrom : lightDeflectionFactor nordstromPPN = 0 := by
-  unfold lightDeflectionFactor nordstromPPN
+  simp only [lightDeflectionFactor, nordstromPPN]
   norm_num
 
 /-- In unscreened metric `f(R)` gravity (`γ = 1/2`), light deflection is `3/4` of the General
 Relativity prediction. -/
 lemma lightDeflectionFactor_fRMetric : lightDeflectionFactor fRMetricPPN = 3 / 4 := by
-  unfold lightDeflectionFactor fRMetricPPN
+  simp only [lightDeflectionFactor, fRMetricPPN]
   norm_num
 
 /-- In General Relativity, the perihelion precession factor is `1`. -/
 lemma perihelionPrecessionFactor_gr : perihelionPrecessionFactor grPPN = 1 := by
-  unfold perihelionPrecessionFactor grPPN
+  simp only [perihelionPrecessionFactor, grPPN]
   norm_num
 
 /-- In Nordström's theory (`γ = -1, β = 1/2`), the perihelion precession factor is `-1/6`
 (retrograde advance of `-1/6` times the Einstein value). -/
 lemma perihelionPrecessionFactor_nordstrom :
     perihelionPrecessionFactor nordstromPPN = -1 / 6 := by
-  unfold perihelionPrecessionFactor nordstromPPN
+  simp only [perihelionPrecessionFactor, nordstromPPN]
   norm_num
 
 /-- In Brans–Dicke theory (`2 + ω ≠ 0`), the perihelion precession factor is
@@ -263,29 +266,28 @@ lemma perihelionPrecessionFactor_nordstrom :
 lemma perihelionPrecessionFactor_bransDicke (ω : ℝ) (hω : 2 + ω ≠ 0) :
     perihelionPrecessionFactor (bransDickePPN ω) = (4 + 3 * ω) / (6 + 3 * ω) := by
   have h3 : 6 + 3 * ω ≠ 0 := by intro h; apply hω; linarith
-  unfold perihelionPrecessionFactor bransDickePPN
-  dsimp only
+  simp only [perihelionPrecessionFactor, bransDickePPN]
   rw [BransDicke.gamma_eq_one_sub ω hω, div_eq_div_iff (by norm_num) h3]
   field_simp [hω]
   ring
 
 /-- General Relativity satisfies the Strong Equivalence Principle identically (`η_N = 0`). -/
 lemma nordtvedtParameter_gr : nordtvedtParameter grPPN = 0 := by
-  unfold nordtvedtParameter grPPN
+  simp only [nordtvedtParameter, grPPN]
   norm_num
 
 /-- In Brans–Dicke gravity (`2 + ω ≠ 0`), the Nordtvedt Strong Equivalence Principle violation
 parameter is `η_N = 1 / (2 + ω)`. -/
 lemma nordtvedtParameter_bransDicke (ω : ℝ) (hω : 2 + ω ≠ 0) :
     nordtvedtParameter (bransDickePPN ω) = 1 / (2 + ω) := by
-  unfold nordtvedtParameter bransDickePPN
+  simp only [nordtvedtParameter, bransDickePPN]
   rw [BransDicke.gamma_eq_one_sub ω hω]
   ring
 
 /-- In unscreened metric `f(R)` gravity (`γ = 1/2, β = 1`), the Nordtvedt parameter is
 `η_N = 1/2`. -/
 lemma nordtvedtParameter_fRMetric : nordtvedtParameter fRMetricPPN = 1 / 2 := by
-  unfold nordtvedtParameter fRMetricPPN
+  simp only [nordtvedtParameter, fRMetricPPN]
   norm_num
 
 /-- Cassini solar-system bound lifted to `bransDickePPN`: `ω > 40000` implies
@@ -299,8 +301,7 @@ lemma cassini_deviation_bransDickePPN (ω : ℝ) (hω : 40000 < ω) :
   have h3 := nordtvedtParameter_bransDicke ω h2
   have h4 := BransDicke.gamma_eq_one_sub ω h2
   rw [h3]
-  unfold grPPN bransDickePPN
-  dsimp only
+  simp only [grPPN, bransDickePPN]
   constructor <;> linarith
 
 end PPN

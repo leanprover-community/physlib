@@ -194,6 +194,13 @@ lemma gammaRphiphi_sds (M Λ r th : ℝ) :
 
 -/
 
+/-- Equational form of `sdsF M Λ r`. -/
+lemma sdsF_eq (M Λ r : ℝ) : sdsF M Λ r = 1 - 2 * M / r - Λ * r ^ 2 / 3 := rfl
+
+/-- Equational form of `sdsLapseHalfDeriv M Λ r`. -/
+lemma sdsLapseHalfDeriv_eq (M Λ r : ℝ) :
+    sdsLapseHalfDeriv M Λ r = M / r ^ 2 - Λ * r / 3 := rfl
+
 /-- The `t r t r` Riemann component for Schwarzschild–de Sitter: `(2M/r³ + Λ/3)/f`. -/
 lemma riemann_t_rtr_sds (M Λ r : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0) :
     -(deriv (fun s : ℝ => sdsLapseHalfDeriv M Λ s / sdsF M Λ s) r)
@@ -208,23 +215,16 @@ lemma riemann_t_rtr_sds (M Λ r : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0) :
         = (fun s : ℝ => sdsLapseHalfDeriv M Λ s) / fun s : ℝ => sdsF M Λ s := rfl
     rw [hfun, h.deriv]
     field_simp [hf]
-  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
-  have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
   rw [hq]
   field_simp [hf, hr]
-  unfold sdsLapseHalfDeriv
-  field_simp [hr, hr2, hr3]
   ring
 
 /-- The `t θ t θ` Riemann component for Schwarzschild–de Sitter: `Λ r² / 3 - M / r`. -/
 lemma riemann_t_thetatheta_sds (M Λ r : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0) :
     (sdsLapseHalfDeriv M Λ r / sdsF M Λ r) * (-(r * sdsF M Λ r))
       = Λ * r ^ 2 / 3 - M / r := by
-  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
-  have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
+  rw [sdsLapseHalfDeriv_eq]
   field_simp [hf, hr]
-  unfold sdsLapseHalfDeriv
-  field_simp [hr, hr2, hr3]
   ring
 
 /-- The `t φ t φ` Riemann component for Schwarzschild–de Sitter: `(Λ r² / 3 - M / r) sin²θ`. -/
@@ -232,11 +232,8 @@ lemma riemann_t_phitphi_sds (M Λ r th : ℝ) (hr : r ≠ 0)
     (hf : sdsF M Λ r ≠ 0) :
     (sdsLapseHalfDeriv M Λ r / sdsF M Λ r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
       = (Λ * r ^ 2 / 3 - M / r) * Real.sin th ^ 2 := by
-  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
-  have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
+  rw [sdsLapseHalfDeriv_eq]
   field_simp [hf, hr]
-  unfold sdsLapseHalfDeriv
-  field_simp [hr, hr2, hr3]
   ring
 
 /-- The `r θ r θ` Riemann component for Schwarzschild–de Sitter: `Λ r² / 3 - M / r`. -/
@@ -245,11 +242,8 @@ lemma riemann_r_thetar_sds (M Λ r : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0
       + (-(sdsLapseHalfDeriv M Λ r) / sdsF M Λ r) * (-(r * sdsF M Λ r))
       - (-(r * sdsF M Λ r)) * (1 / r)
       = Λ * r ^ 2 / 3 - M / r := by
-  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
-  have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
+  rw [sdsLapseHalfDeriv_eq]
   field_simp [hf, hr]
-  unfold sdsLapseHalfDeriv
-  field_simp [hr, hr2, hr3]
   ring
 
 /-- The `r φ r φ` Riemann component for Schwarzschild–de Sitter: `(Λ r² / 3 - M / r) sin²θ`. -/
@@ -259,11 +253,8 @@ lemma riemann_r_phirphi_sds (M Λ r th : ℝ) (hr : r ≠ 0)
       + (-(sdsLapseHalfDeriv M Λ r) / sdsF M Λ r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
       - (-(r * Real.sin th ^ 2 * sdsF M Λ r)) * (1 / r)
       = (Λ * r ^ 2 / 3 - M / r) * Real.sin th ^ 2 := by
-  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
-  have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
+  rw [sdsLapseHalfDeriv_eq]
   field_simp [hf, hr]
-  unfold sdsLapseHalfDeriv
-  field_simp [hr, hr2, hr3]
   ring
 
 /-- The `θ φ θ φ` Riemann component for Schwarzschild–de Sitter: `(2M/r + Λr²/3) sin²θ`. -/
@@ -273,7 +264,7 @@ lemma riemann_theta_phitheta_sds (M Λ r th : ℝ) (hr : r ≠ 0)
       + (1 / r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
       - (-(Real.sin th * Real.cos th)) * (Real.cos th / Real.sin th)
       = (2 * M / r + Λ * r ^ 2 / 3) * Real.sin th ^ 2 := by
-  unfold sdsF
+  rw [sdsF_eq]
   field_simp [hr, hsin]
   ring
 

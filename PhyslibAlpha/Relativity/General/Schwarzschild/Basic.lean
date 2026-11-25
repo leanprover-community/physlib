@@ -136,6 +136,15 @@ lemma potential_second_hasDerivAt (M r : ℝ) (hr : r ≠ 0) :
 /-- The Schwarzschild metric lapse function `f = 1 - 2M / r`. -/
 noncomputable def schwarzschildF (M r : ℝ) : ℝ := 1 - 2 * M / r
 
+/-- Equational form of `schwarzschildF M r`. -/
+lemma schwarzschildF_eq (M r : ℝ) : schwarzschildF M r = 1 - 2 * M / r := rfl
+
+/-- Clearing the radial denominator gives `r * schwarzschildF M r = r - 2 M`. -/
+lemma r_mul_schwarzschildF (M r : ℝ) (hr : r ≠ 0) :
+    r * schwarzschildF M r = r - 2 * M := by
+  rw [schwarzschildF_eq]
+  field_simp
+
 /-- The `rr` component of the Schwarzschild metric is `f⁻¹`. -/
 lemma schwarzschildMetric_rr (M : ℝ) (x : Fin 4 → ℝ) :
     schwarzschildMetric M x 1 1 = (schwarzschildF M (x 1))⁻¹ := by
@@ -146,7 +155,7 @@ lemma sub_ne_zero_of_ne (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 
     r - 2 * M ≠ 0 := by
   intro h
   apply hf
-  unfold schwarzschildF
+  rw [schwarzschildF_eq]
   have h1 : 2 * M / r = 1 := by
     field_simp
     linarith
@@ -172,14 +181,12 @@ lemma hasDerivAt_gtt (M r : ℝ) (hr : r ≠ 0) :
 lemma gammaTtr_from_metric (M r : ℝ) (hf : schwarzschildF M r ≠ 0) :
     (1 / 2 : ℝ) * (-(schwarzschildF M r)⁻¹) * (-(2 * M / r ^ 2))
       = M / (r ^ 2 * schwarzschildF M r) := by
-  have hf' : (1 - 2 * M / r) ≠ 0 := by simpa [schwarzschildF] using hf
-  unfold schwarzschildF
   field_simp
 
 /-- Radial derivative of `g_rr = f⁻¹`: `∂_r g_rr = -2M / (r - 2M)²`. -/
 lemma deriv_grr (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) :
     deriv ((fun s : ℝ => 1 - 2 * M / s)⁻¹) r = -(2 * M) / (r - 2 * M) ^ 2 := by
-  have hf' : (1 - 2 * M / r) ≠ 0 := by simpa [schwarzschildF] using hf
+  have hf' : (1 - 2 * M / r) ≠ 0 := by simpa [schwarzschildF_eq] using hf
   have h2 := sub_ne_zero_of_ne M r hr hf
   have h := HasDerivAt.inv (hasDerivAt_gtt M r hr) hf'
   rw [h.deriv]
@@ -189,16 +196,16 @@ lemma deriv_grr (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) :
 lemma gammaRrr_from_metric (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) :
     (1 / 2 : ℝ) * (schwarzschildF M r) * (-(2 * M) / (r - 2 * M) ^ 2)
       = -M / (r * (r - 2 * M)) := by
-  have hf' : (1 - 2 * M / r) ≠ 0 := by simpa [schwarzschildF] using hf
   have h2 := sub_ne_zero_of_ne M r hr hf
-  unfold schwarzschildF
-  field_simp
+  have hr_mul := r_mul_schwarzschildF M r hr
+  field_simp [h2, hr]
+  linear_combination -M * hr_mul
 
 /-- Radial derivative of `Γ^t_{tr}`: `∂_r Γ^t_{tr} = -2M(r - M) / (r(r - 2M))²`. -/
 lemma deriv_gammaTtr (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) :
     deriv (fun s : ℝ => M / (s ^ 2 * schwarzschildF M s)) r
       = -2 * M * (r - M) / (r * (r - 2 * M)) ^ 2 := by
-  have hf' : (1 - 2 * M / r) ≠ 0 := by simpa [schwarzschildF] using hf
+  have hf' : (1 - 2 * M / r) ≠ 0 := by simpa [schwarzschildF_eq] using hf
   have h2 := sub_ne_zero_of_ne M r hr hf
   have hden : HasDerivAt (fun s : ℝ => s ^ 2 * (1 - 2 * M / s)) (2 * r - 2 * M) r := by
     have h1 : HasDerivAt (fun s : ℝ => s ^ 2) (2 * r) r := by
@@ -217,7 +224,7 @@ lemma deriv_gammaTtr (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) 
   have hfun : (fun s : ℝ => M / (s ^ 2 * schwarzschildF M s))
       = (fun _ : ℝ => M) / fun s : ℝ => s ^ 2 * (1 - 2 * M / s) := by
     funext s
-    simp [schwarzschildF]
+    simp [schwarzschildF_eq]
   rw [hfun, h.deriv]
   field_simp
   ring
@@ -235,8 +242,8 @@ lemma riemann_t_rtr_from_metric (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF 
       - (M / (r ^ 2 * schwarzschildF M r)) ^ 2
       = 2 * M / (r ^ 3 * schwarzschildF M r) := by
   have h2 := sub_ne_zero_of_ne M r hr hf
-  rw [deriv_gammaTtr M r hr hf]
-  unfold schwarzschildF
+  rw [deriv_gammaTtr M r hr hf, schwarzschildF_eq]
+  rw [schwarzschildF_eq] at hf
   field_simp [inv_eq_one_div]
   ring
 
@@ -245,13 +252,10 @@ lemma riemann_t_rtr_from_metric (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF 
 lemma electric_r_from_metric (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) :
     -(schwarzschildF M r) * (2 * M / (r ^ 3 * schwarzschildF M r))
       = electricPart (M / r ^ 3) 1 1 := by
-  have h2 := sub_ne_zero_of_ne M r hr hf
-  have hf' : (1 - 2 * M / r) ≠ 0 := by simpa [schwarzschildF] using hf
   have h11 : electricPart (M / r ^ 3) 1 1 = -(2 * M / r ^ 3) := by
     simp [electricPart]
     ring_nf
   rw [h11]
-  unfold schwarzschildF
   field_simp
 
 /-- `Γ^r_{θθ} = (1/2) g^{rr} (-∂_r g_{θθ}) = -r f`. -/
@@ -263,12 +267,6 @@ lemma gammaRthth_from_metric (M r : ℝ) :
 lemma riemann_t_thetatheta_from_metric (M r : ℝ) (hr : r ≠ 0)
     (hf : schwarzschildF M r ≠ 0) :
     (M / (r ^ 2 * schwarzschildF M r)) * (-(r * schwarzschildF M r)) = -M / r := by
-  have h2 := sub_ne_zero_of_ne M r hr hf
-  have h2x : r - M * 2 ≠ 0 := by
-    intro h
-    exact h2 (by linarith)
-  have hf' : (1 - 2 * M / r) ≠ 0 := by simpa [schwarzschildF] using hf
-  unfold schwarzschildF
   field_simp
 
 /-- Orthonormal-frame `θθ` tidal eigenvalue: `M / r³`, the `(2, 2)` entry of
@@ -277,12 +275,9 @@ lemma electric_thetatheta_from_metric (M r : ℝ) (hr : r ≠ 0)
     (hf : schwarzschildF M r ≠ 0) :
     (schwarzschildF M r)⁻¹ * (r ^ 2)⁻¹ * (-(schwarzschildF M r) * (-M / r))
       = electricPart (M / r ^ 3) 2 2 := by
-  have h2 := sub_ne_zero_of_ne M r hr hf
-  have hf' : (1 - 2 * M / r) ≠ 0 := by simpa [schwarzschildF] using hf
   have h22 : electricPart (M / r ^ 3) 2 2 = M / r ^ 3 := by
     simp [electricPart]
   rw [h22]
-  unfold schwarzschildF
   field_simp
 
 /-!
@@ -318,11 +313,6 @@ lemma riemann_t_phitphi_from_metric (M r th : ℝ) (hr : r ≠ 0)
     (M / (r ^ 2 * schwarzschildF M r))
         * (-(r * Real.sin th ^ 2 * schwarzschildF M r))
       = -(M / r) * Real.sin th ^ 2 := by
-  have h2x : r - M * 2 ≠ 0 := by
-    intro h
-    exact sub_ne_zero_of_ne M r hr hf (by linarith)
-  have hf' : (1 - 2 * M / r) ≠ 0 := by simpa [schwarzschildF] using hf
-  unfold schwarzschildF
   field_simp
 
 /-- Product `Γ^r_{rr} Γ^r_{θθ} = M / r`. -/
@@ -330,17 +320,11 @@ lemma gammaRrr_mul_gammaRthth (M r : ℝ) (hr : r ≠ 0)
     (hf : schwarzschildF M r ≠ 0) :
     (-M / (r ^ 2 * schwarzschildF M r)) * (-(r * schwarzschildF M r))
       = M / r := by
-  have hf' : (1 - 2 * M / r) ≠ 0 := by simpa [schwarzschildF] using hf
-  have hden : r ^ 2 * schwarzschildF M r ≠ 0 :=
-    mul_ne_zero (pow_ne_zero 2 hr) hf
-  refine mul_right_cancel₀ hden ?_
-  unfold schwarzschildF
   field_simp
 
 /-- Product `Γ^r_{θθ} Γ^θ_{rθ} = -f`. -/
 lemma gammaRthth_mul_gammaThetar (M r : ℝ) (hr : r ≠ 0) :
     (-(r * schwarzschildF M r)) * (1 / r) = -schwarzschildF M r := by
-  unfold schwarzschildF
   field_simp
 
 /-- The `r θ r θ` Riemann component: `-M / r`. -/
@@ -360,18 +344,12 @@ lemma gammaRrr_mul_gammaRphiphi (M r th : ℝ) (hr : r ≠ 0)
     (-M / (r ^ 2 * schwarzschildF M r))
         * (-(r * Real.sin th ^ 2 * schwarzschildF M r))
       = (M / r) * Real.sin th ^ 2 := by
-  have hf' : (1 - 2 * M / r) ≠ 0 := by simpa [schwarzschildF] using hf
-  have hden : r ^ 2 * schwarzschildF M r ≠ 0 :=
-    mul_ne_zero (pow_ne_zero 2 hr) hf
-  refine mul_right_cancel₀ hden ?_
-  unfold schwarzschildF
   field_simp
 
 /-- Product `Γ^r_{φφ} Γ^φ_{rφ} = -f sin²θ`. -/
 lemma gammaRphiphi_mul_gammaPhirphi (M r th : ℝ) (hr : r ≠ 0) :
     (-(r * Real.sin th ^ 2 * schwarzschildF M r)) * (1 / r)
       = -Real.sin th ^ 2 * schwarzschildF M r := by
-  unfold schwarzschildF
   field_simp
 
 /-- The `r φ r φ` Riemann component: `-(M / r) sin²θ`. -/
@@ -408,7 +386,7 @@ lemma riemann_theta_phitheta_from_metric (M r th : ℝ) (hr : r ≠ 0)
       + (1 / r) * (-(r * Real.sin th ^ 2 * schwarzschildF M r))
       - (-(Real.sin th * Real.cos th)) * (Real.cos th / Real.sin th)
       = (2 * M / r) * Real.sin th ^ 2 := by
-  unfold schwarzschildF
+  rw [schwarzschildF_eq]
   field_simp
   ring
 
@@ -416,8 +394,7 @@ lemma riemann_theta_phitheta_from_metric (M r th : ℝ) (hr : r ≠ 0)
 lemma rt_phitphi_lowered (M r th : ℝ) :
     -(schwarzschildF M r) * (-(M / r) * Real.sin th ^ 2)
       = (M * schwarzschildF M r / r) * Real.sin th ^ 2 := by
-  unfold schwarzschildF
-  field_simp
+  ring
 
 /-- Frame rescaling of `R_{tφtφ}` cancels the metric factors to give `M / r³`. -/
 lemma frame_phiphi (M r th : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0)

@@ -76,8 +76,7 @@ lemma det_kkGaugeJacobian (dlam : Fin 4 → ℝ) : Matrix.det (kkGaugeJacobian d
     have hne : j ≠ i := ne_of_lt hij
     have hj4 : j ≠ 4 := by
       intro h; subst h
-      change 4 < i at hij
-      omega
+      exact absurd hij (not_lt.mpr (Fin.le_last i))
     simp [kkGaugeJacobian, hne, hj4]
   rw [Matrix.det_of_isUpperTriangular htri]
   refine Finset.prod_eq_one fun i _ => ?_

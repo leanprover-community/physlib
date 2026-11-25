@@ -103,8 +103,8 @@ lemma elemSymm_isotropic3 (lam : ℝ) :
   have h2 : K 2 2 = lam := rfl
   have h3 : K 3 3 = lam := rfl
   have hoff : ∀ i j : Fin 4, i ≠ j → K i j = 0 := fun i j hij => Matrix.diagonal_apply_ne _ hij
-  unfold elemSymm1 elemSymm2 elemSymm3 trK1 trK2 trK3
-  simp only [Fin.sum_univ_four, h0, h1, h2, h3, hoff, ne_eq, Fin.reduceEq, not_false_eq_true]
+  simp only [elemSymm1, elemSymm2, elemSymm3, trK1, trK2, trK3,
+    Fin.sum_univ_four, h0, h1, h2, h3, hoff, ne_eq, Fin.reduceEq, not_false_eq_true]
   refine ⟨by ring, by ring, by ring⟩
 
 /-- Cubic dRGT ghost-free potential `U(K) = e₂(K) + α₃ e₃(K)` with free parameter `α₃`
@@ -116,8 +116,7 @@ noncomputable def dRGTPotential (α3 : ℝ) (K : Tensor2 4) : ℝ :=
 (zero cosmological constant / tadpole-free vacuum). -/
 lemma dRGTPotential_vacuum_zero (α3 : ℝ) :
     dRGTPotential α3 0 = 0 := by
-  unfold dRGTPotential elemSymm2 elemSymm3 trK1 trK2 trK3
-  simp
+  simp [dRGTPotential, elemSymm2, elemSymm3, trK1, trK2, trK3]
 
 end MassiveGravity
 

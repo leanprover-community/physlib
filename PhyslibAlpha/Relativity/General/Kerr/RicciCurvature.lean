@@ -492,6 +492,35 @@ private lemma pd_kerrG_2_33 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1
 
 -/
 
+private lemma sum_pd_kerrChristoffel_diag (M a : ℝ) (x : Fin 4 → ℝ)
+    (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
+    (σ ν : Fin 4) :
+    (∑ ρ : Fin 4, pd ν (fun y => kerrChristoffel M a y ρ ρ σ) x)
+      = if ν = 1 ∨ ν = 2 then pd ν (fun y => kerrChristoffelTrace a y σ) x else 0 := by
+  have hcongrTr : (fun y => ∑ ρ : Fin 4, kerrChristoffel M a y ρ ρ σ) =ᶠ[nhds x]
+      fun y => kerrChristoffelTrace a y σ := by
+    have hcSig : Continuous (fun y : Fin 4 → ℝ => sigma a (y 1) (y 2)) := by
+      simp only [sigma]; fun_prop
+    have hcDel : Continuous (fun y : Fin 4 → ℝ => delta M a (y 1)) := by
+      simp only [delta]; fun_prop
+    have hcS : Continuous (fun y : Fin 4 → ℝ => Real.sin (y 2)) := by fun_prop
+    filter_upwards [(hcSig.continuousAt.eventually_ne hsig).and
+      ((hcDel.continuousAt.eventually_ne hdel).and (hcS.continuousAt.eventually_ne hs))]
+      with y ⟨h1, h2, h3⟩
+    exact sum_kerrChristoffel_trace M a y h1 h2 h3 σ
+  have hν : ν = 0 ∨ ν = 1 ∨ ν = 2 ∨ ν = 3 := by fin_cases ν <;> decide
+  rcases hν with rfl | rfl | rfl | rfl
+  · simp [pd_kerrG_const_03 M a x 0 (Or.inl rfl)]
+  · simp only [Fin.isValue, true_or, ↓reduceIte]
+    rw [← pd_sum 1 (fun ρ y => kerrChristoffel M a y ρ ρ σ) x
+      (fun ρ => differentiableAt_kerrG_r' M a x hsig hdel hs ρ ρ σ)]
+    exact pd_congr_nhds 1 x hcongrTr
+  · simp only [Fin.isValue, or_true, ↓reduceIte]
+    rw [← pd_sum 2 (fun ρ y => kerrChristoffel M a y ρ ρ σ) x
+      (fun ρ => differentiableAt_kerrG_th M a x hsig hdel hs ρ ρ σ)]
+    exact pd_congr_nhds 2 x hcongrTr
+  · simp [pd_kerrG_const_03 M a x 3 (Or.inr rfl)]
+
 private lemma ricciOf_kerr_eq_sum (M a : ℝ) (x : Fin 4 → ℝ)
     (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (σ ν : Fin 4) :
@@ -515,42 +544,7 @@ private lemma ricciOf_kerr_eq_sum (M a : ℝ) (x : Fin 4 → ℝ)
     fun μ k i j => pd_congr_nhds μ x (hev k i j)
   have hsumG : ∀ lam, (∑ ρ : Fin 4, kerrChristoffel M a x ρ ρ lam) = kerrChristoffelTrace a x lam :=
     sum_kerrChristoffel_trace M a x hsig hdel hs
-  have htr_pd : (∑ ρ : Fin 4, pd ν (fun y => kerrChristoffel M a y ρ ρ σ) x)
-      = if ν = 1 ∨ ν = 2 then pd ν (fun y => kerrChristoffelTrace a y σ) x else 0 := by
-    have hcongrTr : (fun y => ∑ ρ : Fin 4, kerrChristoffel M a y ρ ρ σ) =ᶠ[nhds x]
-        fun y => kerrChristoffelTrace a y σ := by
-      have hcSig : Continuous (fun y : Fin 4 → ℝ => sigma a (y 1) (y 2)) := by
-        unfold sigma; fun_prop
-      have hcDel : Continuous (fun y : Fin 4 → ℝ => delta M a (y 1)) := by
-        unfold delta; fun_prop
-      have hcS : Continuous (fun y : Fin 4 → ℝ => Real.sin (y 2)) := by fun_prop
-      filter_upwards [(hcSig.continuousAt.eventually_ne hsig).and
-        ((hcDel.continuousAt.eventually_ne hdel).and (hcS.continuousAt.eventually_ne hs))]
-        with y ⟨h1, h2, h3⟩
-      exact sum_kerrChristoffel_trace M a y h1 h2 h3 σ
-    fin_cases ν
-    · change (∑ ρ : Fin 4, pd 0 (fun y => kerrChristoffel M a y ρ ρ σ) x) =
-        if (0 : Fin 4) = 1 ∨ (0 : Fin 4)
-          = 2 then pd 0 (fun y => kerrChristoffelTrace a y σ) x else 0
-      simp [pd_kerrG_const_03 M a x 0 (Or.inl rfl)]
-    · change (∑ ρ : Fin 4, pd 1 (fun y => kerrChristoffel M a y ρ ρ σ) x) =
-        if (1 : Fin 4) = 1 ∨ (1 : Fin 4)
-          = 2 then pd 1 (fun y => kerrChristoffelTrace a y σ) x else 0
-      simp only [Fin.isValue, true_or, ↓reduceIte]
-      rw [← pd_sum 1 (fun ρ y => kerrChristoffel M a y ρ ρ σ) x
-        (fun ρ => differentiableAt_kerrG_r' M a x hsig hdel hs ρ ρ σ)]
-      exact pd_congr_nhds 1 x hcongrTr
-    · change (∑ ρ : Fin 4, pd 2 (fun y => kerrChristoffel M a y ρ ρ σ) x) =
-        if (2 : Fin 4) = 1 ∨ (2 : Fin 4)
-          = 2 then pd 2 (fun y => kerrChristoffelTrace a y σ) x else 0
-      simp only [Fin.isValue, or_true, ↓reduceIte]
-      rw [← pd_sum 2 (fun ρ y => kerrChristoffel M a y ρ ρ σ) x
-        (fun ρ => differentiableAt_kerrG_th M a x hsig hdel hs ρ ρ σ)]
-      exact pd_congr_nhds 2 x hcongrTr
-    · change (∑ ρ : Fin 4, pd 3 (fun y => kerrChristoffel M a y ρ ρ σ) x) =
-        if (3 : Fin 4) = 1 ∨ (3 : Fin 4)
-          = 2 then pd 3 (fun y => kerrChristoffelTrace a y σ) x else 0
-      simp [pd_kerrG_const_03 M a x 3 (Or.inr rfl)]
+  have htr_pd := sum_pd_kerrChristoffel_diag M a x hsig hdel hs σ ν
   simp only [ricciTensorOf, riemann, hpd, hpt, Finset.sum_sub_distrib, Finset.sum_add_distrib]
   have h1 : (∑ ρ : Fin 4, pd ρ (fun y => kerrChristoffel M a y ρ ν σ) x)
       = pd 1 (fun y => kerrChristoffel M a y 1 ν σ) x

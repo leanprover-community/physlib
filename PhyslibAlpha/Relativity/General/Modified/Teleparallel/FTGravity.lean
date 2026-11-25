@@ -75,7 +75,7 @@ noncomputable def fTFriedmannLHS (H : ℝ) (F dF : ℝ → ℝ) : ℝ :=
 equation reduces identically to the standard General Relativity Friedmann left-hand side `3 H²`. -/
 lemma fTFriedmannLHS_tegr (H : ℝ) :
     fTFriedmannLHS H (fun _ => 0) (fun _ => 0) = 3 * H ^ 2 := by
-  unfold fTFriedmannLHS
+  simp only [fTFriedmannLHS]
   ring
 
 /-- For a quadratic teleparallel correction `F(T) = α T²` (`dF(T) = 2 α T`), the modified Friedmann
@@ -83,7 +83,7 @@ left-hand side evaluates to `3 H² - 54 α H⁴`. -/
 lemma fTFriedmannLHS_quadratic (H α : ℝ) :
     fTFriedmannLHS H (fun T => α * T ^ 2) (fun T => 2 * α * T) =
       3 * H ^ 2 - 54 * α * H ^ 4 := by
-  unfold fTFriedmannLHS
+  simp only [fTFriedmannLHS]
   ring
 
 end Teleparallel

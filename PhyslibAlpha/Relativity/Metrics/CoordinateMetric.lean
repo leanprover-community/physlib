@@ -174,15 +174,14 @@ lemma pd_eq_spaceTime_deriv {f : SpaceTime 3 → ℝ} (μ : Fin 1 ⊕ Fin 3) (y 
         map_smul' := fun _ _ => rfl }
   have hLsingle : L (Pi.single (e μ) (1 : ℝ) : Fin 4 → ℝ) = Lorentz.Vector.basis μ := by
     ext ν
-    change (Pi.single (e μ) (1 : ℝ) : Fin 4 → ℝ) (e ν) = Lorentz.Vector.basis μ ν
-    simp [Pi.single_apply, e.injective.eq_iff, eq_comm]
+    simp [L, Pi.single_apply, e.injective.eq_iff, eq_comm, Lorentz.Vector.basis_apply]
   have hx : L (fun k => y (e.symm k)) = y := by
     ext α; simp [L, e]
   have hcomp : HasFDerivAt (f ∘ L) ((fderiv ℝ f y).comp L) (fun k => y (e.symm k)) := by
     have hy : HasFDerivAt f (fderiv ℝ f y) (L (fun k => y (e.symm k))) := by
       rw [hx]; exact hf.hasFDerivAt
     exact hy.comp _ L.hasFDerivAt
-  change pd (e μ) (f ∘ L) (fun k => y (e.symm k)) = SpaceTime.deriv μ f y
+  show pd (e μ) (f ∘ L) (fun k => y (e.symm k)) = SpaceTime.deriv μ f y
   rw [pd_eq_fderiv hcomp.differentiableAt, hcomp.fderiv, ContinuousLinearMap.comp_apply, hLsingle]
   rfl
 

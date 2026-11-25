@@ -101,13 +101,12 @@ the 4D Einstein–Maxwell Lagrangian `R^{(4)} - ¼ F_{ab} F^{ab}`. -/
 lemma kaluza_miracle (M : MetricTensor 4) (R4 : Tensor2 4) (F : Tensor2 4) :
     kkScalar5D M R4 F =
       (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b * R4 a b) - (1 / 4) * maxwellF2 M F := by
-  unfold kkScalar5D kkRicci4D kkRicci44 maxwellF2
-  simp only [mul_sub, Finset.sum_sub_distrib]
+  simp only [kkScalar5D, kkRicci4D, kkRicci44, maxwellF2, mul_sub, Finset.sum_sub_distrib]
   have hF :
       (∑ a : Fin 4, ∑ b : Fin 4,
         M.ginv a b * ((1 / 2) * ∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * F a c * F b d))
         = (1 / 2) * maxwellFieldInvariant M.ginv F := by
-    unfold maxwellFieldInvariant
+    simp only [maxwellFieldInvariant]
     rw [Finset.mul_sum]
     refine Finset.sum_congr rfl fun a _ => ?_
     simp_rw [Finset.mul_sum]
@@ -126,7 +125,7 @@ lemma kkEinstein4D_eq_zero_iff (M : MetricTensor 4) (R4 : Tensor2 4) (F : Tensor
       R4 a b - (1 / 2) * M.g a b * (∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * R4 c d) =
         (1 / 2) * maxwellStressEnergy M F a b := by
   rw [kaluza_miracle]
-  unfold kkRicci4D maxwellStressEnergy maxwellStressEnergyRaw maxwellF2
+  simp only [kkRicci4D, maxwellStressEnergy, maxwellStressEnergyRaw, maxwellF2]
   constructor <;> intro h <;> linarith
 
 end KaluzaKlein

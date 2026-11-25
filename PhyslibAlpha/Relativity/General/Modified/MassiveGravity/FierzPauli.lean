@@ -94,8 +94,7 @@ noncomputable def fpMassTensor (m α : ℝ) (h : Tensor2 4) : Tensor2 4 :=
 lemma fpMassTensor_trace (m α : ℝ) (h : Tensor2 4) :
     (∑ i : Fin 4, minkowskiMetric4 i i * fpMassTensor m α h i i) =
       (m ^ 2 / 2) * (1 + 4 * α) * hTraceEta h := by
-  unfold fpMassTensor hTraceEta
-  simp only [Fin.sum_univ_four, minkowskiMetric4_apply]
+  simp only [fpMassTensor, hTraceEta, Fin.sum_univ_four, minkowskiMetric4_apply]
   norm_num
   ring
 
@@ -114,8 +113,7 @@ vanishes (preventing a fourth-order time-derivative Boulware–Deser ghost) if a
 lemma longitudinal_time_ghost_free_iff (α ϕdd : ℝ) (hϕ : ϕdd ≠ 0) :
     hContractionSq (fun i j => if i = 0 ∧ j = 0 then ϕdd else 0)
       + α * hTraceEta (fun i j => if i = 0 ∧ j = 0 then ϕdd else 0) ^ 2 = 0 ↔ α = -1 := by
-  unfold hContractionSq hTraceEta
-  simp only [Fin.sum_univ_four, minkowskiMetric4_apply]
+  simp only [hContractionSq, hTraceEta, Fin.sum_univ_four, minkowskiMetric4_apply]
   norm_num
   constructor
   · intro h

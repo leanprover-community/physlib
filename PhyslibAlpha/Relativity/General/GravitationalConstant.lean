@@ -125,6 +125,10 @@ lemma val_ne_zero (G : GravitationalConstant) : (G : ℝ) ≠ 0 := ne_of_gt G.po
 def gravitationalConstantDimension : Dimension LTMCTDimensionBase :=
   L𝓭 * L𝓭 * L𝓭 * M𝓭⁻¹ * T𝓭⁻¹ * T𝓭⁻¹
 
+/-- Equational expansion of `gravitationalConstantDimension` into base dimensions. -/
+lemma gravitationalConstantDimension_eq :
+    gravitationalConstantDimension = L𝓭 * L𝓭 * L𝓭 * M𝓭⁻¹ * T𝓭⁻¹ * T𝓭⁻¹ := rfl
+
 /-- Newton's gravitational constant has the dimension `L³ M⁻¹ T⁻²`. -/
 instance instHasDim : HasDim GravitationalConstant where
   d := gravitationalConstantDimension
@@ -204,6 +208,27 @@ lemma gravitationalConstant_in_SI :
 
 -/
 
+private lemma coe_self_div_scale {U : Type} [PositiveRealUnitCore U] (x : U) (r : ℝ) (hr : 0 < r) :
+    ((x / PositiveRealUnitCore.scale r x hr : ℝ≥0) : ℝ) = 1 / r := by
+  rw [PositiveRealUnitCore.self_div_scale]
+  rfl
+
+private lemma coe_div_self {U : Type} [PositiveRealUnitCore U] (x : U) :
+    ((x / x : ℝ≥0) : ℝ) = 1 := by
+  simp
+
+private lemma speedOfLight_scaleUnit_SI (u : LTMCTUnitChoices) :
+    (speedOfLight u).val = (SI.dimScale u (L𝓭 * T𝓭⁻¹) : ℝ) * 299792458 := rfl
+
+private lemma gravitationalConstant_scaleUnit_SI (u : LTMCTUnitChoices) :
+    (gravitationalConstant u).val =
+      (SI.dimScale u GravitationalConstant.gravitationalConstantDimension : ℝ) *
+        6.67430e-11 := rfl
+
+private lemma boltzmannConstant_scaleUnit_SI (u : LTMCTUnitChoices) :
+    (boltzmannConstant u).val =
+      (SI.dimScale u (M𝓭 * L𝓭 * L𝓭 * T𝓭⁻¹ * T𝓭⁻¹ * Θ𝓭⁻¹) : ℝ) * 1.380649e-23 := rfl
+
 /-- There exist units `u : LTMCTUnitChoices` in which the speed of light `c`, the Newtonian
 gravitational constant `G`, and the Boltzmann constant `k_B` are simultaneously equal to `1`. -/
 lemma exists_units_c_G_kB_eq_one : ∃ u : LTMCTUnitChoices,
@@ -215,25 +240,19 @@ lemma exists_units_c_G_kB_eq_one : ∃ u : LTMCTUnitChoices,
     temperature := PositiveRealUnitCore.scale
       ((299792458 ^ 3 / 6.67430e-11) * 299792458 ^ 2 / 1.380649e-23)
       TemperatureUnit.kelvin}, ?_, ?_, ?_⟩
-  · change ((SI.dimScale _ (L𝓭 * T𝓭⁻¹) : ℝ≥0) : ℝ) * 299792458 = 1
-    simp only [map_mul, map_inv, NNReal.coe_mul, NNReal.coe_inv, dimScale_L𝓭, dimScale_T𝓭]
-    change (1 / (299792458 * 1) : ℝ) * (1 / 1)⁻¹ * 299792458 = 1
-    norm_num
-  · change ((SI.dimScale _ GravitationalConstant.gravitationalConstantDimension : ℝ≥0) : ℝ) *
-      6.67430e-11 = 1
-    unfold GravitationalConstant.gravitationalConstantDimension
-    simp only [map_mul, map_inv, NNReal.coe_mul, NNReal.coe_inv, dimScale_L𝓭, dimScale_M𝓭,
-      dimScale_T𝓭]
-    change (1 / (299792458 * 1) : ℝ) * (1 / (299792458 * 1)) * (1 / (299792458 * 1)) *
-      (1 / ((299792458 ^ 3 / 6.67430e-11) * 1))⁻¹ * (1 / 1)⁻¹ * (1 / 1)⁻¹ * 6.67430e-11 = 1
-    norm_num
-  · change ((SI.dimScale _ (M𝓭 * L𝓭 * L𝓭 * T𝓭⁻¹ * T𝓭⁻¹ * Θ𝓭⁻¹) : ℝ≥0) : ℝ) * 1.380649e-23 = 1
+  · rw [speedOfLight_scaleUnit_SI]
     simp only [map_mul, map_inv, NNReal.coe_mul, NNReal.coe_inv, dimScale_L𝓭, dimScale_T𝓭,
-      dimScale_M𝓭, dimScale_Θ𝓭]
-    change (1 / ((299792458 ^ 3 / 6.67430e-11) * 1) : ℝ) *
-      (1 / (299792458 * 1)) * (1 / (299792458 * 1)) * (1 / 1)⁻¹ * (1 / 1)⁻¹ *
-      (1 / (((299792458 ^ 3 / 6.67430e-11) * 299792458 ^ 2 / 1.380649e-23) * 1))⁻¹ *
-      1.380649e-23 = 1
+      SI_length, SI_time, coe_self_div_scale, coe_div_self]
+    norm_num
+  · rw [gravitationalConstant_scaleUnit_SI,
+      GravitationalConstant.gravitationalConstantDimension_eq]
+    simp only [map_mul, map_inv, NNReal.coe_mul, NNReal.coe_inv, dimScale_L𝓭, dimScale_M𝓭,
+      dimScale_T𝓭, SI_length, SI_mass, SI_time, coe_self_div_scale, coe_div_self]
+    norm_num
+  · rw [boltzmannConstant_scaleUnit_SI]
+    simp only [map_mul, map_inv, NNReal.coe_mul, NNReal.coe_inv, dimScale_L𝓭, dimScale_T𝓭,
+      dimScale_M𝓭, dimScale_Θ𝓭, SI_length, SI_time, SI_mass, SI_temperature,
+      coe_self_div_scale, coe_div_self]
     norm_num
 
 end GeneralRelativity

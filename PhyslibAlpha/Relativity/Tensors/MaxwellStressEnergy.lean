@@ -78,7 +78,7 @@ lemma maxwellStressEnergyRaw_trace_zero (M : MetricTensor 4) (F : Tensor2 4) :
       (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b *
         (∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * F a c * F b d)) =
         maxwellFieldInvariant M.ginv F := by
-    unfold maxwellFieldInvariant
+    simp only [maxwellFieldInvariant]
     refine Finset.sum_congr rfl fun a _ => ?_
     simp_rw [Finset.mul_sum]
     rw [Finset.sum_comm]

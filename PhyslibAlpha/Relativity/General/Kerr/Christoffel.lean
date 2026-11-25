@@ -484,9 +484,9 @@ lemma eventually_christoffel_kerr_eq (M a : ℝ) (x : Fin 4 → ℝ)
     (fun y => christoffel (kerrMetric M a) (kerrMetricInv M a) y k i j)
       =ᶠ[nhds x] fun y => kerrChristoffel M a y k i j := by
   have hcSig : Continuous (fun y : Fin 4 → ℝ => sigma a (y 1) (y 2)) := by
-    unfold sigma; fun_prop
+    simp only [sigma]; fun_prop
   have hcDel : Continuous (fun y : Fin 4 → ℝ => delta M a (y 1)) := by
-    unfold delta; fun_prop
+    simp only [delta]; fun_prop
   have hcS : Continuous (fun y : Fin 4 → ℝ => Real.sin (y 2)) := by fun_prop
   have hmem := (hcSig.continuousAt.eventually_ne hsig).and
     ((hcDel.continuousAt.eventually_ne hdel).and (hcS.continuousAt.eventually_ne hs))

@@ -789,6 +789,17 @@ private lemma ricci_flrw_33 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha 
   field_simp [ha, hr, hkr, hkr', hsin]
   ring
 
+private lemma ricci_flrw_offdiag (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
+    (hr : x 1 ≠ 0) (hkr : 1 - k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
+    (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ a t)
+    (ha2 : DifferentiableAt ℝ (deriv a) (x 0)) {σ ν : Fin 4} (h : σ ≠ ν) :
+    ricciTensorOf (flrwMetric a k) (flrwMetricInv a k) x σ ν = 0 := by
+  fin_cases σ <;> fin_cases ν <;> try exact absurd rfl h
+  all_goals
+    simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
+      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
+  all_goals ring
+
 /-- Complete coordinate-pipeline Ricci tensor of the FLRW metric. -/
 lemma ricciTensorOf_flrw (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
@@ -808,32 +819,20 @@ lemma ricciTensorOf_flrw (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a
         else 0 := by
   fin_cases σ <;> fin_cases ν <;> dsimp only
   · exact ricci_flrw_00 a k x ha hr hkr hsin ha_diff ha2
-  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]; ring
+  · exact ricci_flrw_offdiag a k x ha hr hkr hsin ha_diff ha2 (by decide)
+  · exact ricci_flrw_offdiag a k x ha hr hkr hsin ha_diff ha2 (by decide)
+  · exact ricci_flrw_offdiag a k x ha hr hkr hsin ha_diff ha2 (by decide)
+  · exact ricci_flrw_offdiag a k x ha hr hkr hsin ha_diff ha2 (by decide)
   · exact ricci_flrw_11 a k x ha hr hkr hsin ha_diff ha2
-  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]; ring
-  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]; ring
+  · exact ricci_flrw_offdiag a k x ha hr hkr hsin ha_diff ha2 (by decide)
+  · exact ricci_flrw_offdiag a k x ha hr hkr hsin ha_diff ha2 (by decide)
+  · exact ricci_flrw_offdiag a k x ha hr hkr hsin ha_diff ha2 (by decide)
+  · exact ricci_flrw_offdiag a k x ha hr hkr hsin ha_diff ha2 (by decide)
   · exact ricci_flrw_22 a k x ha hr hkr hsin ha_diff ha2
-  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four, riemann_flrw_eq_data a k x ha hr hkr hsin ha_diff ha2,
-      riemannFromData, flrwChristoffel, flrwChristoffelDeriv]
+  · exact ricci_flrw_offdiag a k x ha hr hkr hsin ha_diff ha2 (by decide)
+  · exact ricci_flrw_offdiag a k x ha hr hkr hsin ha_diff ha2 (by decide)
+  · exact ricci_flrw_offdiag a k x ha hr hkr hsin ha_diff ha2 (by decide)
+  · exact ricci_flrw_offdiag a k x ha hr hkr hsin ha_diff ha2 (by decide)
   · exact ricci_flrw_33 a k x ha hr hkr hsin ha_diff ha2
 
 /-- FLRW scalar curvature `S = 6 (a'' / a + (a' / a)² + k / a²)`. -/

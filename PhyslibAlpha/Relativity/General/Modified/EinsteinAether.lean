@@ -114,8 +114,7 @@ def minkowskiRestAether : Fin 4 → ℝ := ![1, 0, 0, 0]
 /-- The Minkowski rest-frame aether `u = (1, 0, 0, 0)` is unit-timelike with respect to
 `minkowskiMetric4`. -/
 lemma minkowskiRestAether_unitTimelike : IsUnitTimelike minkowskiMetric4 minkowskiRestAether := by
-  unfold IsUnitTimelike minkowskiRestAether
-  simp [Fin.sum_univ_four]
+  simp [IsUnitTimelike, minkowskiRestAether, Fin.sum_univ_four]
 
 /-- First-order variation of the unit-timelike constraint `g_{ab} u^a u^b = -1` around flat
 Minkowski spacetime (`g = minkowskiMetric4 + h`, `u = minkowskiRestAether + δu`):
@@ -165,7 +164,7 @@ def aetherLagrangian {n : ℕ} (C : AetherCouplings) (M : MetricTensor n) (R : �
 lemma aetherLagrangian_on_shell {n : ℕ} (C : AetherCouplings) (M : MetricTensor n) (R : ℝ)
     (u : Fin n → ℝ) (du : Tensor2 n) (lam : ℝ) (hu : IsUnitTimelike M.g u) :
     aetherLagrangian C M R u du lam = R - aetherKineticInvariant C M u du := by
-  unfold aetherLagrangian
+  simp only [aetherLagrangian]
   rw [hu]
   ring
 
@@ -194,8 +193,7 @@ noncomputable def spin0SpeedSq (C : AetherCouplings) : ℝ :=
 (`s₂² = 1`) if and only if `c₁₃ = c₁ + c₃ = 0`. -/
 lemma spin2SpeedSq_eq_one_iff (C : AetherCouplings) (h : 1 - C.c13 ≠ 0) :
     spin2SpeedSq C = 1 ↔ C.c13 = 0 := by
-  unfold spin2SpeedSq
-  rw [div_eq_iff h]
+  simp only [spin2SpeedSq, div_eq_iff h]
   constructor <;> intro h1 <;> linarith
 
 /-- When tensor gravitons are luminal (`c₁₃ = c₁ + c₃ = 0`), the spin-1 vector mode squared speed
@@ -203,10 +201,9 @@ simplifies to `s₁² = c₁ / c₁₄`. -/
 lemma spin1SpeedSq_luminal_graviton (C : AetherCouplings) (hc13 : C.c13 = 0)
     (hc14 : C.c14 ≠ 0) : spin1SpeedSq C = C.c1 / C.c14 := by
   have hc3 : C.c3 = -C.c1 := by
-    unfold AetherCouplings.c13 at hc13
+    simp only [AetherCouplings.c13] at hc13
     linarith
-  unfold spin1SpeedSq
-  rw [hc13, hc3]
+  simp only [spin1SpeedSq, hc13, hc3]
   field_simp [hc14]
   ring
 
@@ -215,10 +212,9 @@ to `s₀² = c₂ (2 - c₁₄) / (c₁₄ (2 + 3 c₂))`. -/
 lemma spin0SpeedSq_luminal_graviton (C : AetherCouplings) (hc13 : C.c13 = 0) :
     spin0SpeedSq C = C.c2 * (2 - C.c14) / (C.c14 * (2 + 3 * C.c2)) := by
   have hc123 : C.c123 = C.c2 := by
-    unfold AetherCouplings.c123 AetherCouplings.c13 at *
+    simp only [AetherCouplings.c123, AetherCouplings.c13] at *
     linarith
-  unfold spin0SpeedSq
-  rw [hc13, hc123]
+  simp only [spin0SpeedSq, hc13, hc123]
   ring
 
 /-- Renormalized Newtonian gravitational constant measured in weak-field static gravity:
@@ -231,8 +227,7 @@ if and only if `c₁₄ = c₁ + c₄ = 0`. -/
 lemma effectiveNewtonG_eq_bare_iff (Gbare : ℝ) (C : AetherCouplings) (hG : Gbare ≠ 0)
     (hd : 1 - C.c14 / 2 ≠ 0) :
     effectiveNewtonG Gbare C = Gbare ↔ C.c14 = 0 := by
-  unfold effectiveNewtonG
-  rw [div_eq_iff hd]
+  simp only [effectiveNewtonG, div_eq_iff hd]
   constructor
   · intro h
     have h1 : Gbare * (1 - C.c14 / 2) = Gbare * 1 := by linarith

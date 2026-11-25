@@ -96,11 +96,14 @@ def IsGeodesic (G : GeodesicSystem E) (s : Set ℝ) (γ w : ℝ → E) : Prop :=
 lemma geodesicField_apply (Γ : Christoffel E) (x v : E) :
     geodesicField Γ (x, v) = (v, geodesicAccel Γ x v) := rfl
 
+private lemma geodesicField_eq_fun (Γ : Christoffel E) :
+    geodesicField Γ = fun z => (z.2, -Γ z.1 z.2 z.2) := rfl
+
 /-- The geodesic vector field inherits `C¹` regularity from the Christoffel symbols. -/
 lemma contDiffAt_geodesicField (Γ : E → E →L[ℝ] E →L[ℝ] E) {x₀ v₀ : E}
     (hΓ : ContDiffAt ℝ 1 Γ x₀) :
     ContDiffAt ℝ 1 (geodesicField Γ) (x₀, v₀) := by
-  unfold geodesicField geodesicAccel
+  rw [geodesicField_eq_fun]
   fun_prop
 
 /-!

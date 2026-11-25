@@ -97,7 +97,7 @@ lemma genKronecker_eq_zero_of_lt {n k : ℕ} (h : n < k) (a b : Fin k → Fin n)
     refine Finset.prod_congr rfl fun t _ => ?_
     rw [Perm.mul_apply, hτ_a t]
   have hsum : genKronecker k a b = -genKronecker k a b := by
-    unfold genKronecker
+    simp only [genKronecker]
     conv_lhs => rw [← Equiv.sum_comp (Equiv.mulRight τ)]
     rw [← Finset.sum_neg_distrib]
     refine Finset.sum_congr rfl fun σ _ => ?_
@@ -118,12 +118,33 @@ private abbrev p4 (a : Fin 4) (b : Fin 3) (c : Fin 2) : Perm (Fin 4) :=
 private lemma p4_sign (a : Fin 4) (b : Fin 3) (c : Fin 2) :
     Perm.sign (p4 a b c) =
       (if a = 0 then 1 else -1) * (if b = 0 then 1 else -1) * (if c = 0 then 1 else -1) := by
-  decide +revert
+  simp only [p4, Equiv.Perm.decomposeFin.symm_sign, map_one, mul_one, mul_assoc]
 
 private lemma p5_sign (k : Fin 5) (a : Fin 4) (b : Fin 3) (c : Fin 2) :
     Perm.sign (Perm.decomposeFin.symm (k, p4 a b c)) =
       (if k = 0 then 1 else -1) * Perm.sign (p4 a b c) := by
-  decide +revert
+  simp only [Equiv.Perm.decomposeFin.symm_sign]
+
+private lemma p4_apply_zero (a : Fin 4) (b : Fin 3) (c : Fin 2) : p4 a b c 0 = a :=
+  Perm.decomposeFin_symm_apply_zero _ _
+
+private lemma p4_apply_one (a : Fin 4) (b : Fin 3) (c : Fin 2) :
+    p4 a b c 1 = Equiv.swap 0 a b.succ := by
+  simp [p4, Perm.decomposeFin_symm_apply_one, Perm.decomposeFin_symm_apply_zero]
+
+private lemma p4_apply_two (a : Fin 4) (b : Fin 3) (c : Fin 2) :
+    p4 a b c 2 = Equiv.swap 0 a (Equiv.swap 0 b c.succ).succ := by
+  have h2 : (2 : Fin 4) = (1 : Fin 3).succ := rfl
+  rw [p4, h2, Perm.decomposeFin_symm_apply_succ, Perm.decomposeFin_symm_apply_one,
+    Perm.decomposeFin_symm_apply_zero]
+
+private lemma p4_apply_three (a : Fin 4) (b : Fin 3) (c : Fin 2) :
+    p4 a b c 3 = Equiv.swap 0 a (Equiv.swap 0 b (Equiv.swap 0 c (1 : Fin 2)).succ).succ := by
+  have h3 : (3 : Fin 4) = (2 : Fin 3).succ := rfl
+  have h2 : (2 : Fin 3) = (1 : Fin 2).succ := rfl
+  have h1 : (1 : Fin 2) = (0 : Fin 1).succ := rfl
+  rw [p4, h3, Perm.decomposeFin_symm_apply_succ, h2, Perm.decomposeFin_symm_apply_succ, h1,
+    Perm.decomposeFin_symm_apply_succ, Perm.one_apply]
 
 private lemma sum_perm_fin4_eq (g : Perm (Fin 4) → ℝ) :
     (∑ q : Perm (Fin 4), g q) = ∑ a : Fin 4, ∑ b : Fin 3, ∑ c : Fin 2, g (p4 a b c) := by
@@ -144,28 +165,35 @@ private lemma perm_fin4_split (F : Fin 4 → Fin 4 → Fin 4 → Fin 4 → ℝ)
     (∑ q : Perm (Fin 4), ((Perm.sign q : ℤ) : ℝ) * F (q 0) (q 1) (q 2) (q 3))
       = 4 * (F 0 1 2 3 - F 0 2 1 3 + F 0 3 1 2 + F 1 2 0 3 - F 1 3 0 2 + F 2 3 0 1) := by
   rw [sum_perm_fin4_eq]
-  simp_rw [p4_sign]
   simp only [Fin.sum_univ_four, Fin.sum_univ_three, Fin.sum_univ_two,
-    Fin.isValue, Fin.reduceEq, ↓reduceIte,
-    Units.val_mul, Int.cast_mul, Units.val_one, Int.cast_one,
-    Units.val_neg, Int.cast_neg]
-  change
-    1 * 1 * 1 * F 0 1 2 3 + 1 * 1 * -1 * F 0 1 3 2 +
-      (1 * -1 * 1 * F 0 2 1 3 + 1 * -1 * -1 * F 0 2 3 1) +
-      (1 * -1 * 1 * F 0 3 2 1 + 1 * -1 * -1 * F 0 3 1 2) +
-    (-1 * 1 * 1 * F 1 0 2 3 + -1 * 1 * -1 * F 1 0 3 2 +
-      (-1 * -1 * 1 * F 1 2 0 3 + -1 * -1 * -1 * F 1 2 3 0) +
-      (-1 * -1 * 1 * F 1 3 2 0 + -1 * -1 * -1 * F 1 3 0 2)) +
-    (-1 * 1 * 1 * F 2 1 0 3 + -1 * 1 * -1 * F 2 1 3 0 +
-      (-1 * -1 * 1 * F 2 0 1 3 + -1 * -1 * -1 * F 2 0 3 1) +
-      (-1 * -1 * 1 * F 2 3 0 1 + -1 * -1 * -1 * F 2 3 1 0)) +
-    (-1 * 1 * 1 * F 3 1 2 0 + -1 * 1 * -1 * F 3 1 0 2 +
-      (-1 * -1 * 1 * F 3 2 1 0 + -1 * -1 * -1 * F 3 2 0 1) +
-      (-1 * -1 * 1 * F 3 0 2 1 + -1 * -1 * -1 * F 3 0 1 2)) =
-    4 * (F 0 1 2 3 - F 0 2 1 3 + F 0 3 1 2 + F 1 2 0 3 - F 1 3 0 2 + F 2 3 0 1)
+    p4_sign, p4_apply_zero, p4_apply_one, p4_apply_two, p4_apply_three,
+    Equiv.swap_apply_def, Fin.isValue, Fin.reduceEq, ↓reduceIte,
+    Fin.succ_zero_eq_one, Fin.succ_one_eq_two,
+    show (2 : Fin 3).succ = 3 from rfl, show (1 : Fin 2).succ = 2 from rfl,
+    Units.val_mul, Int.cast_mul, Units.val_one, Int.cast_one, Units.val_neg, Int.cast_neg]
   simp_rw [h12 1 0, h12 2 0, h12 3 0, h12 2 1, h12 3 1, h12 3 2]
   simp_rw [h34 _ _ 1 0, h34 _ _ 2 0, h34 _ _ 3 0, h34 _ _ 2 1, h34 _ _ 3 1, h34 _ _ 3 2]
   ring
+
+private lemma perm5_fiber_term (k : Fin 5) (a : Fin 4) (b : Fin 3) (c : Fin 2)
+    (F : Fin 5 → Fin 5 → Fin 5 → Fin 5 → ℝ) :
+    ((Perm.sign (Perm.decomposeFin.symm (k, p4 a b c)) : ℤ) : ℝ) *
+      F (Perm.decomposeFin.symm (k, p4 a b c) 1)
+        (Perm.decomposeFin.symm (k, p4 a b c) 2)
+        (Perm.decomposeFin.symm (k, p4 a b c) 3)
+        (Perm.decomposeFin.symm (k, p4 a b c) 4) =
+      (if k = 0 then (1 : ℝ) else -1) *
+        (((Perm.sign (p4 a b c) : ℤ) : ℝ) *
+          F (Equiv.swap 0 k (p4 a b c 0).succ) (Equiv.swap 0 k (p4 a b c 1).succ)
+            (Equiv.swap 0 k (p4 a b c 2).succ) (Equiv.swap 0 k (p4 a b c 3).succ)) := by
+  have h1 : (1 : Fin 5) = (0 : Fin 4).succ := rfl
+  have h2 : (2 : Fin 5) = (1 : Fin 4).succ := rfl
+  have h3 : (3 : Fin 5) = (2 : Fin 4).succ := rfl
+  have h4 : (4 : Fin 5) = (3 : Fin 4).succ := rfl
+  rw [h1, h2, h3, h4, p5_sign k a b c, Perm.decomposeFin_symm_apply_succ,
+    Perm.decomposeFin_symm_apply_succ, Perm.decomposeFin_symm_apply_succ,
+    Perm.decomposeFin_symm_apply_succ, Units.val_mul, Int.cast_mul]
+  split_ifs <;> simp
 
 lemma perm_fin5_fiber_split (k : Fin 5) (F : Fin 5 → Fin 5 → Fin 5 → Fin 5 → ℝ)
     (h12 : ∀ a b c d, F a b c d = -F b a c d)
@@ -199,15 +227,7 @@ lemma perm_fin5_fiber_split (k : Fin 5) (F : Fin 5 → Fin 5 → Fin 5 → Fin 5
       rw [← hd]
       simp [d, q2, q1]
     rw [hq]
-    change ((Perm.sign (Perm.decomposeFin.symm (k, p4 a b c)) : ℤ) : ℝ) *
-        F (Perm.decomposeFin.symm (k, p4 a b c) (Fin.succ 0))
-          (Perm.decomposeFin.symm (k, p4 a b c) (Fin.succ 1))
-          (Perm.decomposeFin.symm (k, p4 a b c) (Fin.succ 2))
-          (Perm.decomposeFin.symm (k, p4 a b c) (Fin.succ 3)) = _
-    rw [p5_sign k a b c, Perm.decomposeFin_symm_apply_succ,
-      Perm.decomposeFin_symm_apply_succ, Perm.decomposeFin_symm_apply_succ,
-      Perm.decomposeFin_symm_apply_succ, Units.val_mul, Int.cast_mul]
-    split_ifs <;> simp <;> ring
+    exact perm5_fiber_term k a b c F
   simp_rw [hsign, ← Finset.mul_sum]
   rw [perm_fin4_split (fun x y z w => F (s x) (s y) (s z) (s w))
     (fun a b c d => h12 (s a) (s b) (s c) (s d))

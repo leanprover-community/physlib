@@ -650,6 +650,17 @@ private lemma ricci_ss_33 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
   field_simp [hr, hf, hsin]
   ring
 
+private lemma ricci_ss_offdiag (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : f (x 1) ≠ 0)
+    (hsin : Real.sin (x 2) ≠ 0) (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ f s)
+    (hf2 : DifferentiableAt ℝ (deriv f) (x 1)) {σ ν : Fin 4} (h : σ ≠ ν) :
+    ricciTensorOf (staticSphericalMetric f) (staticSphericalMetricInv f) x σ ν = 0 := by
+  fin_cases σ <;> fin_cases ν <;> try exact absurd rfl h
+  all_goals
+    simp [ricciTensorOf, Fin.sum_univ_four,
+      riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
+      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
+  ring
+
 /-- Complete coordinate-pipeline Ricci tensor for any static spherically symmetric metric
 `ds² = -f(r) dt² + f(r)⁻¹ dr² + r² dΩ²`. -/
 lemma ricciTensorOf_staticSpherical (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
@@ -665,45 +676,20 @@ lemma ricciTensorOf_staticSpherical (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : 
         else 0 := by
   fin_cases σ <;> fin_cases ν
   · simpa using ricci_ss_00 f x hr hf hsin hf_diff hf2
-  · simp [ricciTensorOf, Fin.sum_univ_four,
-      riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four,
-      riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four,
-      riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four,
-      riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
+  · simpa using ricci_ss_offdiag f x hr hf hsin hf_diff hf2 (by decide)
+  · simpa using ricci_ss_offdiag f x hr hf hsin hf_diff hf2 (by decide)
+  · simpa using ricci_ss_offdiag f x hr hf hsin hf_diff hf2 (by decide)
+  · simpa using ricci_ss_offdiag f x hr hf hsin hf_diff hf2 (by decide)
   · simpa using ricci_ss_11 f x hr hf hsin hf_diff hf2
-  · simp [ricciTensorOf, Fin.sum_univ_four,
-      riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four,
-      riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four,
-      riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four,
-      riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
-    ring
+  · simpa using ricci_ss_offdiag f x hr hf hsin hf_diff hf2 (by decide)
+  · simpa using ricci_ss_offdiag f x hr hf hsin hf_diff hf2 (by decide)
+  · simpa using ricci_ss_offdiag f x hr hf hsin hf_diff hf2 (by decide)
+  · simpa using ricci_ss_offdiag f x hr hf hsin hf_diff hf2 (by decide)
   · simpa using ricci_ss_22 f x hr hf hsin hf_diff hf2
-  · simp [ricciTensorOf, Fin.sum_univ_four,
-      riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four,
-      riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four,
-      riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
-  · simp [ricciTensorOf, Fin.sum_univ_four,
-      riemann_staticSpherical_eq_data f x hr hf hsin hf_diff hf2,
-      riemannFromData, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
+  · simpa using ricci_ss_offdiag f x hr hf hsin hf_diff hf2 (by decide)
+  · simpa using ricci_ss_offdiag f x hr hf hsin hf_diff hf2 (by decide)
+  · simpa using ricci_ss_offdiag f x hr hf hsin hf_diff hf2 (by decide)
+  · simpa using ricci_ss_offdiag f x hr hf hsin hf_diff hf2 (by decide)
   · simpa using ricci_ss_33 f x hr hf hsin hf_diff hf2
 
 /-- Scalar curvature computed by `ricciScalarOf` for `staticSphericalMetric f`:

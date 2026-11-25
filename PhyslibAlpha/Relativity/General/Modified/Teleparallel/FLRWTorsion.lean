@@ -124,7 +124,7 @@ lemma ricciScalarOf_flrw_flat_eq_neg_torsion_add_boundary (a : ℝ → ℝ) (x :
       -flrwTorsionScalar a (x 0) + flrwBoundaryTerm a (x 0) := by
   have hkr : 1 - 0 * (x 1) ^ 2 ≠ 0 := by norm_num
   rw [ricciScalarOf_flrw a 0 x ha hr hkr hsin ha_diff ha2]
-  unfold flrwTorsionScalar flrwBoundaryTerm
+  simp only [flrwTorsionScalar, flrwBoundaryTerm]
   ring
 
 /-- For a Physlib `Cosmology.FLRW` universe, `flrwTorsionScalar` reproduces `6 H²` in terms of

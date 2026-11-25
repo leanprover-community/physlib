@@ -123,4 +123,16 @@ lemma MetricTensor.sum_ginv_mul_g_right {n : ℕ} (M : MetricTensor n) (i j : Fi
     (∑ k : Fin n, M.g i k * M.ginv k j) = if i = j then 1 else 0 := by
   simpa [Matrix.mul_apply, Matrix.one_apply] using congrFun (congrFun M.inv_left i) j
 
+/-- Vector-valued inverse-metric contraction `∑ k, g^{pk} ∑ m, g_{km} f(m) = f(p)`. -/
+lemma MetricTensor.sum_ginv_mul_g_apply {n : ℕ} (M : MetricTensor n) (p : Fin n) (f : Fin n → ℝ) :
+    (∑ k : Fin n, M.ginv p k * (∑ m : Fin n, M.g k m * f m)) = f p := by
+  calc (∑ k : Fin n, M.ginv p k * (∑ m : Fin n, M.g k m * f m))
+      = ∑ m : Fin n, f m * ∑ k : Fin n, M.ginv p k * M.g k m := by
+        simp_rw [Finset.mul_sum]
+        rw [Finset.sum_comm]
+        exact Finset.sum_congr rfl fun m _ =>
+          Finset.sum_congr rfl fun k _ => by ring
+    _ = f p := by
+        simp [M.sum_ginv_mul_g_left p]
+
 end GeneralRelativity

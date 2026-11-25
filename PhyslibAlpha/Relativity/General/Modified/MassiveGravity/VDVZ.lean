@@ -86,8 +86,8 @@ graviton exchange amplitude is `4/3` times the massless General Relativity ampli
 lemma vdvz_static_ratio (ρ1 ρ2 : ℝ) :
     massivePropagatorCoupling (staticSource ρ1) (staticSource ρ2) =
       (4 / 3) * grPropagatorCoupling (staticSource ρ1) (staticSource ρ2) := by
-  unfold massivePropagatorCoupling grPropagatorCoupling stressTrace staticSource
-  simp only [Fin.sum_univ_four, minkowskiMetric4_apply]
+  simp only [massivePropagatorCoupling, grPropagatorCoupling, stressTrace, staticSource,
+    Fin.sum_univ_four, minkowskiMetric4_apply]
   norm_num
   ring
 
@@ -98,8 +98,7 @@ General Relativity coupling. -/
 lemma vdvz_light_deflection_ratio (Tmass Tlight : Tensor2 4) (hnull : stressTrace Tlight = 0) :
     (3 / 4) * massivePropagatorCoupling Tmass Tlight =
       (3 / 4) * grPropagatorCoupling Tmass Tlight := by
-  unfold massivePropagatorCoupling grPropagatorCoupling
-  rw [hnull]
+  simp only [massivePropagatorCoupling, grPropagatorCoupling, hnull]
   ring
 
 /-- `stressTrace` coincides with `metricTrace minkowski`. -/

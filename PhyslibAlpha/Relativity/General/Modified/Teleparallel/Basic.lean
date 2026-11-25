@@ -92,8 +92,7 @@ def weitzenbockTorsion {n : ℕ} (einv : Tensor2 n) (de : Fin n → Tensor2 n) :
 `T^k_{ij} = ∑_A e_A^k (∂_i e^A_j - ∂_j e^A_i)`. -/
 lemma weitzenbockTorsion_eq {n : ℕ} (einv : Tensor2 n) (de : Fin n → Tensor2 n) (k i j : Fin n) :
     weitzenbockTorsion einv de k i j = ∑ A : Fin n, einv A k * (de i A j - de j A i) := by
-  unfold weitzenbockTorsion torsion weitzenbockConn
-  rw [← Finset.sum_sub_distrib]
+  simp only [weitzenbockTorsion, torsion, weitzenbockConn, ← Finset.sum_sub_distrib]
   refine Finset.sum_congr rfl fun A _ => by ring
 
 /-- Antisymmetry of the Weitzenböck torsion in its lower indices:
@@ -121,7 +120,7 @@ noncomputable def superpotential (M : MetricTensor 4) (T : AffineConnection 4) :
 lemma superpotential_antisymm (M : MetricTensor 4) (T : AffineConnection 4)
     (hT : ∀ k i j, T k i j = -T k j i) (k i j : Fin 4) :
     superpotential M T k i j = -superpotential M T k j i := by
-  unfold superpotential
+  simp only [superpotential]
   have hsum : (∑ p : Fin 4, M.g k p * T p i j) = -(∑ p : Fin 4, M.g k p * T p j i) := by
     rw [← Finset.sum_neg_distrib]
     refine Finset.sum_congr rfl fun p _ => by rw [hT p i j]; ring

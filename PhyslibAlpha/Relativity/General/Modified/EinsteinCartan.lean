@@ -186,6 +186,25 @@ noncomputable def contorsion {n : ℕ} (M : MetricTensor n) (T : AffineConnectio
   fun k i j => (1 / 2) * (T k i j + ∑ m : Fin n, M.ginv k m
     * (∑ r : Fin n, M.g i r * T r m j + ∑ r : Fin n, M.g j r * T r m i))
 
+private lemma sum_contorsion_mul_g {n : ℕ} (M : MetricTensor n) (T : AffineConnection n)
+    (k i j : Fin n) :
+    (∑ m : Fin n, contorsion M T m k i * M.g m j)
+      = (1 / 2) * ((∑ m : Fin n, M.g j m * T m k i)
+        + (∑ r : Fin n, M.g k r * T r j i) + (∑ r : Fin n, M.g i r * T r j k)) := by
+  simp only [contorsion]
+  have hsplit : (∑ m : Fin n, (1 / 2 : ℝ) * (T m k i + ∑ p : Fin n, M.ginv m p
+        * (∑ r : Fin n, M.g k r * T r p i + ∑ r : Fin n, M.g i r * T r p k)) * M.g m j)
+      = (1 / 2) * ((∑ m : Fin n, T m k i * M.g m j)
+        + ∑ m : Fin n, (∑ p : Fin n, M.ginv m p
+          * (∑ r : Fin n, M.g k r * T r p i + ∑ r : Fin n, M.g i r * T r p k)) * M.g m j) := by
+    rw [← Finset.sum_add_distrib, Finset.mul_sum]
+    refine Finset.sum_congr rfl fun m _ => by ring
+  rw [hsplit, sum_ginv_mul_g_left M j]
+  have hm : (∑ m : Fin n, T m k i * M.g m j) = ∑ m : Fin n, M.g j m * T m k i :=
+    Finset.sum_congr rfl fun m _ => by rw [M.symm m j]; ring
+  rw [hm]
+  ring
+
 /-- Lowering the first index makes the contorsion tensor antisymmetric in its outer indices
 `(m, j)` vs `(j, m)` when `T` is antisymmetric in its lower indices:
 `g_{mj} K^m_{ki} + g_{im} K^m_{kj} = 0`. -/
@@ -193,40 +212,12 @@ lemma contorsion_antisymm_outer {n : ℕ} (M : MetricTensor n) (T : AffineConnec
     (hT : ∀ k i j, T k i j = -T k j i) (k i j : Fin n) :
     (∑ m : Fin n, contorsion M T m k i * M.g m j)
       + (∑ m : Fin n, contorsion M T m k j * M.g i m) = 0 := by
-  have h1 : (∑ m : Fin n, contorsion M T m k i * M.g m j)
-      = (1 / 2) * ((∑ m : Fin n, M.g j m * T m k i)
-        + (∑ r : Fin n, M.g k r * T r j i) + (∑ r : Fin n, M.g i r * T r j k)) := by
-    simp only [contorsion]
-    have hsplit : (∑ m : Fin n, (1 / 2 : ℝ) * (T m k i + ∑ p : Fin n, M.ginv m p
-          * (∑ r : Fin n, M.g k r * T r p i + ∑ r : Fin n, M.g i r * T r p k)) * M.g m j)
-        = (1 / 2) * ((∑ m : Fin n, T m k i * M.g m j)
-          + ∑ m : Fin n, (∑ p : Fin n, M.ginv m p
-            * (∑ r : Fin n, M.g k r * T r p i + ∑ r : Fin n, M.g i r * T r p k)) * M.g m j) := by
-      rw [← Finset.sum_add_distrib, Finset.mul_sum]
-      refine Finset.sum_congr rfl fun m _ => by ring
-    rw [hsplit, sum_ginv_mul_g_left M j]
-    have hm : (∑ m : Fin n, T m k i * M.g m j) = ∑ m : Fin n, M.g j m * T m k i := by
-      refine Finset.sum_congr rfl fun m _ => by rw [M.symm m j]; ring
-    rw [hm]; ring
+  have h1 := sum_contorsion_mul_g M T k i j
   have h2 : (∑ m : Fin n, contorsion M T m k j * M.g i m)
       = (1 / 2) * ((∑ m : Fin n, M.g i m * T m k j)
         + (∑ r : Fin n, M.g k r * T r i j) + (∑ r : Fin n, M.g j r * T r i k)) := by
-    have hsym : (∑ m : Fin n, contorsion M T m k j * M.g i m)
-        = ∑ m : Fin n, contorsion M T m k j * M.g m i :=
-      Finset.sum_congr rfl fun m _ => by rw [M.symm i m]
-    rw [hsym]
-    simp only [contorsion]
-    have hsplit : (∑ m : Fin n, (1 / 2 : ℝ) * (T m k j + ∑ p : Fin n, M.ginv m p
-          * (∑ r : Fin n, M.g k r * T r p j + ∑ r : Fin n, M.g j r * T r p k)) * M.g m i)
-        = (1 / 2) * ((∑ m : Fin n, T m k j * M.g m i)
-          + ∑ m : Fin n, (∑ p : Fin n, M.ginv m p
-            * (∑ r : Fin n, M.g k r * T r p j + ∑ r : Fin n, M.g j r * T r p k)) * M.g m i) := by
-      rw [← Finset.sum_add_distrib, Finset.mul_sum]
-      refine Finset.sum_congr rfl fun m _ => by ring
-    rw [hsplit, sum_ginv_mul_g_left M i]
-    have hm : (∑ m : Fin n, T m k j * M.g m i) = ∑ m : Fin n, M.g i m * T m k j := by
-      refine Finset.sum_congr rfl fun m _ => by rw [M.symm m i]; ring
-    rw [hm]; ring
+    rw [Finset.sum_congr rfl fun m _ => by rw [M.symm i m]]
+    exact sum_contorsion_mul_g M T k j i
   rw [h1, h2]
   have ha : (∑ r : Fin n, M.g k r * T r j i) + (∑ r : Fin n, M.g k r * T r i j) = 0 := by
     rw [← Finset.sum_add_distrib]
@@ -312,16 +303,7 @@ lemma connection_unique {n : ℕ} (M : MetricTensor n) (dg : Fin n → Tensor2 n
     (Γ : AffineConnection n) (hmc : MetricCompatible M.g dg Γ) :
     Γ = fun k i j => leviCivitaOfDeriv M.ginv dg k i j + contorsion M (torsion Γ) k i j := by
   ext p i j
-  have hcontract : ∀ f : Fin n → ℝ,
-      (∑ k : Fin n, M.ginv p k * (∑ m : Fin n, M.g k m * f m)) = f p := by
-    intro f
-    calc (∑ k : Fin n, M.ginv p k * (∑ m : Fin n, M.g k m * f m))
-        = ∑ m : Fin n, f m * ∑ k : Fin n, M.ginv p k * M.g k m := by
-          simp_rw [Finset.mul_sum]; rw [Finset.sum_comm]
-          exact Finset.sum_congr rfl fun m _ =>
-            Finset.sum_congr rfl fun k _ => by ring
-      _ = f p := by
-          simp [M.sum_ginv_mul_g_left p]
+  have hcontract := M.sum_ginv_mul_g_apply p
   have hsum : ∑ k : Fin n, M.ginv p k * (2 * (∑ m : Fin n, M.g k m * Γ m i j))
       = 2 * Γ p i j := by
     have hmul : (∑ k : Fin n, M.ginv p k * (2 * (∑ m : Fin n, M.g k m * Γ m i j)))
@@ -348,7 +330,7 @@ lemma connection_unique {n : ℕ} (M : MetricTensor n) (dg : Fin n → Tensor2 n
           * (∑ r : Fin n, M.g i r * torsion Γ r k j + ∑ r : Fin n, M.g j r * torsion Γ r k i)) := by
     simp only [mul_add, Finset.sum_add_distrib]
     ring
-  rw [hsplit, hcontract (fun k => torsion Γ k i j)] at hdiv
+  rw [hsplit, M.sum_ginv_mul_g_apply p (fun k => torsion Γ k i j)] at hdiv
   simp only [leviCivitaOfDeriv, contorsion]
   linarith
 

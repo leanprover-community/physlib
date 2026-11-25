@@ -113,21 +113,59 @@ noncomputable def sdsFrameSqSum (M Λ r : ℝ) : ℝ :=
 
 section kretschmann
 
-set_option maxHeartbeats 2000000 in
+private lemma sum_minkowskiMetric4_mul (i : Fin 4) (f : Fin 4 → ℝ) :
+    (∑ k : Fin 4, minkowskiMetric4 i k * f k) = minkowskiMetric4 i i * f i := by
+  rw [Finset.sum_eq_single i]
+  · intro k _ hki
+    simp [minkowskiMetric4_apply, hki.symm]
+  · simp
+
+private lemma sum_kl_mul_deSitterPart (Λ : ℝ) (F : Fin 4 → Fin 4 → ℝ) (i j : Fin 4) :
+    (∑ k : Fin 4, ∑ l : Fin 4, F k l * deSitterPart Λ i j k l) =
+      (Λ / 3) * minkowskiMetric4 i i * minkowskiMetric4 j j * (F i j - F j i) := by
+  have h1 : (∑ k : Fin 4, ∑ l : Fin 4, F k l * (minkowskiMetric4 i k * minkowskiMetric4 j l)) =
+      minkowskiMetric4 i i * (minkowskiMetric4 j j * F i j) := by
+    have hinner : ∀ k : Fin 4,
+        (∑ l : Fin 4, F k l * (minkowskiMetric4 i k * minkowskiMetric4 j l)) =
+          minkowskiMetric4 i k * (∑ l : Fin 4, minkowskiMetric4 j l * F k l) := by
+      intro k
+      rw [Finset.mul_sum]
+      refine Finset.sum_congr rfl fun l _ => by ring
+    simp_rw [hinner, sum_minkowskiMetric4_mul]
+  have h2 : (∑ k : Fin 4, ∑ l : Fin 4, F k l * (minkowskiMetric4 i l * minkowskiMetric4 j k)) =
+      minkowskiMetric4 i i * (minkowskiMetric4 j j * F j i) := by
+    rw [Finset.sum_comm]
+    have hinner : ∀ l : Fin 4,
+        (∑ k : Fin 4, F k l * (minkowskiMetric4 i l * minkowskiMetric4 j k)) =
+          minkowskiMetric4 i l * (∑ k : Fin 4, minkowskiMetric4 j k * F k l) := by
+      intro l
+      rw [Finset.mul_sum]
+      refine Finset.sum_congr rfl fun k _ => by ring
+    simp_rw [hinner, sum_minkowskiMetric4_mul]
+  have hsplit : ∀ k l : Fin 4, F k l * deSitterPart Λ i j k l =
+      (Λ / 3) * (F k l * (minkowskiMetric4 i k * minkowskiMetric4 j l)
+        - F k l * (minkowskiMetric4 i l * minkowskiMetric4 j k)) := by
+    intro k l
+    simp only [deSitterPart]
+    ring
+  simp_rw [hsplit, ← Finset.mul_sum, Finset.sum_sub_distrib, h1, h2]
+  ring
+
 /-- Sum of squares of the de Sitter trace part equals `8 Λ² / 3`. -/
 private lemma deSitterPart_sq_sum (Λ : ℝ) :
     (∑ i, ∑ j, ∑ k, ∑ l, deSitterPart Λ i j k l * deSitterPart Λ i j k l) =
       8 * Λ ^ 2 / 3 := by
-  simp [deSitterPart, Fin.sum_univ_four]
+  simp_rw [sum_kl_mul_deSitterPart, deSitterPart, Fin.sum_univ_four, minkowskiMetric4_apply]
+  norm_num
   ring
 
-set_option maxHeartbeats 2000000 in
 /-- Cross term between the Schwarzschild Weyl part and the de Sitter trace part vanishes. -/
 private lemma weyl_deSitter_cross_zero (M Λ r : ℝ) :
     (∑ i, ∑ j, ∑ k, ∑ l,
       (Schwarzschild.schwarzschild (M / r ^ 3)).comp i j k l * deSitterPart Λ i j k l) = 0 := by
-  simp [Schwarzschild.schwarzschild, deSitterPart, Schwarzschild.electricPart,
-    Fin.sum_univ_four, two_mul, add_assoc]
+  simp_rw [sum_kl_mul_deSitterPart, Fin.sum_univ_four, minkowskiMetric4_apply,
+    Schwarzschild.schwarzschild, Schwarzschild.electricPart]
+  norm_num
   ring
 
 /-- Frame Kretschmann sum of squares for Schwarzschild–de Sitter: `48 k² + 8 Λ² / 3` with

@@ -76,6 +76,20 @@ structure KaluzaKleinData where
 /-- Five-component extension `(A_0, A_1, A_2, A_3, 1)` of a 4D gauge potential `A`. -/
 def extendedPotential (A : Fin 4 → ℝ) : Fin 5 → ℝ := ![A 0, A 1, A 2, A 3, 1]
 
+@[simp]
+private lemma extendedPotential_apply_lt (A : Fin 4 → ℝ) {i : Fin 5} (hi : i.val < 4) :
+    extendedPotential A i = A ⟨i.val, hi⟩ := by
+  fin_cases i
+  · rfl
+  · rfl
+  · rfl
+  · rfl
+  · exact absurd hi (by decide)
+
+@[simp]
+private lemma extendedPotential_four (A : Fin 4 → ℝ) :
+    extendedPotential A 4 = 1 := rfl
+
 /-- Five-dimensional zero-padded embedding of a 4D rank-2 tensor `g4`. -/
 def metric4Ext (g4 : Tensor2 4) : Tensor2 5 :=
   fun i j =>
@@ -87,11 +101,41 @@ def metric4Ext (g4 : Tensor2 4) : Tensor2 5 :=
 def kkMetric (g4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ) : Tensor2 5 :=
   fun i j => metric4Ext g4 i j + φ ^ 2 * extendedPotential A i * extendedPotential A j
 
+@[simp]
+private lemma kkMetric_apply_lt_lt (g4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ)
+    {i j : Fin 5} (hi : i.val < 4) (hj : j.val < 4) :
+    kkMetric g4 A φ i j =
+      g4 ⟨i.val, hi⟩ ⟨j.val, hj⟩ + φ ^ 2 * A ⟨i.val, hi⟩ * A ⟨j.val, hj⟩ := by
+  simp only [kkMetric, metric4Ext, hi, hj, ↓reduceDIte, extendedPotential_apply_lt]
+
+@[simp]
+private lemma kkMetric_apply_lt_four (g4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ)
+    {i : Fin 5} (hi : i.val < 4) :
+    kkMetric g4 A φ i 4 = φ ^ 2 * A ⟨i.val, hi⟩ := by
+  simp only [kkMetric, metric4Ext, hi, show ¬((4 : Fin 5).val < 4) by decide, ↓reduceDIte,
+    extendedPotential_apply_lt, extendedPotential_four]
+  ring
+
+@[simp]
+private lemma kkMetric_apply_four_lt (g4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ)
+    {j : Fin 5} (hj : j.val < 4) :
+    kkMetric g4 A φ 4 j = φ ^ 2 * A ⟨j.val, hj⟩ := by
+  simp only [kkMetric, metric4Ext, hj, show ¬((4 : Fin 5).val < 4) by decide, ↓reduceDIte,
+    extendedPotential_apply_lt, extendedPotential_four]
+  ring
+
+@[simp]
+private lemma kkMetric_apply_four_four (g4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ) :
+    kkMetric g4 A φ 4 4 = φ ^ 2 := by
+  simp only [kkMetric, metric4Ext, show ¬((4 : Fin 5).val < 4) by decide, ↓reduceDIte,
+    extendedPotential_four]
+  ring
+
 /-- Symmetry of `kkMetric g4 A φ` whenever `g4` is symmetric. -/
 lemma kkMetric_symm (g4 : Tensor2 4) (hg : IsSymm g4) (A : Fin 4 → ℝ) (φ : ℝ) :
     IsSymm (kkMetric g4 A φ) := by
   intro i j
-  unfold kkMetric metric4Ext
+  simp only [kkMetric, metric4Ext]
   by_cases hi : i.val < 4 <;> by_cases hj : j.val < 4
   · simp only [hi, hj, ↓reduceDIte, hg ⟨i.val, hi⟩ ⟨j.val, hj⟩]; ring
   · simp only [hi, hj, ↓reduceDIte]; ring
@@ -112,114 +156,144 @@ noncomputable def kkMetricInv (ginv4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ)
       if hj : j.val < 4 then -contravariantPotential ginv4 A ⟨j.val, hj⟩
       else 1 / φ ^ 2 + ∑ k : Fin 4, A k * contravariantPotential ginv4 A k
 
+@[simp]
+private lemma kkMetricInv_apply_lt_lt (ginv4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ)
+    {i j : Fin 5} (hi : i.val < 4) (hj : j.val < 4) :
+    kkMetricInv ginv4 A φ i j = ginv4 ⟨i.val, hi⟩ ⟨j.val, hj⟩ := by
+  simp [kkMetricInv, hi, hj]
+
+@[simp]
+private lemma kkMetricInv_apply_lt_four (ginv4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ)
+    {i : Fin 5} (hi : i.val < 4) :
+    kkMetricInv ginv4 A φ i 4 = -contravariantPotential ginv4 A ⟨i.val, hi⟩ := by
+  simp [kkMetricInv, hi]
+
+@[simp]
+private lemma kkMetricInv_apply_four_lt (ginv4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ)
+    {j : Fin 5} (hj : j.val < 4) :
+    kkMetricInv ginv4 A φ 4 j = -contravariantPotential ginv4 A ⟨j.val, hj⟩ := by
+  simp [kkMetricInv, hj]
+
+@[simp]
+private lemma kkMetricInv_apply_four_four (ginv4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ) :
+    kkMetricInv ginv4 A φ 4 4 =
+      1 / φ ^ 2 + ∑ k : Fin 4, A k * contravariantPotential ginv4 A k := by
+  simp [kkMetricInv]
+
 private lemma sum_fin5_split (f : Fin 5 → ℝ) :
     (∑ k : Fin 5, f k) = (∑ k : Fin 4, f ⟨k.val, by omega⟩) + f 4 := by
   simp only [Fin.sum_univ_five, Fin.sum_univ_four]
   rfl
 
+private lemma contravariantPotential_mul_g (M : MetricTensor 4) (A : Fin 4 → ℝ) (b : Fin 4) :
+    (∑ k : Fin 4, contravariantPotential M.ginv A k * M.g k b) = A b := by
+  simp only [contravariantPotential]
+  calc (∑ k : Fin 4, (∑ m : Fin 4, M.ginv k m * A m) * M.g k b)
+      = ∑ m : Fin 4, A m * ∑ k : Fin 4, M.g b k * M.ginv k m := by
+        simp_rw [Finset.sum_mul]
+        rw [Finset.sum_comm]
+        refine Finset.sum_congr rfl fun m _ => ?_
+        rw [Finset.mul_sum]
+        refine Finset.sum_congr rfl fun k _ => by rw [M.symm k b]; ring
+    _ = A b := by
+        simp [M.sum_ginv_mul_g_right b]
+
+private lemma kkMetricInv_mul_kkMetric_44 (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : ℝ)
+    {i j : Fin 5} (hi : i.val < 4) (hj : j.val < 4) :
+    (∑ k : Fin 5, kkMetricInv M.ginv A φ i k * kkMetric M.g A φ k j) =
+      if i = j then 1 else 0 := by
+  let i4 : Fin 4 := ⟨i.val, hi⟩
+  let j4 : Fin 4 := ⟨j.val, hj⟩
+  have hij : (i = j) ↔ (i4 = j4) := by simp [i4, j4, Fin.ext_iff]
+  rw [sum_fin5_split]
+  have h1 : ∀ x : Fin 4,
+      kkMetricInv M.ginv A φ i ⟨x.val, by omega⟩ * kkMetric M.g A φ ⟨x.val, by omega⟩ j =
+        M.ginv i4 x * M.g x j4 + φ ^ 2 * A j4 * (M.ginv i4 x * A x) := by
+    intro x
+    rw [kkMetricInv_apply_lt_lt M.ginv A φ hi x.isLt,
+      kkMetric_apply_lt_lt M.g A φ x.isLt hj]
+    ring
+  simp only [h1, Finset.sum_add_distrib, ← Finset.mul_sum, M.sum_ginv_mul_g_left i4 j4,
+    kkMetricInv_apply_lt_four M.ginv A φ hi, kkMetric_apply_four_lt M.g A φ hj, hij]
+  simp only [contravariantPotential]
+  ring
+
+private lemma kkMetricInv_mul_kkMetric_45 (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : ℝ)
+    {i : Fin 5} (hi : i.val < 4) :
+    (∑ k : Fin 5, kkMetricInv M.ginv A φ i k * kkMetric M.g A φ k 4) = 0 := by
+  let i4 : Fin 4 := ⟨i.val, hi⟩
+  rw [sum_fin5_split]
+  have h1 : ∀ x : Fin 4,
+      kkMetricInv M.ginv A φ i ⟨x.val, by omega⟩ * kkMetric M.g A φ ⟨x.val, by omega⟩ 4 =
+        φ ^ 2 * (M.ginv i4 x * A x) := by
+    intro x
+    rw [kkMetricInv_apply_lt_lt M.ginv A φ hi x.isLt, kkMetric_apply_lt_four M.g A φ x.isLt]
+    ring
+  simp only [h1, ← Finset.mul_sum, kkMetricInv_apply_lt_four M.ginv A φ hi,
+    kkMetric_apply_four_four M.g A φ, contravariantPotential]
+  ring
+
+private lemma kkMetricInv_mul_kkMetric_54 (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : ℝ)
+    (hφ : φ ≠ 0) {j : Fin 5} (hj : j.val < 4) :
+    (∑ k : Fin 5, kkMetricInv M.ginv A φ 4 k * kkMetric M.g A φ k j) = 0 := by
+  let j4 : Fin 4 := ⟨j.val, hj⟩
+  have hφ2 : φ ^ 2 ≠ 0 := pow_ne_zero 2 hφ
+  rw [sum_fin5_split]
+  have h1 : ∀ x : Fin 4,
+      kkMetricInv M.ginv A φ 4 ⟨x.val, by omega⟩ * kkMetric M.g A φ ⟨x.val, by omega⟩ j =
+        -(contravariantPotential M.ginv A x * M.g x j4)
+          - φ ^ 2 * A j4 * (A x * contravariantPotential M.ginv A x) := by
+    intro x
+    rw [kkMetricInv_apply_four_lt M.ginv A φ x.isLt, kkMetric_apply_lt_lt M.g A φ x.isLt hj]
+    ring
+  simp only [h1, Finset.sum_sub_distrib, Finset.sum_neg_distrib, ← Finset.mul_sum,
+    contravariantPotential_mul_g M A j4, kkMetricInv_apply_four_four M.ginv A φ,
+    kkMetric_apply_four_lt M.g A φ hj]
+  field_simp [hφ2]
+  ring
+
+private lemma kkMetricInv_mul_kkMetric_55 (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : ℝ)
+    (hφ : φ ≠ 0) :
+    (∑ k : Fin 5, kkMetricInv M.ginv A φ 4 k * kkMetric M.g A φ k 4) = 1 := by
+  have hφ2 : φ ^ 2 ≠ 0 := pow_ne_zero 2 hφ
+  rw [sum_fin5_split]
+  have h1 : ∀ x : Fin 4,
+      kkMetricInv M.ginv A φ 4 ⟨x.val, by omega⟩ * kkMetric M.g A φ ⟨x.val, by omega⟩ 4 =
+        -(φ ^ 2 * (A x * contravariantPotential M.ginv A x)) := by
+    intro x
+    rw [kkMetricInv_apply_four_lt M.ginv A φ x.isLt, kkMetric_apply_lt_four M.g A φ x.isLt]
+    ring
+  simp only [h1, Finset.sum_neg_distrib, ← Finset.mul_sum,
+    kkMetricInv_apply_four_four M.ginv A φ, kkMetric_apply_four_four M.g A φ]
+  field_simp [hφ2]
+  ring
+
 /-- Left-inverse identity `kkMetricInv * kkMetric = 1` for any `M : MetricTensor 4` and `φ ≠ 0`. -/
 lemma kkMetricInv_mul_kkMetric (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : ℝ) (hφ : φ ≠ 0) :
     kkMetricInv M.ginv A φ * kkMetric M.g A φ = 1 := by
-  have hφ2 : φ ^ 2 ≠ 0 := pow_ne_zero 2 hφ
-  have hid : ∀ a b : Fin 4, (∑ k : Fin 4, M.ginv a k * M.g k b) = if a = b then 1 else 0 :=
-    M.sum_ginv_mul_g_left
-  have hA : ∀ b : Fin 4, (∑ k : Fin 4, contravariantPotential M.ginv A k * M.g k b) = A b := by
-    intro b
-    unfold contravariantPotential
-    calc (∑ k : Fin 4, (∑ m : Fin 4, M.ginv k m * A m) * M.g k b)
-        = ∑ m : Fin 4, A m * ∑ k : Fin 4, M.g b k * M.ginv k m := by
-          simp_rw [Finset.sum_mul]
-          rw [Finset.sum_comm]
-          refine Finset.sum_congr rfl fun m _ => ?_
-          rw [Finset.mul_sum]
-          refine Finset.sum_congr rfl fun k _ => by rw [M.symm k b]; ring
-      _ = A b := by
-          simp [M.sum_ginv_mul_g_right b]
-  have hpot : ∀ k : Fin 4, extendedPotential A ⟨k.val, by omega⟩ = A k := by
-    intro k; fin_cases k <;> rfl
-  have hx4 : ∀ x : Fin 4, (⟨x.val, by omega⟩ : Fin 5).val < 4 := fun x => x.isLt
   ext i j
-  rw [Matrix.mul_apply, Matrix.one_apply, sum_fin5_split]
+  rw [Matrix.mul_apply, Matrix.one_apply]
   by_cases hi : i.val < 4 <;> by_cases hj : j.val < 4
-  · let i4 : Fin 4 := ⟨i.val, hi⟩
-    let j4 : Fin 4 := ⟨j.val, hj⟩
-    have hij : (i = j) ↔ (i4 = j4) := by
-      simp [i4, j4, Fin.ext_iff]
-    have hj_pot : extendedPotential A j = A j4 := hpot j4
-    simp only [kkMetricInv, kkMetric, metric4Ext, hi, hj, hx4, ↓reduceDIte,
-      show ¬((4 : Fin 5).val < 4) by decide, hpot, hj_pot, show extendedPotential A 4
-        = 1 from rfl, hij]
-    have hsplit :
-        (∑ x : Fin 4, M.ginv i4 x * (M.g x j4 + φ ^ 2 * A x * A j4))
-          = (∑ x : Fin 4,
-            M.ginv i4 x * M.g x j4) + φ ^ 2 * A j4 * contravariantPotential M.ginv A i4 := by
-      unfold contravariantPotential
-      simp only [mul_add, Finset.sum_add_distrib, Finset.mul_sum]
-      refine congrArg (_ + ·) (Finset.sum_congr rfl fun x _ => by ring)
-    change (∑ x : Fin 4, M.ginv i4 x * (M.g x j4 + φ ^ 2 * A x * A j4))
-      + -contravariantPotential M.ginv A i4 * (0 + φ ^ 2 * 1 * A j4) = if i4 = j4 then 1 else 0
-    rw [hsplit, hid i4 j4]
-    ring
-  · let i4 : Fin 4 := ⟨i.val, hi⟩
-    have hj4 : j = 4 := by ext; omega
-    subst hj4
+  · exact kkMetricInv_mul_kkMetric_44 M A φ hi hj
+  · have hj4 : j = 4 := by ext; omega
     have hij : i ≠ 4 := by intro h; rw [h] at hi; exact absurd hi (by decide)
-    simp only [kkMetricInv, kkMetric, metric4Ext, hi, hx4, show ¬((4 : Fin 5).val < 4) by decide,
-      ↓reduceDIte, hpot, show extendedPotential A 4 = 1 from rfl, hij, ↓reduceIte]
-    have hsum : (∑ x : Fin 4, M.ginv i4 x * (0 + φ ^ 2 * A x * 1))
-        = φ ^ 2 * contravariantPotential M.ginv A i4 := by
-      unfold contravariantPotential
-      rw [Finset.mul_sum]
-      refine Finset.sum_congr rfl fun x _ => by ring
-    change (∑ x : Fin 4, M.ginv i4 x * (0 + φ ^ 2 * A x * 1))
-      + -contravariantPotential M.ginv A i4 * (0 + φ ^ 2 * 1 * 1) = 0
-    rw [hsum]
-    ring
-  · let j4 : Fin 4 := ⟨j.val, hj⟩
-    have hi4 : i = 4 := by ext; omega
-    subst hi4
+    simp only [hj4, hij, ↓reduceIte]
+    exact kkMetricInv_mul_kkMetric_45 M A φ hi
+  · have hi4 : i = 4 := by ext; omega
     have hij : (4 : Fin 5) ≠ j := by intro h; rw [← h] at hj; exact absurd hj (by decide)
-    have hj_pot : extendedPotential A j = A j4 := hpot j4
-    simp only [kkMetricInv, kkMetric, metric4Ext, hj, hx4, show ¬((4 : Fin 5).val < 4) by decide,
-      ↓reduceDIte, hpot, hj_pot, show extendedPotential A 4 = 1 from rfl, hij, ↓reduceIte]
-    have hsplit :
-        (∑ x : Fin 4, -contravariantPotential M.ginv A x * (M.g x j4 + φ ^ 2 * A x * A j4))
-          = -(∑ x : Fin 4, contravariantPotential M.ginv A x * M.g x j4)
-            - φ ^ 2 * A j4 * (∑ x : Fin 4, A x * contravariantPotential M.ginv A x) := by
-      have hterm : ∀ x : Fin 4,
-          -contravariantPotential M.ginv A x * (M.g x j4 + φ ^ 2 * A x * A j4) =
-            -(contravariantPotential M.ginv A x * M.g x j4)
-              - φ ^ 2 * A j4 * (A x * contravariantPotential M.ginv A x) := by
-        intro x; ring
-      simp_rw [hterm, Finset.sum_sub_distrib, Finset.sum_neg_distrib, ← Finset.mul_sum]
-    change (∑ x : Fin 4, -contravariantPotential M.ginv A x * (M.g x j4 + φ ^ 2 * A x * A j4))
-      + (1 / φ ^ 2 + ∑ k : Fin 4,
-        A k * contravariantPotential M.ginv A k) * (0 + φ ^ 2 * 1 * A j4) = 0
-    rw [hsplit, hA j4]
-    field_simp [hφ2]
-    ring
+    simp only [hi4, hij, ↓reduceIte]
+    exact kkMetricInv_mul_kkMetric_54 M A φ hφ hj
   · have hi4 : i = 4 := by ext; omega
     have hj4 : j = 4 := by ext; omega
-    subst hi4; subst hj4
-    simp only [kkMetricInv, kkMetric, metric4Ext, hx4, show ¬((4 : Fin 5).val < 4) by decide,
-      ↓reduceDIte, hpot, show extendedPotential A 4 = 1 from rfl, ↓reduceIte]
-    have hsum :
-        (∑ x : Fin 4, -contravariantPotential M.ginv A x * (0 + φ ^ 2 * A x * 1))
-          = -(φ ^ 2 * (∑ x : Fin 4, A x * contravariantPotential M.ginv A x)) := by
-      rw [Finset.mul_sum, ← Finset.sum_neg_distrib]
-      refine Finset.sum_congr rfl fun x _ => by ring
-    change (∑ x : Fin 4, -contravariantPotential M.ginv A x * (0 + φ ^ 2 * A x * 1))
-      + (1 / φ ^ 2 + ∑ k : Fin 4, A k * contravariantPotential M.ginv A k) * (0 + φ ^ 2 * 1 * 1) = 1
-    rw [hsum]
-    field_simp [hφ2]
-    ring
+    simp only [hi4, hj4, ↓reduceIte]
+    exact kkMetricInv_mul_kkMetric_55 M A φ hφ
 
 /-- Symmetry of `kkMetricInv M.ginv A φ` for any `M : MetricTensor 4`. -/
 lemma kkMetricInv_symm (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : ℝ) :
     IsSymm (kkMetricInv M.ginv A φ) := by
   have hginv_symm : IsSymm M.ginv := M.ginv_symm
   intro i j
-  unfold kkMetricInv
+  simp only [kkMetricInv]
   by_cases hi : i.val < 4 <;> by_cases hj : j.val < 4
   · simp [hi, hj, hginv_symm ⟨i.val, hi⟩ ⟨j.val, hj⟩]
   · simp [hi, hj]

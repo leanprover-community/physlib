@@ -161,7 +161,6 @@ noncomputable def exteriorScalarProfile (φinf Q r : ℝ) : ℝ := φinf - Q / r
 /-- The radial gradient of the exterior profile is `Q / r²`. -/
 lemma hasDerivAt_exteriorScalarProfile (φinf Q r : ℝ) (hr : r ≠ 0) :
     HasDerivAt (exteriorScalarProfile φinf Q) (Q / r ^ 2) r := by
-  change HasDerivAt (fun s : ℝ => φinf - Q / s) (Q / r ^ 2) r
   have hinv : HasDerivAt (fun s : ℝ => s⁻¹) (-1 / r ^ 2) r :=
     HasDerivAt.inv (hasDerivAt_id r) hr
   have hQ : HasDerivAt (fun s : ℝ => Q * s⁻¹) (Q * (-1 / r ^ 2)) r :=
@@ -172,6 +171,10 @@ lemma hasDerivAt_exteriorScalarProfile (φinf Q r : ℝ) (hr : r ≠ 0) :
     field_simp
     ring
   rw [hval] at hsub
+  have hex : exteriorScalarProfile φinf Q = fun s => φinf - Q * s⁻¹ := by
+    funext s
+    simp [exteriorScalarProfile, div_eq_mul_inv]
+  rw [hex]
   exact hsub
 
 /-- Fifth-force ratio `(Q / r²) / (Φ R / r²)` relative to Newtonian surface gravity. -/

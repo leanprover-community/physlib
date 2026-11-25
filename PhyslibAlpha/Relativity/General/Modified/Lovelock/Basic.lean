@@ -134,6 +134,35 @@ noncomputable def lovelockContract5 {n : ℕ} (C : AlgCurvature n) (i j : Fin n)
       C.rUp (![i, a, b, c, d] (p 1)) (![i, a, b, c, d] (p 2)) a b *
       C.rUp (![i, a, b, c, d] (p 3)) (![i, a, b, c, d] (p 4)) c d
 
+private lemma sum_ite_eq_mul {n : ℕ} (a : Fin n) (f : Fin n → ℝ) :
+    (∑ x : Fin n, (if a = x then (1 : ℝ) else 0) * f x) = f a := by
+  simp
+
+private lemma sum4_ite_eq_mul {n : ℕ} (a₁ a₂ a₃ a₄ : Fin n)
+    (g : Fin n → Fin n → Fin n → Fin n → ℝ) :
+    (∑ e : Fin n, ∑ f : Fin n, ∑ k : Fin n, ∑ h : Fin n,
+      ((if a₁ = e then (1 : ℝ) else 0) * (if a₂ = f then (1 : ℝ) else 0) *
+       (if a₃ = k then (1 : ℝ) else 0) * (if a₄ = h then (1 : ℝ) else 0)) * g e f k h) =
+      g a₁ a₂ a₃ a₄ := by
+  have h1 : ∀ e f k : Fin n,
+      (∑ h : Fin n, ((if a₁ = e then (1 : ℝ) else 0) * (if a₂ = f then (1 : ℝ) else 0) *
+        (if a₃ = k then (1 : ℝ) else 0) * (if a₄ = h then (1 : ℝ) else 0)) * g e f k h) =
+        (if a₁ = e then (1 : ℝ) else 0) * (if a₂ = f then (1 : ℝ) else 0) *
+          (if a₃ = k then (1 : ℝ) else 0) * g e f k a₄ := by
+    intro e f k; simp
+  have h2 : ∀ e f : Fin n,
+      (∑ k : Fin n, (if a₁ = e then (1 : ℝ) else 0) * (if a₂ = f then (1 : ℝ) else 0) *
+        (if a₃ = k then (1 : ℝ) else 0) * g e f k a₄) =
+        (if a₁ = e then (1 : ℝ) else 0) * (if a₂ = f then (1 : ℝ) else 0) * g e f a₃ a₄ := by
+    intro e f; simp
+  have h3 : ∀ e : Fin n,
+      (∑ f : Fin n, (if a₁ = e then (1 : ℝ) else 0) * (if a₂ = f then (1 : ℝ) else 0) *
+        g e f a₃ a₄) =
+        (if a₁ = e then (1 : ℝ) else 0) * g e a₂ a₃ a₄ := by
+    intro e; simp
+  simp_rw [h1, h2, h3]
+  simp
+
 /-- Equivalence of `lovelockContract5` with the full 8-index generalized Kronecker sum over
 `a, b, c, d, e, f, g, h`. -/
 lemma lovelockContract5_eq_kronecker_sum {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
@@ -141,114 +170,66 @@ lemma lovelockContract5_eq_kronecker_sum {n : ℕ} (C : AlgCurvature n) (i j : F
       ∑ e : Fin n, ∑ f : Fin n, ∑ g : Fin n, ∑ h : Fin n,
         genKronecker 5 ![i, a, b, c, d] ![j, e, f, g, h] * C.rUp e f a b * C.rUp g h c d)
       = lovelockContract5 C i j := by
-  unfold lovelockContract5
+  simp only [lovelockContract5]
   refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ =>
     Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ => ?_
-  let top : Fin 5 → Fin n := ![i, a, b, c, d]
-  have hinner :
-      (∑ e : Fin n, ∑ f : Fin n, ∑ g : Fin n, ∑ h : Fin n,
-        genKronecker 5 top ![j, e, f, g, h] * C.rUp e f a b * C.rUp g h c d)
-        = ∑ p : Perm (Fin 5), ((Perm.sign p : ℤ) : ℝ) *
-            (if top (p 0) = j then (1 : ℝ) else 0) *
-            C.rUp (top (p 1)) (top (p 2)) a b * C.rUp (top (p 3)) (top (p 4)) c d := by
-    have hgk : ∀ e f g h : Fin n,
-        genKronecker 5 top ![j, e, f, g, h] =
-          ∑ p : Perm (Fin 5), ((Perm.sign p : ℤ) : ℝ) *
-            ((if top (p 0) = j then (1 : ℝ) else 0) * (if top (p 1) = e then (1 : ℝ) else 0) *
-             (if top (p 2) = f then (1 : ℝ) else 0) * (if top (p 3) = g then (1 : ℝ) else 0) *
-             (if top (p 4) = h then (1 : ℝ) else 0)) := by
-      intro e f g h
-      unfold genKronecker
-      rw [← Equiv.sum_comp (Equiv.inv (Perm (Fin 5)))]
-      refine Finset.sum_congr rfl fun p _ => ?_
-      have hinv : Equiv.inv (Perm (Fin 5)) p = p⁻¹ := rfl
-      rw [hinv, Perm.sign_inv]
-      congr 1
-      rw [← Equiv.prod_comp p]
-      have hp : ∀ t : Fin 5,
-          (if top (p t) = ![j, e, f, g, h] (p⁻¹ (p t)) then (1 : ℝ) else 0) =
-            (if top (p t) = ![j, e, f, g, h] t then (1 : ℝ) else 0) := by
-        intro t
-        rw [Perm.inv_def, Equiv.symm_apply_apply]
-      simp_rw [hp]
-      have h0 : (if top (p 0) = ![j, e, f, g, h] 0 then (1 : ℝ) else 0) =
-          (if top (p 0) = j then (1 : ℝ) else 0) := rfl
-      have h1 : (if top (p 1) = ![j, e, f, g, h] 1 then (1 : ℝ) else 0) =
-          (if top (p 1) = e then (1 : ℝ) else 0) := rfl
-      have h2 : (if top (p 2) = ![j, e, f, g, h] 2 then (1 : ℝ) else 0) =
-          (if top (p 2) = f then (1 : ℝ) else 0) := rfl
-      have h3 : (if top (p 3) = ![j, e, f, g, h] 3 then (1 : ℝ) else 0) =
-          (if top (p 3) = g then (1 : ℝ) else 0) := rfl
-      have h4 : (if top (p 4) = ![j, e, f, g, h] 4 then (1 : ℝ) else 0) =
-          (if top (p 4) = h then (1 : ℝ) else 0) := rfl
-      rw [Fin.prod_univ_five, h0, h1, h2, h3, h4]
-    simp_rw [hgk, Finset.sum_mul]
-    have hcomm : ∀ (F : Fin n → Perm (Fin 5) → ℝ),
-        (∑ x : Fin n, ∑ p : Perm (Fin 5), F x p) = ∑ p : Perm (Fin 5), ∑ x : Fin n, F x p :=
-      fun _ => Finset.sum_comm
-    simp_rw [hcomm]
+  have hgk : ∀ e f g h : Fin n,
+      genKronecker 5 ![i, a, b, c, d] ![j, e, f, g, h] =
+        ∑ p : Perm (Fin 5), ((Perm.sign p : ℤ) : ℝ) *
+          (if ![i, a, b, c, d] (p 0) = j then (1 : ℝ) else 0) *
+          ((if ![i, a, b, c, d] (p 1) = e then (1 : ℝ) else 0) *
+           (if ![i, a, b, c, d] (p 2) = f then (1 : ℝ) else 0) *
+           (if ![i, a, b, c, d] (p 3) = g then (1 : ℝ) else 0) *
+           (if ![i, a, b, c, d] (p 4) = h then (1 : ℝ) else 0)) := by
+    intro e f g h
+    simp only [genKronecker]
+    rw [← Equiv.sum_comp (Equiv.inv (Perm (Fin 5)))]
     refine Finset.sum_congr rfl fun p _ => ?_
-    have he : ∀ e : Fin n,
-        (∑ f : Fin n, ∑ g : Fin n, ∑ h : Fin n,
-          ((Perm.sign p : ℤ) : ℝ) *
-            ((if top (p 0) = j then (1 : ℝ) else 0) * (if top (p 1) = e then (1 : ℝ) else 0) *
-             (if top (p 2) = f then (1 : ℝ) else 0) * (if top (p 3) = g then (1 : ℝ) else 0) *
-             (if top (p 4) = h then (1 : ℝ) else 0)) * C.rUp e f a b * C.rUp g h c d) =
-        if top (p 1) = e then
-          ((Perm.sign p : ℤ) : ℝ) * (if top (p 0) = j then (1 : ℝ) else 0) *
-            C.rUp e (top (p 2)) a b * C.rUp (top (p 3)) (top (p 4)) c d
-        else 0 := by
-      intro e
-      by_cases he1 : top (p 1) = e
-      · subst he1
-        simp only [↓reduceIte, mul_one]
-        have hf : ∀ f : Fin n,
-            (∑ g : Fin n, ∑ h : Fin n,
-              ((Perm.sign p : ℤ) : ℝ) *
-                ((if top (p 0) = j then (1 : ℝ) else 0) * (if top (p 2) = f then (1 : ℝ) else 0) *
-                 (if top (p 3) = g then (1 : ℝ) else 0) * (if top (p 4) = h then (1 : ℝ) else 0)) *
-                C.rUp (top (p 1)) f a b * C.rUp g h c d) =
-            if top (p 2) = f then
-              ((Perm.sign p : ℤ) : ℝ) * (if top (p 0) = j then (1 : ℝ) else 0) *
-                C.rUp (top (p 1)) f a b * C.rUp (top (p 3)) (top (p 4)) c d
-            else 0 := by
-          intro f
-          by_cases hf2 : top (p 2) = f
-          · subst hf2
-            simp only [↓reduceIte, mul_one]
-            have hg : ∀ g : Fin n,
-                (∑ h : Fin n,
-                  ((Perm.sign p : ℤ) : ℝ) *
-                    ((if top (p 0) = j then (1 : ℝ) else 0) *
-                      (if top (p 3) = g then (1 : ℝ) else 0) *
-                     (if top (p 4) = h then (1 : ℝ) else 0)) *
-                    C.rUp (top (p 1)) (top (p 2)) a b * C.rUp g h c d) =
-                if top (p 3) = g then
-                  ((Perm.sign p : ℤ) : ℝ) * (if top (p 0) = j then (1 : ℝ) else 0) *
-                    C.rUp (top (p 1)) (top (p 2)) a b * C.rUp g (top (p 4)) c d
-                else 0 := by
-              intro g
-              by_cases hg3 : top (p 3) = g
-              · subst hg3
-                simp only [↓reduceIte, mul_one]
-                have hh : ∀ h : Fin n,
-                    ((Perm.sign p : ℤ) : ℝ) *
-                      ((if top (p 0) = j then (1 : ℝ) else 0) *
-                        (if top (p 4) = h then (1 : ℝ) else 0)) *
-                      C.rUp (top (p 1)) (top (p 2)) a b * C.rUp (top (p 3)) h c d =
-                    if top (p 4) = h then
-                      ((Perm.sign p : ℤ) : ℝ) * (if top (p 0) = j then (1 : ℝ) else 0) *
-                        C.rUp (top (p 1)) (top (p 2)) a b * C.rUp (top (p 3)) h c d
-                    else 0 := by
-                  intro h; split_ifs <;> ring
-                simp_rw [hh]; simp
-              · simp [hg3]
-            simp_rw [hg]; simp
-          · simp [hf2]
-        simp_rw [hf]; simp
-      · simp [he1]
-    simp_rw [he]; simp
-  exact hinner
+    have hinv : Equiv.inv (Perm (Fin 5)) p = p⁻¹ := rfl
+    rw [hinv, Perm.sign_inv, ← Equiv.prod_comp p]
+    have hp : ∀ t : Fin 5,
+        (if ![i, a, b, c, d] (p t) = ![j, e, f, g, h] (p⁻¹ (p t)) then (1 : ℝ) else 0) =
+          (if ![i, a, b, c, d] (p t) = ![j, e, f, g, h] t then (1 : ℝ) else 0) := fun t => by
+      rw [Perm.inv_def, Equiv.symm_apply_apply]
+    simp_rw [hp]
+    have h0 : (if ![i, a, b, c, d] (p 0) = ![j, e, f, g, h] 0 then (1 : ℝ) else 0) =
+        (if ![i, a, b, c, d] (p 0) = j then (1 : ℝ) else 0) := rfl
+    have h1 : (if ![i, a, b, c, d] (p 1) = ![j, e, f, g, h] 1 then (1 : ℝ) else 0) =
+        (if ![i, a, b, c, d] (p 1) = e then (1 : ℝ) else 0) := rfl
+    have h2 : (if ![i, a, b, c, d] (p 2) = ![j, e, f, g, h] 2 then (1 : ℝ) else 0) =
+        (if ![i, a, b, c, d] (p 2) = f then (1 : ℝ) else 0) := rfl
+    have h3 : (if ![i, a, b, c, d] (p 3) = ![j, e, f, g, h] 3 then (1 : ℝ) else 0) =
+        (if ![i, a, b, c, d] (p 3) = g then (1 : ℝ) else 0) := rfl
+    have h4 : (if ![i, a, b, c, d] (p 4) = ![j, e, f, g, h] 4 then (1 : ℝ) else 0) =
+        (if ![i, a, b, c, d] (p 4) = h then (1 : ℝ) else 0) := rfl
+    rw [Fin.prod_univ_five, h0, h1, h2, h3, h4]
+    ring
+  simp_rw [hgk, Finset.sum_mul]
+  have hcomm : ∀ (F : Fin n → Perm (Fin 5) → ℝ),
+      (∑ x : Fin n, ∑ p : Perm (Fin 5), F x p) = ∑ p : Perm (Fin 5), ∑ x : Fin n, F x p :=
+    fun _ => Finset.sum_comm
+  simp_rw [hcomm]
+  refine Finset.sum_congr rfl fun p _ => ?_
+  have hfact : ∀ e f g h : Fin n,
+      (((Perm.sign p : ℤ) : ℝ) * (if ![i, a, b, c, d] (p 0) = j then (1 : ℝ) else 0) *
+        ((if ![i, a, b, c, d] (p 1) = e then (1 : ℝ) else 0) *
+         (if ![i, a, b, c, d] (p 2) = f then (1 : ℝ) else 0) *
+         (if ![i, a, b, c, d] (p 3) = g then (1 : ℝ) else 0) *
+         (if ![i, a, b, c, d] (p 4) = h then (1 : ℝ) else 0))) *
+        C.rUp e f a b * C.rUp g h c d =
+      ((if ![i, a, b, c, d] (p 1) = e then (1 : ℝ) else 0) *
+       (if ![i, a, b, c, d] (p 2) = f then (1 : ℝ) else 0) *
+       (if ![i, a, b, c, d] (p 3) = g then (1 : ℝ) else 0) *
+       (if ![i, a, b, c, d] (p 4) = h then (1 : ℝ) else 0)) *
+        (((Perm.sign p : ℤ) : ℝ) * (if ![i, a, b, c, d] (p 0) = j then (1 : ℝ) else 0) *
+          C.rUp e f a b * C.rUp g h c d) := by
+    intro e f g h; ring
+  simp_rw [hfact]
+  exact sum4_ite_eq_mul (![i, a, b, c, d] (p 1)) (![i, a, b, c, d] (p 2))
+    (![i, a, b, c, d] (p 3)) (![i, a, b, c, d] (p 4))
+    (fun e f g h => ((Perm.sign p : ℤ) : ℝ) *
+      (if ![i, a, b, c, d] (p 0) = j then (1 : ℝ) else 0) *
+      C.rUp e f a b * C.rUp g h c d)
 
 /-- In dimension `n < 5`, the 5-index Lovelock contraction vanishes identically. -/
 lemma lovelockContract5_eq_zero_of_lt {n : ℕ} (hn : n < 5) (C : AlgCurvature n) (i j : Fin n) :
@@ -294,12 +275,11 @@ private lemma fiber_zero_sum {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
       = 4 * (if i = j then C.gaussBonnetScalar else 0) := by
   have h1 : (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp a b a b * C.rUp c d c d)
       = C.ricciScalar ^ 2 := by
-    unfold AlgCurvature.ricciScalar
-    rw [sq]
+    simp only [AlgCurvature.ricciScalar, sq]
     simp_rw [Finset.sum_mul, Finset.mul_sum]
   have h2 : (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp a c a b * C.rUp b d c d)
       = C.ricciSq := by
-    unfold AlgCurvature.ricciSq AlgCurvature.ricciMixed
+    simp only [AlgCurvature.ricciSq, AlgCurvature.ricciMixed]
     simp_rw [Finset.sum_mul, Finset.mul_sum]
     rw [sum4_swap13]
     refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun b _ =>
@@ -328,8 +308,8 @@ private lemma fiber_zero_sum {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
     refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ => ?_
     rw [C.antisymm34 a c b a, C.antisymm34 b d d c]; ring
   simp_rw [← Finset.mul_sum]
-  simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, h1, h2, h3, h4, h5]
-  unfold AlgCurvature.gaussBonnetScalar AlgCurvature.riemannSq
+  simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, h1, h2, h3, h4, h5,
+    AlgCurvature.gaussBonnetScalar, AlgCurvature.riemannSq]
   split_ifs <;> ring
 
 private lemma fiber_one_sum {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
@@ -343,13 +323,13 @@ private lemma fiber_one_sum {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
         + (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp c d j b * C.rUp i b c d) := by
   have h1 : (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp i b j b * C.rUp c d c d)
       = C.ricciScalar * C.ricciMixed i j := by
-    unfold AlgCurvature.ricciScalar AlgCurvature.ricciMixed
+    simp only [AlgCurvature.ricciScalar, AlgCurvature.ricciMixed]
     simp_rw [Finset.mul_sum, Finset.sum_mul]
     refine Finset.sum_congr rfl fun b _ => Finset.sum_congr rfl fun c _ =>
       Finset.sum_congr rfl fun d _ => by ring
   have h2 : (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp i c j b * C.rUp b d c d)
       = ∑ b : Fin n, ∑ c : Fin n, C.rUp i c j b * C.ricciMixed b c := by
-    unfold AlgCurvature.ricciMixed
+    simp only [AlgCurvature.ricciMixed]
     simp_rw [Finset.mul_sum]
   have h3 : (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp i d j b * C.rUp b c c d)
       = -(∑ b : Fin n, ∑ c : Fin n, C.rUp i c j b * C.ricciMixed b c) := by
@@ -361,7 +341,7 @@ private lemma fiber_one_sum {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
     rw [C.antisymm34 b d d c]; ring
   have h4 : (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp b c j b * C.rUp i d c d)
       = -(∑ c : Fin n, C.ricciMixed i c * C.ricciMixed c j) := by
-    unfold AlgCurvature.ricciMixed
+    simp only [AlgCurvature.ricciMixed]
     simp_rw [Finset.sum_mul, Finset.mul_sum, ← Finset.sum_neg_distrib]
     rw [Finset.sum_comm]
     refine Finset.sum_congr rfl fun c _ => ?_
@@ -370,7 +350,7 @@ private lemma fiber_one_sum {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
     rw [C.antisymm12 b c j b]; ring
   have h5 : (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp b d j b * C.rUp i c c d)
       = ∑ c : Fin n, C.ricciMixed i c * C.ricciMixed c j := by
-    unfold AlgCurvature.ricciMixed
+    simp only [AlgCurvature.ricciMixed]
     simp_rw [Finset.sum_mul, Finset.mul_sum]
     rw [Finset.sum_comm]
     conv_lhs =>
@@ -383,199 +363,185 @@ private lemma fiber_one_sum {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
   simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, h1, h2, h3, h4, h5]
   ring
 
-/-- The 5-index Lovelock Kronecker contraction equals `-8` times the Gauss–Bonnet variation tensor
-`H^i_j` in every dimension `n`. -/
-lemma lovelockContract5_eq_neg_eight_lanczos {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
-    lovelockContract5 C i j = -8 * C.lanczosTensor i j := by
-  unfold lovelockContract5
-  have hperm : ∀ a b c d : Fin n,
-      (∑ p : Perm (Fin 5), ((Perm.sign p : ℤ) : ℝ) *
-        (if ![i, a, b, c, d] (p 0) = j then (1 : ℝ) else 0) *
-        C.rUp (![i, a, b, c, d] (p 1)) (![i, a, b, c, d] (p 2)) a b *
-        C.rUp (![i, a, b, c, d] (p 3)) (![i, a, b, c, d] (p 4)) c d) =
-      ((if i = j then (1 : ℝ) else 0) * 4 *
-        (C.rUp a b a b * C.rUp c d c d - C.rUp a c a b * C.rUp b d c d
-          + C.rUp a d a b * C.rUp b c c d + C.rUp b c a b * C.rUp a d c d
-          - C.rUp b d a b * C.rUp a c c d + C.rUp c d a b * C.rUp a b c d)) +
-      ((if a = j then (1 : ℝ) else 0) * (-1 * 4 *
-        (C.rUp i b a b * C.rUp c d c d - C.rUp i c a b * C.rUp b d c d
-          + C.rUp i d a b * C.rUp b c c d + C.rUp b c a b * C.rUp i d c d
-          - C.rUp b d a b * C.rUp i c c d + C.rUp c d a b * C.rUp i b c d))) +
-      ((if b = j then (1 : ℝ) else 0) * (-1 * 4 *
-        (C.rUp a i a b * C.rUp c d c d - C.rUp a c a b * C.rUp i d c d
-          + C.rUp a d a b * C.rUp i c c d + C.rUp i c a b * C.rUp a d c d
-          - C.rUp i d a b * C.rUp a c c d + C.rUp c d a b * C.rUp a i c d))) +
-      ((if c = j then (1 : ℝ) else 0) * (-1 * 4 *
-        (C.rUp a b a b * C.rUp i d c d - C.rUp a i a b * C.rUp b d c d
-          + C.rUp a d a b * C.rUp b i c d + C.rUp b i a b * C.rUp a d c d
-          - C.rUp b d a b * C.rUp a i c d + C.rUp i d a b * C.rUp a b c d))) +
-      ((if d = j then (1 : ℝ) else 0) * (-1 * 4 *
-        (C.rUp a b a b * C.rUp c i c d - C.rUp a c a b * C.rUp b i c d
-          + C.rUp a i a b * C.rUp b c c d + C.rUp b c a b * C.rUp a i c d
-          - C.rUp b i a b * C.rUp a c c d + C.rUp c i a b * C.rUp a b c d))) := by
-    intro a b c d
-    rw [← Perm.decomposeFin.symm.sum_comp, Fintype.sum_prod_type]
-    let v : Fin 5 → Fin n := ![i, a, b, c, d]
-    have hfiber : ∀ k : Fin 5,
+private lemma perm5_fiber_split_v {n : ℕ} (C : AlgCurvature n) (j a b c d : Fin n)
+    (v : Fin 5 → Fin n) (k : Fin 5) :
+    (∑ q : Perm (Fin 4),
+      ((Perm.sign (Perm.decomposeFin.symm (k, q)) : ℤ) : ℝ) *
+        (if v (Perm.decomposeFin.symm (k, q) 0) = j then (1 : ℝ) else 0) *
+        C.rUp (v (Perm.decomposeFin.symm (k, q) 1)) (v (Perm.decomposeFin.symm (k, q) 2)) a b *
+        C.rUp (v (Perm.decomposeFin.symm (k, q) 3)) (v (Perm.decomposeFin.symm (k, q) 4)) c d)
+    = (if v k = j then (1 : ℝ) else 0) *
+      ((if k = 0 then (1 : ℝ) else -1) * 4 *
+        (let s := fun m : Fin 4 => v (Equiv.swap 0 k m.succ)
+         C.rUp (s 0) (s 1) a b * C.rUp (s 2) (s 3) c d
+           - C.rUp (s 0) (s 2) a b * C.rUp (s 1) (s 3) c d
+           + C.rUp (s 0) (s 3) a b * C.rUp (s 1) (s 2) c d
+           + C.rUp (s 1) (s 2) a b * C.rUp (s 0) (s 3) c d
+           - C.rUp (s 1) (s 3) a b * C.rUp (s 0) (s 2) c d
+           + C.rUp (s 2) (s 3) a b * C.rUp (s 0) (s 1) c d)) := by
+  have hpull :
+      (∑ q : Perm (Fin 4),
+        ((Perm.sign (Perm.decomposeFin.symm (k, q)) : ℤ) : ℝ) *
+          (if v (Perm.decomposeFin.symm (k, q) 0) = j then (1 : ℝ) else 0) *
+          C.rUp (v (Perm.decomposeFin.symm (k, q) 1))
+            (v (Perm.decomposeFin.symm (k, q) 2)) a b *
+          C.rUp (v (Perm.decomposeFin.symm (k, q) 3))
+            (v (Perm.decomposeFin.symm (k, q) 4)) c d)
+      = (if v k = j then (1 : ℝ) else 0) *
         (∑ q : Perm (Fin 4),
           ((Perm.sign (Perm.decomposeFin.symm (k, q)) : ℤ) : ℝ) *
-            (if v (Perm.decomposeFin.symm (k, q) 0) = j then (1 : ℝ) else 0) *
-            C.rUp (v (Perm.decomposeFin.symm (k, q) 1)) (v (Perm.decomposeFin.symm (k, q) 2)) a b *
-            C.rUp (v (Perm.decomposeFin.symm (k, q) 3)) (v (Perm.decomposeFin.symm (k, q) 4)) c d)
-        = (if v k = j then (1 : ℝ) else 0) *
-          ((if k = 0 then (1 : ℝ) else -1) * 4 *
-            (let s := fun m : Fin 4 => v (Equiv.swap 0 k m.succ)
-             C.rUp (s 0) (s 1) a b * C.rUp (s 2) (s 3) c d
-               - C.rUp (s 0) (s 2) a b * C.rUp (s 1) (s 3) c d
-               + C.rUp (s 0) (s 3) a b * C.rUp (s 1) (s 2) c d
-               + C.rUp (s 1) (s 2) a b * C.rUp (s 0) (s 3) c d
-               - C.rUp (s 1) (s 3) a b * C.rUp (s 0) (s 2) c d
-               + C.rUp (s 2) (s 3) a b * C.rUp (s 0) (s 1) c d)) := by
-      intro k
-      have hpull :
-          (∑ q : Perm (Fin 4),
-            ((Perm.sign (Perm.decomposeFin.symm (k, q)) : ℤ) : ℝ) *
-              (if v (Perm.decomposeFin.symm (k, q) 0) = j then (1 : ℝ) else 0) *
-              C.rUp (v (Perm.decomposeFin.symm (k, q) 1))
-                (v (Perm.decomposeFin.symm (k, q) 2)) a b *
-              C.rUp (v (Perm.decomposeFin.symm (k, q) 3))
-                (v (Perm.decomposeFin.symm (k, q) 4)) c d)
-          = (if v k = j then (1 : ℝ) else 0) *
-            (∑ q : Perm (Fin 4),
-              ((Perm.sign (Perm.decomposeFin.symm (k, q)) : ℤ) : ℝ) *
-                (C.rUp (v (Perm.decomposeFin.symm (k, q) 1))
-                  (v (Perm.decomposeFin.symm (k, q) 2)) a b *
-                 C.rUp (v (Perm.decomposeFin.symm (k, q) 3))
-                  (v (Perm.decomposeFin.symm (k, q) 4)) c d)) := by
-        rw [Finset.mul_sum]
-        refine Finset.sum_congr rfl fun q _ => ?_
-        rw [Perm.decomposeFin_symm_apply_zero]
-        ring
-      rw [hpull]
-      congr 1
-      exact perm_fin5_fiber_split k
-        (fun x y z w => C.rUp (v x) (v y) a b * C.rUp (v z) (v w) c d)
-        (fun x y z w => by rw [C.antisymm12 (v x) (v y)]; ring)
-        (fun x y z w => by rw [C.antisymm12 (v z) (v w)]; ring)
-    rw [Finset.sum_congr rfl fun k _ => hfiber k, Fin.sum_univ_five]
-    change
-      (if i = j then (1 : ℝ) else 0) *
-        ((1 : ℝ) * 4 *
-          (C.rUp a b a b * C.rUp c d c d - C.rUp a c a b * C.rUp b d c d
-            + C.rUp a d a b * C.rUp b c c d + C.rUp b c a b * C.rUp a d c d
-            - C.rUp b d a b * C.rUp a c c d + C.rUp c d a b * C.rUp a b c d)) +
-      (if a = j then (1 : ℝ) else 0) *
-        ((-1 : ℝ) * 4 *
-          (C.rUp i b a b * C.rUp c d c d - C.rUp i c a b * C.rUp b d c d
-            + C.rUp i d a b * C.rUp b c c d + C.rUp b c a b * C.rUp i d c d
-            - C.rUp b d a b * C.rUp i c c d + C.rUp c d a b * C.rUp i b c d)) +
-      (if b = j then (1 : ℝ) else 0) *
-        ((-1 : ℝ) * 4 *
-          (C.rUp a i a b * C.rUp c d c d - C.rUp a c a b * C.rUp i d c d
-            + C.rUp a d a b * C.rUp i c c d + C.rUp i c a b * C.rUp a d c d
-            - C.rUp i d a b * C.rUp a c c d + C.rUp c d a b * C.rUp a i c d)) +
-      (if c = j then (1 : ℝ) else 0) *
-        ((-1 : ℝ) * 4 *
-          (C.rUp a b a b * C.rUp i d c d - C.rUp a i a b * C.rUp b d c d
-            + C.rUp a d a b * C.rUp b i c d + C.rUp b i a b * C.rUp a d c d
-            - C.rUp b d a b * C.rUp a i c d + C.rUp i d a b * C.rUp a b c d)) +
-      (if d = j then (1 : ℝ) else 0) *
-        ((-1 : ℝ) * 4 *
-          (C.rUp a b a b * C.rUp c i c d - C.rUp a c a b * C.rUp b i c d
-            + C.rUp a i a b * C.rUp b c c d + C.rUp b c a b * C.rUp a i c d
-            - C.rUp b i a b * C.rUp a c c d + C.rUp c i a b * C.rUp a b c d)) = _
+            (C.rUp (v (Perm.decomposeFin.symm (k, q) 1))
+              (v (Perm.decomposeFin.symm (k, q) 2)) a b *
+             C.rUp (v (Perm.decomposeFin.symm (k, q) 3))
+              (v (Perm.decomposeFin.symm (k, q) 4)) c d)) := by
+    rw [Finset.mul_sum]
+    refine Finset.sum_congr rfl fun q _ => ?_
+    rw [Perm.decomposeFin_symm_apply_zero]
     ring
-  simp_rw [hperm]
-  simp only [Finset.sum_add_distrib]
-  rw [fiber_zero_sum C i j]
-  have hf1 :
-      (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
+  rw [hpull]
+  congr 1
+  exact perm_fin5_fiber_split k
+    (fun x y z w => C.rUp (v x) (v y) a b * C.rUp (v z) (v w) c d)
+    (fun x y z w => by rw [C.antisymm12 (v x) (v y)]; ring)
+    (fun x y z w => by rw [C.antisymm12 (v z) (v w)]; ring)
+
+private lemma lovelock_perm_sum {n : ℕ} (C : AlgCurvature n) (i j a b c d : Fin n) :
+    (∑ p : Perm (Fin 5), ((Perm.sign p : ℤ) : ℝ) *
+      (if ![i, a, b, c, d] (p 0) = j then (1 : ℝ) else 0) *
+      C.rUp (![i, a, b, c, d] (p 1)) (![i, a, b, c, d] (p 2)) a b *
+      C.rUp (![i, a, b, c, d] (p 3)) (![i, a, b, c, d] (p 4)) c d) =
+    ((if i = j then (1 : ℝ) else 0) * 4 *
+      (C.rUp a b a b * C.rUp c d c d - C.rUp a c a b * C.rUp b d c d
+        + C.rUp a d a b * C.rUp b c c d + C.rUp b c a b * C.rUp a d c d
+        - C.rUp b d a b * C.rUp a c c d + C.rUp c d a b * C.rUp a b c d)) +
+    ((if a = j then (1 : ℝ) else 0) * (-1 * 4 *
+      (C.rUp i b a b * C.rUp c d c d - C.rUp i c a b * C.rUp b d c d
+        + C.rUp i d a b * C.rUp b c c d + C.rUp b c a b * C.rUp i d c d
+        - C.rUp b d a b * C.rUp i c c d + C.rUp c d a b * C.rUp i b c d))) +
+    ((if b = j then (1 : ℝ) else 0) * (-1 * 4 *
+      (C.rUp a i a b * C.rUp c d c d - C.rUp a c a b * C.rUp i d c d
+        + C.rUp a d a b * C.rUp i c c d + C.rUp i c a b * C.rUp a d c d
+        - C.rUp i d a b * C.rUp a c c d + C.rUp c d a b * C.rUp a i c d))) +
+    ((if c = j then (1 : ℝ) else 0) * (-1 * 4 *
+      (C.rUp a b a b * C.rUp i d c d - C.rUp a i a b * C.rUp b d c d
+        + C.rUp a d a b * C.rUp b i c d + C.rUp b i a b * C.rUp a d c d
+        - C.rUp b d a b * C.rUp a i c d + C.rUp i d a b * C.rUp a b c d))) +
+    ((if d = j then (1 : ℝ) else 0) * (-1 * 4 *
+      (C.rUp a b a b * C.rUp c i c d - C.rUp a c a b * C.rUp b i c d
+        + C.rUp a i a b * C.rUp b c c d + C.rUp b c a b * C.rUp a i c d
+        - C.rUp b i a b * C.rUp a c c d + C.rUp c i a b * C.rUp a b c d))) := by
+  rw [← Perm.decomposeFin.symm.sum_comp, Fintype.sum_prod_type]
+  rw [Finset.sum_congr rfl fun k _ => perm5_fiber_split_v C j a b c d ![i, a, b, c, d] k]
+  have hv0 : (![i, a, b, c, d] : Fin 5 → Fin n) 0 = i := rfl
+  have hv1 : (![i, a, b, c, d] : Fin 5 → Fin n) 1 = a := rfl
+  have hv2 : (![i, a, b, c, d] : Fin 5 → Fin n) 2 = b := rfl
+  have hv3 : (![i, a, b, c, d] : Fin 5 → Fin n) 3 = c := rfl
+  have hv4 : (![i, a, b, c, d] : Fin 5 → Fin n) 4 = d := rfl
+  simp only [Fin.sum_univ_five, Fin.isValue, Fin.reduceEq, ↓reduceIte,
+    Equiv.swap_apply_def, Fin.succ_zero_eq_one, Fin.succ_one_eq_two,
+    show (2 : Fin 4).succ = 3 from rfl, show (3 : Fin 4).succ = 4 from rfl,
+    hv0, hv1, hv2, hv3, hv4]
+  ring
+
+private lemma fiber_sum_a_j {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
+    (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
+      (if a = j then (1 : ℝ) else 0) * (-1 * 4 *
+        (C.rUp i b a b * C.rUp c d c d - C.rUp i c a b * C.rUp b d c d
+          + C.rUp i d a b * C.rUp b c c d + C.rUp b c a b * C.rUp i d c d
+          - C.rUp b d a b * C.rUp i c c d + C.rUp c d a b * C.rUp i b c d)))
+    = -4 * (C.ricciScalar * C.ricciMixed i j
+      - 2 * (∑ c : Fin n, C.ricciMixed i c * C.ricciMixed c j)
+      - 2 * (∑ b : Fin n, ∑ c : Fin n, C.rUp i c j b * C.ricciMixed b c)
+      + (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp c d j b * C.rUp i b c d)) := by
+  have ha : ∀ a : Fin n,
+      (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
         (if a = j then (1 : ℝ) else 0) * (-1 * 4 *
           (C.rUp i b a b * C.rUp c d c d - C.rUp i c a b * C.rUp b d c d
             + C.rUp i d a b * C.rUp b c c d + C.rUp b c a b * C.rUp i d c d
             - C.rUp b d a b * C.rUp i c c d + C.rUp c d a b * C.rUp i b c d)))
-      = -4 * (C.ricciScalar * C.ricciMixed i j
-        - 2 * (∑ c : Fin n, C.ricciMixed i c * C.ricciMixed c j)
-        - 2 * (∑ b : Fin n, ∑ c : Fin n, C.rUp i c j b * C.ricciMixed b c)
-        + (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp c d j b * C.rUp i b c d)) := by
-    have ha : ∀ a : Fin n,
-        (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
-          (if a = j then (1 : ℝ) else 0) * (-1 * 4 *
-            (C.rUp i b a b * C.rUp c d c d - C.rUp i c a b * C.rUp b d c d
-              + C.rUp i d a b * C.rUp b c c d + C.rUp b c a b * C.rUp i d c d
-              - C.rUp b d a b * C.rUp i c c d + C.rUp c d a b * C.rUp i b c d)))
-        = if a = j then -4 *
-            (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
-              (C.rUp i b j b * C.rUp c d c d - C.rUp i c j b * C.rUp b d c d
-                + C.rUp i d j b * C.rUp b c c d + C.rUp b c j b * C.rUp i d c d
-                - C.rUp b d j b * C.rUp i c c d + C.rUp c d j b * C.rUp i b c d))
-          else 0 := by
-      intro a
-      by_cases haj : a = j
-      · subst haj
-        simp only [↓reduceIte, one_mul, ← Finset.mul_sum]
-        ring
-      · simp [haj]
-    simp_rw [ha]; simp [fiber_one_sum C i j]
-  have hf2 :
-      (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
-        (if b = j then (1 : ℝ) else 0) * (-1 * 4 *
-          (C.rUp a i a b * C.rUp c d c d - C.rUp a c a b * C.rUp i d c d
-            + C.rUp a d a b * C.rUp i c c d + C.rUp i c a b * C.rUp a d c d
-            - C.rUp i d a b * C.rUp a c c d + C.rUp c d a b * C.rUp a i c d)))
-      = ∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
-        (if a = j then (1 : ℝ) else 0) * (-1 * 4 *
-          (C.rUp i b a b * C.rUp c d c d - C.rUp i c a b * C.rUp b d c d
-            + C.rUp i d a b * C.rUp b c c d + C.rUp b c a b * C.rUp i d c d
-            - C.rUp b d a b * C.rUp i c c d + C.rUp c d a b * C.rUp i b c d)) := by
-    rw [Finset.sum_comm]
-    refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ =>
-      Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ => ?_
-    rw [C.antisymm12 b i b a, C.antisymm34 i b b a,
-      C.antisymm34 b c b a, C.antisymm34 b d b a,
-      C.antisymm34 i c b a, C.antisymm34 i d b a,
-      C.antisymm34 c d b a, C.antisymm12 b i c d]
-    ring
-  have hf3 :
-      (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
-        (if c = j then (1 : ℝ) else 0) * (-1 * 4 *
-          (C.rUp a b a b * C.rUp i d c d - C.rUp a i a b * C.rUp b d c d
-            + C.rUp a d a b * C.rUp b i c d + C.rUp b i a b * C.rUp a d c d
-            - C.rUp b d a b * C.rUp a i c d + C.rUp i d a b * C.rUp a b c d)))
-      = ∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
-        (if a = j then (1 : ℝ) else 0) * (-1 * 4 *
-          (C.rUp i b a b * C.rUp c d c d - C.rUp i c a b * C.rUp b d c d
-            + C.rUp i d a b * C.rUp b c c d + C.rUp b c a b * C.rUp i d c d
-            - C.rUp b d a b * C.rUp i c c d + C.rUp c d a b * C.rUp i b c d)) := by
-    rw [sum4_swap_pairs]
-    refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ =>
-      Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
-    rw [C.antisymm12 a i a b, C.antisymm12 b d c d,
-      C.antisymm12 b d a b, C.antisymm12 a i c d,
-      C.antisymm12 a d a b, C.antisymm12 b i c d,
-      C.antisymm12 b i a b, C.antisymm12 a d c d]
-    ring
-  have hf4 :
-      (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
-        (if d = j then (1 : ℝ) else 0) * (-1 * 4 *
-          (C.rUp a b a b * C.rUp c i c d - C.rUp a c a b * C.rUp b i c d
-            + C.rUp a i a b * C.rUp b c c d + C.rUp b c a b * C.rUp a i c d
-            - C.rUp b i a b * C.rUp a c c d + C.rUp c i a b * C.rUp a b c d)))
-      = ∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
-        (if c = j then (1 : ℝ) else 0) * (-1 * 4 *
-          (C.rUp a b a b * C.rUp i d c d - C.rUp a i a b * C.rUp b d c d
-            + C.rUp a d a b * C.rUp b i c d + C.rUp b i a b * C.rUp a d c d
-            - C.rUp b d a b * C.rUp a i c d + C.rUp i d a b * C.rUp a b c d)) := by
-    refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
-    rw [Finset.sum_comm]
-    refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ => ?_
-    rw [C.antisymm12 d i d c, C.antisymm34 i d d c,
-      C.antisymm34 b i d c, C.antisymm34 a b d c,
-      C.antisymm34 b d d c, C.antisymm34 a d d c,
-      C.antisymm34 a i d c, C.antisymm12 d i a b]
-    ring
-  rw [hf4, hf3, hf2, hf1]
-  unfold AlgCurvature.lanczosTensor
+      = if a = j then -4 *
+          (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
+            (C.rUp i b j b * C.rUp c d c d - C.rUp i c j b * C.rUp b d c d
+              + C.rUp i d j b * C.rUp b c c d + C.rUp b c j b * C.rUp i d c d
+              - C.rUp b d j b * C.rUp i c c d + C.rUp c d j b * C.rUp i b c d))
+        else 0 := by
+    intro a
+    by_cases haj : a = j
+    · subst haj
+      simp only [↓reduceIte, one_mul, ← Finset.mul_sum]
+      ring
+    · simp [haj]
+  simp_rw [ha]; simp [fiber_one_sum C i j]
+
+private lemma fiber_sum_b_j {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
+    (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
+      (if b = j then (1 : ℝ) else 0) * (-1 * 4 *
+        (C.rUp a i a b * C.rUp c d c d - C.rUp a c a b * C.rUp i d c d
+          + C.rUp a d a b * C.rUp i c c d + C.rUp i c a b * C.rUp a d c d
+          - C.rUp i d a b * C.rUp a c c d + C.rUp c d a b * C.rUp a i c d)))
+    = ∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
+      (if a = j then (1 : ℝ) else 0) * (-1 * 4 *
+        (C.rUp i b a b * C.rUp c d c d - C.rUp i c a b * C.rUp b d c d
+          + C.rUp i d a b * C.rUp b c c d + C.rUp b c a b * C.rUp i d c d
+          - C.rUp b d a b * C.rUp i c c d + C.rUp c d a b * C.rUp i b c d)) := by
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ =>
+    Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ => ?_
+  rw [C.antisymm12 b i b a, C.antisymm34 i b b a,
+    C.antisymm34 b c b a, C.antisymm34 b d b a,
+    C.antisymm34 i c b a, C.antisymm34 i d b a,
+    C.antisymm34 c d b a, C.antisymm12 b i c d]
+  ring
+
+private lemma fiber_sum_c_j {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
+    (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
+      (if c = j then (1 : ℝ) else 0) * (-1 * 4 *
+        (C.rUp a b a b * C.rUp i d c d - C.rUp a i a b * C.rUp b d c d
+          + C.rUp a d a b * C.rUp b i c d + C.rUp b i a b * C.rUp a d c d
+          - C.rUp b d a b * C.rUp a i c d + C.rUp i d a b * C.rUp a b c d)))
+    = ∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
+      (if a = j then (1 : ℝ) else 0) * (-1 * 4 *
+        (C.rUp i b a b * C.rUp c d c d - C.rUp i c a b * C.rUp b d c d
+          + C.rUp i d a b * C.rUp b c c d + C.rUp b c a b * C.rUp i d c d
+          - C.rUp b d a b * C.rUp i c c d + C.rUp c d a b * C.rUp i b c d)) := by
+  rw [sum4_swap_pairs]
+  refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ =>
+    Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
+  rw [C.antisymm12 a i a b, C.antisymm12 b d c d,
+    C.antisymm12 b d a b, C.antisymm12 a i c d,
+    C.antisymm12 a d a b, C.antisymm12 b i c d,
+    C.antisymm12 b i a b, C.antisymm12 a d c d]
+  ring
+
+private lemma fiber_sum_d_j {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
+    (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
+      (if d = j then (1 : ℝ) else 0) * (-1 * 4 *
+        (C.rUp a b a b * C.rUp c i c d - C.rUp a c a b * C.rUp b i c d
+          + C.rUp a i a b * C.rUp b c c d + C.rUp b c a b * C.rUp a i c d
+          - C.rUp b i a b * C.rUp a c c d + C.rUp c i a b * C.rUp a b c d)))
+    = ∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
+      (if c = j then (1 : ℝ) else 0) * (-1 * 4 *
+        (C.rUp a b a b * C.rUp i d c d - C.rUp a i a b * C.rUp b d c d
+          + C.rUp a d a b * C.rUp b i c d + C.rUp b i a b * C.rUp a d c d
+          - C.rUp b d a b * C.rUp a i c d + C.rUp i d a b * C.rUp a b c d)) := by
+  refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ => ?_
+  rw [C.antisymm12 d i d c, C.antisymm34 i d d c,
+    C.antisymm34 b i d c, C.antisymm34 a b d c,
+    C.antisymm34 b d d c, C.antisymm34 a d d c,
+    C.antisymm34 a i d c, C.antisymm12 d i a b]
+  ring
+
+/-- The 5-index Lovelock Kronecker contraction equals `-8` times the Gauss–Bonnet variation tensor
+`H^i_j` in every dimension `n`. -/
+lemma lovelockContract5_eq_neg_eight_lanczos {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
+    lovelockContract5 C i j = -8 * C.lanczosTensor i j := by
+  simp only [lovelockContract5]
+  simp_rw [lovelock_perm_sum C i j]
+  simp only [Finset.sum_add_distrib]
+  rw [fiber_zero_sum C i j, fiber_sum_d_j, fiber_sum_c_j, fiber_sum_b_j, fiber_sum_a_j]
+  simp only [AlgCurvature.lanczosTensor]
   ring
 
 /-- Bach–Lanczos theorem in arbitrary dimension `n < 5`: the Gauss–Bonnet variation tensor
@@ -604,16 +570,16 @@ def constCurv (n : ℕ) (κ : ℝ) : AlgCurvature n where
 topological density `𝒢 = 24 κ²`, even though its metric variation `H^i_j` vanishes identically. -/
 lemma gaussBonnetScalar_constCurv_four (κ : ℝ) :
     (constCurv 4 κ).gaussBonnetScalar = 24 * κ ^ 2 := by
-  unfold AlgCurvature.gaussBonnetScalar AlgCurvature.ricciScalar AlgCurvature.ricciSq
-    AlgCurvature.riemannSq AlgCurvature.ricciMixed constCurv
-  simp only [Fin.sum_univ_four, Fin.isValue, Fin.reduceEq, ↓reduceIte]
+  simp only [AlgCurvature.gaussBonnetScalar, AlgCurvature.ricciScalar, AlgCurvature.ricciSq,
+    AlgCurvature.riemannSq, AlgCurvature.ricciMixed, constCurv,
+    Fin.sum_univ_four, Fin.isValue, Fin.reduceEq, ↓reduceIte]
   ring
 
 private lemma ricciMixed_constCurv_five (κ : ℝ) (i j : Fin 5) :
     (constCurv 5 κ).ricciMixed i j = if i = j then 4 * κ else 0 := by
   have hi : i = 0 ∨ i = 1 ∨ i = 2 ∨ i = 3 ∨ i = 4 := by fin_cases i <;> decide
   have hj : j = 0 ∨ j = 1 ∨ j = 2 ∨ j = 3 ∨ j = 4 := by fin_cases j <;> decide
-  unfold AlgCurvature.ricciMixed constCurv
+  simp only [AlgCurvature.ricciMixed, constCurv]
   rcases hi with rfl | rfl | rfl | rfl | rfl <;>
     rcases hj with rfl | rfl | rfl | rfl | rfl <;>
     simp only [Fin.sum_univ_five, Fin.isValue, Fin.reduceEq, ↓reduceIte] <;>
@@ -627,11 +593,10 @@ private lemma scalarCurv_constCurv_five (κ : ℝ) :
 
 private lemma gaussBonnetScalar_constCurv_five (κ : ℝ) :
     (constCurv 5 κ).gaussBonnetScalar = 120 * κ ^ 2 := by
-  unfold AlgCurvature.gaussBonnetScalar AlgCurvature.ricciSq AlgCurvature.riemannSq
+  simp only [AlgCurvature.gaussBonnetScalar, AlgCurvature.ricciSq, AlgCurvature.riemannSq]
   rw [scalarCurv_constCurv_five]
   simp only [ricciMixed_constCurv_five]
-  unfold constCurv
-  simp only [Fin.sum_univ_five, Fin.isValue, Fin.reduceEq, ↓reduceIte]
+  simp only [constCurv, Fin.sum_univ_five, Fin.isValue, Fin.reduceEq, ↓reduceIte]
   ring
 
 /-- In `n = 5`, the Gauss–Bonnet variation tensor `H^i_j` is dynamically non-trivial: on a 5D
@@ -639,10 +604,10 @@ constant-curvature space it evaluates to `H^i_i = -12 κ²`. -/
 lemma lanczosTensor_constCurv_five (κ : ℝ) (i : Fin 5) :
     (constCurv 5 κ).lanczosTensor i i = -12 * κ ^ 2 := by
   have hi : i = 0 ∨ i = 1 ∨ i = 2 ∨ i = 3 ∨ i = 4 := by fin_cases i <;> decide
-  unfold AlgCurvature.lanczosTensor
+  simp only [AlgCurvature.lanczosTensor]
   rw [gaussBonnetScalar_constCurv_five, scalarCurv_constCurv_five]
   simp only [ricciMixed_constCurv_five]
-  unfold constCurv
+  simp only [constCurv]
   rcases hi with rfl | rfl | rfl | rfl | rfl <;>
     simp only [Fin.sum_univ_five, Fin.isValue, Fin.reduceEq, ↓reduceIte] <;>
     ring

@@ -208,7 +208,7 @@ private lemma pd_nordstromChristoffel (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 
       + (if k = j then pd i φ y / φ y else 0)
       - minkowskiMetric4 i j * minkowskiMetric4 k k * (pd k φ y / φ y) := by
     funext y
-    unfold nordstromChristoffel
+    simp only [nordstromChristoffel]
     split_ifs <;> ring
   have hd_q : ∀ ν, DifferentiableAt ℝ (fun s => pd ν φ (Function.update x μ s)
       / φ (Function.update x μ s)) (x μ) := by
