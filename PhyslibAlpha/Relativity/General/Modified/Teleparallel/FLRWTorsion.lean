@@ -6,7 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Notation
-public import PhyslibAlpha.Cosmology.FLRW.Metric
+public import PhyslibAlpha.Cosmology.FLRW.FriedmannBridge
 public import PhyslibAlpha.Relativity.General.Modified.Teleparallel.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
@@ -17,7 +17,7 @@ import Mathlib.Tactic.Ring
 # Flat FLRW teleparallel torsion and the boundary equivalence `R_LC = -T + B`
 
 Diagonal comoving flat FLRW tetrad, Weitzenböck Hubble connection, torsion scalar `T = 6 H²`,
-and exact equivalence `ricciScalarOf = -T + B` with `FLRW.ricciScalarOf_flrw`.
+and exact equivalence `R_LC = -T + B` with `FLRWSpacetime.ricciScalarOf`.
 
 ## i. Overview
 
@@ -30,7 +30,7 @@ computed by the metric pipeline satisfies `R_LC = -T + B`.
 - `flrwTetrad`, `flrwTetradInv`, `flrwTetrad_mul_inv` : diagonal flat FLRW comoving tetrad.
 - `flrwWeitzenbock_hubble` : spatial Weitzenböck connection equals Hubble parameter `a'/a`.
 - `flrwTorsionScalar`, `flrwBoundaryTerm`, `ricciScalarOf_flrw_flat_eq_neg_torsion_add_boundary` :
-  exact equivalence `R_LC = -T + B` bridged to `FLRW.ricciScalarOf_flrw`.
+  exact equivalence `R_LC = -T + B` bridged to `FLRWSpacetime.ricciScalarOf`.
 
 ## iii. Table of contents
 
@@ -119,10 +119,10 @@ lemma ricciScalarOf_flrw_flat_eq_neg_torsion_add_boundary (a : ℝ → ℝ) (x :
     (ha : a (x 0) ≠ 0) (hr : x 1 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ a t)
     (ha2 : DifferentiableAt ℝ (deriv a) (x 0)) :
-    ricciScalarOf (flrwMetric a 0) (flrwMetricInv a 0) x =
+    ricciScalarOf (FLRWSpacetime.mk a 0).metric (FLRWSpacetime.mk a 0).metricInv x =
       -flrwTorsionScalar a (x 0) + flrwBoundaryTerm a (x 0) := by
-  have hkr : 1 - 0 * (x 1) ^ 2 ≠ 0 := by norm_num
-  rw [ricciScalarOf_flrw a 0 x ha hr hkr hsin ha_diff ha2]
+  have hkr : 1 - (0 : ℝ) * (x 1) ^ 2 ≠ 0 := by norm_num
+  rw [FLRWSpacetime.ricciScalarOf ⟨a, 0⟩ x ha hr hkr hsin ha_diff ha2]
   simp only [flrwTorsionScalar, flrwBoundaryTerm]
   ring
 

@@ -264,7 +264,10 @@ public import PhyslibAlpha.CondensedMatter.TightBindingChain.Open.LocalizedUncer
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Open.Uncertainty
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.VelocityBand.Basic
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.VelocityBand.Width
+public import PhyslibAlpha.Cosmology.FLRW.Christoffel
+public import PhyslibAlpha.Cosmology.FLRW.FriedmannBridge
 public import PhyslibAlpha.Cosmology.FLRW.Metric
+public import PhyslibAlpha.Cosmology.FLRW.PerfectFluid
 public import PhyslibAlpha.Electromagnetism.BoxChargeConservation
 public import PhyslibAlpha.Electromagnetism.TemperedDistributional.WireJunction
 public import PhyslibAlpha.Mathematics.AlgebraGeneration

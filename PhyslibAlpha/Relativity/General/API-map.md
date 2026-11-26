@@ -81,9 +81,10 @@ spin a, polynomial functions Σ = r² + a² cos²θ and Δ = r² - r_s r + a², 
 metric [30], all 64 Levi-Civita Christoffel symbols [31], and full differential pipeline
 verification that the Ricci tensor, Ricci scalar, and Einstein tensor vanish identically in vacuum
 {{2}}{{3}}. [32] Homogeneous and isotropic cosmology is formalized through the
-Friedmann-Lemaître-Robertson-Walker metric with scale factor a(t) and spatial curvature k,
-evaluating all FLRW Christoffel symbols, Ricci components, scalar curvature, and Friedmann Einstein
-equations through the coordinate pipeline and bridging directly to `Cosmology.FLRW` [33].
+Friedmann-Lemaître-Robertson-Walker metric with scale factor a(t) and spatial curvature k [33],
+evaluating all FLRW Christoffel symbols, Ricci components, scalar curvature, and Einstein tensor
+through the coordinate pipeline [68], proving equivalence with the Friedmann equations for a
+comoving perfect fluid [69], and bridging directly to `Cosmology.FLRW` [70].
 
 ### Scalar-tensor, higher-curvature, and screening gravity theories
 
@@ -251,12 +252,9 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
 32. PhyslibAlpha/Relativity/General/Kerr/RicciCurvature.lean — `kerrRicci`, `kerrEinstein`,
     `pd_kerrChristoffelTrace_11`, `pd_kerrChristoffelTrace_21`, `pd_kerrChristoffelTrace_12`, `pd_kerrChristoffelTrace_22`, `ricciTensorOf_kerr_eq_zero`,
     `ricciScalarOf_kerr_eq_zero`, `einsteinTensorOf_kerr_eq_zero`
-33. PhyslibAlpha/Cosmology/FLRW/Metric.lean — `FLRWSpacetime`, `FLRWSpacetime.ofCosmology`,
-    `FLRWSpacetime.metric`, `flrwMetric`, `flrwMetricInv`, `flrwMetric_symm`,
-    `flrwMetric_mul_inv`, `flrwMetricTensor`, `flrwChristoffel`, `flrwChristoffelDeriv`,
-    `eventually_christoffel_eq_flrwChristoffel`, `christoffel_eq_flrwChristoffel`,
-    `ricciScalarOf_flrw`, `einsteinTensorOf_flrw_00_iff_friedmann`,
-    `einsteinTensorOf_flrw_spatial_iff_friedmann`, `friedmannSolution_of_einsteinTensorOf_flrw_G`
+33. PhyslibAlpha/Cosmology/FLRW/Metric.lean — `FLRWSpacetime`, `FLRWSpacetime.metric`,
+    `FLRWSpacetime.metricInv`, `FLRWSpacetime.metric_symm`, `FLRWSpacetime.metric_mul_inv`,
+    `FLRWSpacetime.metricTensor`
 34. PhyslibAlpha/Relativity/General/Modified/Nordstrom.lean — `NordstromSpacetime`,
     `nordstromMetric`, `nordstromMetricInv`, `nordstromMetricTensor`,
     `light_deflection_zero`, `nordstromChristoffel`, `christoffel_nordstrom_eq`,
@@ -372,6 +370,18 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
 67. PhyslibAlpha/Relativity/General/InitialData/FlatSlice.lean — `euclid3`, `flatData`,
     `flatData_isVacuum`, `anisotropicSliceData`, `anisotropicSliceData_hamiltonianConstraint`,
     `anisotropicSliceData_hamiltonianConstraint_ne_zero`
+68. PhyslibAlpha/Cosmology/FLRW/Christoffel.lean — `FLRWSpacetime.christoffel`,
+    `FLRWSpacetime.christoffelDeriv`, `FLRWSpacetime.christoffel_eq`,
+    `FLRWSpacetime.eventually_christoffel_eq`, `FLRWSpacetime.pd_christoffel_eq_deriv`,
+    `FLRWSpacetime.riemann_eq_data`, `FLRWSpacetime.ricciTensorOf`, `FLRWSpacetime.ricciScalarOf`,
+    `FLRWSpacetime.einsteinTensorOf`
+69. PhyslibAlpha/Cosmology/FLRW/PerfectFluid.lean — `perfectFluidT`,
+    `FLRWSpacetime.einsteinTensorOf_00_iff_friedmann`,
+    `FLRWSpacetime.einsteinTensorOf_spatial_iff_friedmann`,
+    `FLRWSpacetime.einsteinTensorOf_iff_friedmann`
+70. PhyslibAlpha/Cosmology/FLRW/FriedmannBridge.lean — `flrwScaleFn`,
+    `FLRWSpacetime.ofCosmology`, `einsteinTensorOf_ofCosmology_iff_friedmann`,
+    `friedmannSolution_of_einsteinTensorOf`, `friedmannSolution_of_einsteinTensorOf_G`
 
 ## References
 
