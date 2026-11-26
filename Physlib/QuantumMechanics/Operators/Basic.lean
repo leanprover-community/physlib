@@ -20,8 +20,8 @@ An import class of operators in NRQM are those which are both densely defined an
 which we refer to as _unbounded_. When `H = H'` operators may also be symmetric, self-adjoint or
 essentially self-adjoint (closure is self-adjoint).
 
-In this module we collect results on how the properties `HasDenseDomain`, `IsUnbounded`,
-`IsSymmetric`, and `IsSelfAdjoint` interact with the basic algebraic
+In this module we collect results on how the properties `HasDenseDomain`, `IsUnbounded` and
+`IsSymmetric` interact with the basic algebraic
 operations, closure, adjoints, unitary conjugation and each other.
 
 **Notes**
@@ -73,7 +73,6 @@ Results
 - C. Classes of operators
   - C.1. Unbounded operators
   - C.2. Symmetric operators
-  - C.3. Self-adjoint operators
 
 ## iv. References
 
@@ -108,9 +107,6 @@ variable
 
 /-!
 ## A. Definitions
-
-See `LinearPMap.instStar` and `LinearPMap.isSelfAdjoint_def` for the definition of `IsSelfAdjoint`
-for `LinearPMap`s.
 -/
 
 /-- A LinearPMap `U` has dense domain iff `U.domain` is dense in `H`. -/
