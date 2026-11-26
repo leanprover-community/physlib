@@ -102,8 +102,8 @@ structure ReissnerNordstromSpacetime where
 
 /-- Electromagnetic stress-energy tensor `T^{EM}_{ij} = (1 / (4π)) (F_{ik} F_j{}^k - (1/4) g_{ij}
 F_{ab} F^{ab})` in Gaussian-cgs/geometrized units (`G = c = 1`). -/
-noncomputable def maxwellStressEnergy (g ginv F : Tensor2 4) : Tensor2 4 :=
-  fun i j => (1 / (4 * Real.pi)) * maxwellStressEnergyRaw g ginv F i j
+noncomputable def maxwellStressEnergy (M : MetricTensor 4) (F : Tensor2 4) : Tensor2 4 :=
+  fun i j => (1 / (4 * Real.pi)) * GeneralRelativity.maxwellStressEnergy M F i j
 
 namespace ReissnerNordstromSpacetime
 
@@ -267,13 +267,12 @@ lemma ricciScalarOf (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ) (hr : x
 lemma maxwellStressEnergy_trace_zero (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ)
     (hr : x 1 ≠ 0) (hf : S.lapse (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     metricTrace (S.toStaticSpherical.metricTensor x hr hf hsin)
-      (maxwellStressEnergy (S.metric x) (S.metricInv x) (S.maxwellF (x 1))) = 0 := by
-  have h := maxwellStressEnergyRaw_trace_zero
-    (S.toStaticSpherical.metricTensor x hr hf hsin) (S.maxwellF (x 1))
-  show metricTrace _ (fun i j => (1 / (4 * Real.pi)) *
-    maxwellStressEnergyRaw (S.metric x) (S.metricInv x) (S.maxwellF (x 1)) i j) = 0
-  rw [metricTrace_smul]
-  exact mul_eq_zero_of_right _ h
+      (maxwellStressEnergy (S.toStaticSpherical.metricTensor x hr hf hsin)
+        (S.maxwellF (x 1))) = 0 := by
+  rw [show maxwellStressEnergy (S.toStaticSpherical.metricTensor x hr hf hsin) (S.maxwellF (x 1)) =
+      fun i j => (1 / (4 * Real.pi)) * GeneralRelativity.maxwellStressEnergy
+        (S.toStaticSpherical.metricTensor x hr hf hsin) (S.maxwellF (x 1)) i j from rfl,
+    metricTrace_smul, GeneralRelativity.maxwellStressEnergy_trace_zero, mul_zero]
 
 /-- Electrovacuum Einstein–Maxwell equations verified directly through `GeneralRelativity.Pipeline`:
 `G_{ij} = 8 π T^{EM}_{ij}` at every coordinate index `(i, j)`. -/
@@ -281,12 +280,13 @@ lemma einsteinTensorOf_eq_maxwell (S : ReissnerNordstromSpacetime) (x : Fin 4 �
     (hr : x 1 ≠ 0) (hf : S.lapse (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
     Pipeline.einsteinTensorOf S.metric S.metricInv x i j
       = 8 * Real.pi
-          * maxwellStressEnergy (S.metric x) (S.metricInv x) (S.maxwellF (x 1)) i j := by
+          * maxwellStressEnergy (S.toStaticSpherical.metricTensor x hr hf hsin)
+              (S.maxwellF (x 1)) i j := by
   have hpi : Real.pi ≠ 0 := Real.pi_ne_zero
   simp only [Pipeline.einsteinTensorOf, S.ricciTensorOf x hr hf hsin, S.ricciScalarOf x hr hf hsin]
-  simp only [maxwellStressEnergy, maxwellStressEnergyRaw, maxwellFieldInvariant, metric,
-    metricInv, toStaticSpherical, StaticSphericalMetric.metric, StaticSphericalMetric.metricInv,
-    maxwellF, Fin.sum_univ_four]
+  simp only [maxwellStressEnergy, GeneralRelativity.maxwellStressEnergy, maxwellFieldInvariant,
+    StaticSphericalMetric.metricTensor, StaticSphericalMetric.metric,
+    StaticSphericalMetric.metricInv, toStaticSpherical, maxwellF, Fin.sum_univ_four]
   fin_cases i <;> fin_cases j <;> simp
   · field_simp [hr, hf, hpi]; ring
   · field_simp [hr, hf, hpi]; ring

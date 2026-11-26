@@ -9,6 +9,7 @@ public import PhyslibAlpha.Relativity.General.Linearized.BoxEta
 public import PhyslibAlpha.Relativity.Metrics.ConformalMetric
 public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
 public import PhyslibAlpha.Relativity.Metrics.Minkowski
+public import PhyslibAlpha.Relativity.Metrics.NullVector
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Mul
@@ -125,26 +126,11 @@ noncomputable def nordstromChristoffel (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4
   ((if k = i then coordDeriv j φ x else 0) + (if k = j then coordDeriv i φ x else 0)
     - minkowskiMetric4 i j * minkowskiMetric4 k k * coordDeriv k φ x) / φ x
 
-private lemma hasDerivAt_update_slice (g : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) (μ : Fin 4)
-    (hg : DifferentiableAt ℝ g x) :
-    HasDerivAt (fun s => g (Function.update x μ s)) (coordDeriv μ g x) (x μ) := by
-  have hu : (fun s : ℝ => Function.update x μ s)
-      = fun s => x + (s - x μ) • (Pi.single μ 1 : Fin 4 → ℝ) := by
-    ext s k; by_cases hk : k = μ <;> simp [Function.update, hk]
-  have hdu : HasDerivAt (fun s : ℝ => Function.update x μ s)
-      (Pi.single μ 1 : Fin 4 → ℝ) (x μ) := by
-    rw [hu]
-    simpa using (((hasDerivAt_id (x μ)).sub_const (x μ)).smul_const
-      (Pi.single μ 1 : Fin 4 → ℝ)).const_add x
-  have hf' : HasFDerivAt g (fderiv ℝ g x) (Function.update x μ (x μ)) := by
-    simpa [Function.update_eq_self] using hg.hasFDerivAt
-  exact (hf'.comp_hasDerivAt (x μ) hdu).differentiableAt.hasDerivAt
-
 private lemma pd_conformal_eta (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ)
     (hd : DifferentiableAt ℝ φ x) (μ i j : Fin 4) :
     coordDeriv μ (fun y => nordstromMetric φ y i j) x =
       2 * φ x * coordDeriv μ φ x * minkowskiMetric4 i j := by
-  have hs := hasDerivAt_update_slice φ x μ hd
+  have hs := hasDerivAt_update_slice μ hd
   have hsq : HasDerivAt (fun s => φ (Function.update x μ s) ^ 2 * minkowskiMetric4 i j)
       (2 * φ x * coordDeriv μ φ x * minkowskiMetric4 i j) (x μ) :=
     ((hs.pow 2).mul_const (minkowskiMetric4 i j)).congr_deriv
@@ -186,8 +172,8 @@ private lemma pd_div_phi (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) (hφ
         φ x ^ 2 := by
   have hφ' : φ (Function.update x μ (x μ)) ≠ 0 := by
     simpa [Function.update_eq_self] using hφ
-  have hq := (hasDerivAt_update_slice (coordDeriv ν φ) x μ (h2 ν)).fun_div
-    (hasDerivAt_update_slice φ x μ h1) hφ'
+  have hq := (hasDerivAt_update_slice μ (h2 ν)).fun_div
+    (hasDerivAt_update_slice μ h1) hφ'
   simpa [coordDeriv, Function.update_eq_self] using hq.deriv
 
 private lemma pd_nordstromChristoffel (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) (hφ : φ x ≠ 0)
@@ -214,8 +200,8 @@ private lemma pd_nordstromChristoffel (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 
     intro ν
     have hφ' : φ (Function.update x μ (x μ)) ≠ 0 := by
       simpa [Function.update_eq_self] using hφ
-    exact ((hasDerivAt_update_slice (coordDeriv ν φ) x μ (h2 ν)).fun_div
-      (hasDerivAt_update_slice φ x μ h1) hφ').differentiableAt
+    exact ((hasDerivAt_update_slice μ (h2 ν)).fun_div
+      (hasDerivAt_update_slice μ h1) hφ').differentiableAt
   have hd_if1 : DifferentiableAt ℝ (fun s => if k = i then coordDeriv j φ (Function.update x μ s)
       / φ (Function.update x μ s) else 0) (x μ) := by
     split_ifs <;> first | exact hd_q j | exact differentiableAt_const _

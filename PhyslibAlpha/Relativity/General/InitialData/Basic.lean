@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import PhyslibAlpha.Relativity.Metrics.Basic
-public import PhyslibAlpha.Relativity.Metrics.ScalarCurvature
+public import PhyslibAlpha.Relativity.Metrics.RicciScalar
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -129,7 +129,7 @@ simplifies directly into algebraic conditions on the spatial scalar curvature `Â
 curvature. -/
 lemma hamiltonianConstraint_eq_ricciScalar_of_K_zero (D : InitialData) (hK : D.K = 0) :
     D.hamiltonianConstraint = ricciScalar D.h D.R3 := by
-  simp [hamiltonianConstraint, metricTrace, hK]
+  simp [hamiltonianConstraint, hK]
 
 /-- At a moment of time symmetry (`K = 0`), vanishing Hamiltonian constraint is equivalent to
 scalar flatness. -/

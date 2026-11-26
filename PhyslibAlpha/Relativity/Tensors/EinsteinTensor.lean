@@ -5,7 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
-public import PhyslibAlpha.Relativity.Metrics.ScalarCurvature
+public import PhyslibAlpha.Relativity.Metrics.RicciScalar
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
@@ -27,7 +27,7 @@ cosmological Einstein-space equation `G + Λ g = 0` and `Ric = Λ g`.
 ## ii. Key results
 
 - `einstein` : the Einstein tensor `G_{ij} = Ric_{ij} - (1/2) S g_{ij}`.
-- `einstein_symm` : symmetry of the Einstein tensor.
+- `einstein_symm`, `einstein_flat` : symmetry and vanishing for flat curvature.
 - `metricTrace_einstein` : `g^{ij} G_{ij} = (1 - n/2) S`; in 4D the trace of `G` is `-S`.
 - `vacuum_iff_ricci_flat` : in 4D, `G = 0 ↔ Ric = 0`.
 - `einsteinSpace_iff` : in 4D, `G + Λ g = 0 ↔ Ric = Λ g`.
@@ -69,34 +69,21 @@ lemma einstein_symm (M : MetricTensor n) (R : RiemannTensor n) : IsSymm (einstei
   simp only [Matrix.transpose_apply, einstein]
   rw [(ricci_symm M R).apply i j, M.symm.apply i j]
 
+/-- The Einstein tensor of the flat Riemann curvature tensor vanishes identically. -/
+@[simp]
+lemma einstein_flat (M : MetricTensor n) : einstein M (RiemannTensor.flat n) = 0 := by
+  ext i j
+  simp [einstein]
+
 /-- Metric trace of the Einstein tensor: `g^{ij} G_{ij} = (1 - n/2) S`. -/
 lemma metricTrace_einstein (M : MetricTensor n) (R : RiemannTensor n) :
     metricTrace M (einstein M R) = (1 - (n : ℝ) / 2) * ricciScalar M R := by
-  have hsplit : ∀ i,
-      (∑ j, M.ginv i j * (ricci M R i j - (1 / 2) * ricciScalar M R * M.g i j))
-        = (∑ j, M.ginv i j * ricci M R i j)
-          - (1 / 2) * ricciScalar M R * (∑ j, M.ginv i j * M.g i j) := by
-    intro i
-    have hterm : ∀ j,
-        M.ginv i j * (ricci M R i j - (1 / 2) * ricciScalar M R * M.g i j)
-          = M.ginv i j * ricci M R i j
-            - (1 / 2) * ricciScalar M R * (M.ginv i j * M.g i j) := by
-      intro j
-      ring
-    rw [Finset.sum_congr rfl (fun j _ => hterm j), Finset.sum_sub_distrib,
-      ← Finset.mul_sum]
-  simp only [metricTrace, einstein]
-  calc (∑ i, ∑ j, M.ginv i j * (ricci M R i j - (1 / 2) * ricciScalar M R * M.g i j))
-      = ∑ i, ((∑ j, M.ginv i j * ricci M R i j)
-          - (1 / 2) * ricciScalar M R * (∑ j, M.ginv i j * M.g i j)) :=
-        Finset.sum_congr rfl (fun i _ => hsplit i)
-    _ = (∑ i, ∑ j, M.ginv i j * ricci M R i j)
-          - (1 / 2) * ricciScalar M R * (∑ i, ∑ j, M.ginv i j * M.g i j) := by
-        rw [Finset.sum_sub_distrib, ← Finset.mul_sum]
-    _ = ricciScalar M R - (1 / 2) * ricciScalar M R * (n : ℝ) := by
-        rw [sum_ginv_mul_g]
-        rfl
-    _ = (1 - (n : ℝ) / 2) * ricciScalar M R := by ring
+  have hsub := metricTrace_sub_fun M (ricci M R) (fun i j => ((1 / 2) * ricciScalar M R) * M.g i j)
+  have hmul := metricTrace_mul_g M ((1 / 2) * ricciScalar M R)
+  have heq : einstein M R =
+      fun i j => ricci M R i j - ((1 / 2) * ricciScalar M R) * M.g i j := rfl
+  rw [heq, hsub, hmul, ← ricciScalar_eq_metricTrace]
+  ring
 
 /-!
 
@@ -108,8 +95,7 @@ lemma metricTrace_einstein (M : MetricTensor n) (R : RiemannTensor n) :
 lemma ricciScalar_eq_zero_of_einstein_eq_zero (M : MetricTensor 4) (R : RiemannTensor 4)
     (h : einstein M R = 0) : ricciScalar M R = 0 := by
   have htr : metricTrace M (einstein M R) = 0 := by
-    rw [h]
-    simp [metricTrace]
+    rw [h, metricTrace_zero]
   rw [metricTrace_einstein] at htr
   norm_num at htr
   linarith

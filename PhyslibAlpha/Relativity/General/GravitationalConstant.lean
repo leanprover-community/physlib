@@ -64,14 +64,15 @@ independent in the `(L, T, M, Θ)` base space, `exists_units_c_G_kB_eq_one` para
 
 @[expose] public section
 
-namespace GeneralRelativity
-
 open Dimension UnitDependent LTMCTUnitChoices CarriesDimension
 open scoped NNReal
 
 /-!
 
 ## A. The type
+
+Following `Physlib/Units/Constants.lean`, `GravitationalConstant` packages a positive real value
+representing Newton's constant in an arbitrary choice of units.
 
 -/
 
@@ -87,6 +88,9 @@ namespace GravitationalConstant
 /-!
 
 ## B. Instances
+
+This section registers `PositiveRealUnitCore` and the real coercion so `GravitationalConstant`
+transforms automatically under changes of `LTMCTUnitChoices`.
 
 -/
 
@@ -107,6 +111,9 @@ lemma positiveRealUnitCore_val (G : GravitationalConstant) :
 
 ## C. Positivity
 
+Basic positivity, nonnegativity, and nonvanishing lemmas for the numerical value of the
+gravitational constant in any unit system.
+
 -/
 
 @[simp]
@@ -121,6 +128,9 @@ lemma val_ne_zero (G : GravitationalConstant) : (G : ℝ) ≠ 0 := ne_of_gt G.po
 /-!
 
 ## D. The dimension
+
+Newton's constant carries the mechanical dimension `L³ M⁻¹ T⁻²`, matching `G M / r²` having the
+dimension of acceleration.
 
 -/
 
@@ -156,6 +166,9 @@ lemma val_one : (1 : GravitationalConstant).val = 1 := rfl
 
 ### E.2. As a dimensioned quantity
 
+Embedding `GravitationalConstant` into `WithDim` relates unit scaling directly to the dimensional
+scale factor of `L³ M⁻¹ T⁻²`.
+
 -/
 
 /-- Newton's gravitational constant as a quantity carrying the dimension `L³ M⁻¹ T⁻²` in
@@ -164,7 +177,8 @@ def toWithDim (G : GravitationalConstant) :
     WithDim gravitationalConstantDimension ℝ≥0 :=
   ⟨⟨G.val, le_of_lt G.pos⟩⟩
 
-/-- The underlying real value of `G.toWithDim` agrees with `G.val`. -/
+/-- The underlying real value of the dimensioned gravitational constant agrees with its numerical
+value. -/
 @[simp]
 lemma toWithDim_val (G : GravitationalConstant) : (G.toWithDim.val : ℝ) = G.val := rfl
 
@@ -180,7 +194,7 @@ lemma scaleUnit_val (G : GravitationalConstant) (u1 u2 : LTMCTUnitChoices) :
     (scaleUnit u1 u2 G).val =
       (u1.dimScale u2 gravitationalConstantDimension : ℝ) * G.val := rfl
 
-/-- The map `toWithDim` commutes with changes of units. -/
+/-- Converting to a dimensioned quantity commutes with changes of units. -/
 @[simp]
 lemma toWithDim_scaleUnit (G : GravitationalConstant) (u1 u2 : LTMCTUnitChoices) :
     (scaleUnit u1 u2 G).toWithDim = scaleUnit u1 u2 G.toWithDim := by
@@ -194,12 +208,16 @@ end GravitationalConstant
 
 ## F. The value in our world
 
+The SI value is fixed from the CODATA 2022 recommended value `6.67430 × 10⁻¹¹ m³ kg⁻¹ s⁻²`.
+
 -/
 
 /-- Newton's gravitational constant in our world, `6.67430 × 10⁻¹¹ m³ kg⁻¹ s⁻²` (CODATA 2022). -/
 noncomputable def gravitationalConstant : Dimensionful GravitationalConstant :=
   toDimensionful SI ⟨6.67430e-11, by norm_num⟩
 
+/-- In SI units, `gravitationalConstant` takes the CODATA 2022 value
+`6.67430 × 10⁻¹¹ m³ kg⁻¹ s⁻²`. -/
 @[simp]
 lemma gravitationalConstant_in_SI :
     gravitationalConstant SI = ⟨6.67430e-11, by norm_num⟩ :=
@@ -209,16 +227,10 @@ lemma gravitationalConstant_in_SI :
 
 ## G. Natural and geometric unit systems
 
+Rescaling the SI length, mass, and temperature units simultaneously sets `c = 1`, `G = 1`, and
+`k_B = 1` in `LTMCTUnitChoices`.
+
 -/
-
-private lemma coe_self_div_scale {U : Type} [PositiveRealUnitCore U] (x : U) (r : ℝ) (hr : 0 < r) :
-    ((x / PositiveRealUnitCore.scale r x hr : ℝ≥0) : ℝ) = 1 / r := by
-  rw [PositiveRealUnitCore.self_div_scale]
-  rfl
-
-private lemma coe_div_self {U : Type} [PositiveRealUnitCore U] (x : U) :
-    ((x / x : ℝ≥0) : ℝ) = 1 := by
-  simp
 
 private lemma speedOfLight_scaleUnit_SI (u : LTMCTUnitChoices) :
     (speedOfLight u).val = (SI.dimScale u (L𝓭 * T𝓭⁻¹) : ℝ) * 299792458 := rfl
@@ -237,6 +249,14 @@ gravitational constant `G`, and the Boltzmann constant `k_B` are simultaneously 
 lemma exists_units_c_G_kB_eq_one : ∃ u : LTMCTUnitChoices,
     (speedOfLight u).val = 1 ∧ (gravitationalConstant u).val = 1 ∧
       (boltzmannConstant u).val = 1 := by
+  have hdiv : ∀ {U : Type} [PositiveRealUnitCore U] (x : U) (r : ℝ) (hr : 0 < r),
+      ((x / PositiveRealUnitCore.scale r x hr : ℝ≥0) : ℝ) = 1 / r := by
+    intro U _ x r hr
+    rw [PositiveRealUnitCore.self_div_scale]
+    rfl
+  have hself : ∀ {U : Type} [PositiveRealUnitCore U] (x : U), ((x / x : ℝ≥0) : ℝ) = 1 := by
+    intro U _ x
+    simp
   refine ⟨{SI with
     length := PositiveRealUnitCore.scale 299792458 LengthUnit.meters
     mass := PositiveRealUnitCore.scale (299792458 ^ 3 / 6.67430e-11) MassUnit.kilograms
@@ -245,17 +265,14 @@ lemma exists_units_c_G_kB_eq_one : ∃ u : LTMCTUnitChoices,
       TemperatureUnit.kelvin}, ?_, ?_, ?_⟩
   · rw [speedOfLight_scaleUnit_SI]
     simp only [map_mul, map_inv, NNReal.coe_mul, NNReal.coe_inv, dimScale_L𝓭, dimScale_T𝓭,
-      SI_length, SI_time, coe_self_div_scale, coe_div_self]
+      SI_length, SI_time, hdiv, hself]
     norm_num
   · rw [gravitationalConstant_scaleUnit_SI,
       GravitationalConstant.gravitationalConstantDimension_eq]
     simp only [map_mul, map_inv, NNReal.coe_mul, NNReal.coe_inv, dimScale_L𝓭, dimScale_M𝓭,
-      dimScale_T𝓭, SI_length, SI_mass, SI_time, coe_self_div_scale, coe_div_self]
+      dimScale_T𝓭, SI_length, SI_mass, SI_time, hdiv, hself]
     norm_num
   · rw [boltzmannConstant_scaleUnit_SI]
     simp only [map_mul, map_inv, NNReal.coe_mul, NNReal.coe_inv, dimScale_L𝓭, dimScale_T𝓭,
-      dimScale_M𝓭, dimScale_Θ𝓭, SI_length, SI_time, SI_mass, SI_temperature,
-      coe_self_div_scale, coe_div_self]
+      dimScale_M𝓭, dimScale_Θ𝓭, SI_length, SI_time, SI_mass, SI_temperature, hdiv, hself]
     norm_num
-
-end GeneralRelativity

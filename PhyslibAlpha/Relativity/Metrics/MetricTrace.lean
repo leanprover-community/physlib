@@ -23,7 +23,8 @@ scalar multiples, as well as the dimension identity `g^{ij} g_{ij} = n`.
 
 ## ii. Key results
 
-- `metricTrace`, `metricTrace_diag` : full contraction `g^{ij} T_{ij}` and diagonal reduction.
+- `metricTrace`, `metricTrace_zero`, `metricTrace_diag` : full contraction `g^{ij} T_{ij}`,
+  vanishing on the zero tensor, and diagonal reduction.
 - `metricTrace_add_fun`, `metricTrace_sub_fun`, `metricTrace_smul` : linearity of the trace.
 - `sum_ginv_mul_g`, `metricTrace_mul_g` : `g^{ij} g_{ij} = n`.
 
@@ -55,6 +56,11 @@ variable {n : ℕ}
 /-- Full contraction of the inverse metric with a rank-2 tensor, `g^{ij} T_{ij}`. -/
 def metricTrace (M : MetricTensor n) (T : Tensor2 n) : ℝ := ∑ i, ∑ j, M.ginv i j * T i j
 
+/-- The metric trace of the zero tensor vanishes identically. -/
+@[simp]
+lemma metricTrace_zero {n : ℕ} (M : MetricTensor n) : metricTrace M 0 = 0 := by
+  simp [metricTrace]
+
 /-- `metricTrace` is additive over pointwise sums. -/
 lemma metricTrace_add_fun {n : ℕ} (M : MetricTensor n) (A B : Tensor2 n) :
     metricTrace M (fun i j => A i j + B i j) = metricTrace M A + metricTrace M B := by
@@ -66,7 +72,7 @@ lemma metricTrace_add_fun {n : ℕ} (M : MetricTensor n) (A B : Tensor2 n) :
     exact Finset.sum_congr rfl (fun j _ => by ring)
   rw [Finset.sum_congr rfl (fun i _ => h i), Finset.sum_add_distrib]
 
-/-- `metricTrace` is additive over pointwise differences. -/
+/-- `metricTrace` preserves pointwise differences. -/
 lemma metricTrace_sub_fun {n : ℕ} (M : MetricTensor n) (A B : Tensor2 n) :
     metricTrace M (fun i j => A i j - B i j) = metricTrace M A - metricTrace M B := by
   simp only [metricTrace]

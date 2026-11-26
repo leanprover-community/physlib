@@ -83,10 +83,6 @@ lemma electricPart_trace (k : ℝ) : (∑ i, electricPart k i i) = 0 := by
   simp [electricPart, Fin.sum_univ_four]
   ring
 
-/-- Sum of squares of the orthonormal-frame components of a curvature tensor. -/
-noncomputable def frameSqSum (R : RiemannTensor 4) : ℝ :=
-  ∑ i, ∑ j, ∑ l, ∑ m, R.comp i j l m * R.comp i j l m
-
 /-- The Schwarzschild curvature in the orthonormal frame, with `k = M / r³` at a point: the
 static Weyl tensor of electric part `E = diag(0, -2k, k, k)`. -/
 noncomputable def schwarzschild (k : ℝ) : RiemannTensor 4 where
@@ -136,13 +132,14 @@ lemma ricci_eq_zero (k : ℝ) : ricci minkowski (schwarzschild k) = 0 := by
     two_mul, add_assoc]
 
 /-- The frame components of `schwarzschild k` satisfy `∑ R_{ijlm}² = 48 k²`. -/
-lemma frameSqSum_eq (k : ℝ) : frameSqSum (schwarzschild k) = 48 * k ^ 2 := by
-  simp [frameSqSum, schwarzschild, electricPart, Fin.sum_univ_four, two_mul, add_assoc]
+lemma frameSqSum_eq (k : ℝ) : (schwarzschild k).frameKretschmannScalar = 48 * k ^ 2 := by
+  simp [RiemannTensor.frameKretschmannScalar, schwarzschild, electricPart, Fin.sum_univ_four,
+    two_mul, add_assoc]
   ring
 
 /-- The Schwarzschild Kretschmann scalar `48 M² / r⁶`, obtained at `k = M / r³`. -/
 lemma kretschmann_scalar (M r : ℝ) (hr : r ≠ 0) :
-    frameSqSum (schwarzschild (M / r ^ 3)) = 48 * M ^ 2 / r ^ 6 := by
+    (schwarzschild (M / r ^ 3)).frameKretschmannScalar = 48 * M ^ 2 / r ^ 6 := by
   rw [frameSqSum_eq]
   have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
   field_simp

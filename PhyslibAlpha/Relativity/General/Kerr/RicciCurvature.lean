@@ -469,7 +469,11 @@ private lemma pd_G_2_33 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma 
     have hc4 : HasDerivAt (fun t => c4 * Real.cos t ^ 4)
         (c4 * (4 * Real.cos (x 2) ^ (4 - 1) * (-Real.sin (x 2)))) (x 2) :=
       ((Real.hasDerivAt_cos (x 2)).pow 4).const_mul c4
-    have hc2 := (hasDerivAt_cos_sq (x 2)).const_mul c2
+    have hcosSq : HasDerivAt (fun t : ℝ => Real.cos t ^ 2)
+        (-2 * Real.cos (x 2) * Real.sin (x 2)) (x 2) :=
+      ((hasDerivAt_pow 2 (Real.cos (x 2))).comp (x 2)
+        (Real.hasDerivAt_cos (x 2))).congr_deriv (by ring)
+    have hc2 := hcosSq.const_mul c2
     exact ((hc4.fun_add hc2).add_const c0).congr_deriv (by ring)
   have hfun : (fun t => K.christoffel (Function.update x 2 t) 2 3 3)
       = fun t => -((Real.cos t * Real.sin t * Q t) / K.sigma (x 1) t ^ 3) := by

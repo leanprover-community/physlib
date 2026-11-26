@@ -24,6 +24,7 @@ This module defines the scalar curvature `ricciScalar M R` as the full contracti
 
 - `ricciScalar` : scalar curvature `S = ∑ i j, g^{ij} Ric_{ij}`.
 - `ricciScalar_eq_metricTrace` : `ricciScalar` is the metric trace of `ricci`.
+- `ricciScalar_flat` : the flat Riemann tensor has zero scalar curvature.
 
 ## iii. Table of contents
 
@@ -55,5 +56,11 @@ noncomputable def ricciScalar {n : ℕ} (M : MetricTensor n) (R : RiemannTensor 
 /-- Scalar curvature is the metric trace of the Ricci tensor. -/
 lemma ricciScalar_eq_metricTrace {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) :
     ricciScalar M R = metricTrace M (ricci M R) := rfl
+
+/-- The flat Riemann curvature tensor has identically vanishing scalar curvature. -/
+@[simp]
+lemma ricciScalar_flat {n : ℕ} (M : MetricTensor n) :
+    ricciScalar M (RiemannTensor.flat n) = 0 := by
+  simp [ricciScalar]
 
 end GeneralRelativity

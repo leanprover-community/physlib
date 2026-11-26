@@ -8,12 +8,11 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Deriv
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Physlib.SpaceAndTime.SpaceTime.Derivatives
 import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import Mathlib.Tactic.Ring
 
 /-!
@@ -26,10 +25,10 @@ API, Schwarz mixed-derivative symmetry, and bridge to `SpaceTime.deriv`.
 ## i. Overview
 
 On a coordinate chart `Fin n → ℝ`, `Pipeline.coordDeriv μ f x` differentiates the single-variable
-slice `s ↦ f (Function.update x μ s)` at `x μ`. This module supplies linearity, neighborhood
-congruence, `C²` differentiability, Schwarz symmetry (`coordDeriv_comm`), elementary trigonometric
-slice derivatives, and the identification `coordDeriv_eq_spaceTime_deriv` with Physlib's
-coordinate-free spacetime derivative `SpaceTime.deriv`.
+slice `s ↦ f (Function.update x μ s)` at `x μ`. This module supplies linearity, quotient rule,
+neighborhood congruence, `C²` differentiability, Schwarz symmetry (`coordDeriv_comm`), and the
+identification `coordDeriv_eq_spaceTime_deriv` with Physlib's coordinate-free spacetime derivative
+`SpaceTime.deriv`.
 
 ## ii. Key results
 
@@ -38,11 +37,12 @@ coordinate-free spacetime derivative `SpaceTime.deriv`.
   `Pipeline.coordDeriv_const`, `Pipeline.coordDeriv_congr`,
   `Pipeline.coordDeriv_congr_nhds` : basic evaluation and congruence API.
 - `Pipeline.coordDeriv_add`, `Pipeline.coordDeriv_sub`, `Pipeline.coordDeriv_const_mul`,
-  `Pipeline.coordDeriv_sum` : linearity of coordinate partial derivatives.
+  `Pipeline.coordDeriv_div`, `Pipeline.coordDeriv_sum` : algebraic derivative rules.
 - `Pipeline.coordDeriv_eq_fderiv`, `Pipeline.coordDeriv_eq_spaceTime_deriv` : Fréchet and
   `SpaceTime.deriv` bridges.
 - `Pipeline.coordDeriv_comm`, `Pipeline.contDiffAt_coordDeriv`,
-  `Pipeline.coordDeriv_differentiableAt` : Schwarz symmetry and `C²`/`C³` regularity.
+  `Pipeline.coordDeriv_differentiableAt`, `Pipeline.hasDerivAt_update_slice`,
+  `Pipeline.slice_differentiableAt` : Schwarz symmetry and regularity.
 
 ## iii. Table of contents
 
@@ -74,18 +74,8 @@ Coordinate partial derivatives along basis axes `μ : Fin n` evaluate directiona
 
 -/
 
-/-- Coordinate partial derivative of a `Real.sin · ^ 2` slice: `(sin² θ)' = 2 sin θ cos θ`. -/
-lemma hasDerivAt_sin_sq (θ : ℝ) :
-    HasDerivAt (fun t => Real.sin t ^ 2) (2 * Real.sin θ * Real.cos θ) θ :=
-  ((hasDerivAt_pow 2 (Real.sin θ)).comp θ (Real.hasDerivAt_sin θ)).congr_deriv (by ring)
-
-/-- Coordinate derivative of `cos² θ`: `(cos² θ)' = -2 cos θ sin θ`. -/
-lemma hasDerivAt_cos_sq (θ : ℝ) :
-    HasDerivAt (fun t => Real.cos t ^ 2) (-2 * Real.cos θ * Real.sin θ) θ :=
-  ((hasDerivAt_pow 2 (Real.cos θ)).comp θ (Real.hasDerivAt_cos θ)).congr_deriv (by ring)
-
-/-- The partial derivative of a scalar field along the coordinate `μ`: the derivative of
-`s ↦ f (Function.update x μ s)` at `x μ`. -/
+/-- The partial derivative of a scalar field along a coordinate axis: the derivative of the
+single-variable slice `s ↦ f (Function.update x μ s)` at `x μ`. -/
 noncomputable def coordDeriv {n : ℕ} (μ : Fin n) (f : (Fin n → ℝ) → ℝ) (x : Fin n → ℝ) : ℝ :=
   deriv (fun s : ℝ => f (Function.update x μ s)) (x μ)
 
@@ -256,10 +246,21 @@ lemma coordDeriv_differentiableAt {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : F
     (hf.fderiv_right (m := 1) (by norm_num)).differentiableAt (by norm_num)
   exact (hdf'.clm_apply (differentiableAt_const _)).congr_of_eventuallyEq hcongr
 
-/-- A differentiable field on `ℝⁿ` has differentiable coordinate slices. -/
-lemma slice_differentiableAt {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} (μ : Fin n)
+/-- Quotient rule for `coordDeriv` under pointwise division of differentiable slices. -/
+lemma coordDeriv_div {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ)
+    (hf : DifferentiableAt ℝ (fun s => f (Function.update x μ s)) (x μ))
+    (hg : DifferentiableAt ℝ (fun s => g (Function.update x μ s)) (x μ)) (hg0 : g x ≠ 0) :
+    coordDeriv μ (fun y => f y / g y) x =
+      (coordDeriv μ f x * g x - f x * coordDeriv μ g x) / g x ^ 2 := by
+  have hg' : g (Function.update x μ (x μ)) ≠ 0 := by
+    simpa [Function.update_eq_self] using hg0
+  simpa [coordDeriv, Function.update_eq_self] using (hf.hasDerivAt.fun_div hg.hasDerivAt hg').deriv
+
+/-- A differentiable field on `ℝⁿ` admits `HasDerivAt` along each coordinate slice, with
+derivative `coordDeriv`. -/
+lemma hasDerivAt_update_slice {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} (μ : Fin n)
     (hf : DifferentiableAt ℝ f x) :
-    DifferentiableAt ℝ (fun s => f (Function.update x μ s)) (x μ) := by
+    HasDerivAt (fun s => f (Function.update x μ s)) (coordDeriv μ f x) (x μ) := by
   have hupd : (fun s : ℝ => Function.update x μ s)
       = fun s => x + (s - x μ) • (Pi.single μ 1 : Fin n → ℝ) := by
     ext s k; by_cases hk : k = μ <;> simp [Function.update, hk]
@@ -269,7 +270,13 @@ lemma slice_differentiableAt {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n 
       (Pi.single μ (1 : ℝ))).const_add x
   have hf' : HasFDerivAt f (fderiv ℝ f x) (Function.update x μ (x μ)) := by
     simpa [Function.update_eq_self] using hf.hasFDerivAt
-  exact (hf'.comp_hasDerivAt (x μ) hd).differentiableAt
+  exact (hf'.comp_hasDerivAt (x μ) hd).differentiableAt.hasDerivAt
+
+/-- A differentiable field on `ℝⁿ` has differentiable coordinate slices. -/
+lemma slice_differentiableAt {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} (μ : Fin n)
+    (hf : DifferentiableAt ℝ f x) :
+    DifferentiableAt ℝ (fun s => f (Function.update x μ s)) (x μ) :=
+  (hasDerivAt_update_slice μ hf).differentiableAt
 
 end Pipeline
 

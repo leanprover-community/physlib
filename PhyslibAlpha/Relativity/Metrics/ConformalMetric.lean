@@ -17,19 +17,17 @@ Conformal transformations `g̃ = φ g` preserving nondegeneracy and inverse symm
 ## i. Overview
 
 A conformal rescaling multiplies a spacetime metric `g` by a nowhere-vanishing scalar factor `φ`.
-This module defines the rescaled metric and inverse components (`conformalRescaleMetric` and
-`conformalRescaleMetricInv`),
-proves their two-sided inverse relations, and packages the rescaled `MetricTensor` as
-`conformalMetric`.
+This module defines `conformalMetric` packaging the rescaled metric and inverse as a `MetricTensor`,
+together with the underlying componentwise rescalings `conformalRescaleMetric` and
+`conformalRescaleMetricInv` and their two-sided inverse relations.
 
 ## ii. Key results
 
+- `conformalMetric` : conformal rescaling `g̃ = φ g` packaged as a `MetricTensor`.
 - `conformalRescaleMetric`, `conformalRescaleMetricInv` : componentwise conformal rescalings of a
   metric and its inverse.
-- `conformalG_mul`, `conformalGinv_mul` : two-sided inverse relations for `φ ≠ 0`.
-- `conformalMetric` : conformal rescaling `g̃ = φ g` packaged as a `MetricTensor`.
-- `NullVector`, `nullVector_conformal_iff` : quadratic null-cone predicate and its invariance under
-  nonzero conformal rescalings.
+- `conformalRescaleMetric_mul`, `conformalRescaleMetricInv_mul` : two-sided inverse relations for
+  `φ ≠ 0`.
 
 ## iii. Table of contents
 
@@ -52,84 +50,61 @@ namespace GeneralRelativity
 
 ## A. Conformal rescalings
 
+Rescaling a metric by a nowhere-vanishing scalar factor `φ` preserves symmetry and scales the
+inverse metric by `φ⁻¹`.
+
 -/
-
-/-- Componentwise conformal rescaling of a metric, `g̃ = φ g`. Kept as a standalone matrix
-operation separately from `conformalMetric` so coordinate metric fields such as `nordstromMetric`
-can reuse the formula before packaging a `MetricTensor`. -/
-def conformalRescaleMetric {n : ℕ} (g : Tensor2 n) (φ : ℝ) : Tensor2 n := fun i j => φ * g i j
-
-/-- Corresponding inverse metric components `g̃⁻¹ = φ⁻¹ g⁻¹`, kept alongside
-`conformalRescaleMetric` for coordinate metric fields prior to `MetricTensor` bundling. -/
-noncomputable def conformalRescaleMetricInv {n : ℕ} (ginv : Tensor2 n) (φ : ℝ) : Tensor2 n :=
-  fun i j => φ⁻¹ * ginv i j
-
-/-- The rescaled metric times its rescaled inverse equals the identity. -/
-lemma conformalG_mul {n : ℕ} (M : MetricTensor n) (φ : ℝ) (hφ : φ ≠ 0) :
-    conformalRescaleMetric M.g φ * conformalRescaleMetricInv M.ginv φ = 1 := by
-  ext i j
-  rw [Matrix.mul_apply]
-  have hterm : ∀ k,
-      conformalRescaleMetric M.g φ i k * conformalRescaleMetricInv M.ginv φ k j
-        = M.g i k * M.ginv k j := by
-    intro k
-    simp only [conformalRescaleMetric, conformalRescaleMetricInv]
-    calc (φ * M.g i k) * (φ⁻¹ * M.ginv k j)
-        = (φ * φ⁻¹) * (M.g i k * M.ginv k j) := by ring
-      _ = M.g i k * M.ginv k j := by rw [mul_inv_cancel₀ hφ, one_mul]
-  have h1 : (∑ k, M.g i k * M.ginv k j) = (1 : Tensor2 n) i j := by
-    have hinv := congrFun (congrFun M.inv_left i) j
-    simpa only [Matrix.mul_apply] using hinv
-  have hsum : (∑ k, conformalRescaleMetric M.g φ i k * conformalRescaleMetricInv M.ginv φ k j)
-      = ∑ k, M.g i k * M.ginv k j := Finset.sum_congr rfl (fun k _ => hterm k)
-  rw [hsum]
-  exact h1
-
-/-- The rescaled inverse times the rescaled metric equals the identity. -/
-lemma conformalGinv_mul {n : ℕ} (M : MetricTensor n) (φ : ℝ) (hφ : φ ≠ 0) :
-    conformalRescaleMetricInv M.ginv φ * conformalRescaleMetric M.g φ = 1 := by
-  ext i j
-  rw [Matrix.mul_apply]
-  have hterm : ∀ k,
-      conformalRescaleMetricInv M.ginv φ i k * conformalRescaleMetric M.g φ k j
-        = M.ginv i k * M.g k j := by
-    intro k
-    simp only [conformalRescaleMetric, conformalRescaleMetricInv]
-    calc (φ⁻¹ * M.ginv i k) * (φ * M.g k j)
-        = (φ⁻¹ * φ) * (M.ginv i k * M.g k j) := by ring
-      _ = M.ginv i k * M.g k j := by rw [inv_mul_cancel₀ hφ, one_mul]
-  have h1 : (∑ k, M.ginv i k * M.g k j) = (1 : Tensor2 n) i j := by
-    have hinv := congrFun (congrFun M.inv_right i) j
-    simpa only [Matrix.mul_apply] using hinv
-  have hsum : (∑ k, conformalRescaleMetricInv M.ginv φ i k * conformalRescaleMetric M.g φ k j)
-      = ∑ k, M.ginv i k * M.g k j := Finset.sum_congr rfl (fun k _ => hterm k)
-  rw [hsum]
-  exact h1
 
 /-- A conformal rescaling `g̃ = φ g` of a metric, with inverse `φ⁻¹ g⁻¹`, underlying the
 Jordan-to-Einstein frame transformation. -/
 noncomputable def conformalMetric {n : ℕ} (M : MetricTensor n) (φ : ℝ) (hφ : φ ≠ 0) :
     MetricTensor n where
-  g := conformalRescaleMetric M.g φ
-  ginv := conformalRescaleMetricInv M.ginv φ
+  g := Matrix.of fun i j => φ * M.g i j
+  ginv := Matrix.of fun i j => φ⁻¹ * M.ginv i j
   symm := by
     ext i j
-    simp only [Matrix.transpose_apply, conformalRescaleMetric]
+    simp only [Matrix.transpose_apply, Matrix.of_apply]
     rw [M.symm.apply j i]
-  inv_left := conformalG_mul M φ hφ
-  inv_right := conformalGinv_mul M φ hφ
+  inv_left := by
+    ext i j
+    rw [Matrix.mul_apply]
+    have hterm : ∀ k, (Matrix.of fun i j => φ * M.g i j) i k *
+        (Matrix.of fun i j => φ⁻¹ * M.ginv i j) k j = M.g i k * M.ginv k j := by
+      intro k
+      simp only [Matrix.of_apply]
+      calc (φ * M.g i k) * (φ⁻¹ * M.ginv k j)
+          = (φ * φ⁻¹) * (M.g i k * M.ginv k j) := by ring
+        _ = M.g i k * M.ginv k j := by rw [mul_inv_cancel₀ hφ, one_mul]
+    rw [Finset.sum_congr rfl (fun k _ => hterm k)]
+    simpa only [Matrix.mul_apply] using congrFun (congrFun M.inv_left i) j
+  inv_right := by
+    ext i j
+    rw [Matrix.mul_apply]
+    have hterm : ∀ k, (Matrix.of fun i j => φ⁻¹ * M.ginv i j) i k *
+        (Matrix.of fun i j => φ * M.g i j) k j = M.ginv i k * M.g k j := by
+      intro k
+      simp only [Matrix.of_apply]
+      calc (φ⁻¹ * M.ginv i k) * (φ * M.g k j)
+          = (φ⁻¹ * φ) * (M.ginv i k * M.g k j) := by ring
+        _ = M.ginv i k * M.g k j := by rw [inv_mul_cancel₀ hφ, one_mul]
+    rw [Finset.sum_congr rfl (fun k _ => hterm k)]
+    simpa only [Matrix.mul_apply] using congrFun (congrFun M.inv_right i) j
 
-/-- Quadratic null-cone predicate `g_{ij} v^i v^j = 0`. -/
-def NullVector {n : ℕ} (g : Tensor2 n) (v : Fin n → ℝ) : Prop :=
-  (∑ i : Fin n, ∑ j : Fin n, g i j * v i * v j) = 0
+/-- Componentwise conformal rescaling `g̃ = φ g` of a rank-2 tensor. -/
+def conformalRescaleMetric {n : ℕ} (g : Tensor2 n) (φ : ℝ) : Tensor2 n := fun i j => φ * g i j
 
-/-- Any nonzero conformal rescaling leaves null cones invariant (`vᵀ (ω g) v = 0 ↔ vᵀ g v = 0`). -/
-lemma nullVector_conformal_iff {n : ℕ} (ω : ℝ) (hω : ω ≠ 0) (g : Tensor2 n) (v : Fin n → ℝ) :
-    NullVector (conformalRescaleMetric g ω) v ↔ NullVector g v := by
-  have hsum : (∑ i : Fin n, ∑ j : Fin n, conformalRescaleMetric g ω i j * v i * v j)
-      = ω * ∑ i : Fin n, ∑ j : Fin n, g i j * v i * v j := by
-    simp only [conformalRescaleMetric, Finset.mul_sum]
-    refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => by ring
-  simp only [NullVector, hsum, mul_eq_zero, hω, false_or]
+/-- Componentwise conformal inverse rescaling `g̃⁻¹ = φ⁻¹ g⁻¹`. -/
+noncomputable def conformalRescaleMetricInv {n : ℕ} (ginv : Tensor2 n) (φ : ℝ) : Tensor2 n :=
+  fun i j => φ⁻¹ * ginv i j
+
+/-- The rescaled metric times its rescaled inverse equals the identity. -/
+lemma conformalRescaleMetric_mul {n : ℕ} (M : MetricTensor n) (φ : ℝ) (hφ : φ ≠ 0) :
+    conformalRescaleMetric M.g φ * conformalRescaleMetricInv M.ginv φ = 1 :=
+  (conformalMetric M φ hφ).inv_left
+
+/-- The rescaled inverse times the rescaled metric equals the identity. -/
+lemma conformalRescaleMetricInv_mul {n : ℕ} (M : MetricTensor n) (φ : ℝ) (hφ : φ ≠ 0) :
+    conformalRescaleMetricInv M.ginv φ * conformalRescaleMetric M.g φ = 1 :=
+  (conformalMetric M φ hφ).inv_right
 
 end GeneralRelativity

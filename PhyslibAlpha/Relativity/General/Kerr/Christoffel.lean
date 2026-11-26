@@ -116,7 +116,8 @@ lemma hasDerivAt_sigma_r (K : KerrSpacetime) (r θ : ℝ) :
 `∂_θ Σ = -2 a² cos θ sin θ`. -/
 lemma hasDerivAt_sigma_th (K : KerrSpacetime) (r θ : ℝ) :
     HasDerivAt (fun t => K.sigma r t) (-2 * K.a ^ 2 * Real.cos θ * Real.sin θ) θ :=
-  (((hasDerivAt_cos_sq θ).const_mul (K.a ^ 2)).const_add (r ^ 2)).congr_deriv (by ring)
+  ((((hasDerivAt_pow 2 (Real.cos θ)).comp θ (Real.hasDerivAt_cos θ)).const_mul
+    (K.a ^ 2)).const_add (r ^ 2)).congr_deriv (by ring)
 
 /-- Radial derivative of Boyer–Lindquist `Δ = r² - 2 M r + a²`: `∂_r Δ = 2 r - 2 M`. -/
 lemma hasDerivAt_delta_r (K : KerrSpacetime) (r : ℝ) :
@@ -142,7 +143,8 @@ private lemma hasDerivAt_axialFactor_th (K : KerrSpacetime) (r θ : ℝ) :
     HasDerivAt (fun t => K.axialFactor r t)
       (-2 * K.a ^ 2 * K.delta r * Real.sin θ * Real.cos θ) θ :=
   ((hasDerivAt_const θ ((r ^ 2 + K.a ^ 2) ^ 2)).fun_sub
-    ((hasDerivAt_sin_sq θ).const_mul (K.a ^ 2 * K.delta r))).congr_deriv (by ring)
+    (((hasDerivAt_pow 2 (Real.sin θ)).comp θ (Real.hasDerivAt_sin θ)).const_mul
+      (K.a ^ 2 * K.delta r))).congr_deriv (by ring)
 
 private lemma pd_metric_1_00 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) :
@@ -252,7 +254,11 @@ private lemma pd_metric_2_03 (K : KerrSpacetime) (x : Fin 4 → ℝ)
   have hfun : (fun t => K.metric (Function.update x 2 t) 0 3)
       = fun t => -(2 * K.M * K.a * x 1 * Real.sin t ^ 2 / K.sigma (x 1) t) := by
     funext t; simp [metric]
-  have hm := (hasDerivAt_sin_sq (x 2)).const_mul (2 * K.M * K.a * x 1)
+  have hsinSq : HasDerivAt (fun t : ℝ => Real.sin t ^ 2)
+      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) :=
+    ((hasDerivAt_pow 2 (Real.sin (x 2))).comp (x 2)
+      (Real.hasDerivAt_sin (x 2))).congr_deriv (by ring)
+  have hm := hsinSq.const_mul (2 * K.M * K.a * x 1)
   have hq := (hm.fun_div (K.hasDerivAt_sigma_th (x 1) (x 2)) hsig).fun_neg
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hq)]
   have hval : K.metricD 2 x 0 3 =
@@ -288,7 +294,11 @@ private lemma pd_metric_2_33 (K : KerrSpacetime) (x : Fin 4 → ℝ)
   have hfun : (fun t => K.metric (Function.update x 2 t) 3 3)
       = fun t => K.axialFactor (x 1) t * Real.sin t ^ 2 / K.sigma (x 1) t := by
     funext t; simp [metric]
-  have hnum := (K.hasDerivAt_axialFactor_th (x 1) (x 2)).fun_mul (hasDerivAt_sin_sq (x 2))
+  have hsinSq : HasDerivAt (fun t : ℝ => Real.sin t ^ 2)
+      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) :=
+    ((hasDerivAt_pow 2 (Real.sin (x 2))).comp (x 2)
+      (Real.hasDerivAt_sin (x 2))).congr_deriv (by ring)
+  have hnum := (K.hasDerivAt_axialFactor_th (x 1) (x 2)).fun_mul hsinSq
   have hq := hnum.fun_div (K.hasDerivAt_sigma_th (x 1) (x 2)) hsig
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hq)]
   have hval : K.metricD 2 x 3 3 =

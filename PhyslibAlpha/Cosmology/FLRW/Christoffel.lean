@@ -265,7 +265,9 @@ private lemma pd_theta_33 (S : FLRWSpacetime) (x : Fin 4 → ℝ) :
       = fun s : ℝ => (S.a (x 0) ^ 2 * (x 1) ^ 2) * Real.sin s ^ 2 := by
     funext s; simp [metric, mul_assoc]
   have hsinSq : HasDerivAt (fun s : ℝ => Real.sin s ^ 2)
-      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := hasDerivAt_sin_sq (x 2)
+      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) :=
+    ((hasDerivAt_pow 2 (Real.sin (x 2))).comp (x 2)
+      (Real.hasDerivAt_sin (x 2))).congr_deriv (by ring)
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ (hsinSq.const_mul (S.a (x 0) ^ 2 * (x 1) ^ 2)))]
   ring
 
@@ -555,7 +557,9 @@ private lemma pd_G_2_033 (S : FLRWSpacetime) (x : Fin 4 → ℝ) :
       = fun s => (S.a (x 0) * deriv S.a (x 0) * (x 1) ^ 2) * Real.sin s ^ 2 := by
     funext s; simp [christoffel]
   have hsinSq : HasDerivAt (fun s : ℝ => Real.sin s ^ 2)
-      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := hasDerivAt_sin_sq (x 2)
+      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) :=
+    ((hasDerivAt_pow 2 (Real.sin (x 2))).comp (x 2)
+      (Real.hasDerivAt_sin (x 2))).congr_deriv (by ring)
   rw [coordDeriv_of_hasDerivAt _
     (hfun ▸ (hsinSq.const_mul (S.a (x 0) * deriv S.a (x 0) * (x 1) ^ 2)))]
   simp [christoffelDeriv]
@@ -566,7 +570,9 @@ private lemma pd_G_2_133 (S : FLRWSpacetime) (x : Fin 4 → ℝ) :
       = fun s => -(x 1 * (1 - S.k * (x 1) ^ 2) * Real.sin s ^ 2) := by
     funext s; simp [christoffel]
   have hsinSq : HasDerivAt (fun s : ℝ => Real.sin s ^ 2)
-      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := hasDerivAt_sin_sq (x 2)
+      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) :=
+    ((hasDerivAt_pow 2 (Real.sin (x 2))).comp (x 2)
+      (Real.hasDerivAt_sin (x 2))).congr_deriv (by ring)
   have hd : HasDerivAt (fun s : ℝ => -(x 1 * (1 - S.k * (x 1) ^ 2) * Real.sin s ^ 2))
       (-(x 1 * (1 - S.k * (x 1) ^ 2) * (2 * Real.sin (x 2) * Real.cos (x 2)))) (x 2) := by
     convert (hsinSq.const_mul (x 1 * (1 - S.k * (x 1) ^ 2))).neg using 1

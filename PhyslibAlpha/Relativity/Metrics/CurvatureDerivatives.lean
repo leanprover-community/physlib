@@ -21,7 +21,8 @@ unique conserved combination of `Ric` and `S g` up to scale.
 
 The contracted Bianchi identity `∇^a Ric_ab = (1/2) ∇_b S` follows in differential geometry from
 the second Bianchi identity together with metric compatibility. Taking it as an explicit
-hypothesis `hB` in an orthonormal Lorentzian chart (`g = ginv = η`), this module derives:
+hypothesis in locally inertial (Riemann normal) coordinates at a point (`g = ginv = η` and
+`∂g = 0`, so covariant and coordinate derivatives coincide there), this module derives:
 
 - `divergence_combination` : `∇^a (α Ric + β S g)_b = (α / 2 + β) ∇_b S`;
 - `divergence_einstein_eq_zero` : `∇^a G_ab = 0`;
@@ -30,9 +31,10 @@ hypothesis `hB` in an orthonormal Lorentzian chart (`g = ginv = η`), this modul
 
 ## ii. Key results
 
-- `CurvDeriv` : bundle of coordinate partial derivatives of `Ric` and `S` in an orthonormal
-  chart.
-- `divergence` : divergence `∇^a T_ab = ∑ a, η^{aa} ∂_a T_ab` in an orthonormal chart.
+- `CurvatureDerivatives` : bundle of pointwise partial derivatives of `Ric` and `S` in locally
+  inertial coordinates.
+- `CurvatureDerivatives.einsteinDeriv` : pointwise derivative of the Einstein tensor.
+- `divergence` : divergence `∇^a T_ab = ∑ a, η^{aa} ∂_a T_ab` in locally inertial coordinates.
 - `divergence_combination` : divergence of `α Ric + β S g`.
 - `divergence_einstein_eq_zero` : conservation of the Einstein tensor from the contracted
   Bianchi hypothesis.
@@ -40,7 +42,7 @@ hypothesis `hB` in an orthonormal Lorentzian chart (`g = ginv = η`), this modul
 
 ## iii. Table of contents
 
-- A. Derivative bundles and divergence in an orthonormal chart
+- A. Derivative bundles and divergence in locally inertial coordinates
 - B. Conservation and uniqueness of the Einstein tensor
 
 ## iv. References
@@ -58,42 +60,47 @@ namespace GeneralRelativity
 
 /-!
 
-## A. Derivative bundles and divergence in an orthonormal chart
+## A. Derivative bundles and divergence in locally inertial coordinates
+
+At any point in locally inertial (Riemann normal) coordinates, `g_{ab} = η_{ab}` and
+`∂_e g_{ab} = 0`, so covariant derivatives of `Ric`, `S`, and `G` reduce to partial derivatives
+packaged in `CurvatureDerivatives` separately from `coordDeriv`.
 
 -/
 
-/-- Derivatives of the Ricci tensor and of the scalar curvature in an orthonormal chart:
-`dRic e i j = ∂_e Ric_ij` and `dS e = ∂_e S`. -/
-structure CurvDeriv where
+/-- First partial derivatives of the Ricci tensor and scalar curvature at a point in locally
+inertial (Riemann normal) coordinates (`dRic e i j = ∂_e Ric_ij`, `dS e = ∂_e S`), packaged
+separately from `coordDeriv` to state the pointwise contracted Bianchi identity algebraically. -/
+structure CurvatureDerivatives where
   /-- Coordinate derivatives `∂_e Ric_ij` of the Ricci tensor. -/
   dRic : Fin 4 → Tensor2 4
   /-- Coordinate derivatives `∂_e S` of the scalar curvature. -/
   dS : Fin 4 → ℝ
 
-/-- The derivative of the Einstein tensor, `∂_e G_ij = ∂_e Ric_ij - (1/2) ∂_e S η_ij`
-(the metric is constant in an orthonormal chart, so `∂η = 0`). -/
-noncomputable def CurvDeriv.dEinstein (D : CurvDeriv) (e : Fin 4) : Tensor2 4 :=
+/-- Pointwise derivative of the Einstein tensor in locally inertial coordinates:
+`∂_e G_ij = ∂_e Ric_ij - (1/2) ∂_e S η_ij` (since `g = η` and `∂g = 0` at the origin of locally
+inertial coordinates). -/
+noncomputable def CurvatureDerivatives.einsteinDeriv (D : CurvatureDerivatives) (e : Fin 4) :
+    Tensor2 4 :=
   fun i j => D.dRic e i j - (1 / 2) * D.dS e * minkowskiMetric4 i j
 
-/-- Divergence of a family of rank-2 tensor derivatives in an orthonormal chart:
+/-- Divergence of a rank-2 tensor derivative family in locally inertial coordinates:
 `∇^a T_ab = ∑ a, η^{aa} ∂_a T_ab`. -/
 noncomputable def divergence (T : Fin 4 → Tensor2 4) (b : Fin 4) : ℝ :=
   ∑ a, minkowskiMetric4 a a * T a a b
-
-/-- Raising and lowering with `η` cancels: `∑ a, f a * (η^{aa} η_ab) = f b`. -/
-lemma sum_eta_mul (f : Fin 4 → ℝ) (b : Fin 4) :
-    (∑ a, f a * (minkowskiMetric4 a a * minkowskiMetric4 a b)) = f b := by
-  fin_cases b <;> simp [Fin.sum_univ_four, minkowskiMetric4]
 
 /-!
 
 ## B. Conservation and uniqueness of the Einstein tensor
 
+Using the locally inertial divergence operator, the contracted Bianchi identity forces `G` to be
+divergence free and singles out `α = -2 β` uniquely.
+
 -/
 
 /-- The divergence of a linear combination `α Ric + β S g`: the contracted Bianchi identity
 collapses `∇Ric` to `(1/2) ∇S`, leaving `(α/2 + β) ∇_b S`. -/
-lemma divergence_combination (D : CurvDeriv)
+lemma divergence_combination (D : CurvatureDerivatives)
     (hB : ∀ b, (∑ a, minkowskiMetric4 a a * D.dRic a a b) = (1 / 2) * D.dS b)
     (α β : ℝ) (b : Fin 4) :
     divergence (fun e i j => α * D.dRic e i j + β * D.dS e * minkowskiMetric4 i j) b
@@ -106,25 +113,25 @@ lemma divergence_combination (D : CurvDeriv)
     ring
   simp only [divergence]
   rw [Finset.sum_congr rfl (fun a _ => hterm a), Finset.sum_add_distrib,
-    ← Finset.mul_sum, ← Finset.mul_sum, hB b, sum_eta_mul (fun a => D.dS a) b]
+    ← Finset.mul_sum, ← Finset.mul_sum, hB b, sum_minkowskiMetric4_mul (fun a => D.dS a) b]
   ring
 
 /-- The Einstein tensor is conserved (`∇^a G_ab = 0`) under the contracted Bianchi identity. -/
-lemma divergence_einstein_eq_zero (D : CurvDeriv)
+lemma divergence_einstein_eq_zero (D : CurvatureDerivatives)
     (hB : ∀ b, (∑ a, minkowskiMetric4 a a * D.dRic a a b) = (1 / 2) * D.dS b) (b : Fin 4) :
-    divergence D.dEinstein b = 0 := by
+    divergence D.einsteinDeriv b = 0 := by
   have h := divergence_combination D hB 1 (-(1 / 2)) b
-  have heq : D.dEinstein
+  have heq : D.einsteinDeriv
       = fun e i j => 1 * D.dRic e i j + (-(1 / 2)) * D.dS e * minkowskiMetric4 i j := by
     funext e i j
-    simp only [CurvDeriv.dEinstein]
+    simp only [CurvatureDerivatives.einsteinDeriv]
     ring
   rw [heq, h]
   ring
 
 /-- Uniqueness of the Einstein combination: if `∇_b S ≠ 0` somewhere, `α Ric + β S g` is
 divergence free only when `α = -2β`, i.e. a multiple of `G = Ric - (1/2) S g`. -/
-lemma combination_conserved_iff (D : CurvDeriv)
+lemma combination_conserved_iff (D : CurvatureDerivatives)
     (hB : ∀ b, (∑ a, minkowskiMetric4 a a * D.dRic a a b) = (1 / 2) * D.dS b)
     (α β : ℝ) (hne : ∃ b, D.dS b ≠ 0)
     (h : ∀ b, divergence (fun e i j => α * D.dRic e i j + β * D.dS e * minkowskiMetric4 i j) b

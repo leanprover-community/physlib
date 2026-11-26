@@ -30,14 +30,14 @@ Einstein curvature, while equating `riemann` definitionally to `riemannFromData`
 
 ## ii. Key results
 
-- `Pipeline.christoffel`, `Pipeline.riemann`, `Pipeline.ricciTensorOf`, `Pipeline.ricciScalarOf`,
-  `Pipeline.einsteinTensorOf` : coordinate differential pipeline from `(g, ginv)` to the Einstein
-  tensor.
-- `Pipeline.minkowskiMetricField` : alias for the constant four-dimensional Minkowski metric field.
+- `Pipeline.christoffel`, `Pipeline.christoffel_diag`, `Pipeline.riemann`,
+  `Pipeline.ricciTensorOf`, `Pipeline.ricciScalarOf`, `Pipeline.einsteinTensorOf` : coordinate
+  differential pipeline from `(g, ginv)` to the Einstein tensor.
 - `Pipeline.christoffel_const`, `Pipeline.riemann_const`, `Pipeline.ricciTensorOf_const`,
   `Pipeline.ricciScalarOf_const`, `Pipeline.einsteinTensorOf_const` : vanishing of all pipeline
   outputs for any constant metric.
-- `Pipeline.riemann_eq_riemannFromData` : identification of `riemann` with `riemannFromData`.
+- `Pipeline.riemann_eq_riemannFromData`, `Pipeline.riemann_eq_riemannFromData_of_eventuallyEq` :
+  identification of `riemann` with `riemannFromData`.
 
 ## iii. Table of contents
 
@@ -72,12 +72,23 @@ metric components.
 -/
 
 /-- Christoffel symbols of the second kind,
-`Γ^k_{ij} = (1/2) g^{kl} (∂_i g_{jl} + ∂_j g_{il} - ∂_l g_{ij})`, at `x`. -/
+`Γ^k_{ij} = (1/2) g^{kl} (∂_i g_{jl} + ∂_j g_{il} - ∂_l g_{ij})`. -/
 noncomputable def christoffel {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     (x : Fin n → ℝ) (k i j : Fin n) : ℝ :=
   (1 / 2) * ∑ l, ginv x k l *
     (coordDeriv i (fun y => g y j l) x + coordDeriv j (fun y => g y i l) x
       - coordDeriv l (fun y => g y i j) x)
+
+/-- For a metric whose inverse is diagonal at a point, the Christoffel contraction collapses to
+the single index `l = k`. -/
+lemma christoffel_diag {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (x : Fin n → ℝ)
+    (k i j : Fin n) (hdiag : ∀ l : Fin n, l ≠ k → ginv x k l = 0) :
+    christoffel g ginv x k i j =
+      (1 / 2) * (ginv x k k *
+        (coordDeriv i (fun y => g y j k) x + coordDeriv j (fun y => g y i k) x
+          - coordDeriv k (fun y => g y i j) x)) := by
+  simp only [christoffel]
+  rw [Finset.sum_eq_single k (fun l _ hl => by simp [hdiag l hl]) (by simp)]
 
 /-- The Riemann curvature tensor
 `R^ρ_{σμν} = ∂_μ Γ^ρ_{νσ} - ∂_ν Γ^ρ_{μσ} + Γ^ρ_{μλ} Γ^λ_{νσ} - Γ^ρ_{νλ} Γ^λ_{μσ}`. -/
@@ -103,12 +114,6 @@ noncomputable def einsteinTensorOf {n : ℕ} (g ginv : (Fin n → ℝ) → Tenso
     (x : Fin n → ℝ) (i j : Fin n) : ℝ :=
   ricciTensorOf g ginv x i j - (1 / 2) * ricciScalarOf g ginv x * g x i j
 
-/-- Alias for the Minkowski metric field in inertial coordinates, supplied to `Pipeline` as a
-constant spacetime field `(Fin 4 → ℝ) → Tensor2 4` separate from pointwise `minkowskiMetric4` and
-`minkowski`. -/
-noncomputable abbrev minkowskiMetricField : (Fin 4 → ℝ) → Tensor2 4 :=
-  GeneralRelativity.minkowskiMetricField
-
 /-- Feeding `riemannFromData` the metric's actual partial derivatives of `christoffel` reproduces
 `riemann` definitionally. -/
 lemma riemann_eq_riemannFromData {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
@@ -118,6 +123,19 @@ lemma riemann_eq_riemannFromData {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2
         (fun μ y a b c => coordDeriv μ (fun z => christoffel g ginv z a b c) y)
         x ρ σ μ ν :=
   rfl
+
+/-- Transport `Pipeline.riemann` to `riemannFromData` using local agreement of Christoffel
+symbols around a point and matching coordinate partial derivatives at that point. -/
+lemma riemann_eq_riemannFromData_of_eventuallyEq {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
+    (G : (Fin n → ℝ) → Fin n → Fin n → Fin n → ℝ)
+    (dG : Fin n → (Fin n → ℝ) → Fin n → Fin n → Fin n → ℝ) (x : Fin n → ℝ)
+    (hG_eq : ∀ a b c, (fun y => christoffel g ginv y a b c) =ᶠ[nhds x] fun y => G y a b c)
+    (hdG : ∀ μ a b c, coordDeriv μ (fun y => G y a b c) x = dG μ x a b c)
+    (ρ σ μ ν : Fin n) :
+    riemann g ginv x ρ σ μ ν = riemannFromData G dG x ρ σ μ ν := by
+  rw [riemann_eq_riemannFromData]
+  simp only [riemannFromData, coordDeriv_congr_nhds _ x (hG_eq _ _ _), hdG,
+    (hG_eq _ _ _).eq_of_nhds]
 
 /-!
 

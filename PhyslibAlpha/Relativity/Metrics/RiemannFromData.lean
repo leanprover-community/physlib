@@ -59,10 +59,10 @@ contractions.
 
 -/
 
--- Decouples explicit closed-form tables of Christoffel symbols and derivatives from the nested
--- partial derivatives in `Pipeline.riemann`, avoiding re-differentiating inverse-metric sums.
 /-- The Riemann tensor evaluated from supplied Christoffel symbols `G` and partial derivatives
-`dG`: `R^ρ_{σμν} = ∂_μ Γ^ρ_{νσ} - ∂_ν Γ^ρ_{μσ} + Γ^ρ_{μλ} Γ^λ_{νσ} - Γ^ρ_{νλ} Γ^λ_{μσ}`. -/
+`dG`: `R^ρ_{σμν} = ∂_μ Γ^ρ_{νσ} - ∂_ν Γ^ρ_{μσ} + Γ^ρ_{μλ} Γ^λ_{νσ} - Γ^ρ_{νλ} Γ^λ_{μσ}`.
+Decoupled from `Pipeline.riemann` so explicit closed-form Christoffel and derivative tables
+avoid re-differentiating inverse-metric sums. -/
 noncomputable def riemannFromData {n : ℕ}
     (G : (Fin n → ℝ) → Fin n → Fin n → Fin n → ℝ)
     (dG : Fin n → (Fin n → ℝ) → Fin n → Fin n → Fin n → ℝ)

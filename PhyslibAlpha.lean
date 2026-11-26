@@ -873,12 +873,13 @@ public import PhyslibAlpha.Relativity.Metrics.Basic
 public import PhyslibAlpha.Relativity.Metrics.ConformalMetric
 public import PhyslibAlpha.Relativity.Metrics.CoordDeriv
 public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
-public import PhyslibAlpha.Relativity.Metrics.CurvDeriv
+public import PhyslibAlpha.Relativity.Metrics.CurvatureDerivatives
 public import PhyslibAlpha.Relativity.Metrics.MetricTrace
 public import PhyslibAlpha.Relativity.Metrics.Minkowski
+public import PhyslibAlpha.Relativity.Metrics.NullVector
 public import PhyslibAlpha.Relativity.Metrics.Pipeline
+public import PhyslibAlpha.Relativity.Metrics.RicciScalar
 public import PhyslibAlpha.Relativity.Metrics.RiemannFromData
-public import PhyslibAlpha.Relativity.Metrics.ScalarCurvature
 public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric
 public import PhyslibAlpha.Relativity.MinkowskiMatrix
 public import PhyslibAlpha.Relativity.PauliMatrices.Anticommuting

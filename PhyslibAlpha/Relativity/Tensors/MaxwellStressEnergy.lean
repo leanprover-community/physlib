@@ -19,17 +19,19 @@ Shared 4D electromagnetic stress-energy tensor `T^{EM}_{ab}`, its quadratic fiel
 ## i. Overview
 
 In four spacetime dimensions, classical electromagnetism has stress-energy tensor
-`T^{EM}_{ab} = g^{cd} F_{ac} F_{bd} - ¼ g_{ab} F_{cd} F^{cd}` in Heaviside–Lorentz units.
-Contraction with the inverse metric `g^{ab}` yields the conformal trace identity
-`g^{ab} T^{EM}_{ab} = 0`, a hallmark of classical scale invariance in four dimensions that underlies
-vanishing scalar curvature `S = 0` for electrovacuum solutions such as Reissner–Nordström spacetime
-and the Einstein–Maxwell sector of Kaluza–Klein reduction.
+`T^{EM}_{ab} = g^{cd} F_{ac} F_{bd} - ¼ g_{ab} F_{cd} F^{cd}` in Heaviside–Lorentz units
+(Gaussian units include an overall `1 / (4 π)` prefactor). Contraction with the inverse metric
+`g^{ab}` yields the conformal trace identity `g^{ab} T^{EM}_{ab} = 0`, a hallmark of classical
+scale invariance in four dimensions that underlies vanishing scalar curvature `S = 0` for
+electrovacuum solutions such as Reissner–Nordström spacetime and the Einstein–Maxwell sector of
+Kaluza–Klein reduction.
 
 ## ii. Key results
 
-- `maxwellFieldInvariant` : quadratic field-strength invariant `F_{ab} F^{ab}`.
-- `maxwellStressEnergyRaw` : Heaviside–Lorentz Maxwell stress-energy tensor in 4D.
-- `maxwellStressEnergyRaw_trace_zero` : conformal tracelessness `g^{ab} T^{EM}_{ab} = 0` in 4D.
+- `maxwellFieldInvariant`, `metricTrace_maxwellQuad` : quadratic field-strength invariant
+  `F_{ab} F^{ab}` and contraction of the quadratic term `g^{cd} F_{ac} F_{bd}`.
+- `maxwellStressEnergy`, `maxwellStressEnergy_trace_zero` : Heaviside–Lorentz Maxwell stress-energy
+  tensor in 4D and its conformal tracelessness `g^{ab} T^{EM}_{ab} = 0`.
 
 ## iii. Table of contents
 
@@ -52,59 +54,52 @@ namespace GeneralRelativity
 
 ## A. Maxwell stress-energy and conformal tracelessness
 
+The electromagnetic field strength contracts with the inverse metric to form the Lorentz-invariant
+scalar `F_{ab} F^{ab}` and the symmetric, trace-free 4D Maxwell stress-energy tensor.
+
 -/
 
 /-- Electromagnetic field-strength quadratic invariant `F_{ab} F^{ab} = g^{ac} g^{bd}
 F_{ab} F_{cd}`. -/
-def maxwellFieldInvariant {n : ℕ} (ginv F : Tensor2 n) : ℝ :=
-  ∑ a, ∑ b, ∑ c, ∑ d, ginv a c * ginv b d * F a b * F c d
+def maxwellFieldInvariant {n : ℕ} (M : MetricTensor n) (F : Tensor2 n) : ℝ :=
+  ∑ a, ∑ b, ∑ c, ∑ d, M.ginv a c * M.ginv b d * F a b * F c d
 
-/-- Unitless Heaviside–Lorentz four-dimensional electromagnetic stress-energy tensor
-`T^{EM}_{ab} = g^{cd} F_{ac} F_{bd} - ¼ g_{ab} F_{cd} F^{cd}`. -/
-noncomputable def maxwellStressEnergyRaw (g ginv F : Tensor2 4) : Tensor2 4 :=
+/-- Contracting the quadratic field-strength term `g^{cd} F_{ac} F_{bd}` with the inverse metric
+reproduces the invariant `F_{ab} F^{ab}`. -/
+lemma metricTrace_maxwellQuad {n : ℕ} (M : MetricTensor n) (F : Tensor2 n) :
+    metricTrace M (fun a b => ∑ c : Fin n, ∑ d : Fin n, M.ginv c d * F a c * F b d) =
+      maxwellFieldInvariant M F := by
+  simp only [metricTrace, maxwellFieldInvariant]
+  refine Finset.sum_congr rfl fun a _ => ?_
+  simp_rw [Finset.mul_sum]
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun b _ =>
+    Finset.sum_congr rfl fun d _ => by ring
+
+/-- Four-dimensional electromagnetic stress-energy tensor in Heaviside–Lorentz units:
+`T^{EM}_{ab} = g^{cd} F_{ac} F_{bd} - ¼ g_{ab} F_{cd} F^{cd}` (multiply by `1 / (4 π)` for
+Gaussian units). -/
+noncomputable def maxwellStressEnergy (M : MetricTensor 4) (F : Tensor2 4) : Tensor2 4 :=
   fun a b =>
-    (∑ c : Fin 4, ∑ d : Fin 4, ginv c d * F a c * F b d) -
-      (1 / 4) * g a b * maxwellFieldInvariant ginv F
+    (∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * F a c * F b d) -
+      (1 / 4) * M.g a b * maxwellFieldInvariant M F
 
-/-- In four spacetime dimensions (`n = 4`), `maxwellStressEnergyRaw` is identically trace-free:
+/-- In four spacetime dimensions (`n = 4`), `maxwellStressEnergy` is identically trace-free:
 `g^{ab} T^{EM}_{ab} = 0`. -/
-lemma maxwellStressEnergyRaw_trace_zero (M : MetricTensor 4) (F : Tensor2 4) :
-    metricTrace M (maxwellStressEnergyRaw M.g M.ginv F) = 0 := by
-  simp only [metricTrace, maxwellStressEnergyRaw]
-  have h1 :
-      (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b *
-        (∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * F a c * F b d)) =
-        maxwellFieldInvariant M.ginv F := by
-    simp only [maxwellFieldInvariant]
-    refine Finset.sum_congr rfl fun a _ => ?_
-    simp_rw [Finset.mul_sum]
-    rw [Finset.sum_comm]
-    refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun b _ =>
-      Finset.sum_congr rfl fun d _ => by ring
-  have h2 :
-      (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b *
-        ((1 / 4 : ℝ) * M.g a b * maxwellFieldInvariant M.ginv F)) =
-        maxwellFieldInvariant M.ginv F := by
-    have htr : (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b * M.g a b) = 4 := by
-      simpa using sum_ginv_mul_g M
-    have hfact :
-        (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b *
-          ((1 / 4 : ℝ) * M.g a b * maxwellFieldInvariant M.ginv F)) =
-          (1 / 4) * (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b * M.g a b) *
-            maxwellFieldInvariant M.ginv F := by
-      simp_rw [Finset.mul_sum, Finset.sum_mul]
-      refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => by ring
-    rw [hfact, htr]
+lemma maxwellStressEnergy_trace_zero (M : MetricTensor 4) (F : Tensor2 4) :
+    metricTrace M (maxwellStressEnergy M F) = 0 := by
+  have hsub := metricTrace_sub_fun M
+    (fun a b => ∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * F a c * F b d)
+    (fun a b => ((1 / 4) * maxwellFieldInvariant M F) * M.g a b)
+  have hq := metricTrace_maxwellQuad M F
+  have hm := metricTrace_mul_g M ((1 / 4) * maxwellFieldInvariant M F)
+  have heq : maxwellStressEnergy M F =
+      fun a b => (∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * F a c * F b d) -
+        ((1 / 4) * maxwellFieldInvariant M F) * M.g a b := by
+    ext a b
+    simp only [maxwellStressEnergy]
     ring
-  have hsub :
-      (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b *
-        ((∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * F a c * F b d) -
-          (1 / 4 : ℝ) * M.g a b * maxwellFieldInvariant M.ginv F)) =
-        (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b *
-          (∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * F a c * F b d)) -
-        (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b *
-          ((1 / 4 : ℝ) * M.g a b * maxwellFieldInvariant M.ginv F)) := by
-    simp only [mul_sub, Finset.sum_sub_distrib]
-  rw [hsub, h1, h2, sub_self]
+  rw [heq, hsub, hq, hm]
+  ring
 
 end GeneralRelativity

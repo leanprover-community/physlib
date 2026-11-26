@@ -219,7 +219,9 @@ private lemma pd_metric_theta_33 (S : StaticSphericalMetric) (x : Fin 4 → ℝ)
     funext s
     simp [metric]
   have hsinSq : HasDerivAt (fun s : ℝ => Real.sin s ^ 2)
-      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := hasDerivAt_sin_sq (x 2)
+      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) :=
+    ((hasDerivAt_pow 2 (Real.sin (x 2))).comp (x 2)
+      (Real.hasDerivAt_sin (x 2))).congr_deriv (by ring)
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ (hsinSq.const_mul ((x 1) ^ 2)))]
   ring
 
@@ -494,7 +496,9 @@ private lemma pd_G_t_133 (S : StaticSphericalMetric) (x : Fin 4 → ℝ) :
     funext s
     simp [christoffel]
   have hsinSq : HasDerivAt (fun s : ℝ => Real.sin s ^ 2)
-      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := hasDerivAt_sin_sq (x 2)
+      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) :=
+    ((hasDerivAt_pow 2 (Real.sin (x 2))).comp (x 2)
+      (Real.hasDerivAt_sin (x 2))).congr_deriv (by ring)
   have hd := ((hsinSq.const_mul (x 1)).mul_const (S.lapse (x 1))).neg
   have hderiv : deriv (fun s : ℝ => -(x 1 * Real.sin s ^ 2 * S.lapse (x 1))) (x 2)
       = -(x 1 * (2 * Real.sin (x 2) * Real.cos (x 2)) * S.lapse (x 1)) := hd.deriv

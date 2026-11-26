@@ -30,6 +30,7 @@ is derived from the other two rather than assumed.
   antisymmetry in the last pair.
 - `RiemannTensor.zero_of_repeated_first`, `RiemannTensor.zero_of_repeated_last`,
   `RiemannTensor.swap_mixed` : vanishing and mixed-swap identities.
+- `RiemannTensor.frameKretschmannScalar` : quadratic Kretschmann invariant in an orthonormal frame.
 - `RiemannTensor.flat`, `RiemannTensor.flat_comp` : flat curvature tensor.
 
 ## iii. Table of contents
@@ -104,6 +105,10 @@ lemma zero_of_repeated_last (i j k : Fin n) : R.comp i j k k = 0 := by
 lemma swap_mixed (i j k l : Fin n) : R.comp i j k l = R.comp j i l k := by
   rw [R.skew_first i j k l, R.skew_last j i k l]
   ring
+
+/-- Quadratic Kretschmann invariant `K = ∑_{a,b,c,d} R_{abcd}²` in an orthonormal frame. -/
+noncomputable def frameKretschmannScalar (R : RiemannTensor 4) : ℝ :=
+  ∑ i, ∑ j, ∑ l, ∑ m, R.comp i j l m * R.comp i j l m
 
 /-!
 

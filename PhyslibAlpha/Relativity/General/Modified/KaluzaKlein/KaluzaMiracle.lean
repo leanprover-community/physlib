@@ -64,18 +64,18 @@ namespace KaluzaKlein
 /-- Four-dimensional Maxwell field-strength quadratic invariant `F_{ab} F^{ab} = g^{ac} g^{bd}
 F_{ab} F_{cd}`. -/
 def maxwellF2 (M : MetricTensor 4) (F : Tensor2 4) : ℝ :=
-  maxwellFieldInvariant M.ginv F
+  maxwellFieldInvariant M F
 
 /-- Four-dimensional electromagnetic stress-energy tensor
 `T^{EM}_{ab} = g^{cd} F_{ac} F_{bd} - ¼ g_{ab} F_{cd} F^{cd}`. -/
 noncomputable def maxwellStressEnergy (M : MetricTensor 4) (F : Tensor2 4) (a b : Fin 4) : ℝ :=
-  maxwellStressEnergyRaw M.g M.ginv F a b
+  GeneralRelativity.maxwellStressEnergy M F a b
 
 /-- In four spacetime dimensions (`d = 4`), the Maxwell stress-energy tensor is identically
 trace-free: `g^{ab} T^{EM}_{ab} = 0`. -/
 lemma maxwellStressEnergy_trace_zero (M : MetricTensor 4) (F : Tensor2 4) :
-    (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b * maxwellStressEnergy M F a b) = 0 := by
-  simpa [metricTrace, maxwellStressEnergy] using maxwellStressEnergyRaw_trace_zero M F
+    (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b * maxwellStressEnergy M F a b) = 0 :=
+  GeneralRelativity.maxwellStressEnergy_trace_zero M F
 
 -- Factored out to isolate the scalar dimensional-reduction step of the Kaluza miracle.
 /-- Fifth-dimension `(4, 4)` Kaluza–Klein Ricci component `R^{(5)}_{44} = ¼ F_{ab} F^{ab}` in
@@ -106,14 +106,16 @@ lemma kaluza_miracle (M : MetricTensor 4) (R4 : Tensor2 4) (F : Tensor2 4) :
   have hF :
       (∑ a : Fin 4, ∑ b : Fin 4,
         M.ginv a b * ((1 / 2) * ∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * F a c * F b d))
-        = (1 / 2) * maxwellFieldInvariant M.ginv F := by
-    simp only [maxwellFieldInvariant]
-    rw [Finset.mul_sum]
-    refine Finset.sum_congr rfl fun a _ => ?_
-    simp_rw [Finset.mul_sum]
-    rw [Finset.sum_comm]
-    refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun b _ =>
-      Finset.sum_congr rfl fun d _ => by ring
+        = (1 / 2) * maxwellFieldInvariant M F := by
+    have hpull :
+        (∑ a : Fin 4, ∑ b : Fin 4,
+          M.ginv a b * ((1 / 2) * ∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * F a c * F b d)) =
+          (1 / 2) * metricTrace M
+            (fun a b => ∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * F a c * F b d) := by
+      simp only [metricTrace, Finset.mul_sum]
+      refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
+      ring_nf
+    rw [hpull, metricTrace_maxwellQuad]
   rw [hF]
   ring
 
@@ -126,7 +128,7 @@ lemma kkEinstein4D_eq_zero_iff (M : MetricTensor 4) (R4 : Tensor2 4) (F : Tensor
       R4 a b - (1 / 2) * M.g a b * (∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * R4 c d) =
         (1 / 2) * maxwellStressEnergy M F a b := by
   rw [kaluza_miracle]
-  simp only [kkRicci4D, maxwellStressEnergy, maxwellStressEnergyRaw, maxwellF2]
+  simp only [kkRicci4D, maxwellStressEnergy, GeneralRelativity.maxwellStressEnergy, maxwellF2]
   constructor <;> intro h <;> linarith
 
 end KaluzaKlein

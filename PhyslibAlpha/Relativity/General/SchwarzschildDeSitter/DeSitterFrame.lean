@@ -5,7 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
-public import PhyslibAlpha.Relativity.Metrics.CurvDeriv
+public import PhyslibAlpha.Relativity.Metrics.CurvatureDerivatives
 public import PhyslibAlpha.Relativity.General.Schwarzschild.ElectricWeyl
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
@@ -116,13 +116,6 @@ noncomputable def sdsFrameSqSum (M Λ r : ℝ) : ℝ :=
 
 section kretschmann
 
-private lemma sum_minkowskiMetric4_mul (i : Fin 4) (f : Fin 4 → ℝ) :
-    (∑ k : Fin 4, minkowskiMetric4 i k * f k) = minkowskiMetric4 i i * f i := by
-  rw [Finset.sum_eq_single i]
-  · intro k _ hki
-    simp [minkowskiMetric4_apply, hki.symm]
-  · simp
-
 private lemma sum_kl_mul_deSitterPart (Λ : ℝ) (F : Fin 4 → Fin 4 → ℝ) (i j : Fin 4) :
     (∑ k : Fin 4, ∑ l : Fin 4, F k l * deSitterPart Λ i j k l) =
       (Λ / 3) * minkowskiMetric4 i i * minkowskiMetric4 j j * (F i j - F j i) := by
@@ -134,7 +127,7 @@ private lemma sum_kl_mul_deSitterPart (Λ : ℝ) (F : Fin 4 → Fin 4 → ℝ) (
       intro k
       rw [Finset.mul_sum]
       refine Finset.sum_congr rfl fun l _ => by ring
-    simp_rw [hinner, sum_minkowskiMetric4_mul]
+    simp_rw [hinner, sum_minkowskiMetric4_left]
   have h2 : (∑ k : Fin 4, ∑ l : Fin 4, F k l * (minkowskiMetric4 i l * minkowskiMetric4 j k)) =
       minkowskiMetric4 i i * (minkowskiMetric4 j j * F j i) := by
     rw [Finset.sum_comm]
@@ -144,7 +137,7 @@ private lemma sum_kl_mul_deSitterPart (Λ : ℝ) (F : Fin 4 → Fin 4 → ℝ) (
       intro l
       rw [Finset.mul_sum]
       refine Finset.sum_congr rfl fun k _ => by ring
-    simp_rw [hinner, sum_minkowskiMetric4_mul]
+    simp_rw [hinner, sum_minkowskiMetric4_left]
   have hsplit : ∀ k l : Fin 4, F k l * deSitterPart Λ i j k l =
       (Λ / 3) * (F k l * (minkowskiMetric4 i k * minkowskiMetric4 j l)
         - F k l * (minkowskiMetric4 i l * minkowskiMetric4 j k)) := by
@@ -320,7 +313,7 @@ lemma schwarzschild_einstein_zero (M r : ℝ) (i j : Fin 4) :
 
 /-- The frame derivative bundle of the Schwarzschild–de Sitter Einstein space: since `Ric = Λ η`
 and `S = 4 Λ` are constant in the orthonormal frame, all frame derivatives vanish. -/
-noncomputable def sdsFrameCurvDeriv : CurvDeriv where
+noncomputable def sdsFrameCurvDeriv : CurvatureDerivatives where
   dRic := fun _ _ _ => 0
   dS := fun _ => 0
 
@@ -334,7 +327,7 @@ lemma sds_frame_bianchi :
 /-- The frame Einstein tensor of Schwarzschild–de Sitter is conserved (`∇ · G = 0`), proved
 from `sds_frame_bianchi`. -/
 lemma sds_frame_einstein_conserved (b : Fin 4) :
-    divergence (CurvDeriv.dEinstein sdsFrameCurvDeriv) b = 0 :=
+    divergence (CurvatureDerivatives.einsteinDeriv sdsFrameCurvDeriv) b = 0 :=
   divergence_einstein_eq_zero sdsFrameCurvDeriv sds_frame_bianchi b
 
 end SchwarzschildDeSitter
