@@ -45,12 +45,13 @@ Riemannian 3-metric and symmetric extrinsic curvature tensor K_{{ij}} subject to
 momentum constraint equations, which simplify on time-symmetric (K_{{ij}} = 0) and maximal (tr K = 0)
 slices and distinguish flat vacuum data from non-vacuum initial data with anisotropic extrinsic
 curvature [13]. Around the
-Minkowski background g = η + h, first-order perturbation theory defines the trace-reversed
-perturbation h̄_{{ij}} = h_{{ij}} - ½ η_{{ij}} h and wave operator □_η [14], the linearized Christoffel
-symbols, Riemann tensor, Ricci tensor, and Einstein tensor with diffeomorphism gauge invariance
-[15], proves that in Lorenz gauge the linearized Einstein tensor reduces to -½ □_η h̄_{{ij}} [16],
+Minkowski background g = η + h, first-order perturbation theory packages symmetric metric
+perturbations `MetricPerturbation` [59], defines the trace-reversed perturbation
+h̄_{{ij}} = h_{{ij}} - ½ η_{{ij}} h [14] and wave operator □_η [60], the linearized Christoffel
+symbols, Riemann tensor, Ricci tensor, and Einstein tensor [15] with diffeomorphism gauge
+invariance [61], proves that in Lorenz gauge the linearized Einstein tensor reduces to -½ □_η h̄_{{ij}} [16],
 verifies that transverse-traceless gravitational waves solve the linearized vacuum equations [17],
-and derives Poisson's equation in the weak-field Newtonian limit [18]. Newton's universal
+and derives Poisson's equation [62] in the weak-field Newtonian limit [18]. Newton's universal
 gravitational constant G carries dimension L³ M⁻¹ T⁻² and CODATA 2022 SI value
 6.67430 × 10⁻¹¹ m³ kg⁻¹ s⁻², and admits natural and geometric unit systems in which c, G, and k_B
 are simultaneously equal to 1 {{1}}. [19]
@@ -187,19 +188,18 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
     `InitialData.hamiltonianConstraint_eq_of_trace_zero`, `euclid3`, `flatData_isVacuum`,
     `anisotropicSliceData_hamiltonianConstraint`
 14. PhyslibAlpha/Relativity/General/Linearized/TraceReversed.lean — `hTrace`, `hTrace_eq_metricTrace`,
-    `traceReversed`, `traceReversed_trace`, `traceReversed_involutive`, `boxEta`
+    `traceReversed`, `traceReversed_trace`, `traceReversed_involutive`,
+    `MetricPerturbation.traceReversed`
 15. PhyslibAlpha/Relativity/General/Linearized/LinearizedCurvature.lean — `linChristoffel`,
-    `linChristoffel_symm`, `linRiemann`, `linRicci`, `linScalar`, `linEinstein`,
-    `linRiemann_gauge_invariant`, `linRicci_gauge_invariant`, `linEinstein_gauge_invariant`
+    `linChristoffel_symm`, `linRiemann`, `linRicci`, `linScalar`, `linEinstein`
 16. PhyslibAlpha/Relativity/General/Linearized/LorenzGauge.lean — `lorenzDiv`,
     `lorenzGaugeCond`, `linRicci_in_traceReversed`, `linEinstein_in_traceReversed`,
     `linEinstein_lorenz_gauge`
-17. PhyslibAlpha/Relativity/General/Linearized/TTWave.lean — `ttWave`, `ttWave_symm`,
+17. PhyslibAlpha/Relativity/General/Linearized/TTWave.lean — `ttWave`,
     `ttWave_trace_zero`, `traceReversed_ttWave`, `ttWave_lorenz_gauge`, `ttWave_linEinstein_zero`
 18. PhyslibAlpha/Relativity/General/Linearized/NewtonianPerturb.lean — `newtonianPerturb`,
-    `newtonianPerturb_symm`, `traceReversed_newtonianPerturb`, `newtonianPerturb_lorenz_gauge`,
-    `laplacian3`, `laplacian3_eq_space_laplacian`, `newtonianPerturb_linEinstein_00`,
-    `newtonianPerturb_poisson_iff`
+    `traceReversed_newtonianPerturb`, `newtonianPerturb_lorenz_gauge`,
+    `newtonianPerturb_linEinstein_00`, `newtonianPerturb_poisson_iff`
 19. PhyslibAlpha/Relativity/General/GravitationalConstant.lean — `GravitationalConstant`,
     `gravitationalConstantDimension`, `gravitationalConstant`, `gravitationalConstant_in_SI`,
     `toWithDim`, `toWithDim_scaleUnit`, `exists_units_c_G_kB_eq_one`
@@ -349,6 +349,14 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
 58. PhyslibAlpha/Relativity/Tensors/MaxwellStressEnergy.lean — `maxwellFieldInvariant`,
     `maxwellStressEnergyRaw`, `maxwellStressEnergyRaw_trace_zero`, `emFieldStrengthComponents`,
     `emFieldStrengthComponents_antisymm`
+59. PhyslibAlpha/Relativity/General/Linearized/Basic.lean — `MetricPerturbation`,
+    `MetricPerturbation.symm_apply`, `MetricPerturbation.IsC2At`, `MetricPerturbation.add`
+60. PhyslibAlpha/Relativity/General/Linearized/BoxEta.lean — `boxEta`, `boxEta_zero`
+61. PhyslibAlpha/Relativity/General/Linearized/GaugeTransform.lean — `pureGauge`, `gaugeTransform`,
+    `linRiemann_pureGauge`, `linRiemann_gauge_invariant`, `linRicci_gauge_invariant`,
+    `linEinstein_gauge_invariant`
+62. PhyslibAlpha/Relativity/General/Linearized/Laplacian3.lean — `laplacian3`,
+    `laplacian3_eq_space_laplacian`
 
 ## References
 

@@ -5,7 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
-public import PhyslibAlpha.Relativity.General.Linearized.TraceReversed
+public import PhyslibAlpha.Relativity.General.Linearized.BoxEta
 public import PhyslibAlpha.Relativity.Metrics.ConformalMetric
 public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
 public import PhyslibAlpha.Relativity.Metrics.Minkowski

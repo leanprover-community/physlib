@@ -5,37 +5,36 @@ Authors: Alex Vergara Gil
 -/
 module
 
-public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
-public import PhyslibAlpha.Relativity.Metrics.MetricTrace
+public import PhyslibAlpha.Relativity.General.Linearized.Basic
 import Mathlib.Tactic.Ring
 
 /-!
 
-# Trace-reversed metric perturbations and wave operator
+# Trace-reversed metric perturbations
 
-Trace reversal `h̄_{ij} = h_{ij} - ½ η_{ij} h` and the Minkowski d'Alembertian `□_η` for
+Minkowski trace `h = η^{ab} h_{ab}` and trace reversal `h̄_{ij} = h_{ij} - ½ η_{ij} h` for
 linearized gravity.
 
 ## i. Overview
 
 Around four-dimensional Minkowski spacetime `minkowskiMetric4`, a weak-field metric perturbation
-`h` has
-Minkowski trace `hTrace h = η^{ab} h_{ab}` (equal to `metricTrace minkowski h`) and trace-reversed
-perturbation `traceReversed h = h - ½ η hTrace h`. Trace reversal is an involution
-(`traceReversed_involutive`) that flips the sign of the trace (`traceReversed_trace`) and preserves
-symmetry. This module also defines the flat-space wave operator `boxEta` and records `C²`
-regularity of `hTrace` and `traceReversed`.
+`h` has Minkowski trace `hTrace h = η^{ab} h_{ab}` (equal to `metricTrace minkowski h`) and
+trace-reversed perturbation `traceReversed h = h - ½ η hTrace h`. Trace reversal is an involution
+(`traceReversed_involutive`) that flips the sign of the trace (`traceReversed_trace`), preserves
+symmetry (`traceReversed_symm`), lifts to `MetricPerturbation.traceReversed`, and preserves `C²`
+regularity.
 
 ## ii. Key results
 
 - `hTrace`, `hTrace_eq_metricTrace`, `traceReversed`, `traceReversed_trace`,
   `traceReversed_involutive`, `traceReversed_symm` : Minkowski trace, bridge to `metricTrace`,
   and trace-reversal involution.
-- `boxEta` : Minkowski d'Alembertian wave operator `□_η`.
+- `MetricPerturbation.traceReversed`, `MetricPerturbation.IsC2At.traceReversed` : bundle-level
+  trace reversal and `C²` regularity preservation.
 
 ## iii. Table of contents
 
-- A. Trace reversal and wave operator
+- A. Trace reversal on symmetric tensors and perturbations
 
 ## iv. References
 
@@ -52,14 +51,12 @@ namespace GeneralRelativity
 
 namespace Linearized
 
-open Pipeline
-
 /-!
 
-## A. Trace reversal and wave operator
+## A. Trace reversal on symmetric tensors and perturbations
 
-Trace-reversing the metric perturbation (`h̄_{ij} = h_{ij} - ½ η_{ij} h`) diagonalizes the
-principal part of the linearized Einstein equations into the flat d'Alembertian `□_η`.
+Trace-reversing a metric perturbation (`h̄_{ij} = h_{ij} - ½ η_{ij} h`) diagonalizes the principal
+part of the linearized Einstein equations into the flat d'Alembertian `□_η`.
 
 -/
 
@@ -91,9 +88,11 @@ lemma traceReversed_symm {h : Tensor2 4} (hs : IsSymm h) : IsSymm (traceReversed
   simp only [Matrix.transpose_apply, traceReversed]
   rw [hs.apply i j, minkowskiMetric4_symm.apply i j]
 
-/-- Minkowski d'Alembertian (wave operator) `□f = η^{μν} ∂_μ ∂_ν f = -∂_t² f + ∇² f`. -/
-noncomputable def boxEta (f : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) : ℝ :=
-  ∑ μ : Fin 4, minkowskiMetric4 μ μ * coordDeriv μ (coordDeriv μ f) x
+/-- Trace reversal lifted to a `MetricPerturbation` bundle. -/
+noncomputable def MetricPerturbation.traceReversed (P : MetricPerturbation) :
+    MetricPerturbation where
+  h x := Linearized.traceReversed (P.h x)
+  symm x := traceReversed_symm (P.symm x)
 
 /-- A `C²` metric perturbation has a `C²` Minkowski trace. -/
 lemma contDiffAt_hTrace {h : (Fin 4 → ℝ) → Tensor2 4} {x : Fin 4 → ℝ}
@@ -117,6 +116,11 @@ lemma contDiffAt_traceReversed {h : (Fin 4 → ℝ) → Tensor2 4} {x : Fin 4 �
   simp only [traceReversed]
   exact (hh i j).sub
     ((contDiffAt_const (c := (1 / 2 : ℝ) * minkowskiMetric4 i j)).mul (contDiffAt_hTrace hh))
+
+/-- Trace reversal preserves pointwise `C²` regularity of a `MetricPerturbation`. -/
+lemma MetricPerturbation.IsC2At.traceReversed {P : MetricPerturbation} {x : Fin 4 → ℝ}
+    (hP : P.IsC2At x) : P.traceReversed.IsC2At x :=
+  fun i j => contDiffAt_traceReversed hP i j
 
 end Linearized
 

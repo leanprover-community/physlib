@@ -816,6 +816,10 @@ public import PhyslibAlpha.Relativity.General.InitialData
 public import PhyslibAlpha.Relativity.General.Kerr.Basic
 public import PhyslibAlpha.Relativity.General.Kerr.Christoffel
 public import PhyslibAlpha.Relativity.General.Kerr.RicciCurvature
+public import PhyslibAlpha.Relativity.General.Linearized.Basic
+public import PhyslibAlpha.Relativity.General.Linearized.BoxEta
+public import PhyslibAlpha.Relativity.General.Linearized.GaugeTransform
+public import PhyslibAlpha.Relativity.General.Linearized.Laplacian3
 public import PhyslibAlpha.Relativity.General.Linearized.LinearizedCurvature
 public import PhyslibAlpha.Relativity.General.Linearized.LorenzGauge
 public import PhyslibAlpha.Relativity.General.Linearized.NewtonianPerturb
