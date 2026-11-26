@@ -75,7 +75,7 @@ variable {d : ℕ}
 structure NewtonianSystem (d : ℕ) where
   /-- The system's reference frame. -/
   frame : ReferenceFrame d
-  [isInertial : Fact frame.IsInertial]
+  frame_inertial : frame.IsInertial
   /-- The particles in the system. -/
   particles : Multiset frame.Particle
   /-- Forces between particles in the system. -/
@@ -91,9 +91,6 @@ structure NewtonianSystem (d : ℕ) where
 namespace NewtonianSystem
 
 variable (system : NewtonianSystem d)
-
-instance : Fact system.frame.IsInertial :=
-  system.isInertial
 
 /-!
 ## B. System particles
@@ -283,6 +280,6 @@ lemma hasDerivAt_momentum : HasDerivAt system.momentum (system.netExternalForce 
   unfold momentum
   apply HasDerivAt.fun_sum
   intro p _
-  exact (p.1.pos_twice_differentiable system.isInertial.out).2 t |>.hasDerivAt.const_smul p.mass.val
+  exact p.1.pos_twice_differentiable.2 t |>.hasDerivAt.const_smul p.mass.val
 
 end ClassicalMechanics.PointParticle.NewtonianSystem

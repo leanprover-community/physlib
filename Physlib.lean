@@ -166,11 +166,13 @@ public import Physlib.Mathematics.ForMathlib.Fin
 public import Physlib.Mathematics.ForMathlib.Fin.Involutions
 public import Physlib.Mathematics.ForMathlib.HasTemperateGrowth
 public import Physlib.Mathematics.ForMathlib.Integration.Basic
+public import Physlib.Mathematics.ForMathlib.IsConst
 public import Physlib.Mathematics.ForMathlib.LinearMaps
 public import Physlib.Mathematics.ForMathlib.LinearPMap
 public import Physlib.Mathematics.ForMathlib.List
 public import Physlib.Mathematics.ForMathlib.List.InsertIdx
 public import Physlib.Mathematics.ForMathlib.List.InsertionSort
+public import Physlib.Mathematics.ForMathlib.LpStarOrder
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Basic
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Unitary
 public import Physlib.Mathematics.ForMathlib.OrthogonalMatrix
@@ -198,6 +200,7 @@ public import Physlib.Mathematics.LeviCivita.Basic
 public import Physlib.Mathematics.Modules.ConjModule
 public import Physlib.Mathematics.Modules.CrossProduct
 public import Physlib.Mathematics.Modules.CrossProductMatrix
+public import Physlib.Mathematics.Projection.Compress
 public import Physlib.Mathematics.SpecialFunctions.EllipticIntegral
 public import Physlib.Mathematics.SpecialFunctions.PhysHermite
 public import Physlib.Mathematics.Tensors.Color
@@ -313,6 +316,8 @@ public import Physlib.ProbabilisticTheory.Channel.Convex
 public import Physlib.ProbabilisticTheory.Channel.Covariant
 public import Physlib.ProbabilisticTheory.Channel.Norm
 public import Physlib.ProbabilisticTheory.Channel.Reversible
+public import Physlib.ProbabilisticTheory.Classical.Basic
+public import Physlib.ProbabilisticTheory.Classical.Dirac
 public import Physlib.ProbabilisticTheory.Effect.Basic
 public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Physlib.ProbabilisticTheory.Effect.Convex
@@ -459,6 +464,7 @@ public import Physlib.QuantumMechanics.Operators.OneDimension.Position
 public import Physlib.QuantumMechanics.Operators.OneDimension.Unbounded
 public import Physlib.QuantumMechanics.Operators.Position
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.Basic
+public import Physlib.QuantumMechanics.Operators.SpectralTheory.Multiplication
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.SelfAdjoint
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.SpectralMeasure
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.Symmetric

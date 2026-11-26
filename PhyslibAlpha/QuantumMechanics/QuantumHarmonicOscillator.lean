@@ -255,64 +255,64 @@ lemma coherentState_only_eigenvector (α : ℂ) (v : ℕ → ℂ) :
     a v = α • v ↔
     v = (Complex.exp (↑‖α‖ ^ 2 / 2) * v 0) • coherentState α := by
   constructor
-  intro hv
-  ext n
-  induction n with
-  | zero =>
+  · intro hv
+    ext n
+    induction n with
+    | zero =>
+      unfold coherentState
+      simp only [Complex.ofReal_exp, Complex.ofReal_div, Complex.ofReal_neg, Complex.ofReal_pow,
+        Complex.ofReal_ofNat, Pi.smul_apply, pow_zero, mul_one, Nat.factorial_zero, Nat.cast_one,
+        Real.sqrt_one, Complex.ofReal_one, div_one, smul_eq_mul]
+      field_simp
+      rw [mul_assoc]
+      rw [← Complex.exp_add]
+      field_simp
+      ring_nf
+      simp
+    | succ n hn =>
+      unfold a at hv
+      have h₀ := congrFun hv n
+      simp only [Pi.smul_apply, smul_eq_mul] at h₀
+      have : v (n + 1) = α * v n / √(n + 1) := by
+        field_simp
+        rw [← h₀, mul_comm]
+      rw [this, hn]
+      unfold coherentState
+      field_simp
+      ring_nf
+      simp only [one_div, Complex.ofReal_exp, Complex.ofReal_mul, Complex.ofReal_pow,
+        Complex.ofReal_div, Complex.ofReal_neg, Complex.ofReal_one, Complex.ofReal_ofNat,
+        Pi.smul_apply, smul_eq_mul]
+      rw [pow_add]
+      field_simp
+      ring_nf
+      repeat rw [mul_assoc]
+      congr
+      field_simp
+      ring_nf
+      rw [add_comm]
+      nth_rw 2 [add_comm]
+      have : (n+1).factorial = (n+1) * n.factorial := rfl
+      rw [this]
+      norm_num
+      field_simp
+  · intro h
+    rw [h]
+    unfold a
+    ext n
+    have : (Complex.exp (↑‖α‖ ^ 2 / 2)) ≠ 0 := by simp
+    field_simp
     unfold coherentState
     simp only [Complex.ofReal_exp, Complex.ofReal_div, Complex.ofReal_neg, Complex.ofReal_pow,
-      Complex.ofReal_ofNat, Pi.smul_apply, pow_zero, mul_one, Nat.factorial_zero, Nat.cast_one,
-      Real.sqrt_one, Complex.ofReal_one, div_one, smul_eq_mul]
-    field_simp
-    rw [mul_assoc]
-    rw [← Complex.exp_add]
+      Complex.ofReal_ofNat, Pi.smul_apply, smul_eq_mul]
     field_simp
     ring_nf
-    simp
-  | succ n hn =>
-    unfold a at hv
-    have h₀ := congrFun hv n
-    simp only [Pi.smul_apply, smul_eq_mul] at h₀
-    have : v (n + 1) = α * v n / √(n + 1) := by
-      field_simp
-      rw [← h₀, mul_comm]
-    rw [this, hn]
-    unfold coherentState
     field_simp
-    ring_nf
-    simp only [one_div, Complex.ofReal_exp, Complex.ofReal_mul, Complex.ofReal_pow,
-      Complex.ofReal_div, Complex.ofReal_neg, Complex.ofReal_one, Complex.ofReal_ofNat,
-      Pi.smul_apply, smul_eq_mul]
-    rw [pow_add]
-    field_simp
-    ring_nf
-    repeat rw [mul_assoc]
-    congr
-    field_simp
-    ring_nf
-    rw [add_comm]
-    nth_rw 2 [add_comm]
+    rw [mul_assoc, add_comm 1 n, add_comm 1 (n:ℝ)]
     have : (n+1).factorial = (n+1) * n.factorial := rfl
     rw [this]
     norm_num
     field_simp
-  intro h
-  rw [h]
-  unfold a
-  ext n
-  have : (Complex.exp (↑‖α‖ ^ 2 / 2)) ≠ 0 := by simp
-  field_simp
-  unfold coherentState
-  simp only [Complex.ofReal_exp, Complex.ofReal_div, Complex.ofReal_neg, Complex.ofReal_pow,
-    Complex.ofReal_ofNat, Pi.smul_apply, smul_eq_mul]
-  field_simp
-  ring_nf
-  field_simp
-  rw [mul_assoc, add_comm 1 n, add_comm 1 (n:ℝ)]
-  have : (n+1).factorial = (n+1) * n.factorial := rfl
-  rw [this]
-  norm_num
-  field_simp
 
 lemma eigenvector_coherentState (α : ℂ) :
     a (coherentState α) = α • coherentState α := by

@@ -60,7 +60,7 @@ lemma hasDerivAt_centerOfMass (t : ℝ) :
   apply HasDerivAt.fun_const_smul
   apply HasDerivAt.fun_sum
   intro p _
-  exact (p.1.pos_twice_differentiable S.isInertial.out).1 t |>.hasDerivAt.const_smul p.mass.val
+  exact p.1.pos_twice_differentiable.1 t |>.hasDerivAt.const_smul p.mass.val
 
 /-- If the net external force vanishes, the center of mass moves with constant velocity. -/
 lemma hasDerivAt_centerOfMass_of_netExternalForce_eq_zero (hExt : S.netExternalForce = 0)

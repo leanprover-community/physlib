@@ -10,38 +10,39 @@ public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.GaugeWeight
 /-!
 # The root decomposition of the gauge algebra
 
+The root and Cartan directions of the gauge algebra, read as a gauge weight decomposition.
+
 ## i. Overview
 
 The gauge torus acts on the gauge algebra by conjugation with a diagonal matrix, so it
 scales the matrix entry `(j, k)` of the `su(3)` and `su(2)` blocks by `d j * star (d k)`.
-Off the diagonal this makes the real and imaginary parts of an entry a rotating pair —
-the root directions, recorded by `rootIdx`, `rootEntry` and `rootWeight` — while the
-diagonal directions and the `u(1)` generator are fixed, and are recorded by `cartanIdx`,
-which is assembled from the Cartan indices `su3CartanId` and `su2CartanId` of the
-individual factors.
+Off the diagonal this makes the real and imaginary parts of an entry a rotating pair. These
+are the root directions, recorded by `rootIdx`, `rootEntry` and `rootWeight`. The diagonal
+directions and the `u(1)` generator are fixed, and are recorded by `cartanIdx`, which is
+assembled from the Cartan indices `su3CartanId` and `su2CartanId` of the individual factors.
 
 This is the adjoint analogue of the weights carried by the matter representations, and
-is what the gauge sector's gauge weight decomposition is built from.
-
-Section E makes that last sentence a theorem. A gauge weight is a character of the torus,
-so the real Lie algebra carries no gauge weight decomposition of its own; but for any
-complex algebra receiving the dual adjoint action, `adjointDecomposition` decomposes the
-span of the resulting symbols, and its pieces are a single root line at each of the eight
-nonzero weights and the span of the four Cartan symbols at weight zero. That is the sense
-in which the root decomposition and the gauge weight decomposition of the adjoint are the
-same thing.
+section E makes that a theorem. A gauge weight is a character of the torus, so the real Lie
+algebra carries no gauge weight decomposition of its own. But for any complex algebra receiving
+the dual adjoint action, `adjointDecomposition` decomposes the span of the resulting symbols,
+and its pieces are a single root line at each of the eight nonzero weights and the span of the
+four Cartan symbols at weight zero. In this sense the root decomposition and the gauge weight
+decomposition of the adjoint are the same thing.
 
 ## ii. Key results
 
-- `rootIdx` : the four root directions of the adjoint
-- `rootWeight` : the gauge weight of each root direction
-- `rootEntry` : the matrix entry scaled by the torus along each root direction
-- `su3CartanId` : the Gell-Mann indices of the two Cartan directions of `su(3)`
-- `su2CartanId` : the Pauli index of the Cartan direction of `su(2)`
-- `cartanIdx` : the four weight-zero directions: the two `su(3)` Cartan generators, the `su(2)`
-  Cartan generator and the `u(1)` generator
-- `adjointDecomposition` : the root decomposition read as a gauge weight decomposition: the span of
-  the symbols of a coadjoint map, joined out of the twelve root and Cartan lines
+- `StandardModel.GaugeAlgebra.rootIdx` : the four root directions of the adjoint.
+- `StandardModel.GaugeAlgebra.rootWeight` : the gauge weight of each root direction.
+- `StandardModel.GaugeAlgebra.rootEntry` : the matrix entry scaled by the torus along each root
+  direction.
+- `StandardModel.GaugeAlgebra.cartanIdx` : the four weight-zero directions, the two `su(3)`
+  Cartan generators, the `su(2)` Cartan generator and the `u(1)` generator.
+- `StandardModel.GaugeAlgebra.adjointDecomposition` : the root decomposition read as a gauge
+  weight decomposition of the span of the symbols of a coadjoint map.
+- `StandardModel.GaugeAlgebra.adjointDecomposition_supp`,
+  `StandardModel.GaugeAlgebra.adjointDecomposition_piece_rootWeight`,
+  `StandardModel.GaugeAlgebra.adjointDecomposition_piece_zero` : its nine weights, a single root
+  line at each nonzero weight and the Cartan symbols at weight zero.
 
 ## iii. Table of contents
 
@@ -50,7 +51,6 @@ same thing.
 - C. An entrywise scaling rotates the real pair of coordinate functionals
 - D. The root and Cartan directions of the adjoint
 - E. The root decomposition as a gauge weight decomposition
-- F. The weight coordinates of one factor
 
 ## iv. References
 
@@ -64,24 +64,25 @@ namespace StandardModel
 
 open Matrix MatrixGroups
 
-/-- Conjugation inverts a power of `expI`. -/
-lemma star_expI_zpow (z : ℤ) : star ((expI : ℂ) ^ z) = (expI : ℂ) ^ (-z) := by
-  rw [Complex.star_def, starRingEnd_expI_zpow]
+namespace GaugeAlgebra
 
 /-!
 
 ## A. The coordinates of the standard basis
 
+The coordinates of an element of the gauge algebra in `stdBasis` are its Gell-Mann and Pauli
+coefficients and the real part of its `u(1)` component.
+
 -/
 
-namespace GaugeAlgebra
-
-/-- coords -/
+/-- The coordinates of an element of the gauge algebra in the standard basis `stdBasis`. -/
 noncomputable def stdCoeff (x : GaugeAlgebra) : Fin 8 ⊕ Fin 3 ⊕ Fin 1 → ℝ
   | Sum.inl k => gellMannCoeff x.toSU3Matrix k
   | Sum.inr (Sum.inl i) => pauliCoeff x.toSU2Matrix i
   | Sum.inr (Sum.inr _) => (x.toU1Value).re
 
+/-- An element of the gauge algebra is the sum of the standard basis weighted by its
+  coordinates. -/
 lemma eq_sum_stdCoeff (x : GaugeAlgebra) : x = ∑ y, stdCoeff x y • stdBasis y := by
   refine ext_of_matrix ?_ ?_ ?_
   · rw [toSU3Matrix_sum]
@@ -113,22 +114,24 @@ lemma stdBasis_coord_apply (y : GaugeAlgebra) (a : Fin 8 ⊕ Fin 3 ⊕ Fin 1) :
   rw [Finset.sum_ite_eq' Finset.univ a fun b => stdCoeff y b]
   simp
 
-end GaugeAlgebra
-
 /-!
 
 ## B. The torus acts by conjugation with a diagonal matrix
 
+The inverses of the four torus generators have diagonal `SU(3)` and `SU(2)` factors, so their
+adjoint action scales each matrix entry by a phase.
+
 -/
 
-/-- su3 diagonals of inverse torus gens -/
+/-- The diagonals of the `SU(3)` factors of the inverses of the four torus generators. -/
 noncomputable def torusSU3Diag : Fin 4 → Fin 3 → ℂ :=
   ![![star (expI : ℂ), (expI : ℂ), 1], ![1, star (expI : ℂ), (expI : ℂ)], 1, 1]
 
-/-- su2 -/
+/-- The diagonals of the `SU(2)` factors of the inverses of the four torus generators. -/
 noncomputable def torusSU2Diag : Fin 4 → Fin 2 → ℂ :=
   ![1, 1, ![star (expI : ℂ), (expI : ℂ)], 1]
 
+/-- The `SU(3)` factor of the inverse of a torus generator is diagonal. -/
 lemma toSU3_inv_gaugeTorusGen (i : Fin 4) :
     ((GaugeGroupI.toSU3 (gaugeTorusGen i)⁻¹ : specialUnitaryGroup (Fin 3) ℂ) :
       Matrix (Fin 3) (Fin 3) ℂ) = Matrix.diagonal (torusSU3Diag i) := by
@@ -139,6 +142,7 @@ lemma toSU3_inv_gaugeTorusGen (i : Fin 4) :
       simp [gaugeTorusGen, GaugeGroupI.toSU3, su3ExpIOne, su3ExpITwo, torusSU3Diag,
         Matrix.diagonal]
 
+/-- The `SU(2)` factor of the inverse of a torus generator is diagonal. -/
 lemma toSU2_inv_gaugeTorusGen (i : Fin 4) :
     ((GaugeGroupI.toSU2 (gaugeTorusGen i)⁻¹ : specialUnitaryGroup (Fin 2) ℂ) :
       Matrix (Fin 2) (Fin 2) ℂ) = Matrix.diagonal (torusSU2Diag i) := by
@@ -149,8 +153,8 @@ lemma toSU2_inv_gaugeTorusGen (i : Fin 4) :
       simp [gaugeTorusGen, GaugeGroupI.toSU2, su2ExpI, torusSU2Diag,
         Matrix.diagonal]
 
-namespace GaugeAlgebra
-
+/-- Conjugation by a diagonal colour factor `d` scales the entry `(j, k)` of the `su(3)`
+  component by `d j * star (d k)`. -/
 lemma adjointMap_toSU3Matrix_apply_diagonal {g : GaugeGroupI} {d : Fin 3 → ℂ}
     (hg : ((GaugeGroupI.toSU3 g : specialUnitaryGroup (Fin 3) ℂ) :
       Matrix (Fin 3) (Fin 3) ℂ) = Matrix.diagonal d)
@@ -160,6 +164,8 @@ lemma adjointMap_toSU3Matrix_apply_diagonal {g : GaugeGroupI} {d : Fin 3 → ℂ
     Matrix.diagonal_conjTranspose, Matrix.mul_diagonal, Matrix.diagonal_mul, Pi.star_apply]
   ring
 
+/-- Conjugation by a diagonal isospin factor `d` scales the entry `(j, k)` of the `su(2)`
+  component by `d j * star (d k)`. -/
 lemma adjointMap_toSU2Matrix_apply_diagonal {g : GaugeGroupI} {d : Fin 2 → ℂ}
     (hg : ((GaugeGroupI.toSU2 g : specialUnitaryGroup (Fin 2) ℂ) :
       Matrix (Fin 2) (Fin 2) ℂ) = Matrix.diagonal d)
@@ -169,19 +175,17 @@ lemma adjointMap_toSU2Matrix_apply_diagonal {g : GaugeGroupI} {d : Fin 2 → ℂ
     Matrix.diagonal_conjTranspose, Matrix.mul_diagonal, Matrix.diagonal_mul, Pi.star_apply]
   ring
 
-end GaugeAlgebra
-
+/-- The diagonal entries of the `SU(3)` factors of the torus generators are phases. -/
 lemma torusSU3Diag_mul_star (i : Fin 4) (j : Fin 3) :
     torusSU3Diag i j * star (torusSU3Diag i j) = 1 := by
   fin_cases i <;> fin_cases j <;>
     simp [torusSU3Diag, expI_mul_conj, conj_mul_expI]
 
+/-- The diagonal entries of the `SU(2)` factors of the torus generators are phases. -/
 lemma torusSU2Diag_mul_star (i : Fin 4) (j : Fin 2) :
     torusSU2Diag i j * star (torusSU2Diag i j) = 1 := by
   fin_cases i <;> fin_cases j <;>
     simp [torusSU2Diag, expI_mul_conj, conj_mul_expI]
-
-namespace GaugeAlgebra
 
 /-!
 
@@ -189,6 +193,8 @@ namespace GaugeAlgebra
 
 -/
 
+/-- If an element scales a complex coordinate `e` by `star z`, its dual action rotates the
+  pair of real functionals `re e` and `-im e` by `z`. -/
 lemma dualMap_pair_of_entry {g : GaugeGroupI} {e : GaugeAlgebra → ℂ}
     {φ₁ φ₂ : Module.Dual ℝ GaugeAlgebra} {z : ℂ}
     (h1 : ∀ x, φ₁ x = (e x).re) (h2 : ∀ x, φ₂ x = -(e x).im)
@@ -200,26 +206,21 @@ lemma dualMap_pair_of_entry {g : GaugeGroupI} {e : GaugeAlgebra → ℂ}
       LinearMap.smul_apply, smul_eq_mul, h1, h2, he, Complex.mul_re, Complex.mul_im,
       Complex.star_def, Complex.conj_re, Complex.conj_im] <;> ring
 
-end GaugeAlgebra
-
 /-!
 
 ## D. The root and Cartan directions of the adjoint
 
-The `su(3)` and `su(2)` blocks each contribute root directions — pairs of standard
-basis indices whose coordinate functionals are the real part and minus the imaginary
-part of one matrix entry — together with Cartan directions on which the torus acts
-trivially; the `u(1)` generator is also fixed.
+The `su(3)` and `su(2)` blocks each contribute root directions, pairs of standard basis
+indices whose coordinate functionals are the real part and minus the imaginary part of one
+matrix entry. They also contribute Cartan directions, on which the torus acts trivially, and
+the `u(1)` generator is fixed as well.
 
 The Cartan directions are named one factor at a time first, by `su3CartanId` in the
 Gell-Mann indices and `su2CartanId` in the Pauli indices, and `cartanIdx` assembles those
 with the `u(1)` generator into the four weight-zero directions of the whole algebra. The
-factorwise names are the ones section F uses; they are reducible, so they behave exactly
-like the index literals they name.
+factorwise names are reducible, so they behave exactly like the index literals they name.
 
 -/
-
-namespace GaugeAlgebra
 
 /-- The four root directions of the adjoint. -/
 def rootIdx : Fin 4 → (Fin 8 ⊕ Fin 3 ⊕ Fin 1) × (Fin 8 ⊕ Fin 3 ⊕ Fin 1)
@@ -250,7 +251,7 @@ abbrev su3CartanId : Fin 2 → Fin 8
 /-- The Pauli index of the Cartan direction of `su(2)`. -/
 abbrev su2CartanId : Fin 3 := 2
 
-/-- The four weight-zero directions: the two `su(3)` Cartan generators, the `su(2)`
+/-- The four weight-zero directions, the two `su(3)` Cartan generators, the `su(2)`
   Cartan generator and the `u(1)` generator. -/
 def cartanIdx : Fin 4 → (Fin 8 ⊕ Fin 3 ⊕ Fin 1)
   | 0 => Sum.inl (su3CartanId 0)
@@ -258,14 +259,18 @@ def cartanIdx : Fin 4 → (Fin 8 ⊕ Fin 3 ⊕ Fin 1)
   | 2 => Sum.inr (Sum.inl su2CartanId)
   | 3 => Sum.inr (Sum.inr 0)
 
+/-- The first coordinate of a root pair is the real part of the root entry. -/
 lemma coord_rootIdx_fst (r : Fin 4) (x : GaugeAlgebra) :
     stdBasis.coord (rootIdx r).1 x = (rootEntry r x).re := by
   fin_cases r <;> (rw [stdBasis_coord_apply]; rfl)
 
+/-- The second coordinate of a root pair is minus the imaginary part of the root entry. -/
 lemma coord_rootIdx_snd (r : Fin 4) (x : GaugeAlgebra) :
     stdBasis.coord (rootIdx r).2 x = -(rootEntry r x).im := by
   fin_cases r <;> (rw [stdBasis_coord_apply]; rfl)
 
+/-- The inverse of a torus generator scales the root entry by the conjugate of the character
+  of the root weight. -/
 lemma rootEntry_adjointMap (r : Fin 4) (i : Fin 4) (x : GaugeAlgebra) :
     rootEntry r (adjointMap (gaugeTorusGen i)⁻¹ x)
       = star ((expI : ℂ) ^ GaugeWeight.coord (rootWeight r) i) * rootEntry r x := by
@@ -293,6 +298,7 @@ lemma rootEntry_adjointMap (r : Fin 4) (i : Fin 4) (x : GaugeAlgebra) :
     fin_cases i <;>
       simp [torusSU2Diag, rootWeight, GaugeWeight.coord, pow_two]
 
+/-- The torus fixes the coordinate functional of each Cartan direction. -/
 lemma dualMap_coord_cartanIdx (c : Fin 4) (i : Fin 4) :
     (adjointMap (gaugeTorusGen i)⁻¹).dualMap (stdBasis.coord (cartanIdx c))
       = stdBasis.coord (cartanIdx c) := by
@@ -311,8 +317,6 @@ lemma dualMap_coord_cartanIdx (c : Fin 4) (i : Fin 4) :
     simp only [LinearMap.dualMap_apply, cartanIdx, su3CartanId, su2CartanId,
       stdBasis_coord_apply, stdCoeff, gellMannCoeff, pauliCoeff, h3, h2, h1]
 
-end GaugeAlgebra
-
 /-!
 
 ## E. The root decomposition as a gauge weight decomposition
@@ -321,37 +325,28 @@ A gauge weight is a character of the torus, so the vectors carrying one are comp
 whereas the gauge algebra is a real Lie algebra and `GaugeWeightDecomposition` asks for a
 complex algebra. The relation is therefore not a statement about `GaugeAlgebra`, which
 carries no gauge weight decomposition at all, but about any complex algebra receiving the
-dual adjoint action: a real-linear map `F` out of `Module.Dual ℝ GaugeAlgebra`
+dual adjoint action. That is a real-linear map `F` out of `Module.Dual ℝ GaugeAlgebra`
 intertwining the gauge action with the coadjoint one, which is how the field strength of
 the gauge sector meets the adjoint.
 
 For such an `F` the root data of section D is exactly a gauge weight decomposition of the
 span of the symbols. Each root contributes the two combinations `F φ₁ ± i F φ₂` of its
 paired coordinate symbols, of weights `± rootWeight r`, and each Cartan direction
-contributes its symbol, of weight zero; `exists_rootIdx_or_cartanIdx` says these twelve
+contributes its symbol, of weight zero. `exists_rootIdx_or_cartanIdx` says these twelve
 vectors are enough, and `adjointDecomposition` joins their lines one weight at a time.
 
 The pieces are the identification itself. `adjointDecomposition_piece_rootWeight` and
 `adjointDecomposition_piece_neg_rootWeight` give a single root line at each of the eight
 nonzero weights, and `adjointDecomposition_piece_zero` gives the span of the four Cartan
-symbols at weight zero: the root directions are the nonzero-weight pieces and the Cartan
+symbols at weight zero. The root directions are the nonzero-weight pieces and the Cartan
 directions are the zero-weight piece.
 
-Section F gives the Gell-Mann and Pauli coordinates of the vectors `adjVec` that belong to one
-non-abelian factor.
-
 -/
-
-namespace GaugeAlgebra
 
 variable {B : Type*} [Ring B] [Algebra ℂ B] {rep : Representation ℂ GaugeGroupI B}
   {F : Module.Dual ℝ GaugeAlgebra →ₗ[ℝ] B}
 
-/-- A real scalar acts on a complex algebra through its complex image. -/
-lemma real_smul_eq_complex_smul (r : ℝ) (b : B) : r • b = ((r : ℂ)) • b := by
-  rw [← Complex.coe_algebraMap, algebraMap_smul]
-
-/-- A coadjoint symbol map: a real-linear map from the dual of the gauge algebra into a
+/-- A coadjoint symbol map, a real-linear map from the dual of the gauge algebra into a
   complex algebra which intertwines the gauge action with the dual adjoint action. The
   field strength of the gauge sector is one such map. -/
 def IsCoadjointSymbol (rep : Representation ℂ GaugeGroupI B)
@@ -359,7 +354,7 @@ def IsCoadjointSymbol (rep : Representation ℂ GaugeGroupI B)
   ∀ (g : GaugeGroupI) (φ : Module.Dual ℝ GaugeAlgebra),
     rep g (F φ) = F ((adjointMap g⁻¹).dualMap φ)
 
-/-- The index type of the adjoint weight vectors: four positive roots, four negative
+/-- The index type of the adjoint weight vectors, four positive roots, four negative
   roots and four Cartan directions. -/
 abbrev AdjIdx : Type := Fin 4 ⊕ Fin 4 ⊕ Fin 4
 
@@ -369,8 +364,8 @@ def adjWeight : AdjIdx → GaugeWeight
   | Sum.inr (Sum.inl r) => -(rootWeight r)
   | Sum.inr (Sum.inr _) => 0
 
-/-- The weight vectors of the adjoint in the image of a coadjoint symbol map: for each
-  root the two combinations of its paired coordinate symbols, and for each Cartan
+/-- The weight vectors of the adjoint in the image of a coadjoint symbol map. For each root
+  they are the two combinations of its paired coordinate symbols, and for each Cartan
   direction the symbol itself. -/
 noncomputable def adjVec (F : Module.Dual ℝ GaugeAlgebra →ₗ[ℝ] B) : AdjIdx → B
   | Sum.inl r => F (stdBasis.coord (rootIdx r).1)
@@ -379,14 +374,7 @@ noncomputable def adjVec (F : Module.Dual ℝ GaugeAlgebra →ₗ[ℝ] B) : AdjI
       - Complex.I • F (stdBasis.coord (rootIdx r).2)
   | Sum.inr (Sum.inr c) => F (stdBasis.coord (cartanIdx c))
 
-/-- A weight vector carries zero gauge weight exactly when it is a Cartan direction; the
-  eight root directions all carry a nonzero weight. -/
-lemma adjWeight_eq_zero_iff (k : AdjIdx) :
-    adjWeight k = 0 ↔ ∃ c : Fin 4, k = Sum.inr (Sum.inr c) := by
-  revert k
-  decide
-
-/-- The root and Cartan directions exhaust the standard basis: every standard index is
+/-- The root and Cartan directions exhaust the standard basis. Every standard index is
   one of the two members of a root pair, or a Cartan index. -/
 lemma exists_rootIdx_or_cartanIdx (a : Fin 8 ⊕ Fin 3 ⊕ Fin 1) :
     (∃ r : Fin 4, a = (rootIdx r).1) ∨ (∃ r : Fin 4, a = (rootIdx r).2)
@@ -401,8 +389,8 @@ lemma rep_pair_add (hF : IsCoadjointSymbol rep F) (g : GaugeGroupI)
     (h2 : (adjointMap g⁻¹).dualMap φ₂ = z.im • φ₁ + z.re • φ₂) :
     rep g (F φ₁ + Complex.I • F φ₂) = z • (F φ₁ + Complex.I • F φ₂) := by
   rw [map_add, map_smul, hF, hF, h1, h2, map_sub, map_add, map_smul, map_smul,
-    map_smul, map_smul, real_smul_eq_complex_smul z.re, real_smul_eq_complex_smul z.im,
-    real_smul_eq_complex_smul z.im, real_smul_eq_complex_smul z.re]
+    map_smul, map_smul, ← Complex.coe_smul z.re, ← Complex.coe_smul z.im,
+    ← Complex.coe_smul z.im, ← Complex.coe_smul z.re]
   conv_rhs => rw [← Complex.re_add_im z]
   match_scalars <;> ring_nf
   simp [Complex.I_sq]
@@ -416,8 +404,8 @@ lemma rep_pair_sub (hF : IsCoadjointSymbol rep F) (g : GaugeGroupI)
     rep g (F φ₁ - Complex.I • F φ₂)
       = (starRingEnd ℂ z) • (F φ₁ - Complex.I • F φ₂) := by
   rw [map_sub, map_smul, hF, hF, h1, h2, map_sub, map_add, map_smul, map_smul,
-    map_smul, map_smul, real_smul_eq_complex_smul z.re, real_smul_eq_complex_smul z.im,
-    real_smul_eq_complex_smul z.im, real_smul_eq_complex_smul z.re]
+    map_smul, map_smul, ← Complex.coe_smul z.re, ← Complex.coe_smul z.im,
+    ← Complex.coe_smul z.im, ← Complex.coe_smul z.re]
   rw [show (starRingEnd ℂ) z = (z.re : ℂ) - (z.im : ℂ) * Complex.I by
     rw [Complex.ext_iff]; simp]
   match_scalars <;> ring_nf
@@ -499,7 +487,7 @@ lemma span_range_eq_iSup (F : Module.Dual ℝ GaugeAlgebra →ₗ[ℝ] B) :
   · rintro x ⟨φ, rfl⟩
     rw [← stdBasis.sum_dual_apply_smul_coord φ, map_sum]
     refine Submodule.sum_mem _ fun a _ => ?_
-    rw [map_smul, real_smul_eq_complex_smul]
+    rw [map_smul, ← Complex.coe_smul]
     exact Submodule.smul_mem _ _ (symbol_mem_iSup F a)
   · refine (Submodule.span_singleton_le_iff_mem _ _).mpr ?_
     have hFm : ∀ φ, F φ ∈ Submodule.span ℂ (Set.range F) :=
@@ -510,8 +498,8 @@ lemma span_range_eq_iSup (F : Module.Dual ℝ GaugeAlgebra →ₗ[ℝ] B) :
       exact Submodule.sub_mem _ (hFm _) (Submodule.smul_mem _ _ (hFm _))
     | Sum.inr (Sum.inr c) => exact hFm _
 
-/-- The root decomposition read as a gauge weight decomposition: the span of the symbols
-  of a coadjoint map, joined out of the twelve root and Cartan lines. -/
+/-- The root decomposition read as a gauge weight decomposition. The span of the symbols
+  of a coadjoint map is joined out of the twelve root and Cartan lines. -/
 @[implicit_reducible]
 noncomputable def adjointDecomposition (hmul : IsMulRep rep)
     (hF : IsCoadjointSymbol rep F) :
@@ -522,7 +510,7 @@ noncomputable def adjointDecomposition (hmul : IsMulRep rep)
         (fun i => rep_adjVec hF k i))
     _ (span_range_eq_iSup F)
 
-/-- The gauge weights of the adjoint: the six `su(3)` roots, the two `su(2)` roots and
+/-- The gauge weights of the adjoint are the six `su(3)` roots, the two `su(2)` roots and
   the zero weight of the Cartan and `u(1)` directions. Every one of them has vanishing
   hypercharge. -/
 lemma adjointDecomposition_supp (hmul : IsMulRep rep) (hF : IsCoadjointSymbol rep F) :
@@ -532,8 +520,8 @@ lemma adjointDecomposition_supp (hmul : IsMulRep rep) (hF : IsCoadjointSymbol re
   show Finset.univ.biUnion (fun k : AdjIdx => ({adjWeight k} : Finset GaugeWeight)) = _
   decide
 
-/-- The pieces of the decomposition: the weight-`w` piece is the join of the weight lines
-  whose weight is `w`. -/
+/-- The weight-`w` piece of the decomposition is the join of the weight lines whose weight
+  is `w`. -/
 lemma adjointDecomposition_piece (hmul : IsMulRep rep) (hF : IsCoadjointSymbol rep F)
     (w : GaugeWeight) :
     (adjointDecomposition hmul hF).piece w
@@ -573,7 +561,7 @@ lemma adjointDecomposition_piece_neg_rootWeight (hmul : IsMulRep rep)
     exact le_rfl
   · exact bot_le
 
-/-- The weight-zero piece is the span of the four Cartan symbols: the two `su(3)` Cartan
+/-- The weight-zero piece is the span of the four Cartan symbols, of the two `su(3)` Cartan
   generators, the `su(2)` Cartan generator and the `u(1)` generator. -/
 lemma adjointDecomposition_piece_zero (hmul : IsMulRep rep)
     (hF : IsCoadjointSymbol rep F) :
@@ -586,83 +574,6 @@ lemma adjointDecomposition_piece_zero (hmul : IsMulRep rep)
   have h3 : ∀ c : Fin 4, ((0 : GaugeWeight) = adjWeight (Sum.inr (Sum.inr c))) := by decide
   simp only [h1, h2, ite_false, iSup_bot, bot_sup_eq]
   exact iSup_congr fun c => ite_eq_left (h3 c)
-
-/-- Every weight outside the nine is absent from the adjoint. -/
-lemma adjointDecomposition_piece_eq_bot (hmul : IsMulRep rep)
-    (hF : IsCoadjointSymbol rep F) {w : GaugeWeight}
-    (hw : w ∉ (adjointDecomposition hmul hF).supp) :
-    (adjointDecomposition hmul hF).piece w = ⊥ :=
-  (adjointDecomposition hmul hF).piece_eq_bot w hw
-
-end GaugeAlgebra
-
-/-!
-
-## F. The weight coordinates of one factor
-
-The vectors `adjVec` that belong to the `su(3)` or the `su(2)` factor have Gell-Mann or Pauli
-coordinates `x₁ ± i x₂` on a root pair, and the Cartan coordinate itself on a Cartan
-direction. `su3WeightCoeff` and `su2WeightCoeff` record these coordinates, indexed by
-`su3WeightIdx` and `su2WeightIdx`. The lemmas `rootIdx_castSucc`, `cartanIdx_castSucc`,
-`rootIdx_three` and `cartanIdx_two` identify the root pairs and Cartan indices of one factor
-with those of the whole algebra.
-
--/
-
-namespace GaugeAlgebra
-
-/-- The index type of the `su(3)` weight coordinates: three positive roots, three negative
-  roots and two Cartan directions. -/
-abbrev su3WeightIdx : Type := Fin 3 ⊕ Fin 3 ⊕ Fin 2
-
-/-- The pairs of Gell-Mann indices making up the three root directions of `su(3)`. -/
-def su3RootPair : Fin 3 → Fin 8 × Fin 8
-  | 0 => (0, 1)
-  | 1 => (3, 4)
-  | 2 => (5, 6)
-
-/-- The `su(3)` root pairs are the first three root pairs of the whole gauge algebra. -/
-lemma rootIdx_castSucc (r : Fin 3) :
-    rootIdx r.castSucc = (Sum.inl (su3RootPair r).1, Sum.inl (su3RootPair r).2) := by
-  fin_cases r <;> rfl
-
-/-- The `su(3)` Cartan indices are the first two Cartan indices of the whole gauge
-  algebra. -/
-lemma cartanIdx_castSucc (c : Fin 2) :
-    cartanIdx c.castSucc.castSucc = Sum.inl (su3CartanId c) := by
-  fin_cases c <;> rfl
-
-/-- The `su(3)` weight coordinates in Gell-Mann coordinates: `x₁ ± i x₂` on each root pair,
-  and the Cartan coordinates themselves. -/
-noncomputable def su3WeightCoeff : su3WeightIdx → Fin 8 → ℂ
-  | Sum.inl r, a => (if a = (su3RootPair r).1 then 1 else 0)
-      + Complex.I * (if a = (su3RootPair r).2 then 1 else 0)
-  | Sum.inr (Sum.inl r), a => (if a = (su3RootPair r).1 then 1 else 0)
-      - Complex.I * (if a = (su3RootPair r).2 then 1 else 0)
-  | Sum.inr (Sum.inr c), a => if a = su3CartanId c then 1 else 0
-
-/-- The index type of the `su(2)` weight coordinates: the positive root, the negative root
-  and the Cartan direction. -/
-abbrev su2WeightIdx : Type := Fin 1 ⊕ Fin 1 ⊕ Fin 1
-
-/-- The pair of Pauli indices making up the root direction of `su(2)`. -/
-def su2RootPair : Fin 3 × Fin 3 := (0, 1)
-
-/-- The `su(2)` root pair is the fourth root pair of the whole gauge algebra. -/
-lemma rootIdx_three :
-    rootIdx 3 = (Sum.inr (Sum.inl su2RootPair.1), Sum.inr (Sum.inl su2RootPair.2)) := rfl
-
-/-- The `su(2)` Cartan index is the third Cartan index of the whole gauge algebra. -/
-lemma cartanIdx_two : cartanIdx 2 = Sum.inr (Sum.inl su2CartanId) := rfl
-
-/-- The `su(2)` weight coordinates in Pauli coordinates: `x₁ ± i x₂` on the root pair, and
-  the Cartan coordinate itself. -/
-noncomputable def su2WeightCoeff : su2WeightIdx → Fin 3 → ℂ
-  | Sum.inl _, a => (if a = su2RootPair.1 then 1 else 0)
-      + Complex.I * (if a = su2RootPair.2 then 1 else 0)
-  | Sum.inr (Sum.inl _), a => (if a = su2RootPair.1 then 1 else 0)
-      - Complex.I * (if a = su2RootPair.2 then 1 else 0)
-  | Sum.inr (Sum.inr _), a => if a = su2CartanId then 1 else 0
 
 end GaugeAlgebra
 

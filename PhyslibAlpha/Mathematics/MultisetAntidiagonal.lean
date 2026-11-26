@@ -21,7 +21,9 @@ all-orders Leibniz rules of the jet calculus.
 
 - `sum_antidiagonal_assoc` : coassociativity of antidiagonal sums: summing over `s = u + v` and then
   `u = x + y` is summing over `s = x + t` and then `t = y + v`
-- `sum_antidiagonal_exchange`
+- `sum_antidiagonal_exchange` : the exchange law of doubly-split antidiagonal sums
+- `sum_antidiagonal_assoc_cycle` : a sum over triple splittings is invariant under the cyclic
+  shift of the three parts
 - `sum_linearMap_apply` : a multiset sum of linear maps, applied: the sum of the applications
 - `tmul_sum` : a pure tensor against a multiset sum distributes over the sum
 
@@ -45,7 +47,7 @@ all-orders Leibniz rules of the jet calculus.
 
 namespace Multiset
 
-/-- Coassociativity of antidiagonal sums: summing over `s = u + v` and then `u = x + y`
+/-- Coassociativity of antidiagonal sums. Summing over `s = u + v` and then `u = x + y`
   is summing over `s = x + t` and then `t = y + v`. -/
 lemma sum_antidiagonal_assoc {ι M : Type*} [AddCommMonoid M]
     (s : Multiset ι) (h : Multiset ι → Multiset ι → Multiset ι → M) :
@@ -63,7 +65,7 @@ lemma sum_antidiagonal_assoc {ι M : Type*} [AddCommMonoid M]
         ih (fun x y v => h (κ ::ₘ x) y v)]
       abel
 
-/-- The exchange law of doubly-split antidiagonal sums: splitting `s = u + v` and then
+/-- The exchange law of doubly-split antidiagonal sums. Splitting `s = u + v` and then
   `u = x + y`, `v = z + w` is, with the middle parts exchanged, splitting `s = u' + v'`
   and then `u' = x + z`, `v' = y + w`. -/
 lemma sum_antidiagonal_exchange {ι M : Type*} [AddCommMonoid M]
@@ -84,7 +86,7 @@ lemma sum_antidiagonal_exchange {ι M : Type*} [AddCommMonoid M]
         ih (fun x y z w => h x (κ ::ₘ y) z w), ih (fun x y z w => h (κ ::ₘ x) y z w)]
       abel
 
-/-- A multiset sum of linear maps, applied: the sum of the applications. -/
+/-- A multiset sum of linear maps, applied, is the sum of the applications. -/
 lemma sum_linearMap_apply {R M N : Type*} [Semiring R] [AddCommMonoid M]
     [AddCommMonoid N] [Module R M] [Module R N] (S : Multiset (M →ₗ[R] N)) (x : M) :
     S.sum x = (S.map fun f => f x).sum := by
@@ -192,5 +194,16 @@ lemma sum_antidiagonal_middle_exchange {ι M : Type*} [AddCommMonoid M]
     Multiset.sum_antidiagonal_assoc s (fun a b c => h a c b)]
   refine congrArg Multiset.sum (Multiset.map_congr rfl fun p hp => ?_)
   exact Multiset.sum_antidiagonal_swap p.2 (fun a b => h p.1 a b)
+
+/-- A nested antidiagonal sum over the splittings `s = x + y + z` is invariant under the cyclic
+  shift `(x, y, z) ↦ (z, x, y)` of the summand. -/
+lemma sum_antidiagonal_assoc_cycle {ι M : Type*} [AddCommMonoid M]
+    (s : Multiset ι) (h : Multiset ι → Multiset ι → Multiset ι → M) :
+    (s.antidiagonal.map fun p =>
+        (p.1.antidiagonal.map fun q => h q.1 q.2 p.2).sum).sum
+      = (s.antidiagonal.map fun p =>
+        (p.1.antidiagonal.map fun q => h p.2 q.1 q.2).sum).sum := by
+  rw [Multiset.sum_antidiagonal_assoc s h]
+  exact Multiset.sum_antidiagonal_swap s (fun a b => (b.antidiagonal.map fun q => h a q.1 q.2).sum)
 
 end Multiset
