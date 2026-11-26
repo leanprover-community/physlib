@@ -172,6 +172,7 @@ public import Physlib.Mathematics.ForMathlib.LinearPMap
 public import Physlib.Mathematics.ForMathlib.List
 public import Physlib.Mathematics.ForMathlib.List.InsertIdx
 public import Physlib.Mathematics.ForMathlib.List.InsertionSort
+public import Physlib.Mathematics.ForMathlib.LpStarOrder
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Basic
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Unitary
 public import Physlib.Mathematics.ForMathlib.OrthogonalMatrix
@@ -315,6 +316,8 @@ public import Physlib.ProbabilisticTheory.Channel.Convex
 public import Physlib.ProbabilisticTheory.Channel.Covariant
 public import Physlib.ProbabilisticTheory.Channel.Norm
 public import Physlib.ProbabilisticTheory.Channel.Reversible
+public import Physlib.ProbabilisticTheory.Classical.Basic
+public import Physlib.ProbabilisticTheory.Classical.Dirac
 public import Physlib.ProbabilisticTheory.Effect.Basic
 public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Physlib.ProbabilisticTheory.Effect.Convex
@@ -428,12 +431,14 @@ public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.Completen
 public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.Eigenfunction
 public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.Examples
 public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.TISE
+public import Physlib.QuantumMechanics.HilbertSpaces.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.FiniteTarget.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.Gaussians
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.PlaneWaves
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.PositionStates
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.SchwartzSubmodule
+public import Physlib.QuantumMechanics.HilbertSpaces.Qubit.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.DirichletSubmodule
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.Fourier
@@ -463,6 +468,7 @@ public import Physlib.QuantumMechanics.Operators.SpaceD.Momentum
 public import Physlib.QuantumMechanics.Operators.SpaceD.Multiplication
 public import Physlib.QuantumMechanics.Operators.SpaceD.Position
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.Basic
+public import Physlib.QuantumMechanics.Operators.SpectralTheory.Multiplication
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.SelfAdjoint
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.SpectralMeasure
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.Symmetric

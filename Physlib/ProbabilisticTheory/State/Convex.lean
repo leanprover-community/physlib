@@ -123,4 +123,14 @@ lemma isPure_iff_forall_mix_eq {ω : P.State} :
   simp only [isPure_iff_forall_mem_openSegment, mem_openSegment_iff_exists_mix,
     forall_exists_index, and_imp]
 
+/-- A positive observable with vanishing expectation in a genuine mixture vanishes in both
+components. -/
+lemma apply_eq_zero_of_mix_eq {ω φ ψ : P.State} {t : unitInterval} (ht0 : 0 < t) (ht1 : t < 1)
+    (h : mix φ ψ t = ω) {A : P.Observables} (hA : 0 ≤ A) (hωA : ω A = 0) :
+    φ A = 0 ∧ ψ A = 0 := by
+  rw [← h, mix_apply, add_eq_zero_iff_of_nonneg (mul_nonneg t.2.1 (map_nonneg φ hA))
+    (mul_nonneg (sub_nonneg.mpr t.2.2) (map_nonneg ψ hA))] at hωA
+  exact ⟨(mul_eq_zero.mp hωA.1).resolve_left (ne_of_gt ht0),
+    (mul_eq_zero.mp hωA.2).resolve_left (sub_ne_zero.mpr (ne_of_gt ht1))⟩
+
 end ProbabilisticTheory.State
