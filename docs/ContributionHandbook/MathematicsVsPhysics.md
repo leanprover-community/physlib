@@ -92,8 +92,6 @@ This is related to [Little math results](Basic.md#little-math-results) in the ba
 Unless you are developing a whole area of mathematics, write every lemma, auxiliary ones included, in terms of the physical quantities involved, in a file outside ./Mathematics. Someone else working on the same physics may need that result, and they should be able to use it as stated rather than first translating it back from the underlying mathematics.
 
 
-
-
 <a id="check-mathlib-first"></a>
 
 ## Check Mathlib first
