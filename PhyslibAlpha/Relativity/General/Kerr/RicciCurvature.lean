@@ -74,8 +74,9 @@ namespace KerrSpacetime
 
 ## A. Trace and Christoffel partial derivatives
 
-Differentiating the Boyer–Lindquist Christoffel symbols and contracted trace `tr_μ = ∂_μ ln(Σ sin θ)`
-along the `r` and `θ` coordinate slices prepares the cancellation of the Ricci tensor components.
+Differentiating the Boyer–Lindquist Christoffel symbols and contracted trace
+`tr_μ = ∂_μ ln(Σ sin θ)` along the `r` and `θ` coordinate slices prepares the cancellation of the
+Ricci tensor components.
 
 -/
 

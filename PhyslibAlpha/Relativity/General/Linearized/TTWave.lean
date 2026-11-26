@@ -21,15 +21,15 @@ and verification that they satisfy the linearized vacuum Einstein equations.
 A plane gravitational wave propagating along the `+z` direction with profile `f(t - z)` and
 polarization amplitudes `hPlus`, `hCross` is packaged as the `MetricPerturbation`
 `ttWave hPlus hCross f`. This module proves that `ttWave` is trace free, fixed by trace reversal,
-automatically in Lorenz gauge for any profile `f`, and solves `linEinstein = 0` for every `C²`
-wave profile.
+automatically in Lorenz gauge for any profile `f`, and solves `linearizedEinstein = 0` for every
+`C²` wave profile.
 
 ## ii. Key results
 
 - `ttWave`, `ttWave_trace_zero`, `traceReversed_ttWave` : transverse-traceless plane gravitational
   wave and its algebraic properties.
 - `ttWave_lorenz_gauge` : automatic Lorenz gauge for `ttWave`.
-- `ttWave_linEinstein_zero` : `TT` waves with `C²` profile solve `G^{(1)}_{ij} = 0`.
+- `ttWave_linearizedEinstein_zero` : `TT` waves with `C²` profile solve `G^{(1)}_{ij} = 0`.
 
 ## iii. Table of contents
 
@@ -75,14 +75,14 @@ noncomputable def ttWave (hPlus hCross : ℝ) (f : ℝ → ℝ) : MetricPerturba
 
 /-- A `TT` gravitational wave is trace-free: `η^{ij} h^{TT}_{ij} = 0`. -/
 lemma ttWave_trace_zero (hPlus hCross : ℝ) (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
-    hTrace ((ttWave hPlus hCross f).h x) = 0 := by
-  simp [hTrace, metricTrace, minkowski, ttWave, Fin.sum_univ_four]
+    perturbationTrace ((ttWave hPlus hCross f).h x) = 0 := by
+  simp [perturbationTrace, metricTrace, minkowski, ttWave, Fin.sum_univ_four]
 
 /-- Trace reversal acts trivially on `ttWave`. -/
 lemma traceReversed_ttWave (hPlus hCross : ℝ) (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
     (ttWave hPlus hCross f).traceReversed.h x = (ttWave hPlus hCross f).h x := by
   ext i j
-  simp [MetricPerturbation.traceReversed, traceReversed, ttWave_trace_zero]
+  simp [MetricPerturbation.traceReversed, traceReversed, Matrix.of_apply, ttWave_trace_zero]
 
 private lemma pd_1_wave (c : ℝ) (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
     coordDeriv 1 (fun y => c * f (y 0 - y 3)) x = 0 :=
@@ -95,7 +95,7 @@ private lemma pd_2_wave (c : ℝ) (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
 /-- A `TT` wave automatically satisfies the Lorenz gauge condition `∂^k h^{TT}_{kj} = 0`
 for any wave profile `f`. -/
 lemma ttWave_lorenz_gauge (hPlus hCross : ℝ) (f : ℝ → ℝ) (x : Fin 4 → ℝ) (j : Fin 4) :
-    lorenzGaugeCond (ttWave hPlus hCross f) x j := by
+    IsLorenzGauge (ttWave hPlus hCross f) x j := by
   have htr : ∀ y, (ttWave hPlus hCross f).traceReversed.h y = (ttWave hPlus hCross f).h y :=
     traceReversed_ttWave hPlus hCross f
   have hc0 : ∀ μ, coordDeriv μ (fun _ : Fin 4 → ℝ => (0 : ℝ)) x = 0 :=
@@ -104,7 +104,7 @@ lemma ttWave_lorenz_gauge (hPlus hCross : ℝ) (f : ℝ → ℝ) (x : Fin 4 → 
     have hfun : (fun y : Fin 4 → ℝ => -(hPlus * f (y 0 - y 3)))
         = fun y => (-hPlus) * f (y 0 - y 3) := funext fun y => by ring
     rw [hfun, pd_2_wave]
-  simp only [lorenzGaugeCond, lorenzDiv, htr, Fin.sum_univ_four, minkowskiMetric4_apply]
+  simp only [IsLorenzGauge, lorenzDivergence, htr, Fin.sum_univ_four, minkowskiMetric4_apply]
   fin_cases j <;>
     simp only [ttWave] <;> norm_num
   · simp [hc0]
@@ -134,26 +134,28 @@ private lemma pd_3_wave (c : ℝ) (f : ℝ → ℝ) (hf : Differentiable ℝ f) 
     (hd0.const_mul c).congr_deriv (by ring)
   exact coordDeriv_of_hasDerivAt 3 (hfun ▸ hd)
 
-private lemma boxEta_wave (c : ℝ) (f : ℝ → ℝ) (hf : ContDiff ℝ 2 f) (x : Fin 4 → ℝ) :
-    boxEta (fun y => c * f (y 0 - y 3)) x = 0 := by
+private lemma minkowskiDalembertian_wave (f : ℝ → ℝ) (hf : ContDiff ℝ 2 f) (x : Fin 4 → ℝ) :
+    minkowskiDalembertian (fun y => f (y 0 - y 3)) x = 0 := by
   have hf1 : Differentiable ℝ f := hf.differentiable (by norm_num)
   have hf2 : Differentiable ℝ (deriv f) :=
     ((contDiff_succ_iff_deriv (n := 1)).mp hf).2.2.differentiable (by norm_num)
-  have h0eq : coordDeriv (0 : Fin 4) (fun y : Fin 4 → ℝ => c * f (y 0 - y 3))
-      = fun y => c * deriv f (y 0 - y 3) :=
-    funext fun y => pd_0_wave c f hf1 y
-  have h3eq : coordDeriv (3 : Fin 4) (fun y : Fin 4 → ℝ => c * f (y 0 - y 3))
-      = fun y => (-c) * deriv f (y 0 - y 3) := by
+  have h0eq : coordDeriv (0 : Fin 4) (fun y : Fin 4 → ℝ => f (y 0 - y 3))
+      = fun y => deriv f (y 0 - y 3) := by
     funext y
-    rw [pd_3_wave c f hf1 y]
-    ring
-  have hc1 : coordDeriv (1 : Fin 4) (fun y : Fin 4 → ℝ => c * f (y 0 - y 3)) = fun _ => 0 :=
-    funext fun y => pd_1_wave c f y
-  have hc2 : coordDeriv (2 : Fin 4) (fun y : Fin 4 → ℝ => c * f (y 0 - y 3)) = fun _ => 0 :=
-    funext fun y => pd_2_wave c f y
-  simp only [boxEta, Fin.sum_univ_four, minkowskiMetric4_apply, h0eq, hc1, hc2, h3eq]
-  rw [pd_0_wave c (deriv f) hf2 x, pd_3_wave (-c) (deriv f) hf2 x, coordDeriv_const,
-    coordDeriv_const]
+    simpa using pd_0_wave 1 f hf1 y
+  have h3eq : coordDeriv (3 : Fin 4) (fun y : Fin 4 → ℝ => f (y 0 - y 3))
+      = fun y => (-1 : ℝ) * deriv f (y 0 - y 3) := by
+    funext y
+    simpa using pd_3_wave 1 f hf1 y
+  have hc1 : coordDeriv (1 : Fin 4) (fun y : Fin 4 → ℝ => f (y 0 - y 3)) = fun _ => 0 := by
+    funext y; simpa using pd_1_wave 1 f y
+  have hc2 : coordDeriv (2 : Fin 4) (fun y : Fin 4 → ℝ => f (y 0 - y 3)) = fun _ => 0 := by
+    funext y; simpa using pd_2_wave 1 f y
+  simp only [minkowskiDalembertian, Fin.sum_univ_four, minkowskiMetric4_apply, h0eq, hc1, hc2, h3eq]
+  have hp0 := pd_0_wave 1 (deriv f) hf2 x
+  have hp3 := pd_3_wave (-1) (deriv f) hf2 x
+  simp only [one_mul] at hp0
+  rw [hp0, hp3, coordDeriv_const, coordDeriv_const]
   norm_num
 
 private lemma contDiffAt_wave (c : ℝ) (f : ℝ → ℝ) (hf : ContDiff ℝ 2 f) (x : Fin 4 → ℝ) :
@@ -165,9 +167,9 @@ private lemma contDiffAt_wave (c : ℝ) (f : ℝ → ℝ) (hf : ContDiff ℝ 2 f
 
 /-- Every transverse-traceless gravitational wave with `C²` profile `f` satisfies the linearized
 vacuum Einstein equations `G^{(1)}_{ij} = 0`. -/
-lemma ttWave_linEinstein_zero (hPlus hCross : ℝ) (f : ℝ → ℝ) (hf : ContDiff ℝ 2 f)
+lemma ttWave_linearizedEinstein_zero (hPlus hCross : ℝ) (f : ℝ → ℝ) (hf : ContDiff ℝ 2 f)
     (x : Fin 4 → ℝ) (i j : Fin 4) :
-    linEinstein (ttWave hPlus hCross f) x i j = 0 := by
+    linearizedEinstein (ttWave hPlus hCross f) x i j = 0 := by
   have hc : (ttWave hPlus hCross f).IsC2At x := fun a b => by
     fin_cases a <;> fin_cases b <;> simp only [ttWave] <;> norm_num
     all_goals first
@@ -175,21 +177,19 @@ lemma ttWave_linEinstein_zero (hPlus hCross : ℝ) (f : ℝ → ℝ) (hf : ContD
       | exact contDiffAt_wave hPlus f hf x
       | exact (contDiffAt_wave hPlus f hf x).neg
       | exact contDiffAt_wave hCross f hf x
-  have hlz : ∀ᶠ y in nhds x, ∀ k, lorenzGaugeCond (ttWave hPlus hCross f) y k :=
+  have hlz : ∀ᶠ y in nhds x, ∀ k, IsLorenzGauge (ttWave hPlus hCross f) y k :=
     Filter.Eventually.of_forall fun y k => ttWave_lorenz_gauge hPlus hCross f y k
-  rw [linEinstein_lorenz_gauge (ttWave hPlus hCross f) x hc hlz i j]
+  rw [linearizedEinstein_lorenz_gauge (ttWave hPlus hCross f) x hc hlz i j]
   have htr : (fun y => (ttWave hPlus hCross f).traceReversed.h y i j)
       = fun y => (ttWave hPlus hCross f).h y i j := by
     funext y; simp [traceReversed_ttWave]
   rw [htr]
   fin_cases i <;> fin_cases j <;> simp only [ttWave] <;> norm_num
   all_goals first
-    | exact boxEta_zero x
-    | exact boxEta_wave hPlus f hf x
-    | (rw [show (fun y : Fin 4 → ℝ => -(hPlus * f (y 0 - y 3)))
-          = fun y => (-hPlus) * f (y 0 - y 3) from funext fun _ => by ring];
-        exact boxEta_wave (-hPlus) f hf x)
-    | exact boxEta_wave hCross f hf x
+    | exact minkowskiDalembertian_zero x
+    | (rw [minkowskiDalembertian_const_mul, minkowskiDalembertian_wave f hf x, mul_zero])
+    | (rw [minkowskiDalembertian_neg, minkowskiDalembertian_const_mul,
+        minkowskiDalembertian_wave f hf x, mul_zero, neg_zero])
 
 end Linearized
 

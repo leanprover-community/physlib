@@ -815,6 +815,7 @@ public import PhyslibAlpha.Relativity.Fermions.Weyl.Tensorial
 public import PhyslibAlpha.Relativity.Fermions.Weyl.Unit
 public import PhyslibAlpha.Relativity.General.GeodesicSystem
 public import PhyslibAlpha.Relativity.General.GravitationalConstant
+public import PhyslibAlpha.Relativity.General.InitialData.AnisotropicSlice
 public import PhyslibAlpha.Relativity.General.InitialData.Basic
 public import PhyslibAlpha.Relativity.General.InitialData.FlatSlice
 public import PhyslibAlpha.Relativity.General.Kerr.Basic
@@ -822,12 +823,15 @@ public import PhyslibAlpha.Relativity.General.Kerr.Christoffel
 public import PhyslibAlpha.Relativity.General.Kerr.MetricDeriv
 public import PhyslibAlpha.Relativity.General.Kerr.RicciCurvature
 public import PhyslibAlpha.Relativity.General.Linearized.Basic
-public import PhyslibAlpha.Relativity.General.Linearized.BoxEta
 public import PhyslibAlpha.Relativity.General.Linearized.GaugeTransform
 public import PhyslibAlpha.Relativity.General.Linearized.Laplacian3
-public import PhyslibAlpha.Relativity.General.Linearized.LinearizedCurvature
+public import PhyslibAlpha.Relativity.General.Linearized.LinearizedChristoffel
+public import PhyslibAlpha.Relativity.General.Linearized.LinearizedEinstein
+public import PhyslibAlpha.Relativity.General.Linearized.LinearizedRicci
+public import PhyslibAlpha.Relativity.General.Linearized.LinearizedRiemann
 public import PhyslibAlpha.Relativity.General.Linearized.LorenzGauge
-public import PhyslibAlpha.Relativity.General.Linearized.NewtonianPerturb
+public import PhyslibAlpha.Relativity.General.Linearized.MinkowskiDalembertian
+public import PhyslibAlpha.Relativity.General.Linearized.NewtonianPerturbation
 public import PhyslibAlpha.Relativity.General.Linearized.TraceReversed
 public import PhyslibAlpha.Relativity.General.Linearized.TTWave
 public import PhyslibAlpha.Relativity.General.MinkowskiCoordinateMetric

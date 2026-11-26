@@ -5,7 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
-public import PhyslibAlpha.Relativity.General.Linearized.BoxEta
+public import PhyslibAlpha.Relativity.General.Linearized.MinkowskiDalembertian
 public import PhyslibAlpha.Relativity.Metrics.ConformalMetric
 public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
 public import PhyslibAlpha.Relativity.Metrics.Minkowski
@@ -262,11 +262,11 @@ conformally flat metric `φ² η` computed through `GeneralRelativity.Pipeline`.
 lemma ricciScalarOf_nordstrom (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) (hφ : φ x ≠ 0)
     (hc2 : ContDiffAt ℝ 2 φ x) :
     ricciScalarOf (nordstromMetric φ) (nordstromMetricInv φ) x
-      = -6 * boxEta φ x / φ x ^ 3 := by
+      = -6 * minkowskiDalembertian φ x / φ x ^ 3 := by
   simp only [ricciScalarOf, Fin.sum_univ_four, nordstromMetricInv, conformalRescaleMetricInv,
     minkowskiMetric4_apply]
   norm_num
-  simp only [ricciTensorOf_nordstrom_diag φ x hφ hc2, boxEta, Fin.sum_univ_four,
+  simp only [ricciTensorOf_nordstrom_diag φ x hφ hc2, minkowskiDalembertian, Fin.sum_univ_four,
     minkowskiMetric4_apply]
   norm_num
   field_simp [hφ]
@@ -277,7 +277,7 @@ scalar wave equation `□φ = -4 π φ³ T`. -/
 lemma einsteinFokker_iff (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) (hφ : φ x ≠ 0)
     (hc2 : ContDiffAt ℝ 2 φ x) (T : ℝ) :
     ricciScalarOf (nordstromMetric φ) (nordstromMetricInv φ) x = 24 * Real.pi * T
-      ↔ boxEta φ x = -4 * Real.pi * φ x ^ 3 * T := by
+      ↔ minkowskiDalembertian φ x = -4 * Real.pi * φ x ^ 3 * T := by
   rw [ricciScalarOf_nordstrom φ x hφ hc2]
   have h3 : φ x ^ 3 ≠ 0 := pow_ne_zero 3 hφ
   constructor <;> intro h

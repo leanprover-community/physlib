@@ -35,10 +35,13 @@ nor axiomatised here.
 
 - `InitialData`, `InitialData.momentumConstraint`, `InitialData.hamiltonianConstraint`,
   `InitialData.IsVacuumData` : Cauchy data and vacuum constraint equations.
-- `InitialData.ham_zero_iff_scalarCurv_zero_of_K_zero` : time-symmetric vacuum data are
-  scalar flat.
+- `InitialData.hamiltonianConstraint_zero_iff_ricciScalar_zero_of_K_zero` : time-symmetric
+  vacuum data are scalar flat.
 - `InitialData.hamiltonianConstraint_eq_of_trace_zero` : maximal-slicing reduction `H = ³R - K_ij
   K^ij`.
+- `InitialData.trace_sq_eq_of_hamiltonianConstraint_zero`,
+  `InitialData.momentumConstraint_zero_of_covariantDeriv_zero` : scalar-flat trace identity and
+  vanishing momentum constraint under zero covariant derivative `∇K = 0`.
 
 ## iii. Table of contents
 
@@ -133,7 +136,7 @@ lemma hamiltonianConstraint_eq_ricciScalar_of_K_zero (D : InitialData) (hK : D.K
 
 /-- At a moment of time symmetry (`K = 0`), vanishing Hamiltonian constraint is equivalent to
 scalar flatness. -/
-lemma ham_zero_iff_scalarCurv_zero_of_K_zero (D : InitialData)
+lemma hamiltonianConstraint_zero_iff_ricciScalar_zero_of_K_zero (D : InitialData)
     (hK : D.K = 0) : D.hamiltonianConstraint = 0 ↔ ricciScalar D.h D.R3 = 0 := by
   rw [hamiltonianConstraint_eq_ricciScalar_of_K_zero D hK]
 
@@ -146,15 +149,16 @@ lemma hamiltonianConstraint_eq_of_trace_zero (D : InitialData) (htr : metricTrac
   simp [hamiltonianConstraint, htr]
 
 /-- On a scalar-flat slice, `H = 0` forces `(tr K)² = K_ij K^ij`. -/
-lemma trace_sq_eq_of_ham_zero (D : InitialData) (hH : D.hamiltonianConstraint = 0)
-    (hR : ricciScalar D.h D.R3 = 0) :
+lemma trace_sq_eq_of_hamiltonianConstraint_zero (D : InitialData)
+    (hH : D.hamiltonianConstraint = 0) (hR : ricciScalar D.h D.R3 = 0) :
     (metricTrace D.h D.K) ^ 2 =
       ∑ i, ∑ j, ∑ k, ∑ l, D.h.ginv i k * D.h.ginv j l * D.K i j * D.K k l := by
   simp only [hamiltonianConstraint] at hH
   linarith
 
-/-- Constant extrinsic curvature (`∂_μ K = 0`) satisfies the momentum constraint identically. -/
-lemma momConstraint_zero_of_dK_zero (D : InitialData) (dK : Fin 3 → Tensor2 3)
+/-- If the covariant derivative tensor `dK = ∇K` vanishes everywhere on the spatial slice, the
+momentum constraint holds identically. -/
+lemma momentumConstraint_zero_of_covariantDeriv_zero (D : InitialData) (dK : Fin 3 → Tensor2 3)
     (hdK : ∀ μ, dK μ = 0) : ∀ i, D.momentumConstraint dK i = 0 := by
   intro i
   simp [momentumConstraint, hdK]
