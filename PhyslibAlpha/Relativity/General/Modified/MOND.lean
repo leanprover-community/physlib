@@ -185,7 +185,7 @@ open scoped Classical in
 /-- In Physlib's classical reference frame, the norm of `pairGravityAcceleration` between
 non-coincident particles equals `newtonAccel`. -/
 lemma norm_pairGravityAcceleration_eq_newtonAccel {d : ℕ}
-    {frame : ClassicalMechanics.ReferenceFrame d} [Fact frame.IsMetricConserved]
+    {frame : ClassicalMechanics.ReferenceFrame d}
     (G : GravitationalConstant) (particles : Multiset frame.Particle)
     (source target : particles.ToType) (t : ℝ)
     (hne : source.1.pos t ≠ target.1.pos t) :
