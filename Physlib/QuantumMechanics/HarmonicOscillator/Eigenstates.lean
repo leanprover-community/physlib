@@ -37,6 +37,8 @@ hyperspherical harmonics. In such cases the energies only depend on the radial q
 - `raising_eigenfunction`, `lowering_eigenfunction`: `aᵢ† ψₙ = √(nᵢ + 1) ψₙ₊ₑᵢ`,
   `aᵢ ψₙ = √nᵢ ψₙ₋ₑᵢ`; `lowering_eigenfunction_zero`: `aᵢ ψ₀ = 0`.
 - `number_eigenfunction`: `Nᵢ ψₙ = nᵢ ψₙ`.
+- `positionCLM_mem_span_eigenfunction`, `exists_mem_span_eigenfunction_inner_pow_mul`: the span
+  of the eigenfunctions is stable under the position operators and contains `⟪x, w⟫ ^ r ψ₀(x)`.
 - `sum_number_eigenfunction`, `hamiltonian_eigenstate`: `H ψₙ = Eₙ ψₙ`.
 
 ## iii. Table of contents
@@ -385,6 +387,46 @@ lemma number_eigenfunction (i : Fin d) (n : Fin d → ℕ) :
     rw [show (((n i - 1 : ℕ) : ℝ) + 1) = ((n i : ℕ) : ℝ) by exact_mod_cast Nat.sub_add_cancel hpos,
       ← Complex.ofReal_mul, Real.mul_self_sqrt (by positivity)]
     rfl
+
+/-- The span of the eigenfunctions is stable under the position operators `𝐱 j`: each of them
+  is a combination of a lowering and a raising operator (`position_eq_lowering_add_raising`),
+  which shift one quantum number of an eigenfunction. -/
+lemma positionCLM_mem_span_eigenfunction (j : Fin d) {f : 𝓢(Space d, ℂ)}
+    (hf : f ∈ Submodule.span ℂ (Set.range Q.eigenfunction)) :
+    𝐱 j f ∈ Submodule.span ℂ (Set.range Q.eigenfunction) := by
+  have hle : Submodule.span ℂ (Set.range Q.eigenfunction) ≤
+      (Submodule.span ℂ (Set.range Q.eigenfunction)).comap
+        (𝐱 j : 𝓢(Space d, ℂ) →ₗ[ℂ] 𝓢(Space d, ℂ)) := by
+    refine Submodule.span_le.mpr ?_
+    rintro _ ⟨n, rfl⟩
+    rw [SetLike.mem_coe, Submodule.mem_comap, ContinuousLinearMap.coe_coe,
+      Q.position_eq_lowering_add_raising j, _root_.smul_apply, _root_.add_apply,
+      lowering_eigenfunction, raising_eigenfunction]
+    exact Submodule.smul_mem _ _ (Submodule.add_mem _
+      (Submodule.smul_mem _ _ (Submodule.subset_span ⟨_, rfl⟩))
+      (Submodule.smul_mem _ _ (Submodule.subset_span ⟨_, rfl⟩)))
+  exact hle hf
+
+/-- For `w : Space d` and `r : ℕ`, the wavefunction `x ↦ ⟪x, w⟫ ^ r ψ₀(x)`, a polynomial in the
+  position times the ground state, is a finite combination of eigenfunctions. -/
+lemma exists_mem_span_eigenfunction_inner_pow_mul (w : Space d) (r : ℕ) :
+    ∃ f ∈ Submodule.span ℂ (Set.range Q.eigenfunction),
+      ∀ x, f x = ((⟪x, w⟫_ℝ : ℝ) : ℂ) ^ r * Q.eigenfunction 0 x := by
+  induction r with
+  | zero => exact ⟨Q.eigenfunction 0, Submodule.subset_span ⟨0, rfl⟩, fun x ↦ by simp⟩
+  | succ r ih =>
+    obtain ⟨f, hf, hfx⟩ := ih
+    refine ⟨∑ j, ((w j : ℝ) : ℂ) • 𝐱 j f, Submodule.sum_mem _ fun j _ ↦
+      Submodule.smul_mem _ _ (Q.positionCLM_mem_span_eigenfunction j hf), fun x ↦ ?_⟩
+    have key (t : ℂ) : ∑ j, ((w j : ℝ) : ℂ) * (((x j : ℝ) : ℂ) * t) =
+        ((⟪x, w⟫_ℝ : ℝ) : ℂ) * t := by
+      rw [Space.inner_eq_sum, Complex.ofReal_sum, Finset.sum_mul]
+      refine Finset.sum_congr rfl fun j _ ↦ ?_
+      push_cast
+      ring
+    simp only [FunLike.coe_sum, Finset.sum_apply, _root_.smul_apply, positionCLM_apply, hfx,
+      smul_eq_mul]
+    rw [key, pow_succ', mul_assoc]
 
 /-!
 
