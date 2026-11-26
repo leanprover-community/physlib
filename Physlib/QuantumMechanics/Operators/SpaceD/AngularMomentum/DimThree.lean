@@ -5,7 +5,7 @@ Authors: Zhuoran Li
 -/
 module
 
-public import Physlib.QuantumMechanics.Operators.AngularMomentum
+public import Physlib.QuantumMechanics.Operators.SpaceD.AngularMomentum
 public import Physlib.Mathematics.LeviCivita.Basic
 
 /-!

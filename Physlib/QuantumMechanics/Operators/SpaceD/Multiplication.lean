@@ -1,11 +1,11 @@
 /-
 Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gregory J. Loges
+Authors: Philippe Kevorkian, Gregory J. Loges
 -/
 module
 
-public import Physlib.QuantumMechanics.Operators.Unbounded
+public import Physlib.QuantumMechanics.Operators.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.SchwartzSubmodule
 /-!
 
@@ -26,7 +26,8 @@ then the corresponding multiplication operator is densely defined, if `f` is `μ
 the domain is `⊤` and if `f` has temperate growth then the domain contains the Schwartz submodule.
 
 Multiplication operators also form the backbone for derivative operators, which are defined
-through multiplication in the Fourier domain: see `Operators/Derivative.lean`.
+through multiplication in the Fourier domain: see `Operators/Derivative.lean`. Their spectrum is
+computed in `Operators/SpectralTheory/Multiplication.lean`.
 
 ## ii. Key results
 
@@ -55,7 +56,7 @@ through multiplication in the Fourier domain: see `Operators/Derivative.lean`.
   - E.1. Smul & neg
   - E.2. Add & sub
   - E.3. Composition
-- F. Spectrum
+  - E.4. Range
 
 ## iv. References
 
@@ -416,6 +417,14 @@ lemma mulOperator_zero (μ : Measure (Space d)) : 𝓜 μ 0 = 0 := by
   · refine (mulOperator_apply_ae ⟨ψ, hψ⟩).trans ?_
     simpa using coeFn_zero.symm
 
+/-- The multiplication operator of the constant function `1` is the identity operator. -/
+@[simp]
+lemma mulOperator_one (μ : Measure (Space d)) : 𝓜 μ 1 = 1 := by
+  ext ψ hψ hψ'
+  · simpa [mem_mulOperator_domain_iff] using memHS_coe ψ
+  · refine (mulOperator_apply_ae ⟨ψ, hψ⟩).trans ?_
+    simp
+
 /-- `μ`-a.e. equal functions give rise to the same multiplication operator. -/
 lemma mulOperator_eq_of_congr_ae {μ : Measure (Space d)} {f g : Space d → ℂ} (h : f =ᵐ[μ] g) :
     𝓜 μ f = 𝓜 μ g := by
@@ -478,6 +487,17 @@ lemma mulOperator_const_smul_eq (μ : Measure (Space d)) (f : Space d → ℂ) {
   refine (eq_of_le_of_domain_eq (mulOperator_const_smul_ge μ f c) ?_).symm
   ext
   simp [mem_mulOperator_domain_iff, memHS_const_smul_iff hc]
+
+/-- Scalar multiplication and `mulOperator` commute for every `c`, `c = 0` included, when
+  `(𝓜 μ f).domain = ⊤`. -/
+lemma mulOperator_const_smul_eq' (μ : Measure (Space d)) (f : Space d → ℂ) (c : ℂ)
+    (h : (𝓜 μ f).domain = ⊤) : 𝓜 μ (c • f) = c • 𝓜 μ f := by
+  refine (eq_of_le_of_domain_eq (mulOperator_const_smul_ge μ f c) ?_).symm
+  rw [smul_domain, h, eq_comm, Submodule.eq_top_iff']
+  intro ψ
+  have hψ : ψ ∈ (𝓜 μ f).domain := h ▸ Submodule.mem_top
+  rw [mem_mulOperator_domain_iff] at *
+  simpa using hψ.const_smul c
 
 /-- Negation and `mulOperator` commute. -/
 @[simp]
@@ -571,6 +591,12 @@ lemma mulOperator_sub_eq' {μ : Measure (Space d)}
   simp only [sub_eq_add_neg, ← mulOperator_neg]
   exact mulOperator_add_eq' hf hg.neg c c' (by simpa) (by simpa)
 
+/-- For a constant `z`, multiplication by `f - z` is the operator `𝓜 μ f - z • 1`. Multiplication
+  by a constant is defined everywhere, so both operators have the domain of `𝓜 μ f`. -/
+lemma mulOperator_sub_smul_one (μ : Measure (Space d)) (f : Space d → ℂ) (z : ℂ) :
+    𝓜 μ (f - z • 1) = 𝓜 μ f - z • 1 := by
+  simp [mulOperator_sub_eq f, mulOperator_const_smul_eq' μ 1 z]
+
 TODO "Add to the sufficient conditions which ensure `𝓜 μ (f ± g) = 𝓜 μ f ± 𝓜 μ g`."
 
 /-!
@@ -615,14 +641,29 @@ TODO "`mulOperator_smul_eq` has the strong assumption `(𝓜 μ g).domain = ⊤`
   and/or find other sufficient conditions to ensure the equality `𝓜 μ (f • g) = 𝓜 μ f * 𝓜 μ g`."
 
 /-!
-## F. Spectrum
+### E.4. Range
 -/
 
-TODO "Prove that the spectrum of the multiplication operator `𝓜 μ f`
-  is the 'μ-essential range' of `f`."
-
-TODO "Prove that the spectrum of the multiplication operator `𝓜 μ f`
-  is the closure of `f.range` for continuous `f`."
+/-- If `f` is `μ`-a.e. strongly measurable and `ε ≤ ‖f x‖` for `μ`-a.e. `x`, with `ε > 0`, then
+  `𝓜 μ f` is onto. A preimage of `φ` is `f⁻¹ • φ`. -/
+lemma mulOperator_range_eq_top {μ : Measure (Space d)} {f : Space d → ℂ}
+    (hf : AEStronglyMeasurable f μ) {ε : ℝ} (hε : 0 < ε) (h : ∀ᵐ x ∂μ, ε ≤ ‖f x‖) :
+    (𝓜 μ f).toFun.range = ⊤ := by
+  have hne : ∀ᵐ x ∂μ, f x ≠ 0 := h.mono fun x hx ↦ norm_pos_iff.mp (hε.trans_le hx)
+  refine LinearMap.range_eq_top.mpr fun φ ↦ ?_
+  have hg : MemHS (fun x ↦ (f x)⁻¹ * φ x) μ := by
+    refine MemLp.of_le_mul (c := ε⁻¹) (memHS_coe φ) (hf.inv₀.mul (Lp.aestronglyMeasurable φ)) ?_
+    filter_upwards [h] with x hx
+    rw [norm_mul, norm_inv]
+    exact mul_le_mul_of_nonneg_right (inv_anti₀ hε hx) (norm_nonneg _)
+  have hdom : mk hg ∈ (𝓜 μ f).domain := by
+    refine mem_mulOperator_domain_iff.mpr <| (memHS_coe φ).ae_eq ?_
+    filter_upwards [coeFn_mk hg, hne] with x h₁ h₂
+    simp [h₁, h₂]
+  refine ⟨⟨mk hg, hdom⟩, ?_⟩
+  rw [toFun_eq_coe, ext_iff]
+  filter_upwards [mulOperator_apply_ae ⟨mk hg, hdom⟩, coeFn_mk hg, hne] with x h₁ h₂ h₃
+  rw [h₁, Pi.smul_apply', h₂, smul_eq_mul, mul_inv_cancel_left₀ h₃]
 
 end
 end SpaceDHilbertSpace

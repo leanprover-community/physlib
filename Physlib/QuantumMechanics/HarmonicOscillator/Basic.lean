@@ -6,8 +6,8 @@ Authors: Gregory J. Loges
 module
 
 public import Physlib.Meta.Informal.Basic
-public import Physlib.QuantumMechanics.Operators.Momentum
-public import Physlib.QuantumMechanics.Operators.Multiplication
+public import Physlib.QuantumMechanics.Operators.SpaceD.Momentum
+public import Physlib.QuantumMechanics.Operators.SpaceD.Multiplication
 /-!
 
 # The quantum harmonic oscillator

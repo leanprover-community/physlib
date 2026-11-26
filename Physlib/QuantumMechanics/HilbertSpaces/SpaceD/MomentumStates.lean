@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.QuantumMechanics.Operators.Momentum
+public import Physlib.QuantumMechanics.Operators.SpaceD.Momentum
 /-!
 
 # Momentum states

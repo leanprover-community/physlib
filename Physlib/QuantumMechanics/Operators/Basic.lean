@@ -24,7 +24,7 @@ In this module we collect results on how the properties `HasDenseDomain`, `IsUnb
 `IsSymmetric`, `IsSelfAdjoint` and `IsEssentiallySelfAdjoint` interact with the basic algebraic
 operations, closure, adjoints, unitary conjugation and each other.
 
-### Notes
+**Notes**
 
 - Naming convention : Definitions of `LinearPMap`s for quantum mechanical unbounded operators should
     have a name of the form `[…]Operator` and notation should use calligraphic capital letters,
