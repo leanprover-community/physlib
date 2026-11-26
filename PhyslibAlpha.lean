@@ -809,6 +809,7 @@ public import PhyslibAlpha.Relativity.Fermions.Weyl.Metric
 public import PhyslibAlpha.Relativity.Fermions.Weyl.MetricPairing
 public import PhyslibAlpha.Relativity.Fermions.Weyl.Tensorial
 public import PhyslibAlpha.Relativity.Fermions.Weyl.Unit
+public import PhyslibAlpha.Relativity.General.Schwarzschild.EntropyLogCorrection
 public import PhyslibAlpha.Relativity.General.Schwarzschild.IncompressibleSphere
 public import PhyslibAlpha.Relativity.IsLorentzDeriv
 public import PhyslibAlpha.Relativity.LorentzGroup.Basic
