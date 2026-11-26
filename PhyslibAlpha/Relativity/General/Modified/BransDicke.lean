@@ -78,6 +78,9 @@ namespace BransDicke
 
 ## A. The PPN parameter and the general-relativity limit
 
+In weak-field solar-system experiments, the scalar coupling `ω` determines the space-curvature
+PPN parameter `γ = (1 + ω) / (2 + ω)`, which recovers General Relativity (`γ → 1`) as `ω → ∞`.
+
 -/
 
 /-- Brans–Dicke scalar–tensor gravity parameterized by its dimensionless Dicke coupling `ω`. -/
@@ -134,6 +137,9 @@ lemma fR_gamma : gamma 0 = 1 / 2 := by
 /-!
 
 ## B. The effective gravitational coupling
+
+Virtual scalar exchange enhances Newton's gravitational constant between non-relativistic masses
+by the weak-field factor `coupling ω = (4 + 2ω) / (3 + 2ω)`.
 
 -/
 

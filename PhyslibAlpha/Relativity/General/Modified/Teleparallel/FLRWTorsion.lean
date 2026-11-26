@@ -69,6 +69,9 @@ open GeneralRelativity.Modified.EinsteinCartan
 
 ## A. Flat FLRW teleparallel cosmology and `R_LC = -T + B`
 
+Instantiating the diagonal flat FLRW comoving tetrad yields the Hubble connection, `T = 6 H²`,
+and exact agreement with `FLRWSpacetime.ricciScalarOf` up to the boundary divergence `B`.
+
 -/
 
 /-- Diagonal flat FLRW comoving tetrad `e^A_i = diag(1, a(t), a(t), a(t))`. -/

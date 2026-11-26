@@ -61,6 +61,9 @@ namespace KaluzaKlein
 
 ## A. Five-dimensional Kaluza–Klein metric and inverse
 
+Combining a 4D metric `M`, electromagnetic four-potential `A`, and dilaton `φ` yields a
+nondegenerate 5D metric tensor together with its explicit block inverse.
+
 -/
 
 /-- Five-dimensional Kaluza–Klein configuration pairing a 4D metric `M`, electromagnetic

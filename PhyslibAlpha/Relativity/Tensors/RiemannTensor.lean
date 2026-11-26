@@ -58,6 +58,9 @@ namespace GeneralRelativity
 
 ## A. The Riemann curvature tensor
 
+An algebraic `RiemannTensor n` carries last-pair antisymmetry, pair-exchange symmetry, and the
+first Bianchi identity, inducing the full symmetry relations and Kretschmann scalar.
+
 -/
 
 /-- Covariant components of the Riemann tensor with its algebraic symmetries. `bianchi` is the

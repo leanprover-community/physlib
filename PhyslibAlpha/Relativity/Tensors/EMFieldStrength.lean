@@ -48,6 +48,9 @@ namespace GeneralRelativity
 
 ## A. Bridge to Physlib's `ElectromagneticPotential.toFieldStrength`
 
+Reindexing Physlib's electromagnetic field strength tensor maps coordinate components into
+`Tensor2 4` while preserving antisymmetry.
+
 -/
 
 open TensorSpecies Tensor Tensorial

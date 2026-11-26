@@ -51,6 +51,9 @@ variable {n : ℕ}
 
 ## A. Metric trace and linearity
 
+Contracting rank-2 tensors against `M.ginv` defines `metricTrace`, which is linear in the tensor
+argument and evaluates to spacetime dimension `n` on `M.g`.
+
 -/
 
 /-- Full contraction of the inverse metric with a rank-2 tensor, `g^{ij} T_{ij}`. -/

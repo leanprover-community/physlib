@@ -65,6 +65,9 @@ open GeneralRelativity.Modified.EinsteinCartan
 
 ## A. Weitzenböck connection, torsion, and superpotential
 
+A tetrad coframe and its inverse define the curvature-free Weitzenböck connection, whose torsion
+contracts with the teleparallel superpotential to form the torsion scalar `T`.
+
 -/
 
 /-- An orthonormal tetrad (vielbein) frame `e^A_i` paired with its inverse `e_A^i` in `n`

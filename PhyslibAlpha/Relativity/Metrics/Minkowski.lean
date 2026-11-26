@@ -67,6 +67,9 @@ namespace GeneralRelativity
 
 ## A. The Minkowski matrix `η`
 
+Fixing the `(-, +, +, +)` signature convention defines the constant reference metric
+`minkowskiMetric4` and bundles it as `minkowski : MetricTensor 4`.
+
 -/
 
 /-- The Minkowski metric of signature `(-, +, +, +)` in inertial coordinates, obtained by

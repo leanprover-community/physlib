@@ -28,8 +28,8 @@ metric `g`, a scalar field `φ`, and a unit timelike vector field `U`:
 In an orthonormal frame where `g = η = diag(-1, 1, 1, 1)` and `U = ∂_t`, this reduces to
 `diag(-e^{2φ}, e^{-2φ}, e^{-2φ}, e^{-2φ})`. This module bundles that configuration into
 `TeVeSMetric`, proves that `T.metric` remains symmetric and Lorentzian
-(`g̃_{00} < 0`, `g̃_{ii} > 0`) for every `φ : ℝ`, preserves the conformal spatial metric `e^{-2φ} δ`,
-and admits an explicit two-sided inverse bundled into `MetricTensor 4`.
+(`g̃_{00} < 0`, `g̃_{ii} > 0`) for every `φ : ℝ`, preserves the conformal spatial metric
+`e^{-2φ} δ`, and admits an explicit two-sided inverse bundled into `MetricTensor 4`.
 
 ## ii. Key results
 

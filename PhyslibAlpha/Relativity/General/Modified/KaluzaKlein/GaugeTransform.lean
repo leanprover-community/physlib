@@ -57,6 +57,9 @@ namespace KaluzaKlein
 
 ## A. Compact-circle diffeomorphisms and U(1) gauge transformations
 
+Volume-preserving shifts along the compact fifth circle act on the 5D metric by shifting the
+4D electromagnetic potential `A_μ ↦ A_μ + ∂_μ λ`.
+
 -/
 
 /-- Jacobian matrix `(∂x'^A / ∂x^B)` of a 5D compact-circle coordinate shift `x'^4 = x^4 + λ(x^μ)`

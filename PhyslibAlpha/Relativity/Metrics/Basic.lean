@@ -52,6 +52,9 @@ namespace GeneralRelativity
 
 ## A. Metric tensors with explicit inverses
 
+Packaging the covariant metric and its two-sided inverse in `MetricTensor` supplies symmetric
+index-contraction lemmas used throughout curvature calculations.
+
 -/
 
 /-- A nondegenerate metric in components, carried together with an explicit two-sided

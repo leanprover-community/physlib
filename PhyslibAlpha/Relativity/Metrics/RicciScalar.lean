@@ -47,6 +47,9 @@ namespace GeneralRelativity
 
 ## A. Scalar curvature
 
+Contracting `ricci M R` with `M.ginv` produces the scalar curvature invariant `ricciScalar M R`,
+matching `metricTrace M (ricci M R)`.
+
 -/
 
 /-- Scalar curvature `S = ∑ i j, g^{ij} Ric_{ij}`. -/

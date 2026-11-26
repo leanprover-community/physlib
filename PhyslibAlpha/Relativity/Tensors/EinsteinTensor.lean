@@ -57,6 +57,9 @@ variable {n : ℕ}
 
 ## A. The Einstein tensor and its trace identity
 
+Subtracting half the scalar curvature trace guarantees divergence-free dynamics and yields the
+dimension-dependent trace identity `(1 - n/2) S`.
+
 -/
 
 /-- The Einstein tensor `G_{ij} = Ric_{ij} - (1/2) S g_{ij}`. -/
@@ -88,6 +91,9 @@ lemma metricTrace_einstein (M : MetricTensor n) (R : RiemannTensor n) :
 /-!
 
 ## B. Four-dimensional vacuum and Einstein-space equations
+
+In four spacetime dimensions, vanishing Einstein tensor forces scalar and Ricci flatness, while
+`G + Λ g = 0` is equivalent to `Ric = Λ g`.
 
 -/
 

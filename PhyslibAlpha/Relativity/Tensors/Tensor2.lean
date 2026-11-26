@@ -50,6 +50,8 @@ namespace GeneralRelativity
 
 ## A. Rank-2 tensors and symmetry
 
+Rank-2 tensors on `Fin n` are modeled as `Matrix (Fin n) (Fin n) ℝ` together with `IsSymm`.
+
 -/
 
 /-- A rank-2 covariant tensor in a fixed frame or coordinate basis: a real matrix of

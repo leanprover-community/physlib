@@ -67,6 +67,9 @@ namespace MassiveGravity
 
 ## A. Fierz–Pauli mass term and ghost-free trace constraint
 
+Comparing generic quadratic mass mixings singles out `α = -1` as the unique ghost-free tuning
+canceling longitudinal higher-derivative kinetic terms and enforcing vacuum tracelessness.
+
 -/
 
 /-- Fierz–Pauli linearized massive gravity parameterized by graviton mass `m` and mass-term

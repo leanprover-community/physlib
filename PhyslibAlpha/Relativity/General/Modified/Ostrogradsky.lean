@@ -23,8 +23,8 @@ Hamiltonian for non-degenerate second-order Lagrangians.
 ## i. Overview
 
 By Ostrogradsky's theorem, a non-degenerate Lagrangian depending on second time derivatives
-`L(q, q̇, q̈)` introduces a second canonical pair `(q̇, p₁)` whose canonical momentum `p₁` enters
-the canonical Hamiltonian only linearly as `p₁ q̇`. Consequently, for any non-zero velocity `q̇ ≠ 0`,
+`L(q, q̇, q̈)` introduces a second canonical pair `(q̇, p₁)` whose canonical momentum `p₁`
+enters the canonical Hamiltonian only linearly as `p₁ q̇`. For any non-zero velocity `q̇ ≠ 0`,
 the Hamiltonian is unbounded below — the Ostrogradsky ghost — explaining why viable modified
 gravity theories must either reduce to healthy scalar–tensor theories (`f(R)`) or restrict to
 second-order field equations (Horndeski / Galileons).

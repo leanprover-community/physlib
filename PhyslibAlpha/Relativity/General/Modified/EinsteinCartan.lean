@@ -73,6 +73,9 @@ namespace EinsteinCartan
 
 ## A. Affine connections and torsion tensor
 
+Relaxing connection symmetry replaces zero torsion by the antisymmetric Cartan tensor
+`T^k_{ij} = Γ^k_{ij} - Γ^k_{ji}`, which vanishes identically for Levi-Civita connections.
+
 -/
 
 /-- General `(1,2)` affine connection coefficients `Γ^k_{ij}` in `n` dimensions. -/
@@ -120,6 +123,9 @@ lemma torsion_add_symm {n : ℕ} (Γ S : AffineConnection n) (hs : ∀ k i j, S 
 /-!
 
 ## B. Metric compatibility and contorsion existence and uniqueness
+
+Every metric-compatible affine connection splits uniquely into the Levi-Civita connection plus the
+contorsion tensor built algebraically from its torsion.
 
 -/
 
@@ -342,6 +348,9 @@ lemma EinsteinCartanData.connection_unique {n : ℕ} (D : EinsteinCartanData n)
 /-!
 
 ## C. Cartan algebraic spin-torsion inversion in four dimensions
+
+In four spacetime dimensions, Cartan's algebraic field equation `T̃^k_{ij} = κ spin^k_{ij}`
+inverts linearly, forcing torsion to vanish identically in spinless vacuum.
 
 -/
 

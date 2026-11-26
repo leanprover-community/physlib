@@ -53,6 +53,9 @@ namespace GeneralRelativity
 
 ## A. The Ricci tensor
 
+Contracting the first and third indices of a `RiemannTensor` against `M.ginv` yields the symmetric
+Ricci curvature tensor `ricci M R`.
+
 -/
 
 /-- The general Ricci tensor `Ric_{ij} = ∑ k l, g^{kl} R_{kilj}` obtained by contracting the
