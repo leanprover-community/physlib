@@ -8,6 +8,7 @@ module
 public import Physlib.QuantumMechanics.RectangularBarrier.Basic
 public import Mathlib.Analysis.Calculus.MeanValue
 public import Mathlib.Analysis.Complex.RealDeriv
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
 
@@ -21,16 +22,21 @@ A stationary wave is represented by a function of the real spatial coordinate.
 For a real potential, the Schrödinger equation makes the derivative of the
 probability current vanish within each region. Continuity of the wave and its
 first derivative gives the same current on both sides of each interface.
+For a wave incident from the left, the common exterior wave number lets us
+express this conservation as a balance of the squared amplitudes.
 
 ## ii. Key results
 
 - `RectangularBarrier.probabilityCurrent_eq` gives equality of the current at any
   two positions for a classical stationary wave of the barrier.
+- `RectangularBarrier.reflection_add_transmission_eq_one` gives the normalized
+  flux balance for a stationary wave with the stated exterior plane-wave forms.
 
 ## iii. Table of contents
 
 - A. Probability current and stationary waves
 - B. Conservation across the interfaces
+- C. Exterior plane waves and flux balance
 
 ## iv. References
 
@@ -45,7 +51,7 @@ noncomputable section
 namespace QuantumMechanics.RectangularBarrier
 
 open Set Constants
-open scoped ComplexConjugate
+open scoped ComplexConjugate Topology
 
 /-! ## A. Probability current and stationary waves -/
 
@@ -122,5 +128,77 @@ lemma probabilityCurrent_eq {Q : RectangularBarrier} {E : ℝ} {ψ : ℝ → ℂ
         (by rw [closure_Ioi]; exact le_of_not_ge hu) (by rw [closure_Ioi]; exact le_rfl)
     exact hr.trans (hmid Q.upper ⟨Q.h_bounds.le, le_rfl⟩)
   exact (hAll x).trans (hAll y).symm
+
+/-! ## C. Exterior plane waves and flux balance -/
+
+/-- The plane wave with wave number `k` at position `x`. -/
+def planeWave (k x : ℝ) : ℂ :=
+  Complex.exp ((k : ℂ) * (x : ℂ) * Complex.I)
+
+private lemma hasDerivAt_planeWave (k x : ℝ) :
+    HasDerivAt (planeWave k) ((k : ℂ) * Complex.I * planeWave k x) x := by
+  have h : HasDerivAt (planeWave k) (planeWave k x * ((k : ℂ) * 1 * Complex.I)) x :=
+    ((((hasDerivAt_id x).ofReal_comp).const_mul (k : ℂ)).mul_const Complex.I).cexp
+  exact h.congr_deriv (by ring)
+
+private lemma norm_planeWave (k x : ℝ) : ‖planeWave k x‖ = 1 := by
+  rw [planeWave, ← Complex.ofReal_mul, Complex.norm_exp_ofReal_mul_I]
+
+private lemma planeWave_flux_algebra (u v : ℂ) (k : ℝ) :
+    (conj (u + v) * ((k : ℂ) * Complex.I * (u - v))).im =
+      k * (‖u‖ ^ 2 - ‖v‖ ^ 2) := by
+  simp [Complex.sq_norm, Complex.normSq_apply, Complex.mul_im, Complex.mul_re,
+    Complex.add_re, Complex.add_im, Complex.sub_re, Complex.sub_im]
+  ring
+
+/-- The current of two counterpropagating plane waves is the difference of their currents. -/
+lemma probabilityCurrent_two_plane_waves (Q : RectangularBarrier) (k : ℝ) (A B : ℂ) (x : ℝ) :
+    Q.probabilityCurrent (fun y => A * planeWave k y + B * planeWave (-k) y) x =
+      ((ℏ : ℝ) / Q.m * k) * (‖A‖ ^ 2 - ‖B‖ ^ 2) := by
+  have h := ((hasDerivAt_planeWave k x).const_mul A).add
+    ((hasDerivAt_planeWave (-k) x).const_mul B)
+  have hderiv : HasDerivAt (fun y => A * planeWave k y + B * planeWave (-k) y)
+      ((k : ℂ) * Complex.I * (A * planeWave k x - B * planeWave (-k) x)) x := by
+    refine h.congr_deriv ?_
+    push_cast
+    ring
+  rw [probabilityCurrent, hderiv.deriv, planeWave_flux_algebra, ← mul_assoc]
+  simp only [norm_mul, norm_planeWave, mul_one]
+
+private lemma probabilityCurrent_congr (Q : RectangularBarrier) {ψ φ : ℝ → ℂ} {x : ℝ}
+    (h : ψ =ᶠ[𝓝 x] φ) : Q.probabilityCurrent ψ x = Q.probabilityCurrent φ x := by
+  simp only [probabilityCurrent, h.eq_of_nhds, h.deriv_eq]
+
+variable {Q : RectangularBarrier} {E k : ℝ} {ψ : ℝ → ℂ} {A B C : ℂ}
+
+/-- For a stationary wave with a left incident wave and no right incident wave, the incident
+squared amplitude equals the sum of the reflected and transmitted squared amplitudes. -/
+lemma incident_norm_sq_eq (hψ : Q.IsStationaryWave E ψ) (hk : 0 < k)
+    (hLeft : EqOn ψ (fun x => A * planeWave k x + B * planeWave (-k) x) (Iio Q.lower))
+    (hRight : EqOn ψ (fun x => C * planeWave k x) (Ioi Q.upper)) :
+    ‖A‖ ^ 2 = ‖B‖ ^ 2 + ‖C‖ ^ 2 := by
+  let xL := Q.lower - 1
+  let xR := Q.upper + 1
+  have hL : ψ =ᶠ[𝓝 xL] fun x => A * planeWave k x + B * planeWave (-k) x := by
+    filter_upwards [Iio_mem_nhds (sub_lt_self Q.lower zero_lt_one)] with x hx using hLeft hx
+  have hR : ψ =ᶠ[𝓝 xR] fun x => C * planeWave k x + 0 * planeWave (-k) x := by
+    filter_upwards [Ioi_mem_nhds (lt_add_of_pos_right Q.upper zero_lt_one)] with x hx
+    simpa only [zero_mul, add_zero] using hRight hx
+  have hj := probabilityCurrent_eq hψ xL xR
+  rw [probabilityCurrent_congr Q hL, probabilityCurrent_congr Q hR,
+    probabilityCurrent_two_plane_waves, probabilityCurrent_two_plane_waves] at hj
+  have hc : ((ℏ : ℝ) / Q.m * k) ≠ 0 :=
+    mul_ne_zero (div_ne_zero ℏ_ne_zero Q.m_ne_zero) hk.ne'
+  have h : ‖A‖ ^ 2 - ‖B‖ ^ 2 = ‖C‖ ^ 2 := by
+    simpa using mul_left_cancel₀ hc hj
+  simpa only [add_comm] using sub_eq_iff_eq_add.mp h
+
+/-- The reflection and transmission coefficients for a nonzero incident wave sum to one. -/
+lemma reflection_add_transmission_eq_one (hψ : Q.IsStationaryWave E ψ) (hk : 0 < k) (hA : A ≠ 0)
+    (hLeft : EqOn ψ (fun x => A * planeWave k x + B * planeWave (-k) x) (Iio Q.lower))
+    (hRight : EqOn ψ (fun x => C * planeWave k x) (Ioi Q.upper)) :
+    ‖B‖ ^ 2 / ‖A‖ ^ 2 + ‖C‖ ^ 2 / ‖A‖ ^ 2 = 1 := by
+  rw [← add_div, ← incident_norm_sq_eq hψ hk hLeft hRight,
+    div_self (pow_ne_zero 2 (norm_ne_zero_iff.mpr hA))]
 
 end QuantumMechanics.RectangularBarrier
