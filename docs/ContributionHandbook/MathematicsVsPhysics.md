@@ -47,23 +47,33 @@ A file should read like physics. Proofs of results may unfold down to the underl
 
 ## The ./Mathematics directory
 
-(excluding ./ForMathlib)
+(excluding ./ForMathlib, which is discussed in the next [section](#check-mathlib-first))
 
 The ./Mathematics directory is for areas of mathematics that are either used predominantly by physicists, or in which physicists have their own conventions and ways of working. Some mathematics in Mathlib is set up in a form that suits mathematicians but is not directly usable in physics, and cannot easily be adapted to it. This directory is where those results are developed again in the form a physicist would use. It is not a place for one-off lemmas that a single physics proof happened to need. Examples include variational calculus, explicit forms of groups, special functions etc.
 
 The results in ./Mathematics support the physics; they do not replace it. Even written in a physicist's conventions, a result there is still a statement about mathematical objects. Where it is used, it should be stated again in terms of the physical system it describes, with the mathematical result doing the work in the proof.
 
-For the physicists' Hermite polynomials, the following would appear in `./Mathematics`
+For the physicists' Hermite polynomials, the following appears in  [Physlib/Mathematics/SpecialFunctions/PhysHermite.lean](../../Physlib/Mathematics/SpecialFunctions/PhysHermite.lean)
 ```lean
 lemma physHermite_orthogonal {n m : ℕ} (hnm : n ≠ m) :
     ∫ x : ℝ, (physHermite n x * physHermite m x) * Real.exp (- x ^ 2) = 0
 ```
-whilst the following would also exist in `../QuantumHarmonicOscillator`
+whilst the following appears in [Physlib/QuantumMechanics/HarmonicOscillator/OneDimension/Eigenfunction.lean](../../Physlib/QuantumMechanics/HarmonicOscillator/OneDimension/Eigenfunction.lean)
 ```lean
 /-- The eigenfunctions are orthonormal within the Hilbert space. -/
 lemma eigenfunction_orthonormal :
     Orthonormal ℂ (fun n => HilbertSpace.mk (Q.eigenfunction_memHS n))
 ```
+
+
+<a id="formathlib-directory"></a>
+
+## The ./Mathematics/ForMathlib directory
+
+
+If you’re formalizing a physics result and need mathematical machinery that would fit in Mathlib, ForMathlib gives you a place to put it while it’s being prepared for upstream. The ./Mathematics/ForMathlib directory is only for results that you genuinely expect to be contributed to Mathlib. A result belongs there if it is stated in Mathlib's own language and generality, with no physics in it, and would be accepted upstream as it stands or with minor changes. It is not a holding area for general-looking lemmas that have no other obvious home.
+
+Two rules are checked automatically: a file in ForMathlib may only import other files from ForMathlib (and Mathlib), and every file there must be used somewhere outside the directory. This latter point is to prevent people storing results in Physlib which should really go in Mathlib, and which don't have a use in Physlib. Do not try and get around this by putting such things into ./Mathematics more generally.
 
 <a id="no-physics-in-mathematics"></a>
 
@@ -73,6 +83,7 @@ A result in ./Mathematics should be a statement about mathematical objects only.
 
 If a result only makes sense for a particular physical system, it is physics, and belongs with that system.
 
+This is related to [Little math results](Basic.md#little-math-results) in the basics handbook.
 
 <a id="use-physics-where-possible"></a>
 
@@ -81,13 +92,6 @@ If a result only makes sense for a particular physical system, it is physics, an
 Unless you are developing a whole area of mathematics, write every lemma, auxiliary ones included, in terms of the physical quantities involved, in a file outside ./Mathematics. Someone else working on the same physics may need that result, and they should be able to use it as stated rather than first translating it back from the underlying mathematics.
 
 
-<a id="formathlib-directory"></a>
-
-## The ./Mathematics/ForMathlib directory
-
-The ./Mathematics/ForMathlib directory is only for results that you genuinely expect to be contributed to Mathlib. A result belongs there if it is stated in Mathlib's own language and generality, with no physics in it, and would be accepted upstream as it stands or with minor changes. It is not a holding area for general-looking lemmas that have no other obvious home.
-
-Two rules are checked automatically: a file in ForMathlib may only import other files from ForMathlib (and Mathlib), and every file there must be used somewhere outside the directory. This latter point is to prevent people storing results in Physlib which should really go in Mathlib, and which don't have a use in Physlib. Do not try and get around this by putting such things into ./Mathematics more generally.
 
 
 <a id="check-mathlib-first"></a>
