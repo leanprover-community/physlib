@@ -5,7 +5,7 @@ Authors: Philippe Kevorkian, Gregory J. Loges
 -/
 module
 
-public import Physlib.QuantumMechanics.Operators.Unbounded
+public import Physlib.QuantumMechanics.Operators.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.SchwartzSubmodule
 /-!
 

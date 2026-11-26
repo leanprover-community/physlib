@@ -6,7 +6,7 @@ Authors: Gregory J. Loges
 module
 
 public import Physlib.QuantumMechanics.SpaceDQuantumSystem
-public import Physlib.QuantumMechanics.Operators.Position
+public import Physlib.QuantumMechanics.Operators.SpaceD.Position
 /-!
 
 # Hydrogen atom

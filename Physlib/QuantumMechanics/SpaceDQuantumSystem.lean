@@ -6,7 +6,7 @@ Authors: Gregory J. Loges
 module
 
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.MomentumStates
-public import Physlib.QuantumMechanics.Operators.Multiplication
+public import Physlib.QuantumMechanics.Operators.SpaceD.Multiplication
 public import Physlib.SpaceAndTime.Space.Translations
 /-!
 

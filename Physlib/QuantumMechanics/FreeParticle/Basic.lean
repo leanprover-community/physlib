@@ -6,7 +6,7 @@ Authors: Gregory J. Loges
 module
 
 public import Physlib.Meta.Informal.Basic
-public import Physlib.QuantumMechanics.Operators.Momentum
+public import Physlib.QuantumMechanics.Operators.SpaceD.Momentum
 /-!
 
 # The free particle on `Space d`

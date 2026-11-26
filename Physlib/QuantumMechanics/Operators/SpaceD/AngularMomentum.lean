@@ -42,7 +42,7 @@ Notation:
 ## iii. Table of contents
 
 - A. Angular momentum operator
-  - A.1 Antisymmetry
+  - A.1. Antisymmetry
 - B. Angular momentum squared operator
 - C. Special cases in low dimensions
 - D. Hilbert-space angular momentum operator
@@ -90,7 +90,7 @@ lemma angularMomentumCLM_apply {d : ℕ} (i j : Fin d) (ψ : 𝓢(Space d, ℂ))
 
 /-!
 
-### A.1 Antisymmetry
+### A.1. Antisymmetry
 
 -/
 
