@@ -16,6 +16,9 @@ public import Physlib.QuantumMechanics.Operators.Basic
 
 ## iii. Table of contents
 
+- A. Self-adjoint from symmetric
+- B. Properties
+
 ## iv. References
 
 -/
@@ -27,48 +30,15 @@ namespace LinearPMap
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
   {T : H →ₗ.[ℂ] H}
 
+/-!
+## A. Self-adjoint from symmetric
+-/
+
 lemma IsSymmetric.isSelfAdjoint_iff (h : T.IsSymmetric) (h' : T.HasDenseDomain) :
     IsSelfAdjoint T ↔ T†.domain = T.domain := by
   constructor <;> intro h''
   · congr
   · exact (eq_of_le_of_domain_eq ((isSymmetric_iff_le_adjoint h').mp h) h''.symm).symm
-
-namespace IsSelfAdjoint
-
-variable (h : IsSelfAdjoint T)
-
-include h
-
-lemma isSymmetric : T.IsSymmetric := by
-  rw [isSymmetric_def]
-  nth_rw 1 [← h]
-  exact adjoint_isFormalAdjoint h.dense_domain
-
-lemma isClosed : T.IsClosed := h ▸ adjoint_isClosed h.dense_domain
-
-lemma isClosable : T.IsClosable := (isClosed h).isClosable
-
-lemma isUnbounded : T.IsUnbounded := ⟨h.dense_domain, isClosable h⟩
-
-@[aesop safe apply]
-lemma adjoint : IsSelfAdjoint T† := by
-  apply isSelfAdjoint_def.mp at h
-  exact h.symm ▸ h
-
-open scoped ComplexConjugate in
-@[aesop safe apply]
-protected lemma smul {c : ℂ} (hc : c ≠ 0) (hc' : conj c = c) : IsSelfAdjoint (c • T) := by
-  rw [isSelfAdjoint_def, T.adjoint_smul hc, hc', isSelfAdjoint_def.mp h]
-
-@[aesop safe apply]
-protected lemma real_smul {r : ℝ} (hr : r ≠ 0) : IsSelfAdjoint (r • T) :=
-  IsSelfAdjoint.smul h (Complex.ofReal_ne_zero.mpr hr) (Complex.conj_ofReal r)
-
-@[aesop safe apply]
-protected lemma neg : IsSelfAdjoint (-T) :=
-  neg_eq_neg_one_smul T ▸ IsSelfAdjoint.smul h (by norm_num) (by norm_num)
-
-end IsSelfAdjoint
 
 open Complex InnerProductSpace in
 /-- Self-adjointness from surjectivity of `T ± i`: a symmetric, densely-defined operator `T` for
@@ -103,5 +73,44 @@ lemma IsSymmetric.isSelfAdjoint_of_range_eq_top (hsym : T.IsSymmetric) (hdense :
     ring
   obtain rfl : w = (x : H) := sub_eq_zero.mp (hker (W - X) hdiff)
   exact ⟨hw, x.2, hxeq⟩
+
+/-!
+## B. Properties
+-/
+
+namespace IsSelfAdjoint
+
+variable (h : IsSelfAdjoint T)
+
+include h
+
+lemma isSymmetric : T.IsSymmetric := by
+  rw [isSymmetric_def]
+  nth_rw 1 [← h]
+  exact adjoint_isFormalAdjoint h.dense_domain
+
+lemma isClosable : T.IsClosable := h.isClosed.isClosable
+
+lemma isUnbounded : T.IsUnbounded := ⟨h.dense_domain, isClosable h⟩
+
+@[aesop safe apply]
+protected lemma adjoint : IsSelfAdjoint T† := by
+  apply isSelfAdjoint_def.mp at h
+  exact h.symm ▸ h
+
+open scoped ComplexConjugate in
+@[aesop safe apply]
+protected lemma smul {c : ℂ} (hc : c ≠ 0) (hc' : conj c = c) : IsSelfAdjoint (c • T) := by
+  rw [isSelfAdjoint_def, T.adjoint_smul hc, hc', isSelfAdjoint_def.mp h]
+
+@[aesop safe apply]
+protected lemma real_smul {r : ℝ} (hr : r ≠ 0) : IsSelfAdjoint (r • T) :=
+  IsSelfAdjoint.smul h (Complex.ofReal_ne_zero.mpr hr) (Complex.conj_ofReal r)
+
+@[aesop safe apply]
+protected lemma neg : IsSelfAdjoint (-T) :=
+  neg_eq_neg_one_smul T ▸ IsSelfAdjoint.smul h (by norm_num) (by norm_num)
+
+end IsSelfAdjoint
 
 end LinearPMap
