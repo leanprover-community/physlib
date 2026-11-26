@@ -108,7 +108,7 @@ lemma r_mul_schwarzschildLapse (M r : ℝ) (hr : r ≠ 0) :
 
 /-- The Schwarzschild metric in `(t, r, θ, φ)` coordinates with signature `(-, +, +, +)`. -/
 noncomputable def schwarzschildMetric (M : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
-  StaticSpherical.staticSphericalMetric (schwarzschildLapse M) x
+  StaticSpherical.StaticSphericalMetric.metric ⟨schwarzschildLapse M⟩ x
 
 /-- The coordinate metric of a Schwarzschild spacetime in `(t, r, θ, φ)` coordinates. -/
 noncomputable def SchwarzschildSpacetime.metric (S : SchwarzschildSpacetime)
@@ -118,7 +118,7 @@ noncomputable def SchwarzschildSpacetime.metric (S : SchwarzschildSpacetime)
 /-- The `tt` component of the Schwarzschild metric is `-(1 - 2M/r)`. -/
 lemma schwarzschildMetric_tt (M : ℝ) (x : Fin 4 → ℝ) :
     schwarzschildMetric M x 0 0 = -(1 - 2 * M / x 1) := by
-  simp [schwarzschildMetric, StaticSpherical.staticSphericalMetric, schwarzschildLapse]
+  simp [schwarzschildMetric, StaticSpherical.StaticSphericalMetric.metric, schwarzschildLapse]
 
 /-- The static Newtonian potential is `Φ = -M / r`: `g_tt = -(1 + 2Φ)`. -/
 lemma schwarzschildMetric_tt_potential (M : ℝ) (x : Fin 4 → ℝ) :
@@ -157,7 +157,7 @@ lemma potential_second_hasDerivAt (M r : ℝ) (hr : r ≠ 0) :
 /-- The `rr` component of the Schwarzschild metric is `f⁻¹`. -/
 lemma schwarzschildMetric_rr (M : ℝ) (x : Fin 4 → ℝ) :
     schwarzschildMetric M x 1 1 = (schwarzschildLapse M (x 1))⁻¹ := by
-  simp [schwarzschildMetric, StaticSpherical.staticSphericalMetric, schwarzschildLapse]
+  simp [schwarzschildMetric, StaticSpherical.StaticSphericalMetric.metric, schwarzschildLapse]
 
 /-- `f ≠ 0` forces `r - 2M ≠ 0` away from `r = 0`. -/
 lemma sub_ne_zero_of_ne (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildLapse M r ≠ 0) :

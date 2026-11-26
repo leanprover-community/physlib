@@ -149,13 +149,16 @@ coordinate Christoffel and Ricci computations directly to `GeneralRelativity.Sta
 
 -/
 
+private noncomputable def sdsStatic (M Λ : ℝ) : StaticSphericalMetric :=
+  ⟨sdsLapse M Λ⟩
+
 private lemma sdsMetric_eq_staticSpherical (M Λ : ℝ) :
-    sdsMetric M Λ = staticSphericalMetric (sdsLapse M Λ) := by
+    sdsMetric M Λ = (sdsStatic M Λ).metric := by
   funext x i j
   rfl
 
 private lemma sdsMetricInv_eq_staticSpherical (M Λ : ℝ) :
-    sdsMetricInv M Λ = staticSphericalMetricInv (sdsLapse M Λ) := by
+    sdsMetricInv M Λ = (sdsStatic M Λ).metricInv := by
   funext x i j
   rfl
 
@@ -176,28 +179,28 @@ private lemma hasDerivAt_deriv_sdsLapse (M Λ r : ℝ) (hr : r ≠ 0) :
   exact hd.congr_of_eventuallyEq heq
 
 private lemma sdsChristoffel_eq_staticSpherical (M Λ : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) :
-    ∀ k i j, sdsChristoffel M Λ x k i j = staticSphericalChristoffel (sdsLapse M Λ) x k i j := by
+    ∀ k i j, sdsChristoffel M Λ x k i j = (sdsStatic M Λ).christoffel x k i j := by
   intro k i j
   have hd1 := deriv_sdsLapse M Λ (x 1) hr
   fin_cases k <;> fin_cases i <;> fin_cases j <;> simp [sdsChristoffel,
-    staticSphericalChristoffel, hd1] <;> ring
+    StaticSphericalMetric.christoffel, sdsStatic, hd1] <;> ring
 
 private lemma sdsChristoffelDeriv_eq_staticSpherical (M Λ : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : sdsLapse M Λ (x 1) ≠ 0) (μ k i j : Fin 4) :
     sdsChristoffelDeriv M Λ μ x k i j =
-      staticSphericalChristoffelDeriv (sdsLapse M Λ) μ x k i j := by
+      (sdsStatic M Λ).christoffelDeriv μ x k i j := by
   have hd1 := deriv_sdsLapse M Λ (x 1) hr
   have hd2 := (hasDerivAt_deriv_sdsLapse M Λ (x 1) hr).deriv
   fin_cases μ
   · fin_cases k <;> fin_cases i <;> fin_cases j <;>
-      simp [sdsChristoffelDeriv, staticSphericalChristoffelDeriv]
+      simp [sdsChristoffelDeriv, StaticSphericalMetric.christoffelDeriv]
   · fin_cases k <;> fin_cases i <;> fin_cases j <;>
-      simp [sdsChristoffelDeriv, staticSphericalChristoffelDeriv, hd1, hd2]
+      simp [sdsChristoffelDeriv, StaticSphericalMetric.christoffelDeriv, sdsStatic, hd1, hd2]
     all_goals field_simp [hf]; ring
   · fin_cases k <;> fin_cases i <;> fin_cases j <;>
-      simp [sdsChristoffelDeriv, staticSphericalChristoffelDeriv]
+      simp [sdsChristoffelDeriv, StaticSphericalMetric.christoffelDeriv, sdsStatic]
   · fin_cases k <;> fin_cases i <;> fin_cases j <;>
-      simp [sdsChristoffelDeriv, staticSphericalChristoffelDeriv]
+      simp [sdsChristoffelDeriv, StaticSphericalMetric.christoffelDeriv]
 
 /-- All 64 Christoffel symbols computed by `christoffel` equal `sdsChristoffel`, for every `Λ`. -/
 lemma christoffel_eq_sdsChristoffel (M Λ : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
@@ -206,7 +209,7 @@ lemma christoffel_eq_sdsChristoffel (M Λ : ℝ) (x : Fin 4 → ℝ) (hr : x 1 �
       = sdsChristoffel M Λ x k i j := by
   intro k i j
   rw [sdsMetric_eq_staticSpherical, sdsMetricInv_eq_staticSpherical,
-    christoffel_eq_staticSphericalChristoffel (sdsLapse M Λ) x hr hf hsin
+    (sdsStatic M Λ).christoffel_eq x hr hf hsin
       (hasDerivAt_sdsLapse M Λ (x 1) hr).differentiableAt k i j,
     sdsChristoffel_eq_staticSpherical M Λ x hr k i j]
 
@@ -218,11 +221,11 @@ lemma pd_christoffel_eq_pd_sdsChristoffel (M Λ : ℝ) (x : Fin 4 → ℝ) (hr :
     coordDeriv μ (fun y => christoffel (sdsMetric M Λ) (sdsMetricInv M Λ) y a b c) x
       = coordDeriv μ (fun y => sdsChristoffel M Λ y a b c) x := by
   rw [sdsMetric_eq_staticSpherical, sdsMetricInv_eq_staticSpherical,
-    pd_christoffel_eq_pd_staticSphericalChristoffel (sdsLapse M Λ) x hr hf hsin
+    (sdsStatic M Λ).pd_christoffel_eq x hr hf hsin
       (eventually_differentiableAt_sdsLapse M Λ (x 1) hr) μ a b c]
   have hr_nhds : ∀ᶠ y in nhds x, y 1 ≠ 0 :=
     (continuous_apply (1 : Fin 4)).continuousAt.eventually_ne hr
-  have heq : (fun y => staticSphericalChristoffel (sdsLapse M Λ) y a b c) =ᶠ[nhds x]
+  have heq : (fun y => (sdsStatic M Λ).christoffel y a b c) =ᶠ[nhds x]
       fun y => sdsChristoffel M Λ y a b c := by
     filter_upwards [hr_nhds] with y hy
     exact (sdsChristoffel_eq_staticSpherical M Λ y hy a b c).symm
@@ -237,11 +240,11 @@ lemma pd_sdsChristoffel_eq_deriv (M Λ : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 
   have hr_nhds : ∀ᶠ y in nhds x, y 1 ≠ 0 :=
     (continuous_apply (1 : Fin 4)).continuousAt.eventually_ne hr
   have heq : (fun y => sdsChristoffel M Λ y k i j) =ᶠ[nhds x]
-      fun y => staticSphericalChristoffel (sdsLapse M Λ) y k i j := by
+      fun y => (sdsStatic M Λ).christoffel y k i j := by
     filter_upwards [hr_nhds] with y hy
     exact sdsChristoffel_eq_staticSpherical M Λ y hy k i j
   rw [coordDeriv_congr_nhds μ x heq,
-    pd_staticSphericalChristoffel_eq_deriv (sdsLapse M Λ) x hr hf hsin
+    (sdsStatic M Λ).pd_christoffel_eq_deriv x hr hf hsin
       (hasDerivAt_sdsLapse M Λ (x 1) hr).differentiableAt
       (hasDerivAt_deriv_sdsLapse M Λ (x 1) hr).differentiableAt μ k i j,
     sdsChristoffelDeriv_eq_staticSpherical M Λ x hr hf μ k i j]
@@ -335,8 +338,11 @@ lemma ricciTensorOf_sds (M Λ : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
   have hfdiff := eventually_differentiableAt_sdsLapse M Λ (x 1) hr
   have hf2diff := (hasDerivAt_deriv_sdsLapse M Λ (x 1) hr).differentiableAt
   rw [sdsMetric_eq_staticSpherical, sdsMetricInv_eq_staticSpherical,
-    ricciTensorOf_staticSpherical (sdsLapse M Λ) x hr hf hsin hfdiff hf2diff σ ν, hf1, hf2]
-  fin_cases σ <;> fin_cases ν <;> simp [staticSphericalMetric, sdsLapse, sdsLapseHalfDeriv]
+    (sdsStatic M Λ).ricciTensorOf x hr hf hsin hfdiff hf2diff σ ν]
+  simp only [sdsStatic] at *
+  rw [hf1, hf2]
+  fin_cases σ <;> fin_cases ν <;>
+    simp [StaticSphericalMetric.metric, sdsLapse, sdsLapseHalfDeriv]
   · field_simp [hr]; ring
   · field_simp [hr, hf]; ring
   · field_simp [hr]; ring
@@ -351,8 +357,10 @@ lemma ricciScalarOf_sds (M Λ : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
   have hfdiff := eventually_differentiableAt_sdsLapse M Λ (x 1) hr
   have hf2diff := (hasDerivAt_deriv_sdsLapse M Λ (x 1) hr).differentiableAt
   rw [sdsMetric_eq_staticSpherical, sdsMetricInv_eq_staticSpherical,
-    ricciScalarOf_staticSpherical (sdsLapse M Λ) x hr hf hsin hfdiff hf2diff, hf1, hf2, sdsLapse,
-      sdsLapseHalfDeriv]
+    (sdsStatic M Λ).ricciScalarOf x hr hf hsin hfdiff hf2diff]
+  simp only [sdsStatic] at *
+  rw [hf1, hf2]
+  simp only [sdsLapse, sdsLapseHalfDeriv]
   field_simp [hr]
   ring
 
@@ -380,7 +388,7 @@ lemma ricciTensorOf_sds_frame (M Λ : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     sdsFrameScale M Λ x σ * ricciTensorOf (sdsMetric M Λ) (sdsMetricInv M Λ) x σ ν
       = Λ * minkowskiMetric4 σ ν := by
   rw [ricciTensorOf_sds M Λ x hr hf hsin]
-  fin_cases σ <;> fin_cases ν <;> simp [sdsFrameScale, sdsMetric, staticSphericalMetric]
+  fin_cases σ <;> fin_cases ν <;> simp [sdsFrameScale, sdsMetric, StaticSphericalMetric.metric]
   · field_simp [hf]
   · field_simp [hf]
   · field_simp [hr]

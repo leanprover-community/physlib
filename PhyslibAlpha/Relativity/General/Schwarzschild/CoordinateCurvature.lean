@@ -68,18 +68,18 @@ noncomputable def schwarzschildMetricField (M : ℝ) : (Fin 4 → ℝ) → Tenso
 /-- The inverse Schwarzschild metric as a coordinate spacetime field `(Fin 4 → ℝ) → Tensor2 4` for
 the differential curvature pipeline. -/
 noncomputable def schwarzschildMetricInv (M : ℝ) : (Fin 4 → ℝ) → Tensor2 4 :=
-  StaticSpherical.staticSphericalMetricInv (Schwarzschild.schwarzschildLapse M)
+  StaticSpherical.StaticSphericalMetric.metricInv ⟨Schwarzschild.schwarzschildLapse M⟩
 
 /-- At `Λ = 0`, `sdsMetric` reduces to `schwarzschildMetricField`. -/
 lemma sdsMetric_zero_lambda (M : ℝ) : sdsMetric M 0 = schwarzschildMetricField M := by
   funext x i j
-  simp [sdsMetric, StaticSpherical.staticSphericalMetric, schwarzschildMetricField,
+  simp [sdsMetric, StaticSpherical.StaticSphericalMetric.metric, schwarzschildMetricField,
     Schwarzschild.schwarzschildMetric, sdsLapse, Schwarzschild.schwarzschildLapse]
 
 /-- At `Λ = 0`, `sdsMetricInv` reduces to `schwarzschildMetricInv`. -/
 lemma sdsMetricInv_zero_lambda (M : ℝ) : sdsMetricInv M 0 = schwarzschildMetricInv M := by
   funext x i j
-  simp [sdsMetricInv, StaticSpherical.staticSphericalMetricInv, schwarzschildMetricInv,
+  simp [sdsMetricInv, StaticSpherical.StaticSphericalMetric.metricInv, schwarzschildMetricInv,
     sdsLapse, Schwarzschild.schwarzschildLapse]
 
 /-- All six independent Schwarzschild Riemann components directly from the metric pipeline,

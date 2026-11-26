@@ -98,11 +98,11 @@ noncomputable def rnLapse (M Q r : ℝ) : ℝ := 1 - 2 * M / r + Q ^ 2 / r ^ 2
 
 /-- The Reissner–Nordström metric in Schwarzschild-like coordinates `(t, r, θ, φ)`. -/
 noncomputable def rnMetric (M Q : ℝ) : (Fin 4 → ℝ) → Tensor2 4 :=
-  staticSphericalMetric (rnLapse M Q)
+  StaticSphericalMetric.metric ⟨rnLapse M Q⟩
 
 /-- The inverse of the Reissner–Nordström metric in `(t, r, θ, φ)` coordinates. -/
 noncomputable def rnMetricInv (M Q : ℝ) : (Fin 4 → ℝ) → Tensor2 4 :=
-  staticSphericalMetricInv (rnLapse M Q)
+  StaticSphericalMetric.metricInv ⟨rnLapse M Q⟩
 
 /-- The lapse function `rnLapse` of a Reissner–Nordström spacetime. -/
 noncomputable def ReissnerNordstromSpacetime.lapse (S : ReissnerNordstromSpacetime)
@@ -119,13 +119,13 @@ noncomputable def ReissnerNordstromSpacetime.metricInv (S : ReissnerNordstromSpa
     (x : Fin 4 → ℝ) : Tensor2 4 :=
   rnMetricInv S.M S.Q x
 
-/-- `rnMetric M Q` is definitionally `staticSphericalMetric (rnLapse M Q)`. -/
+/-- `rnMetric M Q` is definitionally `StaticSphericalMetric.metric ⟨rnLapse M Q⟩`. -/
 lemma rnMetric_eq_staticSpherical (M Q : ℝ) :
-    rnMetric M Q = staticSphericalMetric (rnLapse M Q) := rfl
+    rnMetric M Q = StaticSphericalMetric.metric ⟨rnLapse M Q⟩ := rfl
 
-/-- `rnMetricInv M Q` is definitionally `staticSphericalMetricInv (rnLapse M Q)`. -/
+/-- `rnMetricInv M Q` is definitionally `StaticSphericalMetric.metricInv ⟨rnLapse M Q⟩`. -/
 lemma rnMetricInv_eq_staticSpherical (M Q : ℝ) :
-    rnMetricInv M Q = staticSphericalMetricInv (rnLapse M Q) := rfl
+    rnMetricInv M Q = StaticSphericalMetric.metricInv ⟨rnLapse M Q⟩ := rfl
 
 /-- At `Q = 0`, `rnLapse` reduces to the Schwarzschild lapse function. -/
 lemma rnLapse_zero_charge (M r : ℝ) : rnLapse M 0 r = Schwarzschild.schwarzschildLapse M r := by
@@ -238,8 +238,9 @@ lemma ricciTensorOf_rn (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : rn
   have hfdiff := eventually_differentiableAt_rnLapse M Q (x 1) hr
   have hf2diff := (hasDerivAt_deriv_rnLapse M Q (x 1) hr).differentiableAt
   rw [rnMetric_eq_staticSpherical, rnMetricInv_eq_staticSpherical,
-    ricciTensorOf_staticSpherical (rnLapse M Q) x hr hf hsin hfdiff hf2diff σ ν,
-    deriv_rnLapse M Q (x 1) hr, deriv_deriv_rnLapse M Q (x 1) hr]
+    StaticSphericalMetric.ricciTensorOf ⟨rnLapse M Q⟩ x hr hf hsin hfdiff hf2diff σ ν]
+  dsimp
+  rw [deriv_rnLapse M Q (x 1) hr, deriv_deriv_rnLapse M Q (x 1) hr]
   fin_cases σ <;> fin_cases ν <;> simp
   · field_simp [hr]; ring
   · field_simp [hr, hf]; ring
@@ -254,18 +255,19 @@ lemma ricciScalarOf_rn (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : rn
   have hfdiff := eventually_differentiableAt_rnLapse M Q (x 1) hr
   have hf2diff := (hasDerivAt_deriv_rnLapse M Q (x 1) hr).differentiableAt
   rw [rnMetric_eq_staticSpherical, rnMetricInv_eq_staticSpherical,
-    ricciScalarOf_staticSpherical (rnLapse M Q) x hr hf hsin hfdiff hf2diff,
-    deriv_rnLapse M Q (x 1) hr, deriv_deriv_rnLapse M Q (x 1) hr, rnLapse]
+    StaticSphericalMetric.ricciScalarOf ⟨rnLapse M Q⟩ x hr hf hsin hfdiff hf2diff]
+  dsimp
+  rw [deriv_rnLapse M Q (x 1) hr, deriv_deriv_rnLapse M Q (x 1) hr, rnLapse]
   field_simp [hr]
   ring
 
 /-- Four-dimensional Maxwell stress-energy is trace-free: `g^{ij} T^{EM}_{ij} = 0`. -/
 lemma maxwellStressEnergy_rn_trace_zero (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : rnLapse M Q (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
-    metricTrace (staticSphericalMetricTensor (rnLapse M Q) x hr hf hsin)
+    metricTrace (StaticSphericalMetric.metricTensor ⟨rnLapse M Q⟩ x hr hf hsin)
       (maxwellStressEnergy (rnMetric M Q x) (rnMetricInv M Q x) (maxwellF Q (x 1))) = 0 := by
   have h := maxwellStressEnergyRaw_trace_zero
-    (staticSphericalMetricTensor (rnLapse M Q) x hr hf hsin) (maxwellF Q (x 1))
+    (StaticSphericalMetric.metricTensor ⟨rnLapse M Q⟩ x hr hf hsin) (maxwellF Q (x 1))
   show metricTrace _ (fun i j => (1 / (4 * Real.pi)) *
     maxwellStressEnergyRaw (rnMetric M Q x) (rnMetricInv M Q x) (maxwellF Q (x 1)) i j) = 0
   rw [metricTrace_smul]
@@ -281,7 +283,8 @@ lemma einsteinTensorOf_rn_eq_maxwell (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 �
   have hpi : Real.pi ≠ 0 := Real.pi_ne_zero
   simp only [einsteinTensorOf, ricciTensorOf_rn M Q x hr hf hsin, ricciScalarOf_rn M Q x hr hf hsin]
   simp only [maxwellStressEnergy, maxwellStressEnergyRaw, maxwellFieldInvariant, rnMetric,
-    rnMetricInv, staticSphericalMetric, staticSphericalMetricInv, maxwellF, Fin.sum_univ_four]
+    rnMetricInv, StaticSphericalMetric.metric, StaticSphericalMetric.metricInv, maxwellF,
+    Fin.sum_univ_four]
   fin_cases i <;> fin_cases j <;> simp
   · field_simp [hr, hf, hpi]; ring
   · field_simp [hr, hf, hpi]; ring

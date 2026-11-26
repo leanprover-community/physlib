@@ -100,11 +100,11 @@ noncomputable def sdsLapseHalfDeriv (M Λ r : ℝ) : ℝ := M / r ^ 2 - Λ * r /
 
 /-- The Schwarzschild–de Sitter metric in `(t, r, θ, φ)` coordinates. -/
 noncomputable def sdsMetric (M Λ : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
-  StaticSpherical.staticSphericalMetric (sdsLapse M Λ) x
+  StaticSpherical.StaticSphericalMetric.metric ⟨sdsLapse M Λ⟩ x
 
 /-- The inverse of the Schwarzschild–de Sitter metric in `(t, r, θ, φ)` coordinates. -/
 noncomputable def sdsMetricInv (M Λ : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
-  StaticSpherical.staticSphericalMetricInv (sdsLapse M Λ) x
+  StaticSpherical.StaticSphericalMetric.metricInv ⟨sdsLapse M Λ⟩ x
 
 /-- The coordinate metric of a Schwarzschild–de Sitter spacetime. -/
 noncomputable def SchwarzschildDeSitterSpacetime.metric (S : SchwarzschildDeSitterSpacetime)

@@ -207,10 +207,12 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
     `Pipeline.minkowski_riemannFromData`, `minkowskiFlatRiemann`, `minkowski_ricci_eq_zero`,
     `minkowski_ricciScalar_eq_zero`, `minkowski_einstein_eq_zero`, `minkowski_vacuum_iff_ricci_flat`
 21. PhyslibAlpha/Relativity/Metrics/StaticSphericalMetric.lean — `StaticSphericalMetric`,
-    `staticSphericalMetric`, `staticSphericalMetricInv`, `staticSphericalMetric_symm`,
-    `staticSphericalMetric_mul_inv`, `staticSphericalMetricTensor`, `staticSphericalChristoffel`,
-    `christoffel_eq_staticSphericalChristoffel`, `eventually_christoffel_eq_staticSphericalChristoffel`,
-    `staticSphericalChristoffelDeriv`
+    `StaticSphericalMetric.metric`, `StaticSphericalMetric.metricInv`,
+    `StaticSphericalMetric.metric_symm`, `StaticSphericalMetric.metric_mul_inv`,
+    `StaticSphericalMetric.metricTensor`, `StaticSphericalMetric.christoffel`,
+    `StaticSphericalMetric.christoffel_eq`, `StaticSphericalMetric.eventually_christoffel_eq`,
+    `StaticSphericalMetric.christoffelDeriv`, `StaticSphericalMetric.ricciTensorOf`,
+    `StaticSphericalMetric.ricciScalarOf`, `StaticSphericalMetric.einsteinTensorOf`
 22. PhyslibAlpha/Relativity/General/Schwarzschild/ElectricWeyl.lean — `electricPart`,
     `electricPart_symm`, `electricPart_trace`, `frameSqSum`, `schwarzschild`, `ricci_eq_zero`,
     `frameSqSum_eq`, `kretschmann_scalar`, `weyl_purely_electric`
