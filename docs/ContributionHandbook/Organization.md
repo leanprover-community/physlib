@@ -6,14 +6,14 @@ easy to read as possible.
 
 ## Contents
 
-1. [Overarching organizational principle](#organizational-principle)
+1. [Directory Organization](#directory-organization)
 2. [Areas should be based around structures](#area-organization)
 3. [Files should be organized around definitions](#file-organization)
 4. [Name files after what they define](#file-name)
 
-<a id="organizational-principle"></a>
+<a id="directory-organization"></a>
 
-## 1. Overarching organizational principle
+## 1. Directory Organization
 
 Physlib is organized by its definitions. Each directory exists for one key definition, with it and its basic properties in the Basic.lean file. The other files and subdirectories are each dedicated either to a definition descended from the key definition, that is, built from it, or to a single named property of those definitions. This leads to a hierarchy of definitions, which the directories follow. A definition descended from several key definitions sits under the most downstream of them. When enough is built on a definition, its file becomes a directory. Every lemma and theorem sits under one of the definitions that its statement concerns, namely the one furthest down the hierarchy. This allows any result in Physlib to be found by asking what definitions it depends on.
 
@@ -23,7 +23,7 @@ This is similar to Bourbaki's organizational principle, "the concept of a hierar
 
 ## 2. Areas should be based around structures
 
-The above organizational principle means in practice that for an area in physics it is best to define a `structure` which is the basic object of study in that area. Examples of this throughout Physlib include:
+This means that for an area in physics it is best to define a `structure` which is the basic object of study in that area. Examples of this throughout Physlib include:
 - `ElectromagneticPotential` for electromagnetism
 - `FLRW` and `CosmicFluid` in cosmology
 - `CanonicalEnsemble` for statistical mechanics
