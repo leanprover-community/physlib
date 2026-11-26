@@ -25,8 +25,9 @@ Specializing `S.toDeSitter` (`⟨S.M, 0⟩ : SchwarzschildDeSitterSpacetime`) to
 ## ii. Key results
 
 - `SchwarzschildSpacetime.toDeSitter` : Schwarzschild–de Sitter embedding at `Λ = 0`.
-- `SchwarzschildSpacetime.toDeSitter_metric`, `SchwarzschildSpacetime.toDeSitter_metricInv` :
-  reduction from `toDeSitter` at `Λ = 0`.
+- `SchwarzschildSpacetime.toDeSitter_M`, `SchwarzschildSpacetime.toDeSitter_Λ`,
+  `SchwarzschildSpacetime.toDeSitter_metricFn`, `SchwarzschildSpacetime.toDeSitter_metric`,
+  `SchwarzschildSpacetime.toDeSitter_metricInv` : reduction from `toDeSitter` at `Λ = 0`.
 - `SchwarzschildSpacetime.riemann_components` : all six independent Schwarzschild Riemann
   components.
 - `SchwarzschildSpacetime.ricciTensorOf`, `SchwarzschildSpacetime.ricciScalarOf`,
@@ -59,33 +60,49 @@ namespace SchwarzschildSpacetime
 
 ## A. Schwarzschild pipeline specialization at `Λ = 0`
 
+Because a Schwarzschild black hole is a zero-cosmological-constant limit of Schwarzschild–de Sitter
+spacetime, the pipeline Riemann, Ricci, scalar, and Einstein tensors follow by evaluating at
+`Λ = 0`.
+
 -/
 
 /-- Embed a Schwarzschild spacetime into `SchwarzschildDeSitterSpacetime` at `Λ = 0`. -/
 def toDeSitter (S : SchwarzschildSpacetime) : SchwarzschildDeSitterSpacetime :=
   ⟨S.M, 0⟩
 
+/-- Mass parameter of `S.toDeSitter` equals `S.M`. -/
+@[simp]
+lemma toDeSitter_M (S : SchwarzschildSpacetime) : S.toDeSitter.M = S.M := rfl
+
+/-- Cosmological constant of `S.toDeSitter` vanishes. -/
+@[simp]
+lemma toDeSitter_Λ (S : SchwarzschildSpacetime) : S.toDeSitter.Λ = 0 := rfl
+
+/-- At `Λ = 0`, `S.toDeSitter.metricFn` agrees pointwise with `S.metricFn`. -/
+@[simp]
+lemma toDeSitter_metricFn (S : SchwarzschildSpacetime) (r : ℝ) :
+    S.toDeSitter.metricFn r = S.metricFn r :=
+  SchwarzschildDeSitterSpacetime.metricFn_zero_lambda S.M r
+
 /-- At `Λ = 0`, `S.toDeSitter.metric` reduces to `S.metric`. -/
 lemma toDeSitter_metric (S : SchwarzschildSpacetime) : S.toDeSitter.metric = S.metric := by
-  funext x i j
+  ext x i j
   simp [SchwarzschildDeSitterSpacetime.metric, SchwarzschildDeSitterSpacetime.toStaticSpherical,
-    StaticSpherical.StaticSphericalMetric.metric, metric, toStaticSpherical,
-    SchwarzschildDeSitterSpacetime.lapse, lapse, toDeSitter]
+    StaticSpherical.StaticSphericalMetric.metric, metric, toStaticSpherical]
 
 /-- At `Λ = 0`, `S.toDeSitter.metricInv` reduces to `S.metricInv`. -/
 lemma toDeSitter_metricInv (S : SchwarzschildSpacetime) :
     S.toDeSitter.metricInv = S.metricInv := by
-  funext x i j
+  ext x i j
   simp [SchwarzschildDeSitterSpacetime.metricInv, SchwarzschildDeSitterSpacetime.toStaticSpherical,
-    StaticSpherical.StaticSphericalMetric.metricInv, metricInv, toStaticSpherical,
-    SchwarzschildDeSitterSpacetime.lapse, lapse, toDeSitter]
+    StaticSpherical.StaticSphericalMetric.metricInv, metricInv, toStaticSpherical]
 
 /-- All six independent Schwarzschild Riemann components directly from the metric pipeline,
-specialised from `SchwarzschildDeSitterSpacetime.riemann_components_pipeline` at `Λ = 0`. -/
+specialized from `SchwarzschildDeSitterSpacetime.riemann_components_pipeline` at `Λ = 0`. -/
 lemma riemann_components (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
-    (hf : S.lapse (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
+    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     (Pipeline.riemann S.metric S.metricInv x 0 1 0 1
-        = 2 * S.M / ((x 1) ^ 3 * S.lapse (x 1)))
+        = 2 * S.M / ((x 1) ^ 3 * S.metricFn (x 1)))
       ∧ (Pipeline.riemann S.metric S.metricInv x 0 2 0 2 = -S.M / (x 1))
       ∧ (Pipeline.riemann S.metric S.metricInv x 0 3 0 3
           = -(S.M / (x 1)) * Real.sin (x 2) ^ 2)
@@ -94,64 +111,47 @@ lemma riemann_components (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) (hr : 
           = -(S.M / (x 1)) * Real.sin (x 2) ^ 2)
       ∧ (Pipeline.riemann S.metric S.metricInv x 2 3 2 3
           = (2 * S.M / (x 1)) * Real.sin (x 2) ^ 2) := by
-  have h0 : S.toDeSitter.lapse (x 1) = S.lapse (x 1) := by
-    simpa [toDeSitter] using SchwarzschildDeSitterSpacetime.lapse_zero_lambda S.M (x 1)
-  have hf0 : S.toDeSitter.lapse (x 1) ≠ 0 := by rwa [h0]
+  have hf0 : S.toDeSitter.metricFn (x 1) ≠ 0 := by simp [hf]
   obtain ⟨c1, c2, c3, c4, c5, c6⟩ := S.toDeSitter.riemann_components_pipeline x hr hf0 hsin
   rw [S.toDeSitter_metric, S.toDeSitter_metricInv] at c1 c2 c3 c4 c5 c6
-  rw [h0] at c1
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
-  · rw [c1]
-    change (2 * S.M / x 1 ^ 3 + 0 / 3) / S.lapse (x 1) = 2 * S.M / (x 1 ^ 3 * S.lapse (x 1))
+  · simp only [toDeSitter_M, toDeSitter_Λ, toDeSitter_metricFn, zero_div, add_zero] at c1
+    rw [c1]
     field_simp [hr, hf]
-    ring
-  · rw [c2]
-    change (0 : ℝ) * x 1 ^ 2 / 3 - S.M / x 1 = -S.M / x 1
-    ring
-  · simpa [toDeSitter] using c3
-  · rw [c4]
-    change (0 : ℝ) * x 1 ^ 2 / 3 - S.M / x 1 = -S.M / x 1
-    ring
-  · simpa [toDeSitter] using c5
-  · simpa [toDeSitter] using c6
+  · simpa [neg_div] using c2
+  · simpa using c3
+  · simpa [neg_div] using c4
+  · simpa using c5
+  · simpa using c6
 
 /-- Metric-level Ricci flatness for Schwarzschild: `Ric = 0` directly from `S.metric` and
 `S.metricInv`. -/
 lemma ricciTensorOf (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
-    (hf : S.lapse (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
+    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
     Pipeline.ricciTensorOf S.metric S.metricInv x σ ν = 0 := by
-  have hf0 : S.toDeSitter.lapse (x 1) ≠ 0 := by
-    rw [show S.toDeSitter.lapse (x 1) = S.lapse (x 1) from by
-      simpa [toDeSitter] using SchwarzschildDeSitterSpacetime.lapse_zero_lambda S.M (x 1)]
-    exact hf
+  have hf0 : S.toDeSitter.metricFn (x 1) ≠ 0 := by simp [hf]
   have h := S.toDeSitter.ricciTensorOf x hr hf0 hsin σ ν
   rw [S.toDeSitter_metric, S.toDeSitter_metricInv] at h
-  simpa [toDeSitter] using h
+  simpa using h
 
 /-- Metric-level vanishing scalar curvature for Schwarzschild: `R = 0`. -/
 lemma ricciScalarOf (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
-    (hf : S.lapse (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
+    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     Pipeline.ricciScalarOf S.metric S.metricInv x = 0 := by
-  have hf0 : S.toDeSitter.lapse (x 1) ≠ 0 := by
-    rw [show S.toDeSitter.lapse (x 1) = S.lapse (x 1) from by
-      simpa [toDeSitter] using SchwarzschildDeSitterSpacetime.lapse_zero_lambda S.M (x 1)]
-    exact hf
+  have hf0 : S.toDeSitter.metricFn (x 1) ≠ 0 := by simp [hf]
   have h := S.toDeSitter.ricciScalarOf x hr hf0 hsin
   rw [S.toDeSitter_metric, S.toDeSitter_metricInv] at h
-  simpa [toDeSitter] using h
+  simpa using h
 
 /-- Metric-level vacuum Einstein equation for Schwarzschild: `G_{ij} = 0` directly from
 `g = diag(-f, 1/f, r², r² sin²θ)`. -/
 lemma einsteinTensorOf (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
-    (hf : S.lapse (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
+    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
     Pipeline.einsteinTensorOf S.metric S.metricInv x i j = 0 := by
-  have hf0 : S.toDeSitter.lapse (x 1) ≠ 0 := by
-    rw [show S.toDeSitter.lapse (x 1) = S.lapse (x 1) from by
-      simpa [toDeSitter] using SchwarzschildDeSitterSpacetime.lapse_zero_lambda S.M (x 1)]
-    exact hf
+  have hf0 : S.toDeSitter.metricFn (x 1) ≠ 0 := by simp [hf]
   have h := S.toDeSitter.einsteinTensorOf x hr hf0 hsin i j
   rw [S.toDeSitter_metric, S.toDeSitter_metricInv] at h
-  simpa [toDeSitter] using h
+  simpa using h
 
 end SchwarzschildSpacetime
 

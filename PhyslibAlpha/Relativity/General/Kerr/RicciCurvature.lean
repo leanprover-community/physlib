@@ -36,9 +36,9 @@ pair `(σ, ν)` at all regular points (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`). 
 
 - `KerrSpacetime.ricci`, `KerrSpacetime.einstein` : Boyer–Lindquist Kerr pipeline Ricci and Einstein
   tensors.
-- `KerrSpacetime.pd_christoffelTrace_11`, `KerrSpacetime.pd_christoffelTrace_12`,
-  `KerrSpacetime.pd_christoffelTrace_21`, `KerrSpacetime.pd_christoffelTrace_22` : partial
-  derivatives of `KerrSpacetime.christoffelTrace`.
+- `KerrSpacetime.christoffelTraceDeriv_rr`, `KerrSpacetime.christoffelTraceDeriv_rtheta`,
+  `KerrSpacetime.christoffelTraceDeriv_thetar`, `KerrSpacetime.christoffelTraceDeriv_thetatheta` :
+  partial derivatives of `KerrSpacetime.christoffelTrace`.
 - `KerrSpacetime.ricciTensorOf_eq_zero` : vacuum Ricci flatness `Ric_{σ ν} = 0` via
   `Pipeline.ricciTensorOf`.
 - `KerrSpacetime.ricciScalarOf_eq_zero` : vanishing scalar curvature `R = 0`.
@@ -74,6 +74,9 @@ namespace KerrSpacetime
 
 ## A. Trace and Christoffel partial derivatives
 
+Differentiating the Boyer–Lindquist Christoffel symbols and contracted trace `tr_μ = ∂_μ ln(Σ sin θ)`
+along the `r` and `θ` coordinate slices prepares the cancellation of the Ricci tensor components.
+
 -/
 
 /-- Boyer–Lindquist Kerr Ricci tensor computed via `Pipeline.ricciTensorOf`. -/
@@ -84,21 +87,16 @@ noncomputable def ricci (K : KerrSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
 noncomputable def einstein (K : KerrSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
   Pipeline.einsteinTensorOf K.metric K.metricInv x
 
-private lemma hasDerivAt_sigma3_r (K : KerrSpacetime) (r θ : ℝ) :
+private lemma hasDerivAt_sigmaPow3_r (K : KerrSpacetime) (r θ : ℝ) :
     HasDerivAt (fun s => K.sigma s θ ^ 3) (3 * K.sigma r θ ^ 2 * (2 * r)) r :=
   ((K.hasDerivAt_sigma_r r θ).pow 3).congr_deriv (by ring)
 
-private lemma hasDerivAt_sigma3_th (K : KerrSpacetime) (r θ : ℝ) :
+private lemma hasDerivAt_sigmaPow3_theta (K : KerrSpacetime) (r θ : ℝ) :
     HasDerivAt (fun t => K.sigma r t ^ 3)
       (3 * K.sigma r θ ^ 2 * (-2 * K.a ^ 2 * Real.cos θ * Real.sin θ)) θ :=
-  ((K.hasDerivAt_sigma_th r θ).pow 3).congr_deriv (by ring)
+  ((K.hasDerivAt_sigma_theta r θ).pow 3).congr_deriv (by ring)
 
-private lemma hasDerivAt_cos_mul_sin (θ : ℝ) :
-    HasDerivAt (fun t => Real.cos t * Real.sin t)
-      ((-Real.sin θ) * Real.sin θ + Real.cos θ * Real.cos θ) θ :=
-  (Real.hasDerivAt_cos θ).fun_mul (Real.hasDerivAt_sin θ)
-
-private lemma differentiableAt_G_r' (K : KerrSpacetime) (x : Fin 4 → ℝ)
+private lemma differentiableAt_christoffel_r (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (_hsig : K.sigma (x 1) (x 2) ≠ 0) (_hdel : K.delta (x 1) ≠ 0) (_hs : Real.sin (x 2) ≠ 0)
     (k i j : Fin 4) :
     DifferentiableAt ℝ (fun s => K.christoffel (Function.update x 1 s) k i j) (x 1) := by
@@ -112,20 +110,20 @@ private lemma differentiableAt_G_r' (K : KerrSpacetime) (x : Fin 4 → ℝ)
     norm_num
   all_goals fun_prop (disch := positivity)
 
-private lemma differentiableAt_G_th (K : KerrSpacetime) (x : Fin 4 → ℝ)
+private lemma differentiableAt_christoffel_theta (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (_hsig : K.sigma (x 1) (x 2) ≠ 0) (_hdel : K.delta (x 1) ≠ 0) (_hs : Real.sin (x 2) ≠ 0)
     (k i j : Fin 4) :
     DifferentiableAt ℝ (fun t => K.christoffel (Function.update x 2 t) k i j) (x 2) := by
   have _ : DifferentiableAt ℝ (fun t => K.sigma (x 1) t) (x 2) :=
-    (K.hasDerivAt_sigma_th (x 1) (x 2)).differentiableAt
+    (K.hasDerivAt_sigma_theta (x 1) (x 2)).differentiableAt
   fin_cases k <;> fin_cases i <;> fin_cases j <;>
     simp only [christoffel, Function.update_self,
       Function.update_of_ne (by decide : (1 : Fin 4) ≠ 2)] <;>
     norm_num
   all_goals fun_prop (disch := positivity)
 
-/-- Partial derivative `∂_r (K.christoffelTrace · 1)`. -/
-lemma pd_christoffelTrace_11 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+/-- Radial partial derivative of the radial trace `∂_r (K.christoffelTrace · 1)`. -/
+lemma christoffelTraceDeriv_rr (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) :
     coordDeriv 1 (fun y => K.christoffelTrace y 1) x
       = -2 * (x 1 ^ 2 - K.a ^ 2 * Real.cos (x 2) ^ 2) / K.sigma (x 1) (x 2) ^ 2 := by
@@ -139,20 +137,20 @@ lemma pd_christoffelTrace_11 (K : KerrSpacetime) (x : Fin 4 → ℝ)
   simp only [sigma]
   ring
 
-/-- Partial derivative `∂_θ (K.christoffelTrace · 1)`. -/
-lemma pd_christoffelTrace_21 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+/-- Polar partial derivative of the radial trace `∂_θ (K.christoffelTrace · 1)`. -/
+lemma christoffelTraceDeriv_thetar (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) :
     coordDeriv 2 (fun y => K.christoffelTrace y 1) x
       = 4 * K.a ^ 2 * Real.cos (x 2) * x 1 * Real.sin (x 2) / K.sigma (x 1) (x 2) ^ 2 := by
   have hfun : (fun t => K.christoffelTrace (Function.update x 2 t) 1)
       = fun t => 2 * x 1 / K.sigma (x 1) t := by funext t; simp [christoffelTrace]
   have hd := (hasDerivAt_const (x 2) (2 * x 1)).fun_div
-    (K.hasDerivAt_sigma_th (x 1) (x 2)) hsig
+    (K.hasDerivAt_sigma_theta (x 1) (x 2)) hsig
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   ring
 
-/-- Partial derivative `∂_r (K.christoffelTrace · 2)`. -/
-lemma pd_christoffelTrace_12 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+/-- Radial partial derivative of the polar trace `∂_r (K.christoffelTrace · 2)`. -/
+lemma christoffelTraceDeriv_rtheta (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) :
     coordDeriv 1 (fun y => K.christoffelTrace y 2) x
       = 4 * K.a ^ 2 * Real.cos (x 2) * x 1 * Real.sin (x 2) / K.sigma (x 1) (x 2) ^ 2 := by
@@ -166,8 +164,8 @@ lemma pd_christoffelTrace_12 (K : KerrSpacetime) (x : Fin 4 → ℝ)
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ (hd1.fun_sub hd2))]
   ring
 
-/-- Partial derivative `∂_θ (K.christoffelTrace · 2)`. -/
-lemma pd_christoffelTrace_22 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+/-- Polar partial derivative of the polar trace `∂_θ (K.christoffelTrace · 2)`. -/
+lemma christoffelTraceDeriv_thetatheta (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     coordDeriv 2 (fun y => K.christoffelTrace y 2) x
       = -(1 / Real.sin (x 2) ^ 2)
@@ -180,21 +178,22 @@ lemma pd_christoffelTrace_22 (K : KerrSpacetime) (x : Fin 4 → ℝ)
       Function.update_self,
       Function.update_of_ne (by decide : (1 : Fin 4) ≠ 2)]; ring
   have hcot := (Real.hasDerivAt_cos (x 2)).fun_div (Real.hasDerivAt_sin (x 2)) hs
-  have hnum := (hasDerivAt_cos_mul_sin (x 2)).const_mul (2 * K.a ^ 2)
-  have hq := hnum.fun_div (K.hasDerivAt_sigma_th (x 1) (x 2)) hsig
+  have hcs := (Real.hasDerivAt_cos (x 2)).fun_mul (Real.hasDerivAt_sin (x 2))
+  have hnum := hcs.const_mul (2 * K.a ^ 2)
+  have hq := hnum.fun_div (K.hasDerivAt_sigma_theta (x 1) (x 2)) hsig
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ (hcot.fun_sub hq))]
   have hsc := Real.sin_sq_add_cos_sq (x 2)
   field_simp [hs, hsig]
   linear_combination -K.sigma (x 1) (x 2) ^ 2 * hsc
 
-private lemma hasDerivAt_num_1_00 (K : KerrSpacetime) (x : Fin 4 → ℝ) :
+private lemma hasDerivAt_christoffelNum_r_00 (K : KerrSpacetime) (x : Fin 4 → ℝ) :
     HasDerivAt (fun s => K.M * (s ^ 2 - K.a ^ 2 * Real.cos (x 2) ^ 2) * K.delta s)
       ((K.M * (2 * x 1)) * K.delta (x 1)
         + K.M * (x 1 ^ 2 - K.a ^ 2 * Real.cos (x 2) ^ 2) * (2 * x 1 - 2 * K.M)) (x 1) := by
   have h1 := (((hasDerivAt_pow 2 (x 1)).sub_const (K.a ^ 2 * Real.cos (x 2) ^ 2)).const_mul K.M)
   exact (h1.fun_mul (K.hasDerivAt_delta_r (x 1))).congr_deriv (by ring)
 
-private lemma pd_G_1_00 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+private lemma christoffelDeriv_r_00 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (_hdel : K.delta (x 1) ≠ 0) :
     coordDeriv 1 (fun y => K.christoffel y 1 0 0) x =
       (-2 * K.M * (-K.M * K.a ^ 4 * Real.cos (x 2) ^ 4
@@ -206,14 +205,15 @@ private lemma pd_G_1_00 (K : KerrSpacetime) (x : Fin 4 → ℝ)
   have hfun : (fun s => K.christoffel (Function.update x 1 s) 1 0 0)
       = fun s => (K.M * (s ^ 2 - K.a ^ 2 * Real.cos (x 2) ^ 2) * K.delta s)
         / K.sigma s (x 2) ^ 3 := by funext s; simp [christoffel]
-  have hd := (hasDerivAt_num_1_00 K x).fun_div (hasDerivAt_sigma3_r K (x 1) (x 2))
-    (pow_ne_zero 3 hsig)
+  have hd := (hasDerivAt_christoffelNum_r_00 K x).fun_div
+    (hasDerivAt_sigmaPow3_r K (x 1) (x 2)) (pow_ne_zero 3 hsig)
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig]
   simp only [sigma, delta]
   ring
 
-private lemma pd_G_1_03 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+private lemma christoffelDeriv_r_03 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
     coordDeriv 1 (fun y => K.christoffel y 1 0 3) x =
       (2 * K.M * K.a * Real.sin (x 2) ^ 2 * (-K.M * K.a ^ 4 * Real.cos (x 2) ^ 4
         + 8 * K.M * K.a ^ 2 * Real.cos (x 2) ^ 2 * x 1 ^ 2 - 3 * K.M * x 1 ^ 4
@@ -228,14 +228,15 @@ private lemma pd_G_1_03 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma 
       Function.update_of_ne (by decide : (2 : Fin 4) ≠ 1)]
     norm_num
     ring
-  have hd := ((hasDerivAt_num_1_00 K x).fun_div (hasDerivAt_sigma3_r K (x 1) (x 2))
-    (pow_ne_zero 3 hsig)).const_mul (-(K.a * Real.sin (x 2) ^ 2))
+  have hd := ((hasDerivAt_christoffelNum_r_00 K x).fun_div
+    (hasDerivAt_sigmaPow3_r K (x 1) (x 2)) (pow_ne_zero 3 hsig)).const_mul
+      (-(K.a * Real.sin (x 2) ^ 2))
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig]
   simp only [sigma, delta]
   ring
 
-private lemma pd_G_1_11 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+private lemma christoffelDeriv_r_11 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) :
     coordDeriv 1 (fun y => K.christoffel y 1 1 1) x =
       (2 * K.M ^ 2 * K.a ^ 4 * Real.cos (x 2) ^ 4
@@ -268,7 +269,8 @@ private lemma pd_G_1_11 (K : KerrSpacetime) (x : Fin 4 → ℝ)
   simp only [sigma, delta, c0, c1]
   ring
 
-private lemma pd_G_1_12 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+private lemma christoffelDeriv_r_12 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
     coordDeriv 1 (fun y => K.christoffel y 1 1 2) x =
       2 * K.a ^ 2 * Real.cos (x 2) * x 1 * Real.sin (x 2) / K.sigma (x 1) (x 2) ^ 2 := by
   have hfun : (fun s => K.christoffel (Function.update x 1 s) 1 1 2)
@@ -279,7 +281,8 @@ private lemma pd_G_1_12 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma 
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   ring
 
-private lemma pd_G_1_22 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+private lemma christoffelDeriv_r_22 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
     coordDeriv 1 (fun y => K.christoffel y 1 2 2) x =
       -(-4 * K.M * K.a ^ 2 * Real.cos (x 2) ^ 2 * x 1 + K.a ^ 4 * Real.cos (x 2) ^ 2
         + 3 * K.a ^ 2 * Real.cos (x 2) ^ 2 * x 1 ^ 2 - K.a ^ 2 * x 1 ^ 2 + x 1 ^ 4)
@@ -293,7 +296,8 @@ private lemma pd_G_1_22 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma 
   simp only [sigma, delta]
   ring
 
-private lemma pd_G_1_33 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+private lemma christoffelDeriv_r_33 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
     coordDeriv 1 (fun y => K.christoffel y 1 3 3) x =
       (-Real.sin (x 2) ^ 2 * (2 * K.M ^ 2 * K.a ^ 6 * Real.cos (x 2) ^ 6
         - 2 * K.M ^ 2 * K.a ^ 6 * Real.cos (x 2) ^ 4
@@ -329,13 +333,15 @@ private lemma pd_G_1_33 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma 
     norm_num
     ring
   have hd := (((K.hasDerivAt_delta_r (x 1)).fun_mul hP).fun_div
-    (hasDerivAt_sigma3_r K (x 1) (x 2)) (pow_ne_zero 3 hsig)).const_mul (-(Real.sin (x 2) ^ 2))
+    (hasDerivAt_sigmaPow3_r K (x 1) (x 2)) (pow_ne_zero 3 hsig)).const_mul
+      (-(Real.sin (x 2) ^ 2))
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig]
   simp only [sigma, delta, P, P', k0, k1, k2, k3]
   ring
 
-private lemma pd_G_2_00 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+private lemma christoffelDeriv_theta_00 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
     coordDeriv 2 (fun y => K.christoffel y 2 0 0) x =
       2 * K.M * K.a ^ 2 * x 1 * (-K.a ^ 2 * Real.cos (x 2) ^ 4
         - 5 * K.a ^ 2 * Real.cos (x 2) ^ 2 * Real.sin (x 2) ^ 2
@@ -349,14 +355,16 @@ private lemma pd_G_2_00 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma 
       Function.update_of_ne (by decide : (1 : Fin 4) ≠ 2)]
     norm_num
     ring
-  have hd := ((hasDerivAt_cos_mul_sin (x 2)).fun_div (hasDerivAt_sigma3_th K (x 1) (x 2))
+  have hcs := (Real.hasDerivAt_cos (x 2)).fun_mul (Real.hasDerivAt_sin (x 2))
+  have hd := (hcs.fun_div (hasDerivAt_sigmaPow3_theta K (x 1) (x 2))
     (pow_ne_zero 3 hsig)).const_mul (-2 * K.M * K.a ^ 2 * x 1)
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig]
   simp only [sigma]
   ring
 
-private lemma pd_G_2_03 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+private lemma christoffelDeriv_theta_03 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
     coordDeriv 2 (fun y => K.christoffel y 2 0 3) x =
       -2 * K.M * K.a * x 1 * (K.a ^ 2 + x 1 ^ 2) * (-K.a ^ 2 * Real.cos (x 2) ^ 4
         - 5 * K.a ^ 2 * Real.cos (x 2) ^ 2 * Real.sin (x 2) ^ 2
@@ -370,14 +378,15 @@ private lemma pd_G_2_03 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma 
       Function.update_of_ne (by decide : (1 : Fin 4) ≠ 2)]
     norm_num
     ring
-  have hd := ((hasDerivAt_cos_mul_sin (x 2)).fun_div (hasDerivAt_sigma3_th K (x 1) (x 2))
+  have hcs := (Real.hasDerivAt_cos (x 2)).fun_mul (Real.hasDerivAt_sin (x 2))
+  have hd := (hcs.fun_div (hasDerivAt_sigmaPow3_theta K (x 1) (x 2))
     (pow_ne_zero 3 hsig)).const_mul (2 * K.M * K.a * x 1 * (K.a ^ 2 + x 1 ^ 2))
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig]
   simp only [sigma]
   ring
 
-private lemma pd_G_2_11 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+private lemma christoffelDeriv_theta_11 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) :
     coordDeriv 2 (fun y => K.christoffel y 2 1 1) x =
       -K.a ^ 2 * (-K.a ^ 2 * Real.cos (x 2) ^ 4
@@ -391,23 +400,27 @@ private lemma pd_G_2_11 (K : KerrSpacetime) (x : Fin 4 → ℝ)
       Function.update_of_ne (by decide : (1 : Fin 4) ≠ 2)]
     norm_num
     ring
-  have hd := ((hasDerivAt_cos_mul_sin (x 2)).fun_div (K.hasDerivAt_sigma_th (x 1) (x 2))
-    hsig).const_mul (K.a ^ 2 / K.delta (x 1))
+  have hcs := (Real.hasDerivAt_cos (x 2)).fun_mul (Real.hasDerivAt_sin (x 2))
+  have hd := (hcs.fun_div (K.hasDerivAt_sigma_theta (x 1) (x 2)) hsig).const_mul
+    (K.a ^ 2 / K.delta (x 1))
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig, hdel]
   simp only [sigma]
   ring
 
-private lemma pd_G_2_12 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+private lemma christoffelDeriv_theta_12 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
     coordDeriv 2 (fun y => K.christoffel y 2 1 2) x =
       2 * K.a ^ 2 * Real.cos (x 2) * x 1 * Real.sin (x 2) / K.sigma (x 1) (x 2) ^ 2 := by
   have hfun : (fun t => K.christoffel (Function.update x 2 t) 2 1 2)
       = fun t => x 1 / K.sigma (x 1) t := by funext t; simp [christoffel]
-  have hd := (hasDerivAt_const (x 2) (x 1)).fun_div (K.hasDerivAt_sigma_th (x 1) (x 2)) hsig
+  have hd := (hasDerivAt_const (x 2) (x 1)).fun_div
+    (K.hasDerivAt_sigma_theta (x 1) (x 2)) hsig
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   ring
 
-private lemma pd_G_2_22 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+private lemma christoffelDeriv_theta_22 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
     coordDeriv 2 (fun y => K.christoffel y 2 2 2) x =
       K.a ^ 2 * (-K.a ^ 2 * Real.cos (x 2) ^ 4
         - K.a ^ 2 * Real.cos (x 2) ^ 2 * Real.sin (x 2) ^ 2
@@ -420,14 +433,15 @@ private lemma pd_G_2_22 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma 
       Function.update_of_ne (by decide : (1 : Fin 4) ≠ 2)]
     norm_num
     ring
-  have hd := ((hasDerivAt_cos_mul_sin (x 2)).fun_div (K.hasDerivAt_sigma_th (x 1) (x 2))
-    hsig).const_mul (-K.a ^ 2)
+  have hcs := (Real.hasDerivAt_cos (x 2)).fun_mul (Real.hasDerivAt_sin (x 2))
+  have hd := (hcs.fun_div (K.hasDerivAt_sigma_theta (x 1) (x 2)) hsig).const_mul (-K.a ^ 2)
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig]
   simp only [sigma]
   ring
 
-private lemma pd_G_2_33 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+private lemma christoffelDeriv_theta_33 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
     coordDeriv 2 (fun y => K.christoffel y 2 3 3) x =
       (2 * K.M * K.a ^ 6 * Real.cos (x 2) ^ 8 * x 1
         + 2 * K.M * K.a ^ 6 * Real.cos (x 2) ^ 6 * x 1 * Real.sin (x 2) ^ 2
@@ -463,26 +477,25 @@ private lemma pd_G_2_33 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma 
   let c0 : ℝ := 2 * K.M * K.a ^ 4 * x 1 + 4 * K.M * K.a ^ 2 * x 1 ^ 3
     + K.a ^ 2 * x 1 ^ 4 + x 1 ^ 6
   let Q : ℝ → ℝ := fun t => c4 * Real.cos t ^ 4 + c2 * Real.cos t ^ 2 + c0
-  have hQ : HasDerivAt Q
-      (4 * c4 * Real.cos (x 2) ^ 3 * (-Real.sin (x 2))
-        + 2 * c2 * Real.cos (x 2) * (-Real.sin (x 2))) (x 2) := by
-    have hc4 : HasDerivAt (fun t => c4 * Real.cos t ^ 4)
-        (c4 * (4 * Real.cos (x 2) ^ (4 - 1) * (-Real.sin (x 2)))) (x 2) :=
-      ((Real.hasDerivAt_cos (x 2)).pow 4).const_mul c4
-    have hcosSq : HasDerivAt (fun t : ℝ => Real.cos t ^ 2)
-        (-2 * Real.cos (x 2) * Real.sin (x 2)) (x 2) :=
-      ((hasDerivAt_pow 2 (Real.cos (x 2))).comp (x 2)
-        (Real.hasDerivAt_cos (x 2))).congr_deriv (by ring)
-    have hc2 := hcosSq.const_mul c2
-    exact ((hc4.fun_add hc2).add_const c0).congr_deriv (by ring)
+  let Q' : ℝ := -4 * c4 * Real.cos (x 2) ^ 3 * Real.sin (x 2)
+    - 2 * c2 * Real.cos (x 2) * Real.sin (x 2)
+  have hQ : HasDerivAt Q Q' (x 2) := by
+    have h4 := (((hasDerivAt_pow 4 (Real.cos (x 2))).comp (x 2)
+      (Real.hasDerivAt_cos (x 2))).const_mul c4)
+    have h2 := (((hasDerivAt_pow 2 (Real.cos (x 2))).comp (x 2)
+      (Real.hasDerivAt_cos (x 2))).const_mul c2)
+    exact ((h4.fun_add h2).fun_add (hasDerivAt_const (x 2) c0)).congr_deriv
+      (by simp only [Q']; ring)
   have hfun : (fun t => K.christoffel (Function.update x 2 t) 2 3 3)
-      = fun t => -((Real.cos t * Real.sin t * Q t) / K.sigma (x 1) t ^ 3) := by
+      = fun t => -((Real.cos t * Real.sin t) * Q t / K.sigma (x 1) t ^ 3) := by
     funext t
-    simp only [christoffel, Q, c4, c2, c0]
+    simp only [christoffel, Q, c4, c2, c0, Function.update_self,
+      Function.update_of_ne (by decide : (1 : Fin 4) ≠ 2)]
     norm_num
     ring
-  have hd := (((hasDerivAt_cos_mul_sin (x 2)).fun_mul hQ).fun_div
-    (hasDerivAt_sigma3_th K (x 1) (x 2)) (pow_ne_zero 3 hsig)).fun_neg
+  have hcs := (Real.hasDerivAt_cos (x 2)).fun_mul (Real.hasDerivAt_sin (x 2))
+  have hd := (((hcs.fun_mul hQ).fun_div
+    (hasDerivAt_sigmaPow3_theta K (x 1) (x 2)) (pow_ne_zero 3 hsig)).fun_neg)
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig]
   simp only [sigma, Q, c4, c2, c0]
@@ -491,6 +504,10 @@ private lemma pd_G_2_33 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hsig : K.sigma 
 /-!
 
 ## B. Ricci flatness through the coordinate pipeline
+
+Contracting all Riemann contributions using the trace derivative identities shows that every
+component `Ric_{σ ν}` vanishes across both the `(t, φ)` and `(r, θ)` blocks and the off-block
+entries.
 
 -/
 
@@ -515,11 +532,11 @@ private lemma sum_pd_christoffel_diag (K : KerrSpacetime) (x : Fin 4 → ℝ)
   · simp [K.pd_christoffel_const_03 x 0 (Or.inl rfl)]
   · simp only [Fin.isValue, true_or, ↓reduceIte]
     rw [← coordDeriv_sum 1 (fun ρ y => K.christoffel y ρ ρ σ) x
-      (fun ρ => differentiableAt_G_r' K x hsig hdel hs ρ ρ σ)]
+      (fun ρ => differentiableAt_christoffel_r K x hsig hdel hs ρ ρ σ)]
     exact coordDeriv_congr_nhds 1 x hcongrTr
   · simp only [Fin.isValue, or_true, ↓reduceIte]
     rw [← coordDeriv_sum 2 (fun ρ y => K.christoffel y ρ ρ σ) x
-      (fun ρ => differentiableAt_G_th K x hsig hdel hs ρ ρ σ)]
+      (fun ρ => differentiableAt_christoffel_theta K x hsig hdel hs ρ ρ σ)]
     exact coordDeriv_congr_nhds 2 x hcongrTr
   · simp [K.pd_christoffel_const_03 x 3 (Or.inr rfl)]
 
@@ -567,7 +584,7 @@ private lemma christoffel_swap_slice (K : KerrSpacetime) (k i j : Fin 4) :
     (fun y => K.christoffel y k i j) = fun y => K.christoffel y k j i :=
   funext fun y => K.christoffel_symm y k i j
 
-private lemma kerr_sin_sq_four (θ : ℝ) :
+private lemma sin_pow_four_eq (θ : ℝ) :
     Real.sin θ ^ 4 = (1 - Real.cos θ ^ 2) ^ 2 := by
   rw [show Real.sin θ ^ 4 = (Real.sin θ ^ 2) ^ 2 by ring, Real.sin_sq]
 
@@ -577,14 +594,15 @@ local macro "kerr_ricci_clear" : tactic =>
     norm_num
     field_simp
     simp -failIfUnchanged only [KerrSpacetime.sigma, KerrSpacetime.delta, Real.sin_sq,
-      kerr_sin_sq_four]
+      sin_pow_four_eq]
     ring
   })
 
 private lemma ricciOf_00 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     Pipeline.ricciTensorOf K.metric K.metricInv x 0 0 = 0 := by
-  rw [ricciOf_eq_sum K x hsig hdel hs 0 0, pd_G_1_00 K x hsig hdel, pd_G_2_00 K x hsig]
+  rw [ricciOf_eq_sum K x hsig hdel hs 0 0, christoffelDeriv_r_00 K x hsig hdel,
+    christoffelDeriv_theta_00 K x hsig]
   kerr_ricci_clear
 
 private lemma ricciOf_03 (K : KerrSpacetime) (x : Fin 4 → ℝ)
@@ -592,21 +610,23 @@ private lemma ricciOf_03 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     Pipeline.ricciTensorOf K.metric K.metricInv x 0 3 = 0 := by
   rw [ricciOf_eq_sum K x hsig hdel hs 0 3,
     christoffel_swap_slice K 1 3 0, christoffel_swap_slice K 2 3 0,
-    pd_G_1_03 K x hsig, pd_G_2_03 K x hsig]
+    christoffelDeriv_r_03 K x hsig, christoffelDeriv_theta_03 K x hsig]
   kerr_ricci_clear
 
 private lemma ricciOf_30 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     Pipeline.ricciTensorOf K.metric K.metricInv x 3 0 = 0 := by
-  rw [ricciOf_eq_sum K x hsig hdel hs 3 0, pd_G_1_03 K x hsig, pd_G_2_03 K x hsig]
+  rw [ricciOf_eq_sum K x hsig hdel hs 3 0, christoffelDeriv_r_03 K x hsig,
+    christoffelDeriv_theta_03 K x hsig]
   kerr_ricci_clear
 
 private lemma ricciOf_11 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     Pipeline.ricciTensorOf K.metric K.metricInv x 1 1 = 0 := by
-  rw [ricciOf_eq_sum K x hsig hdel hs 1 1, pd_G_1_11 K x hsig hdel, pd_G_2_11 K x hsig hdel]
+  rw [ricciOf_eq_sum K x hsig hdel hs 1 1, christoffelDeriv_r_11 K x hsig hdel,
+    christoffelDeriv_theta_11 K x hsig hdel]
   simp only [Fin.isValue, ↓reduceIte, true_or]
-  rw [K.pd_christoffelTrace_11 x hsig]
+  rw [K.christoffelTraceDeriv_rr x hsig]
   kerr_ricci_clear
 
 private lemma ricciOf_12 (K : KerrSpacetime) (x : Fin 4 → ℝ)
@@ -614,39 +634,42 @@ private lemma ricciOf_12 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     Pipeline.ricciTensorOf K.metric K.metricInv x 1 2 = 0 := by
   rw [ricciOf_eq_sum K x hsig hdel hs 1 2,
     christoffel_swap_slice K 1 2 1, christoffel_swap_slice K 2 2 1,
-    pd_G_1_12 K x hsig, pd_G_2_12 K x hsig]
+    christoffelDeriv_r_12 K x hsig, christoffelDeriv_theta_12 K x hsig]
   simp only [Fin.isValue, ↓reduceIte, or_true]
-  rw [K.pd_christoffelTrace_21 x hsig]
+  rw [K.christoffelTraceDeriv_thetar x hsig]
   kerr_ricci_clear
 
 private lemma ricciOf_21 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     Pipeline.ricciTensorOf K.metric K.metricInv x 2 1 = 0 := by
-  rw [ricciOf_eq_sum K x hsig hdel hs 2 1, pd_G_1_12 K x hsig, pd_G_2_12 K x hsig]
+  rw [ricciOf_eq_sum K x hsig hdel hs 2 1, christoffelDeriv_r_12 K x hsig,
+    christoffelDeriv_theta_12 K x hsig]
   simp only [Fin.isValue, ↓reduceIte, true_or]
-  rw [K.pd_christoffelTrace_12 x hsig]
+  rw [K.christoffelTraceDeriv_rtheta x hsig]
   kerr_ricci_clear
 
 private lemma ricciOf_22 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     Pipeline.ricciTensorOf K.metric K.metricInv x 2 2 = 0 := by
-  rw [ricciOf_eq_sum K x hsig hdel hs 2 2, pd_G_1_22 K x hsig, pd_G_2_22 K x hsig]
+  rw [ricciOf_eq_sum K x hsig hdel hs 2 2, christoffelDeriv_r_22 K x hsig,
+    christoffelDeriv_theta_22 K x hsig]
   simp only [Fin.isValue, ↓reduceIte, or_true]
-  rw [K.pd_christoffelTrace_22 x hsig hs]
+  rw [K.christoffelTraceDeriv_thetatheta x hsig hs]
   kerr_ricci_clear
 
 private lemma ricciOf_33 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     Pipeline.ricciTensorOf K.metric K.metricInv x 3 3 = 0 := by
-  rw [ricciOf_eq_sum K x hsig hdel hs 3 3, pd_G_1_33 K x hsig, pd_G_2_33 K x hsig]
+  rw [ricciOf_eq_sum K x hsig hdel hs 3 3, christoffelDeriv_r_33 K x hsig,
+    christoffelDeriv_theta_33 K x hsig]
   kerr_ricci_clear
 
-private lemma pd_G_zero_of_const (K : KerrSpacetime) (x : Fin 4 → ℝ) (μ k i j : Fin 4)
+private lemma christoffelDeriv_zero_of_const (K : KerrSpacetime) (x : Fin 4 → ℝ) (μ k i j : Fin 4)
     (h : ∀ s, K.christoffel (Function.update x μ s) k i j = 0) :
     coordDeriv μ (fun y => K.christoffel y k i j) x = 0 :=
   coordDeriv_const_slice μ 0 h
 
-private lemma pd_Tr_zero_of_const (K : KerrSpacetime) (x : Fin 4 → ℝ) (μ σ : Fin 4)
+private lemma christoffelTraceDeriv_zero_of_const (K : KerrSpacetime) (x : Fin 4 → ℝ) (μ σ : Fin 4)
     (h : ∀ s, K.christoffelTrace (Function.update x μ s) σ = 0) :
     coordDeriv μ (fun y => K.christoffelTrace y σ) x = 0 :=
   coordDeriv_const_slice μ 0 h
@@ -660,10 +683,10 @@ private lemma ricciOf_offblock (K : KerrSpacetime) (x : Fin 4 → ℝ)
   rw [ricciOf_eq_sum K x hsig hdel hs σ ν]
   rcases hoff with ⟨rfl, rfl | rfl⟩ | ⟨rfl | rfl, rfl | rfl⟩ | ⟨rfl, rfl | rfl⟩
   all_goals
-    rw [pd_G_zero_of_const K x 1 1 _ _ (fun _ => by simp [christoffel]),
-      pd_G_zero_of_const K x 2 2 _ _ (fun _ => by simp [christoffel])]
+    rw [christoffelDeriv_zero_of_const K x 1 1 _ _ (fun _ => by simp [christoffel]),
+      christoffelDeriv_zero_of_const K x 2 2 _ _ (fun _ => by simp [christoffel])]
     simp only [Fin.isValue, Fin.reduceEq, or_self, true_or, or_true, ↓reduceIte]
-    try rw [pd_Tr_zero_of_const K x _ _ (fun _ => by simp [christoffelTrace])]
+    try rw [christoffelTraceDeriv_zero_of_const K x _ _ (fun _ => by simp [christoffelTrace])]
     simp only [Fin.sum_univ_four, christoffelTrace, christoffel]
     norm_num
 
@@ -694,6 +717,9 @@ lemma ricciTensorOf_eq_zero (K : KerrSpacetime) (x : Fin 4 → ℝ)
 /-!
 
 ## C. Scalar curvature and vacuum Einstein equations
+
+Contraction of the vanishing Ricci tensor yields zero scalar curvature and vacuum Einstein
+equations `G = 0`.
 
 -/
 

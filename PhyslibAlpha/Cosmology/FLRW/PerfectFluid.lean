@@ -15,8 +15,8 @@ import Mathlib.Tactic.Ring
 
 # FLRW comoving perfect fluid and Friedmann equations
 
-Comoving perfect-fluid stress-energy tensor `perfectFluidT` and equivalence between the FLRW
-Einstein field equations `G_{ij} + Λ g_{ij} = 8 π G T_{ij}` and the two Friedmann equations.
+Comoving perfect-fluid stress-energy tensor `perfectFluidStressEnergy` and equivalence between the
+FLRW Einstein field equations `G_{ij} + Λ g_{ij} = 8 π G T_{ij}` and the two Friedmann equations.
 
 ## i. Overview
 
@@ -31,7 +31,7 @@ in units `c = 1`) recovers:
 
 ## ii. Key results
 
-- `perfectFluidT` : comoving perfect-fluid stress-energy tensor.
+- `perfectFluidStressEnergy` : comoving perfect-fluid stress-energy tensor.
 - `FLRWSpacetime.einsteinTensorOf_00_iff_friedmann` : `(0, 0)` Einstein equation ↔ first Friedmann
   equation.
 - `FLRWSpacetime.einsteinTensorOf_spatial_iff_friedmann` : `(1, 1)` Einstein equation ↔ second
@@ -71,8 +71,8 @@ the first and second Friedmann equations in geometric units `c = 1`.
 
 /-- Comoving perfect-fluid stress-energy tensor `T_{ij} = (ρ + p) u_i u_j + p g_{ij}` for a
 comoving observer `u = (-1, 0, 0, 0)` (units `c = 1`). -/
-def perfectFluidT (ρ p : ℝ) (g : Tensor2 4) : Tensor2 4 :=
-  fun i j => (ρ + p) * (if i = 0 ∧ j = 0 then 1 else 0) + p * g i j
+def perfectFluidStressEnergy (ρ p : ℝ) (g : Tensor2 4) : Tensor2 4 :=
+  Matrix.of fun i j => (ρ + p) * (if i = 0 ∧ j = 0 then 1 else 0) + p * g i j
 
 namespace FLRWSpacetime
 
@@ -84,11 +84,11 @@ lemma einsteinTensorOf_00_iff_friedmann (S : FLRWSpacetime) (Λ G ρ p : ℝ) (x
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
     (Pipeline.einsteinTensorOf S.metric S.metricInv x 0 0 + Λ * S.metric x 0 0
-        = 8 * Real.pi * G * perfectFluidT ρ p (S.metric x) 0 0)
+        = 8 * Real.pi * G * perfectFluidStressEnergy ρ p (S.metric x) 0 0)
       ↔ (deriv S.a (x 0) / S.a (x 0)) ^ 2
           = (8 * Real.pi * G / 3) * ρ - S.k / (S.a (x 0)) ^ 2 + Λ / 3 := by
   rw [S.einsteinTensorOf x ha hr hkr hsin ha_diff ha2 0 0]
-  simp only [metric, perfectFluidT, ↓reduceIte, and_self, mul_one]
+  simp only [metric, perfectFluidStressEnergy, Matrix.of_apply, ↓reduceIte, and_self, mul_one]
   constructor <;> intro h <;> linarith
 
 /-- Given the first-order Friedmann equation, the spatial diagonal Einstein equation `(1, 1)`
@@ -101,13 +101,13 @@ lemma einsteinTensorOf_spatial_iff_friedmann (S : FLRWSpacetime) (Λ G ρ p : �
     (hf1 : (deriv S.a (x 0) / S.a (x 0)) ^ 2
       = (8 * Real.pi * G / 3) * ρ - S.k / (S.a (x 0)) ^ 2 + Λ / 3) :
     (Pipeline.einsteinTensorOf S.metric S.metricInv x 1 1 + Λ * S.metric x 1 1
-        = 8 * Real.pi * G * perfectFluidT ρ p (S.metric x) 1 1)
+        = 8 * Real.pi * G * perfectFluidStressEnergy ρ p (S.metric x) 1 1)
       ↔ deriv (deriv S.a) (x 0) / S.a (x 0) = -(4 * Real.pi * G / 3) * (ρ + 3 * p) + Λ / 3 := by
   have hg11 : S.a (x 0) ^ 2 / (1 - S.k * x 1 ^ 2) ≠ 0 :=
     div_ne_zero (pow_ne_zero 2 ha) hkr
   rw [S.einsteinTensorOf x ha hr hkr hsin ha_diff ha2 1 1]
-  simp only [metric, perfectFluidT, Fin.isValue, one_ne_zero, false_and, ↓reduceIte,
-    mul_zero, zero_add]
+  simp only [metric, perfectFluidStressEnergy, Matrix.of_apply, Fin.isValue, one_ne_zero,
+    false_and, ↓reduceIte, mul_zero, zero_add]
   have hfac : -(2 * (deriv (deriv S.a) (x 0) / S.a (x 0)) + (deriv S.a (x 0) / S.a (x 0)) ^ 2
         + S.k / (S.a (x 0)) ^ 2) * (S.a (x 0) ^ 2 / (1 - S.k * x 1 ^ 2))
         + Λ * (S.a (x 0) ^ 2 / (1 - S.k * x 1 ^ 2))
@@ -128,7 +128,7 @@ lemma einsteinTensorOf_iff_friedmann (S : FLRWSpacetime) (Λ G ρ p : ℝ) (x : 
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
     (∀ i j, Pipeline.einsteinTensorOf S.metric S.metricInv x i j + Λ * S.metric x i j
-        = 8 * Real.pi * G * perfectFluidT ρ p (S.metric x) i j)
+        = 8 * Real.pi * G * perfectFluidStressEnergy ρ p (S.metric x) i j)
       ↔ ((deriv S.a (x 0) / S.a (x 0)) ^ 2
             = (8 * Real.pi * G / 3) * ρ - S.k / (S.a (x 0)) ^ 2 + Λ / 3)
           ∧ (deriv (deriv S.a) (x 0) / S.a (x 0)
@@ -145,7 +145,7 @@ lemma einsteinTensorOf_iff_friedmann (S : FLRWSpacetime) (Λ G ρ p : ℝ) (x : 
     have hcoef : -(2 * (deriv (deriv S.a) (x 0) / S.a (x 0))
         + (deriv S.a (x 0) / S.a (x 0)) ^ 2 + S.k / (S.a (x 0)) ^ 2) + Λ = 8 * Real.pi * G * p := by
       linarith
-    fin_cases i <;> fin_cases j <;> simp [metric, perfectFluidT]
+    fin_cases i <;> fin_cases j <;> simp [metric, perfectFluidStressEnergy]
     · linarith
     · linear_combination (S.a (x 0) ^ 2 / (1 - S.k * x 1 ^ 2)) * hcoef
     · linear_combination (S.a (x 0) ^ 2 * x 1 ^ 2) * hcoef

@@ -260,9 +260,9 @@ lemma ricciScalarOf_flrw_flat_eq_neg_torsion_add_boundary (a : ℝ → ℝ) (x :
 /-- For a Physlib `Cosmology.FLRW` universe, `flrwTorsionScalar` reproduces `6 H²` in terms of
 `Cosmology.FLRW.FriedmannEquation.hubbleConstant`. -/
 lemma flrwTorsionScalar_ofCosmology (U : Cosmology.FLRW) {t : Time} (ht : t ∈ U.I) :
-    flrwTorsionScalar (flrwScaleFn U) t.val =
+    flrwTorsionScalar (flrwScaleFactorOfReal U) t.val =
       6 * (Cosmology.FLRW.FriedmannEquation.hubbleConstant U.a t) ^ 2 := by
-  simp only [flrwTorsionScalar, deriv_flrwScaleFn_eq U ht,
+  simp only [flrwTorsionScalar, deriv_flrwScaleFactorOfReal_eq U ht,
     Cosmology.FLRW.FriedmannEquation.hubbleConstant]
   rfl
 

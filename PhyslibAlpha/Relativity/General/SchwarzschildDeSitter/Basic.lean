@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import PhyslibAlpha.Relativity.General.Schwarzschild.Basic
-public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.DeSitterFrame
-public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric
+public import PhyslibAlpha.Relativity.General.Schwarzschild.ElectricWeyl
+public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric.Basic
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Mul
@@ -25,28 +25,29 @@ eigenvalues directly from `SchwarzschildDeSitterSpacetime`.
 
 ## i. Overview
 
-With lapse `f = 1 - 2M/r - Λr²/3` (`SchwarzschildDeSitterSpacetime.lapse`) and half-derivative
-`n = f'/2 = M/r² - Λr/3` (`SchwarzschildDeSitterSpacetime.lapseHalfDeriv`), the mixed radial
-Christoffel symbols are `Γ^t_{tr} = n / f` and `Γ^r_{rr} = -n / f`. Differentiating these
-expressions yields all six independent Riemann components for general `Λ`:
+With radial metric function `f = 1 - 2M/r - Λr²/3` (`SchwarzschildDeSitterSpacetime.metricFn`)
+and half-derivative `n = f'/2 = M/r² - Λr/3` (`SchwarzschildDeSitterSpacetime.metricFnHalfDeriv`),
+the mixed radial Christoffel symbols are `Γ^t_{tr} = n / f` and `Γ^r_{rr} = -n / f`.
+Differentiating these expressions yields all six independent Riemann components for general `Λ`:
 
 - `R^t{}_{rtr} = (2M / r³ + Λ / 3) / f`,
 - `R^t{}_{θtθ} = R^r{}_{θrθ} = Λ r² / 3 - M / r`,
 - `R^t{}_{φtφ} = R^r{}_{φrφ} = (Λ r² / 3 - M / r) sin²θ`,
 - `R^θ{}_{φθφ} = (2M / r + Λ r² / 3) sin²θ`.
 
-Lowered into the orthonormal frame and subtracting the trace piece `-(Λ / 3) g` recovers
+Lowering into the orthonormal frame and subtracting the trace piece `-(Λ / 3) g` recovers
 `electricPart (M / r³)` for every `Λ`: the cosmological constant shifts Ricci curvature while
 leaving the Weyl tidal field unchanged.
 
 ## ii. Key results
 
 - `SchwarzschildDeSitterSpacetime`, `SchwarzschildDeSitterSpacetime.metric`,
-  `SchwarzschildDeSitterSpacetime.metricInv`, `SchwarzschildDeSitterSpacetime.lapse`,
-  `SchwarzschildDeSitterSpacetime.lapseHalfDeriv` : Schwarzschild–de Sitter spacetime structure,
-  coordinate metric, inverse, and lapse.
-- `SchwarzschildDeSitterSpacetime.lapse_zero_lambda` : reduction to `SchwarzschildSpacetime.lapse`
-  at `Λ = 0`.
+  `SchwarzschildDeSitterSpacetime.metricInv`, `SchwarzschildDeSitterSpacetime.toCoordinateMetric`,
+  `SchwarzschildDeSitterSpacetime.metricFn`,
+  `SchwarzschildDeSitterSpacetime.metricFnHalfDeriv` : Schwarzschild–de Sitter spacetime structure,
+  coordinate metric, inverse, and metric function.
+- `SchwarzschildDeSitterSpacetime.metricFn_zero_lambda` : reduction to
+  `SchwarzschildSpacetime.metricFn` at `Λ = 0`.
 - `SchwarzschildDeSitterSpacetime.riemann_t_rtr`,
   `SchwarzschildDeSitterSpacetime.riemann_t_thetatheta`,
   `SchwarzschildDeSitterSpacetime.riemann_t_phitphi`,
@@ -59,7 +60,7 @@ leaving the Weyl tidal field unchanged.
 
 ## iii. Table of contents
 
-- A. Lapse function, half-derivative, and Christoffel symbols
+- A. Metric function, half-derivative, and Christoffel symbols
 - B. The six Riemann components for general `Λ`
 - C. `Λ`-independence of the Weyl electric eigenvalues
 
@@ -81,7 +82,11 @@ namespace SchwarzschildDeSitter
 
 /-!
 
-## A. Lapse function, half-derivative, and Christoffel symbols
+## A. Metric function, half-derivative, and Christoffel symbols
+
+The Kottler metric depends solely on the cubic-plus-coulombic radial profile
+`f(r) = 1 - 2M/r - Λr²/3`, whose half-derivative `n(r) = M/r² - Λr/3` governs all non-vanishing
+radial Christoffel symbols.
 
 -/
 
@@ -95,20 +100,30 @@ structure SchwarzschildDeSitterSpacetime where
 
 namespace SchwarzschildDeSitterSpacetime
 
-/-- The Schwarzschild–de Sitter lapse function `f = 1 - 2M / r - Λ r² / 3`. -/
-noncomputable def lapse (S : SchwarzschildDeSitterSpacetime) (r : ℝ) : ℝ :=
+/-- The Schwarzschild–de Sitter radial metric function `f(r) = 1 - 2M / r - Λ r² / 3`. -/
+noncomputable def metricFn (S : SchwarzschildDeSitterSpacetime) (r : ℝ) : ℝ :=
   1 - 2 * S.M / r - S.Λ * r ^ 2 / 3
 
-/-- Half the radial derivative of the lapse, `n = f'/2 = M / r² - Λ r / 3`, factored out so
-rational Christoffel and Riemann component expressions avoid repeated factor-of-2 cancellation. -/
-noncomputable def lapseHalfDeriv (S : SchwarzschildDeSitterSpacetime) (r : ℝ) : ℝ :=
+/-- Half the radial derivative of the metric function, `n = f'/2 = M / r² - Λ r / 3`, factored out
+so rational Christoffel and Riemann expressions avoid repeated factor-of-2 cancellation. -/
+noncomputable def metricFnHalfDeriv (S : SchwarzschildDeSitterSpacetime) (r : ℝ) : ℝ :=
   S.M / r ^ 2 - S.Λ * r / 3
 
 /-- View a Schwarzschild–de Sitter spacetime as a `StaticSphericalMetric` with profile
-`S.lapse`. -/
+`S.metricFn`. -/
 noncomputable def toStaticSpherical (S : SchwarzschildDeSitterSpacetime) :
     StaticSpherical.StaticSphericalMetric :=
-  ⟨S.lapse⟩
+  ⟨S.metricFn⟩
+
+/-- The underlying radial metric function of `S.toStaticSpherical` is `S.metricFn`. -/
+@[simp]
+lemma toStaticSpherical_metricFn (S : SchwarzschildDeSitterSpacetime) :
+    S.toStaticSpherical.metricFn = S.metricFn := rfl
+
+/-- Bundled `CoordinateMetric 4` for Schwarzschild–de Sitter spacetime on its regular coordinate
+domain. -/
+noncomputable def toCoordinateMetric (S : SchwarzschildDeSitterSpacetime) : CoordinateMetric 4 :=
+  S.toStaticSpherical.toCoordinateMetric
 
 /-- The Schwarzschild–de Sitter metric in `(t, r, θ, φ)` coordinates. -/
 noncomputable def metric (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
@@ -118,158 +133,168 @@ noncomputable def metric (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ
 noncomputable def metricInv (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
   S.toStaticSpherical.metricInv x
 
-/-- At `Λ = 0`, the de Sitter lapse reduces to the Schwarzschild lapse. -/
-lemma lapse_zero_lambda (M r : ℝ) :
-    (SchwarzschildDeSitterSpacetime.mk M 0).lapse r =
-      (Schwarzschild.SchwarzschildSpacetime.mk M).lapse r := by
-  simp [lapse, Schwarzschild.SchwarzschildSpacetime.lapse]
+/-- At `Λ = 0`, the Kottler radial metric function reduces to the Schwarzschild metric
+function. -/
+lemma metricFn_zero_lambda (M r : ℝ) :
+    (SchwarzschildDeSitterSpacetime.mk M 0).metricFn r =
+      (Schwarzschild.SchwarzschildSpacetime.mk M).metricFn r := by
+  simp [metricFn, Schwarzschild.SchwarzschildSpacetime.metricFn]
 
 /-- `f = 1 - 2M/r - Λr²/3` is differentiable away from `r = 0` with `f' = 2 n`. -/
-lemma hasDerivAt_lapse (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0) :
-    HasDerivAt S.lapse (2 * S.lapseHalfDeriv r) r := by
+lemma hasDerivAt_metricFn (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0) :
+    HasDerivAt S.metricFn (2 * S.metricFnHalfDeriv r) r := by
   have h1 : HasDerivAt (fun s : ℝ => 1 - 2 * S.M / s) (2 * S.M / r ^ 2) r :=
-    (Schwarzschild.SchwarzschildSpacetime.mk S.M).hasDerivAt_lapse r hr
+    (Schwarzschild.SchwarzschildSpacetime.mk S.M).hasDerivAt_metricFn r hr
   have h2 : HasDerivAt (fun s : ℝ => S.Λ / 3 * s ^ 2) (S.Λ / 3 * (2 * r)) r := by
     have h := (hasDerivAt_pow 2 r).const_mul (S.Λ / 3)
     simpa using h
   have h := h1.sub h2
-  have hfun : S.lapse
+  have hfun : S.metricFn
       = (fun s : ℝ => 1 - 2 * S.M / s) - fun s : ℝ => S.Λ / 3 * s ^ 2 := by
     funext s
-    simp [lapse, Pi.sub_apply]
+    simp [metricFn, Pi.sub_apply]
     ring
-  have hval : 2 * S.M / r ^ 2 - S.Λ / 3 * (2 * r) = 2 * S.lapseHalfDeriv r := by
-    simp [lapseHalfDeriv]
+  have hval : 2 * S.M / r ^ 2 - S.Λ / 3 * (2 * r) = 2 * S.metricFnHalfDeriv r := by
+    simp [metricFnHalfDeriv]
     ring
   rw [← hfun, hval] at h
   exact h
 
 /-- `f' = 2 n` as an identity for `deriv`. -/
-lemma deriv_lapse (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0) :
-    deriv S.lapse r = 2 * S.lapseHalfDeriv r :=
-  (S.hasDerivAt_lapse r hr).deriv
+lemma deriv_metricFn (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0) :
+    deriv S.metricFn r = 2 * S.metricFnHalfDeriv r :=
+  (S.hasDerivAt_metricFn r hr).deriv
 
 /-- `n = M/r² - Λr/3` is differentiable away from `r = 0` with `n' = -2M/r³ - Λ/3`. -/
-lemma hasDerivAt_lapseHalfDeriv (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0) :
-    HasDerivAt S.lapseHalfDeriv (-2 * S.M / r ^ 3 - S.Λ / 3) r := by
+lemma hasDerivAt_metricFnHalfDeriv (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0) :
+    HasDerivAt S.metricFnHalfDeriv (-2 * S.M / r ^ 3 - S.Λ / 3) r := by
   have h1 : HasDerivAt (fun s : ℝ => S.M / s ^ 2) (-2 * S.M / r ^ 3) r :=
     (Schwarzschild.SchwarzschildSpacetime.mk S.M).potential_second_hasDerivAt r hr
   have h2 : HasDerivAt (fun s : ℝ => S.Λ / 3 * s) (S.Λ / 3) r := by
     simpa using (hasDerivAt_id r).const_mul (S.Λ / 3)
   have h := h1.sub h2
-  have hfun : S.lapseHalfDeriv
+  have hfun : S.metricFnHalfDeriv
       = (fun s : ℝ => S.M / s ^ 2) - fun s : ℝ => S.Λ / 3 * s := by
     funext s
-    simp [lapseHalfDeriv, Pi.sub_apply]
+    simp [metricFnHalfDeriv, Pi.sub_apply]
     ring
   rw [← hfun] at h
   exact h
 
 /-- `n' = -2M/r³ - Λ/3` as an identity for `deriv`. -/
-lemma deriv_lapseHalfDeriv (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0) :
-    deriv S.lapseHalfDeriv r = -2 * S.M / r ^ 3 - S.Λ / 3 :=
-  (S.hasDerivAt_lapseHalfDeriv r hr).deriv
+lemma deriv_metricFnHalfDeriv (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0) :
+    deriv S.metricFnHalfDeriv r = -2 * S.M / r ^ 3 - S.Λ / 3 :=
+  (S.hasDerivAt_metricFnHalfDeriv r hr).deriv
+
+/-- Radial derivative of the ratio `n / f = Γ^t_{tr}`. -/
+lemma deriv_metricFnHalfDeriv_div_metricFn (S : SchwarzschildDeSitterSpacetime) (r : ℝ)
+    (hr : r ≠ 0) (hf : S.metricFn r ≠ 0) :
+    deriv (fun s : ℝ => S.metricFnHalfDeriv s / S.metricFn s) r
+      = (-2 * S.M / r ^ 3 - S.Λ / 3) / S.metricFn r
+          - S.metricFnHalfDeriv r * (2 * S.metricFnHalfDeriv r) / (S.metricFn r) ^ 2 := by
+  have h := (S.hasDerivAt_metricFnHalfDeriv r hr).div (S.hasDerivAt_metricFn r hr) hf
+  have hfun : (fun s : ℝ => S.metricFnHalfDeriv s / S.metricFn s) =
+      S.metricFnHalfDeriv / S.metricFn := rfl
+  rw [hfun, h.deriv]
+  field_simp [hf]
 
 /-- `Γ^t_{tr} = (1/2) g^{tt} ∂_r g_{tt} = n / f`. -/
-lemma gammaTtr (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hf : S.lapse r ≠ 0) :
-    (1 / 2 : ℝ) * (-(S.lapse r)⁻¹) * (-(2 * S.lapseHalfDeriv r))
-      = S.lapseHalfDeriv r / S.lapse r := by
+lemma christoffelTtr (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hf : S.metricFn r ≠ 0) :
+    (1 / 2 : ℝ) * (-(S.metricFn r)⁻¹) * (-(2 * S.metricFnHalfDeriv r))
+      = S.metricFnHalfDeriv r / S.metricFn r := by
   field_simp [hf]
 
 /-- `∂_r (f⁻¹) = -2 n / f²`. -/
-lemma deriv_lapse_inv (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0)
-    (hf : S.lapse r ≠ 0) :
-    deriv (fun s : ℝ => (S.lapse s)⁻¹) r
-      = -(2 * S.lapseHalfDeriv r) / (S.lapse r) ^ 2 :=
-  (S.hasDerivAt_lapse r hr).inv hf |>.deriv
+lemma deriv_metricFn_inv (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0)
+    (hf : S.metricFn r ≠ 0) :
+    deriv (fun s : ℝ => (S.metricFn s)⁻¹) r
+      = -(2 * S.metricFnHalfDeriv r) / (S.metricFn r) ^ 2 :=
+  (S.hasDerivAt_metricFn r hr).inv hf |>.deriv
 
 /-- `Γ^r_{rr} = (1/2) g^{rr} ∂_r g_{rr} = -n / f`. -/
-lemma gammaRrr (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0) (hf : S.lapse r ≠ 0) :
-    (1 / 2 : ℝ) * (S.lapse r) * deriv (fun s : ℝ => (S.lapse s)⁻¹) r
-      = -S.lapseHalfDeriv r / S.lapse r := by
-  rw [S.deriv_lapse_inv r hr hf]
+lemma christoffelRrr (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0)
+    (hf : S.metricFn r ≠ 0) :
+    (1 / 2 : ℝ) * (S.metricFn r) * deriv (fun s : ℝ => (S.metricFn s)⁻¹) r
+      = -S.metricFnHalfDeriv r / S.metricFn r := by
+  rw [S.deriv_metricFn_inv r hr hf]
   field_simp [hf]
 
 /-- `Γ^r_{θθ} = -r f`. -/
-lemma gammaRthth (S : SchwarzschildDeSitterSpacetime) (r : ℝ) :
-    (1 / 2 : ℝ) * (S.lapse r) * (-(2 * r)) = -(r * S.lapse r) := by
+lemma christoffelRThetaTheta (S : SchwarzschildDeSitterSpacetime) (r : ℝ) :
+    (1 / 2 : ℝ) * (S.metricFn r) * (-(2 * r)) = -(r * S.metricFn r) := by
   ring
 
 /-- `Γ^r_{φφ} = -r f sin²θ`. -/
-lemma gammaRphiphi (S : SchwarzschildDeSitterSpacetime) (r th : ℝ) :
-    (1 / 2 : ℝ) * (S.lapse r) * (-(2 * r * Real.sin th ^ 2))
-      = -(r * Real.sin th ^ 2 * S.lapse r) := by
+lemma christoffelRPhiPhi (S : SchwarzschildDeSitterSpacetime) (r th : ℝ) :
+    (1 / 2 : ℝ) * (S.metricFn r) * (-(2 * r * Real.sin th ^ 2))
+      = -(r * Real.sin th ^ 2 * S.metricFn r) := by
   ring
 
 /-!
 
 ## B. The six Riemann components for general `Λ`
 
+Each independent Riemann curvature component combines the Kottler mass potential `-M/r` with the
+cosmological constant contribution `Λr²/3`.
+
 -/
 
-/-- Equational form of `SchwarzschildDeSitterSpacetime.lapse`. -/
-lemma lapse_eq (S : SchwarzschildDeSitterSpacetime) (r : ℝ) :
-    S.lapse r = 1 - 2 * S.M / r - S.Λ * r ^ 2 / 3 := rfl
+/-- Equational form of `SchwarzschildDeSitterSpacetime.metricFn`. -/
+lemma metricFn_eq (S : SchwarzschildDeSitterSpacetime) (r : ℝ) :
+    S.metricFn r = 1 - 2 * S.M / r - S.Λ * r ^ 2 / 3 := rfl
 
-/-- Equational form of `SchwarzschildDeSitterSpacetime.lapseHalfDeriv`. -/
-lemma lapseHalfDeriv_eq (S : SchwarzschildDeSitterSpacetime) (r : ℝ) :
-    S.lapseHalfDeriv r = S.M / r ^ 2 - S.Λ * r / 3 := rfl
+/-- Equational form of `SchwarzschildDeSitterSpacetime.metricFnHalfDeriv`. -/
+lemma metricFnHalfDeriv_eq (S : SchwarzschildDeSitterSpacetime) (r : ℝ) :
+    S.metricFnHalfDeriv r = S.M / r ^ 2 - S.Λ * r / 3 := rfl
 
 /-- The `t r t r` Riemann component for Schwarzschild–de Sitter: `(2M/r³ + Λ/3)/f`. -/
 lemma riemann_t_rtr (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0)
-    (hf : S.lapse r ≠ 0) :
-    -(deriv (fun s : ℝ => S.lapseHalfDeriv s / S.lapse s) r)
-      + (S.lapseHalfDeriv r / S.lapse r) * (-(S.lapseHalfDeriv r / S.lapse r))
-      - (S.lapseHalfDeriv r / S.lapse r) ^ 2
-      = (2 * S.M / r ^ 3 + S.Λ / 3) / S.lapse r := by
-  have hq : deriv (fun s : ℝ => S.lapseHalfDeriv s / S.lapse s) r
-      = (-2 * S.M / r ^ 3 - S.Λ / 3) / S.lapse r
-          - S.lapseHalfDeriv r * (2 * S.lapseHalfDeriv r) / (S.lapse r) ^ 2 := by
-    have h := (S.hasDerivAt_lapseHalfDeriv r hr).div (S.hasDerivAt_lapse r hr) hf
-    have hfun : (fun s : ℝ => S.lapseHalfDeriv s / S.lapse s) = S.lapseHalfDeriv / S.lapse := rfl
-    rw [hfun, h.deriv]
-    field_simp [hf]
-  rw [hq]
+    (hf : S.metricFn r ≠ 0) :
+    -(deriv (fun s : ℝ => S.metricFnHalfDeriv s / S.metricFn s) r)
+      + (S.metricFnHalfDeriv r / S.metricFn r) * (-(S.metricFnHalfDeriv r / S.metricFn r))
+      - (S.metricFnHalfDeriv r / S.metricFn r) ^ 2
+      = (2 * S.M / r ^ 3 + S.Λ / 3) / S.metricFn r := by
+  rw [S.deriv_metricFnHalfDeriv_div_metricFn r hr hf]
   field_simp [hf, hr]
   ring
 
 /-- The `t θ t θ` Riemann component for Schwarzschild–de Sitter: `Λ r² / 3 - M / r`. -/
 lemma riemann_t_thetatheta (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0)
-    (hf : S.lapse r ≠ 0) :
-    (S.lapseHalfDeriv r / S.lapse r) * (-(r * S.lapse r))
+    (hf : S.metricFn r ≠ 0) :
+    (S.metricFnHalfDeriv r / S.metricFn r) * (-(r * S.metricFn r))
       = S.Λ * r ^ 2 / 3 - S.M / r := by
-  rw [lapseHalfDeriv_eq]
+  rw [metricFnHalfDeriv_eq]
   field_simp [hf, hr]
   ring
 
 /-- The `t φ t φ` Riemann component for Schwarzschild–de Sitter: `(Λ r² / 3 - M / r) sin²θ`. -/
 lemma riemann_t_phitphi (S : SchwarzschildDeSitterSpacetime) (r th : ℝ) (hr : r ≠ 0)
-    (hf : S.lapse r ≠ 0) :
-    (S.lapseHalfDeriv r / S.lapse r) * (-(r * Real.sin th ^ 2 * S.lapse r))
+    (hf : S.metricFn r ≠ 0) :
+    (S.metricFnHalfDeriv r / S.metricFn r) * (-(r * Real.sin th ^ 2 * S.metricFn r))
       = (S.Λ * r ^ 2 / 3 - S.M / r) * Real.sin th ^ 2 := by
-  rw [lapseHalfDeriv_eq]
+  rw [metricFnHalfDeriv_eq]
   field_simp [hf, hr]
   ring
 
 /-- The `r θ r θ` Riemann component for Schwarzschild–de Sitter: `Λ r² / 3 - M / r`. -/
 lemma riemann_r_thetar (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0)
-    (hf : S.lapse r ≠ 0) :
-    (-(S.lapse r) - r * (2 * S.lapseHalfDeriv r))
-      + (-(S.lapseHalfDeriv r) / S.lapse r) * (-(r * S.lapse r))
-      - (-(r * S.lapse r)) * (1 / r)
+    (hf : S.metricFn r ≠ 0) :
+    (-(S.metricFn r) - r * (2 * S.metricFnHalfDeriv r))
+      + (-(S.metricFnHalfDeriv r) / S.metricFn r) * (-(r * S.metricFn r))
+      - (-(r * S.metricFn r)) * (1 / r)
       = S.Λ * r ^ 2 / 3 - S.M / r := by
-  rw [lapseHalfDeriv_eq]
+  rw [metricFnHalfDeriv_eq]
   field_simp [hf, hr]
   ring
 
 /-- The `r φ r φ` Riemann component for Schwarzschild–de Sitter: `(Λ r² / 3 - M / r) sin²θ`. -/
 lemma riemann_r_phirphi (S : SchwarzschildDeSitterSpacetime) (r th : ℝ) (hr : r ≠ 0)
-    (hf : S.lapse r ≠ 0) :
-    (-(S.lapse r) - r * (2 * S.lapseHalfDeriv r)) * Real.sin th ^ 2
-      + (-(S.lapseHalfDeriv r) / S.lapse r) * (-(r * Real.sin th ^ 2 * S.lapse r))
-      - (-(r * Real.sin th ^ 2 * S.lapse r)) * (1 / r)
+    (hf : S.metricFn r ≠ 0) :
+    (-(S.metricFn r) - r * (2 * S.metricFnHalfDeriv r)) * Real.sin th ^ 2
+      + (-(S.metricFnHalfDeriv r) / S.metricFn r) * (-(r * Real.sin th ^ 2 * S.metricFn r))
+      - (-(r * Real.sin th ^ 2 * S.metricFn r)) * (1 / r)
       = (S.Λ * r ^ 2 / 3 - S.M / r) * Real.sin th ^ 2 := by
-  rw [lapseHalfDeriv_eq]
+  rw [metricFnHalfDeriv_eq]
   field_simp [hf, hr]
   ring
 
@@ -277,35 +302,35 @@ lemma riemann_r_phirphi (S : SchwarzschildDeSitterSpacetime) (r th : ℝ) (hr : 
 lemma riemann_theta_phitheta (S : SchwarzschildDeSitterSpacetime) (r th : ℝ) (hr : r ≠ 0)
     (hsin : Real.sin th ≠ 0) :
     (Real.sin th ^ 2 - Real.cos th ^ 2)
-      + (1 / r) * (-(r * Real.sin th ^ 2 * S.lapse r))
+      + (1 / r) * (-(r * Real.sin th ^ 2 * S.metricFn r))
       - (-(Real.sin th * Real.cos th)) * (Real.cos th / Real.sin th)
       = (2 * S.M / r + S.Λ * r ^ 2 / 3) * Real.sin th ^ 2 := by
-  rw [lapse_eq]
+  rw [metricFn_eq]
   field_simp [hr, hsin]
   ring
 
 /-- All six independent Schwarzschild–de Sitter Riemann components assembled as one
 conjunction. -/
 lemma riemann_components (S : SchwarzschildDeSitterSpacetime) (r th : ℝ) (hr : r ≠ 0)
-    (hf : S.lapse r ≠ 0) (hsin : Real.sin th ≠ 0) :
-    (-(deriv (fun s : ℝ => S.lapseHalfDeriv s / S.lapse s) r)
-        + (S.lapseHalfDeriv r / S.lapse r) * (-(S.lapseHalfDeriv r / S.lapse r))
-        - (S.lapseHalfDeriv r / S.lapse r) ^ 2
-        = (2 * S.M / r ^ 3 + S.Λ / 3) / S.lapse r)
-      ∧ ((S.lapseHalfDeriv r / S.lapse r) * (-(r * S.lapse r))
+    (hf : S.metricFn r ≠ 0) (hsin : Real.sin th ≠ 0) :
+    (-(deriv (fun s : ℝ => S.metricFnHalfDeriv s / S.metricFn s) r)
+        + (S.metricFnHalfDeriv r / S.metricFn r) * (-(S.metricFnHalfDeriv r / S.metricFn r))
+        - (S.metricFnHalfDeriv r / S.metricFn r) ^ 2
+        = (2 * S.M / r ^ 3 + S.Λ / 3) / S.metricFn r)
+      ∧ ((S.metricFnHalfDeriv r / S.metricFn r) * (-(r * S.metricFn r))
           = S.Λ * r ^ 2 / 3 - S.M / r)
-      ∧ ((S.lapseHalfDeriv r / S.lapse r) * (-(r * Real.sin th ^ 2 * S.lapse r))
+      ∧ ((S.metricFnHalfDeriv r / S.metricFn r) * (-(r * Real.sin th ^ 2 * S.metricFn r))
           = (S.Λ * r ^ 2 / 3 - S.M / r) * Real.sin th ^ 2)
-      ∧ ((-(S.lapse r) - r * (2 * S.lapseHalfDeriv r))
-            + (-(S.lapseHalfDeriv r) / S.lapse r) * (-(r * S.lapse r))
-            - (-(r * S.lapse r)) * (1 / r) = S.Λ * r ^ 2 / 3 - S.M / r)
-      ∧ ((-(S.lapse r) - r * (2 * S.lapseHalfDeriv r)) * Real.sin th ^ 2
-            + (-(S.lapseHalfDeriv r) / S.lapse r) *
-                (-(r * Real.sin th ^ 2 * S.lapse r))
-            - (-(r * Real.sin th ^ 2 * S.lapse r)) * (1 / r)
+      ∧ ((-(S.metricFn r) - r * (2 * S.metricFnHalfDeriv r))
+            + (-(S.metricFnHalfDeriv r) / S.metricFn r) * (-(r * S.metricFn r))
+            - (-(r * S.metricFn r)) * (1 / r) = S.Λ * r ^ 2 / 3 - S.M / r)
+      ∧ ((-(S.metricFn r) - r * (2 * S.metricFnHalfDeriv r)) * Real.sin th ^ 2
+            + (-(S.metricFnHalfDeriv r) / S.metricFn r) *
+                (-(r * Real.sin th ^ 2 * S.metricFn r))
+            - (-(r * Real.sin th ^ 2 * S.metricFn r)) * (1 / r)
           = (S.Λ * r ^ 2 / 3 - S.M / r) * Real.sin th ^ 2)
       ∧ ((Real.sin th ^ 2 - Real.cos th ^ 2)
-            + (1 / r) * (-(r * Real.sin th ^ 2 * S.lapse r))
+            + (1 / r) * (-(r * Real.sin th ^ 2 * S.metricFn r))
             - (-(Real.sin th * Real.cos th)) * (Real.cos th / Real.sin th)
           = (2 * S.M / r + S.Λ * r ^ 2 / 3) * Real.sin th ^ 2) :=
   ⟨S.riemann_t_rtr r hr hf,
@@ -319,11 +344,15 @@ lemma riemann_components (S : SchwarzschildDeSitterSpacetime) (r th : ℝ) (hr :
 
 ## C. `Λ`-independence of the Weyl electric eigenvalues
 
+Subtracting the isotropic cosmological trace part `(Λ / 3) g` in the orthonormal frame isolates
+the pure Weyl tidal tensor `electricPart (M / r³)`, demonstrating that `Λ` does not affect local
+tidal stretching.
+
 -/
 
 /-- The radial Weyl electric eigenvalue `-f R^t{}_{rtr} + Λ/3 = -2M/r³` is independent of `Λ`. -/
-lemma weyl_rr (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hf : S.lapse r ≠ 0) :
-    -(S.lapse r) * ((2 * S.M / r ^ 3 + S.Λ / 3) / S.lapse r) + S.Λ / 3
+lemma weyl_rr (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hf : S.metricFn r ≠ 0) :
+    -(S.metricFn r) * ((2 * S.M / r ^ 3 + S.Λ / 3) / S.metricFn r) + S.Λ / 3
       = Schwarzschild.electricPart (S.M / r ^ 3) 1 1 := by
   have h11 : Schwarzschild.electricPart (S.M / r ^ 3) 1 1 = -(2 * S.M / r ^ 3) := by
     simp [Schwarzschild.electricPart]
@@ -335,8 +364,8 @@ lemma weyl_rr (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hf : S.lapse r ≠
 /-- The `θ` Weyl electric eigenvalue `f⁻¹ r⁻² (-f) (Λr²/3 - M/r) + Λ/3 = M/r³` is independent
 of `Λ`. -/
 lemma weyl_thetatheta (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0)
-    (hf : S.lapse r ≠ 0) :
-    (S.lapse r)⁻¹ * (r ^ 2)⁻¹ * (-(S.lapse r) * (S.Λ * r ^ 2 / 3 - S.M / r))
+    (hf : S.metricFn r ≠ 0) :
+    (S.metricFn r)⁻¹ * (r ^ 2)⁻¹ * (-(S.metricFn r) * (S.Λ * r ^ 2 / 3 - S.M / r))
       + S.Λ / 3 = Schwarzschild.electricPart (S.M / r ^ 3) 2 2 := by
   have h22 : Schwarzschild.electricPart (S.M / r ^ 3) 2 2 = S.M / r ^ 3 := by
     simp [Schwarzschild.electricPart]
@@ -346,9 +375,9 @@ lemma weyl_thetatheta (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠
 
 /-- The `φ` Weyl electric eigenvalue equals `M/r³` for every `Λ`. -/
 lemma weyl_phiphi (S : SchwarzschildDeSitterSpacetime) (r th : ℝ) (hr : r ≠ 0)
-    (hf : S.lapse r ≠ 0) (hsin : Real.sin th ≠ 0) :
-    (S.lapse r)⁻¹ * (r ^ 2 * Real.sin th ^ 2)⁻¹
-        * (-(S.lapse r) * ((S.Λ * r ^ 2 / 3 - S.M / r) * Real.sin th ^ 2))
+    (hf : S.metricFn r ≠ 0) (hsin : Real.sin th ≠ 0) :
+    (S.metricFn r)⁻¹ * (r ^ 2 * Real.sin th ^ 2)⁻¹
+        * (-(S.metricFn r) * ((S.Λ * r ^ 2 / 3 - S.M / r) * Real.sin th ^ 2))
       + S.Λ / 3 = Schwarzschild.electricPart (S.M / r ^ 3) 3 3 := by
   have h33 : Schwarzschild.electricPart (S.M / r ^ 3) 3 3 = S.M / r ^ 3 := by
     simp [Schwarzschild.electricPart]

@@ -264,9 +264,9 @@ public import PhyslibAlpha.CondensedMatter.TightBindingChain.Open.LocalizedUncer
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Open.Uncertainty
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.VelocityBand.Basic
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.VelocityBand.Width
+public import PhyslibAlpha.Cosmology.FLRW.Basic
 public import PhyslibAlpha.Cosmology.FLRW.Christoffel
 public import PhyslibAlpha.Cosmology.FLRW.FriedmannBridge
-public import PhyslibAlpha.Cosmology.FLRW.Metric
 public import PhyslibAlpha.Cosmology.FLRW.PerfectFluid
 public import PhyslibAlpha.Electromagnetism.BoxChargeConservation
 public import PhyslibAlpha.Electromagnetism.TemperedDistributional.WireJunction
@@ -819,6 +819,7 @@ public import PhyslibAlpha.Relativity.General.InitialData.Basic
 public import PhyslibAlpha.Relativity.General.InitialData.FlatSlice
 public import PhyslibAlpha.Relativity.General.Kerr.Basic
 public import PhyslibAlpha.Relativity.General.Kerr.Christoffel
+public import PhyslibAlpha.Relativity.General.Kerr.MetricDeriv
 public import PhyslibAlpha.Relativity.General.Kerr.RicciCurvature
 public import PhyslibAlpha.Relativity.General.Linearized.Basic
 public import PhyslibAlpha.Relativity.General.Linearized.BoxEta
@@ -880,7 +881,9 @@ public import PhyslibAlpha.Relativity.Metrics.NullVector
 public import PhyslibAlpha.Relativity.Metrics.Pipeline
 public import PhyslibAlpha.Relativity.Metrics.RicciScalar
 public import PhyslibAlpha.Relativity.Metrics.RiemannFromData
-public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric
+public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric.Basic
+public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric.Christoffel
+public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric.RicciCurvature
 public import PhyslibAlpha.Relativity.MinkowskiMatrix
 public import PhyslibAlpha.Relativity.PauliMatrices.Anticommuting
 public import PhyslibAlpha.Relativity.PauliMatrices.SelfAdjoint

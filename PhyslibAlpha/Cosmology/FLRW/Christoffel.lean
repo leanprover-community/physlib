@@ -6,7 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import PhyslibAlpha.Cosmology.FLRW.Metric
+public import PhyslibAlpha.Cosmology.FLRW.Basic
 public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
 public import PhyslibAlpha.Relativity.Tensors.EinsteinTensor
 import Mathlib.Analysis.Calculus.Deriv.Add
@@ -156,9 +156,9 @@ noncomputable def christoffelDeriv (S : FLRWSpacetime) (μ : Fin 4) (x : Fin 4 �
   else 0
 
 @[simp]
-private lemma pd_phi (S : FLRWSpacetime) (x : Fin 4 → ℝ) (c d : Fin 4) :
-    coordDeriv 3 (fun y => S.metric y c d) x = 0 := by
-  fin_cases c <;> fin_cases d <;> simp [coordDeriv, metric]
+private lemma metricDeriv_phi_eq_zero (S : FLRWSpacetime) (x : Fin 4 → ℝ) (c d : Fin 4) :
+    coordDeriv 3 (fun y => S.metric y c d) x = 0 :=
+  coordDeriv_const_slice 3 (S.metric x c d) fun _ => by simp [metric]
 
 private lemma pd_t_11 (S : FLRWSpacetime) (x : Fin 4 → ℝ)
     (ha_diff : DifferentiableAt ℝ S.a (x 0)) :
@@ -631,9 +631,9 @@ lemma pd_christoffel_eq_deriv (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a 
   · exact pd_G_eq_0 S x ha ha1 ha2 m i j
   · exact pd_G_eq_1 S x hr hkr m i j
   · exact pd_G_eq_2 S x hsin m i j
-  · fin_cases m <;>
-      (fin_cases i <;> fin_cases j <;>
-        simp [coordDeriv, christoffel, christoffelDeriv])
+  · have hc : coordDeriv 3 (fun y => S.christoffel y m i j) x = 0 :=
+      coordDeriv_const_slice 3 (S.christoffel x m i j) fun _ => by simp [christoffel]
+    simp [hc, christoffelDeriv]
 
 /-- The pipeline Riemann tensor of `S.metric` equals
 `riemannFromData S.christoffel S.christoffelDeriv`. -/
@@ -739,23 +739,14 @@ lemma ricciTensorOf (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 
             (S.a (x 0) * deriv (deriv S.a) (x 0) + 2 * (deriv S.a (x 0)) ^ 2 + 2 * S.k)
               * (x 1) ^ 2 * Real.sin (x 2) ^ 2
         else 0 := by
-  fin_cases σ <;> fin_cases ν <;> dsimp only
-  · exact ricci_00 S x ha hr hkr hsin ha_diff ha2
-  · exact ricci_offdiag S x ha hr hkr hsin ha_diff ha2 (by decide)
-  · exact ricci_offdiag S x ha hr hkr hsin ha_diff ha2 (by decide)
-  · exact ricci_offdiag S x ha hr hkr hsin ha_diff ha2 (by decide)
-  · exact ricci_offdiag S x ha hr hkr hsin ha_diff ha2 (by decide)
-  · exact ricci_11 S x ha hr hkr hsin ha_diff ha2
-  · exact ricci_offdiag S x ha hr hkr hsin ha_diff ha2 (by decide)
-  · exact ricci_offdiag S x ha hr hkr hsin ha_diff ha2 (by decide)
-  · exact ricci_offdiag S x ha hr hkr hsin ha_diff ha2 (by decide)
-  · exact ricci_offdiag S x ha hr hkr hsin ha_diff ha2 (by decide)
-  · exact ricci_22 S x ha hr hkr hsin ha_diff ha2
-  · exact ricci_offdiag S x ha hr hkr hsin ha_diff ha2 (by decide)
-  · exact ricci_offdiag S x ha hr hkr hsin ha_diff ha2 (by decide)
-  · exact ricci_offdiag S x ha hr hkr hsin ha_diff ha2 (by decide)
-  · exact ricci_offdiag S x ha hr hkr hsin ha_diff ha2 (by decide)
-  · exact ricci_33 S x ha hr hkr hsin ha_diff ha2
+  by_cases h : σ = ν
+  · subst h
+    fin_cases σ
+    · simpa using ricci_00 S x ha hr hkr hsin ha_diff ha2
+    · simpa using ricci_11 S x ha hr hkr hsin ha_diff ha2
+    · simpa using ricci_22 S x ha hr hkr hsin ha_diff ha2
+    · simpa using ricci_33 S x ha hr hkr hsin ha_diff ha2
+  · simp [h, ricci_offdiag S x ha hr hkr hsin ha_diff ha2 h]
 
 /-- FLRW scalar curvature `R = 6 (a'' / a + (a' / a)² + k / a²)`. -/
 lemma ricciScalarOf (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
@@ -765,8 +756,9 @@ lemma ricciScalarOf (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 
     Pipeline.ricciScalarOf S.metric S.metricInv x
       = 6 * (deriv (deriv S.a) (x 0) / S.a (x 0) + (deriv S.a (x 0) / S.a (x 0)) ^ 2
           + S.k / (S.a (x 0)) ^ 2) := by
-  simp only [Pipeline.ricciScalarOf, S.ricciTensorOf x ha hr hkr hsin ha_diff ha2, metricInv,
-    Fin.sum_univ_four, Fin.reduceEq, ↓reduceIte, Fin.isValue, mul_zero, add_zero, zero_add]
+  simp only [Pipeline.ricciScalarOf, S.ricciTensorOf x ha hr hkr hsin ha_diff ha2]
+  simp only [Fin.sum_univ_four, metricInv, Matrix.of_apply, Fin.reduceEq, ↓reduceIte,
+    Fin.isValue, mul_zero, add_zero, zero_add]
   field_simp [ha, hr, hkr, hsin]
   ring
 
