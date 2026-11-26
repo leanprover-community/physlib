@@ -6,7 +6,6 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
-public import Physlib.Electromagnetism.Kinematics.FieldStrength
 public import PhyslibAlpha.Relativity.Metrics.MetricTrace
 import Mathlib.Tactic.Ring
 
@@ -15,8 +14,7 @@ import Mathlib.Tactic.Ring
 # Electromagnetic field-strength invariant and Maxwell stress-energy
 
 Shared 4D electromagnetic stress-energy tensor `T^{EM}_{ab}`, its quadratic field invariant
-`F_{ab} F^{ab}`, a single proof of conformal tracelessness `g^{ab} T^{EM}_{ab} = 0`, and a
-component bridge to Physlib's `Electromagnetism.ElectromagneticPotential.toFieldStrength`.
+`F_{ab} F^{ab}`, and a single proof of conformal tracelessness `g^{ab} T^{EM}_{ab} = 0`.
 
 ## i. Overview
 
@@ -25,21 +23,17 @@ In four spacetime dimensions, classical electromagnetism has stress-energy tenso
 Contraction with the inverse metric `g^{ab}` yields the conformal trace identity
 `g^{ab} T^{EM}_{ab} = 0`, a hallmark of classical scale invariance in four dimensions that underlies
 vanishing scalar curvature `S = 0` for electrovacuum solutions such as Reissner–Nordström spacetime
-and the Einstein–Maxwell sector of Kaluza–Klein reduction. In inertial Minkowski coordinates,
-`F_{ab}` is expressed directly in terms of Physlib's `ElectromagneticPotential.toFieldStrength`.
+and the Einstein–Maxwell sector of Kaluza–Klein reduction.
 
 ## ii. Key results
 
 - `maxwellFieldInvariant` : quadratic field-strength invariant `F_{ab} F^{ab}`.
 - `maxwellStressEnergyRaw` : Heaviside–Lorentz Maxwell stress-energy tensor in 4D.
 - `maxwellStressEnergyRaw_trace_zero` : conformal tracelessness `g^{ab} T^{EM}_{ab} = 0` in 4D.
-- `emFieldStrengthComponents`, `emFieldStrengthComponents_antisymm` : component bridge from
-  Physlib's `ElectromagneticPotential.toFieldStrength` to `Tensor2 4`.
 
 ## iii. Table of contents
 
 - A. Maxwell stress-energy and conformal tracelessness
-- B. Bridge to Physlib's `ElectromagneticPotential.toFieldStrength`
 
 ## iv. References
 
@@ -112,27 +106,5 @@ lemma maxwellStressEnergyRaw_trace_zero (M : MetricTensor 4) (F : Tensor2 4) :
           ((1 / 4 : ℝ) * M.g a b * maxwellFieldInvariant M.ginv F)) := by
     simp only [mul_sub, Finset.sum_sub_distrib]
   rw [hsub, h1, h2, sub_self]
-
-/-!
-
-## B. Bridge to Physlib's `ElectromagneticPotential.toFieldStrength`
-
--/
-
-open TensorSpecies Tensor Tensorial
-
-/-- Extract the coordinate components `Tensor2 4` of Physlib's electromagnetic field-strength
-tensor `A.toFieldStrength x` via the index equivalence `finSumFinEquiv : Fin 1 ⊕ Fin 3 ≃ Fin 4`. -/
-noncomputable def emFieldStrengthComponents (A : Electromagnetism.ElectromagneticPotential 3)
-    (x : SpaceTime 3) : Tensor2 4 :=
-  fun i j => Tensor.toScalar
-    {A.toFieldStrength x | [finSumFinEquiv.symm i] [finSumFinEquiv.symm j]}ᵀ
-
-/-- Componentwise antisymmetry of `emFieldStrengthComponents`, inherited from
-`ElectromagneticPotential.toFieldStrength_eval_antisymm`. -/
-lemma emFieldStrengthComponents_antisymm (A : Electromagnetism.ElectromagneticPotential 3)
-    (x : SpaceTime 3) (i j : Fin 4) :
-    emFieldStrengthComponents A x i j = -emFieldStrengthComponents A x j i :=
-  Electromagnetism.ElectromagneticPotential.toFieldStrength_eval_antisymm A x _ _
 
 end GeneralRelativity

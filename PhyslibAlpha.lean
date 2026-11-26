@@ -812,7 +812,8 @@ public import PhyslibAlpha.Relativity.Fermions.Weyl.Tensorial
 public import PhyslibAlpha.Relativity.Fermions.Weyl.Unit
 public import PhyslibAlpha.Relativity.General.GeodesicSystem
 public import PhyslibAlpha.Relativity.General.GravitationalConstant
-public import PhyslibAlpha.Relativity.General.InitialData
+public import PhyslibAlpha.Relativity.General.InitialData.Basic
+public import PhyslibAlpha.Relativity.General.InitialData.FlatSlice
 public import PhyslibAlpha.Relativity.General.Kerr.Basic
 public import PhyslibAlpha.Relativity.General.Kerr.Christoffel
 public import PhyslibAlpha.Relativity.General.Kerr.RicciCurvature
@@ -825,7 +826,7 @@ public import PhyslibAlpha.Relativity.General.Linearized.LorenzGauge
 public import PhyslibAlpha.Relativity.General.Linearized.NewtonianPerturb
 public import PhyslibAlpha.Relativity.General.Linearized.TraceReversed
 public import PhyslibAlpha.Relativity.General.Linearized.TTWave
-public import PhyslibAlpha.Relativity.General.MinkowskiVacuum
+public import PhyslibAlpha.Relativity.General.MinkowskiCoordinateMetric
 public import PhyslibAlpha.Relativity.General.Modified.BransDicke
 public import PhyslibAlpha.Relativity.General.Modified.ChameleonScreening
 public import PhyslibAlpha.Relativity.General.Modified.EinsteinAether
@@ -867,10 +868,13 @@ public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.Reynolds
 public import PhyslibAlpha.Relativity.LorentzMix
 public import PhyslibAlpha.Relativity.Metrics.Basic
 public import PhyslibAlpha.Relativity.Metrics.ConformalMetric
+public import PhyslibAlpha.Relativity.Metrics.CoordDeriv
 public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
 public import PhyslibAlpha.Relativity.Metrics.CurvDeriv
 public import PhyslibAlpha.Relativity.Metrics.MetricTrace
 public import PhyslibAlpha.Relativity.Metrics.Minkowski
+public import PhyslibAlpha.Relativity.Metrics.Pipeline
+public import PhyslibAlpha.Relativity.Metrics.RiemannFromData
 public import PhyslibAlpha.Relativity.Metrics.ScalarCurvature
 public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric
 public import PhyslibAlpha.Relativity.MinkowskiMatrix
@@ -890,6 +894,7 @@ public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.ContractionTe
 public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.InvariantCoeff
 public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Tensorial
 public import PhyslibAlpha.Relativity.Tensors.EinsteinTensor
+public import PhyslibAlpha.Relativity.Tensors.EMFieldStrength
 public import PhyslibAlpha.Relativity.Tensors.Equivariant
 public import PhyslibAlpha.Relativity.Tensors.MaxwellStressEnergy
 public import PhyslibAlpha.Relativity.Tensors.RealTensor.CoVector.Representation

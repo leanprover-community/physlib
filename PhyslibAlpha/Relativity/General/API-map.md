@@ -23,16 +23,17 @@ Minkowski metric η = diag(-1, 1, 1, 1) as the flat reference background [3] and
 rescalings g ↦ Ω g preserving invertibility [4]. Algebraic (1, 3) Riemann curvature tensors satisfy
 antisymmetry in their first and last index pairs and the first Bianchi identity [5], and contract
 with the inverse metric to the symmetric Ricci tensor [6] and scalar curvature defined as its metric
-trace [7][8]. The coordinate partial-derivative pipeline computes the Levi-Civita Christoffel
-symbols directly from first partial derivatives of a bundled coordinate metric field, constructs the
-Riemann curvature tensor, Ricci tensor, Ricci scalar, and Einstein tensor, and establishes that any
-spatially and temporally constant metric has identically vanishing connection and curvature [9]. From
-any metric and curvature tensor, the Einstein tensor G_{{ij}} = R_{{ij}} - ½ R g_{{ij}} is symmetric, its
-metric trace in n dimensions is (1 - n / 2) R, and vacuum Einstein equations are equivalent to
-Ricci flatness in dimensions n ≠ 2 [10], while contracted second-Bianchi curvature derivatives
-ensure covariant divergence-freeness of the Einstein tensor and stress-energy conservation [11],
-and the shared 4D Maxwell stress-energy tensor bridges index-level electrovacuum sources to
-Physlib's coordinate-free electromagnetic field strength [58].
+trace [7][8]. The coordinate partial-derivative pipeline [63] computes the Levi-Civita
+Christoffel symbols directly from first partial derivatives of a bundled coordinate metric field
+[9], constructs the Riemann curvature tensor [64][65], Ricci tensor, Ricci scalar, and Einstein
+tensor, and establishes that any spatially and temporally constant metric has identically vanishing
+connection and curvature [9][65]. From any metric and curvature tensor, the Einstein tensor
+G_{{ij}} = R_{{ij}} - ½ R g_{{ij}} is symmetric, its metric trace in n dimensions is
+(1 - n / 2) R, and vacuum Einstein equations are equivalent to Ricci flatness in dimensions n ≠ 2
+[10], while contracted second-Bianchi curvature derivatives ensure covariant divergence-freeness of
+the Einstein tensor and stress-energy conservation [11], and the shared 4D Maxwell stress-energy
+tensor [58] bridges index-level electrovacuum sources to Physlib's coordinate-free electromagnetic
+field strength [66].
 Coordinate-free covariant differentiation on general smooth manifolds is a planned extension. [TODO]
 
 ### Geodesics, ADM 3+1 decomposition, linearized gravity, and physical constants
@@ -43,8 +44,8 @@ local solutions by the Picard-Lindelöf theorem, reducing to straight lines when
 vanishes [12]. In the Arnowitt-Deser-Misner 3+1 initial-value formulation, spatial slices carry a
 Riemannian 3-metric and symmetric extrinsic curvature tensor K_{{ij}} subject to the Hamiltonian and
 momentum constraint equations, which simplify on time-symmetric (K_{{ij}} = 0) and maximal (tr K = 0)
-slices and distinguish flat vacuum data from non-vacuum initial data with anisotropic extrinsic
-curvature [13]. Around the
+slices [13] and distinguish flat vacuum data from non-vacuum initial data with anisotropic extrinsic
+curvature [67]. Around the
 Minkowski background g = η + h, first-order perturbation theory packages symmetric metric
 perturbations `MetricPerturbation` [59], defines the trace-reversed perturbation
 h̄_{{ij}} = h_{{ij}} - ½ η_{{ij}} h [14] and wave operator □_η [60], the linearized Christoffel
@@ -169,10 +170,9 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
 8. PhyslibAlpha/Relativity/Metrics/ScalarCurvature.lean — `ricciScalar`,
    `ricciScalar_eq_metricTrace`
 9. PhyslibAlpha/Relativity/Metrics/CoordinateMetric.lean — `CoordinateMetric`,
-   `CoordinateMetric.metricTensor`, `coordDeriv`, `coordDeriv_of_hasDerivAt`,
-   `coordDeriv_const_slice`, `coordDeriv_const`, `coordDeriv_congr`, `coordDeriv_congr_nhds`,
-   `coordDeriv_eq_fderiv`, `coordDeriv_eq_spaceTime_deriv`, `coordDeriv_comm`, `christoffel`, `riemann`,
-   `ricciTensorOf`, `ricciScalarOf`, `einsteinTensorOf`, `christoffel_const`, `riemann_const`
+   `CoordinateMetric.metricTensor`, `CoordinateMetric.christoffel`, `CoordinateMetric.riemann`,
+   `CoordinateMetric.ricciTensorOf`, `CoordinateMetric.ricciScalarOf`,
+   `CoordinateMetric.einsteinTensorOf`
 10. PhyslibAlpha/Relativity/Tensors/EinsteinTensor.lean — `einstein`, `einstein_symm`,
     `metricTrace_einstein`, `ricciScalar_eq_zero_of_einstein_eq_zero`, `vacuum_iff_ricci_flat`,
     `einsteinSpace_iff`
@@ -182,11 +182,10 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
 12. PhyslibAlpha/Relativity/General/GeodesicSystem.lean — `Christoffel`, `GeodesicSystem`,
     `geodesicAccel`, `geodesicField`, `contDiffAt_geodesicField`, `geodesic_ivp_exists`,
     `geodesic_ivp_exists_curve`, `geodesic_ivp_unique`, `flat_geodesic`
-13. PhyslibAlpha/Relativity/General/InitialData.lean — `InitialData`,
+13. PhyslibAlpha/Relativity/General/InitialData/Basic.lean — `InitialData`,
     `InitialData.momentumConstraint`, `InitialData.hamiltonianConstraint`,
     `InitialData.IsVacuumData`, `InitialData.hamiltonianConstraint_eq_ricciScalar_of_K_zero`,
-    `InitialData.hamiltonianConstraint_eq_of_trace_zero`, `euclid3`, `flatData_isVacuum`,
-    `anisotropicSliceData_hamiltonianConstraint`
+    `InitialData.hamiltonianConstraint_eq_of_trace_zero`
 14. PhyslibAlpha/Relativity/General/Linearized/TraceReversed.lean — `hTrace`, `hTrace_eq_metricTrace`,
     `traceReversed`, `traceReversed_trace`, `traceReversed_involutive`,
     `MetricPerturbation.traceReversed`
@@ -203,9 +202,10 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
 19. PhyslibAlpha/Relativity/General/GravitationalConstant.lean — `GravitationalConstant`,
     `gravitationalConstantDimension`, `gravitationalConstant`, `gravitationalConstant_in_SI`,
     `toWithDim`, `toWithDim_scaleUnit`, `exists_units_c_G_kB_eq_one`
-20. PhyslibAlpha/Relativity/General/MinkowskiVacuum.lean — `minkowskiFlatRiemann`,
-    `minkowski_ricci_eq_zero`, `minkowski_ricciScalar_eq_zero`, `minkowski_einstein_eq_zero`,
-    `minkowski_vacuum_iff_ricci_flat`, `minkowskiCoordinateMetric`
+20. PhyslibAlpha/Relativity/General/MinkowskiCoordinateMetric.lean — `minkowskiCoordinateMetric`,
+    `Pipeline.minkowski_christoffel`, `Pipeline.minkowski_riemann`, `Pipeline.minkowski_einstein`,
+    `Pipeline.minkowski_riemannFromData`, `minkowskiFlatRiemann`, `minkowski_ricci_eq_zero`,
+    `minkowski_ricciScalar_eq_zero`, `minkowski_einstein_eq_zero`, `minkowski_vacuum_iff_ricci_flat`
 21. PhyslibAlpha/Relativity/Metrics/StaticSphericalMetric.lean — `StaticSphericalMetric`,
     `staticSphericalMetric`, `staticSphericalMetricInv`, `staticSphericalMetric_symm`,
     `staticSphericalMetric_mul_inv`, `staticSphericalMetricTensor`, `staticSphericalChristoffel`,
@@ -347,8 +347,7 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
     `nordtvedtParameter_gr`, `nordtvedtParameter_bransDicke`, `nordtvedtParameter_fRMetric`,
     `cassini_deviation_bransDickePPN`
 58. PhyslibAlpha/Relativity/Tensors/MaxwellStressEnergy.lean — `maxwellFieldInvariant`,
-    `maxwellStressEnergyRaw`, `maxwellStressEnergyRaw_trace_zero`, `emFieldStrengthComponents`,
-    `emFieldStrengthComponents_antisymm`
+    `maxwellStressEnergyRaw`, `maxwellStressEnergyRaw_trace_zero`
 59. PhyslibAlpha/Relativity/General/Linearized/Basic.lean — `MetricPerturbation`,
     `MetricPerturbation.symm_apply`, `MetricPerturbation.IsC2At`, `MetricPerturbation.add`
 60. PhyslibAlpha/Relativity/General/Linearized/BoxEta.lean — `boxEta`, `boxEta_zero`
@@ -357,6 +356,19 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
     `linEinstein_gauge_invariant`
 62. PhyslibAlpha/Relativity/General/Linearized/Laplacian3.lean — `laplacian3`,
     `laplacian3_eq_space_laplacian`
+63. PhyslibAlpha/Relativity/Metrics/CoordDeriv.lean — `coordDeriv`, `coordDeriv_of_hasDerivAt`,
+    `coordDeriv_const_slice`, `coordDeriv_const`, `coordDeriv_congr`, `coordDeriv_congr_nhds`,
+    `coordDeriv_eq_fderiv`, `coordDeriv_eq_spaceTime_deriv`, `coordDeriv_comm`
+64. PhyslibAlpha/Relativity/Metrics/RiemannFromData.lean — `riemannFromData`,
+    `riemannFromData_congr`
+65. PhyslibAlpha/Relativity/Metrics/Pipeline.lean — `christoffel`, `riemann`, `ricciTensorOf`,
+    `ricciScalarOf`, `einsteinTensorOf`, `christoffel_const`, `riemann_const`,
+    `riemann_eq_riemannFromData`
+66. PhyslibAlpha/Relativity/Tensors/EMFieldStrength.lean — `emFieldStrengthComponents`,
+    `emFieldStrengthComponents_antisymm`
+67. PhyslibAlpha/Relativity/General/InitialData/FlatSlice.lean — `euclid3`, `flatData`,
+    `flatData_isVacuum`, `anisotropicSliceData`, `anisotropicSliceData_hamiltonianConstraint`,
+    `anisotropicSliceData_hamiltonianConstraint_ne_zero`
 
 ## References
 

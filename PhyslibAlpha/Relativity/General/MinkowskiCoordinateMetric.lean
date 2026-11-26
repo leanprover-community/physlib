@@ -11,32 +11,34 @@ public import PhyslibAlpha.Relativity.Tensors.EinsteinTensor
 
 /-!
 
-# Minkowski spacetime as a vacuum solution
+# The Minkowski coordinate metric and vacuum flatness
 
-Verification that flat Minkowski spacetime satisfies the vacuum Einstein equations both
-algebraically (`RiemannTensor.flat 4`) and through the coordinate differential pipeline.
+Coordinate-chart bundle `minkowskiCoordinateMetric` for flat Minkowski spacetime together with
+verification that it satisfies the vacuum Einstein equations both through the differential pipeline
+and algebraically.
 
 ## i. Overview
 
 In global inertial coordinates `(t, x, y, z)` on `ℝ⁴`, flat Minkowski spacetime carries the
-constant Lorentzian metric `η = diag(-1, 1, 1, 1)`. Because every metric component is position
-independent, all Levi-Civita connection coefficients `Γ^k_{ij}` vanish identically, so the
-Riemann curvature, Ricci tensor, scalar curvature, and Einstein tensor all vanish identically
-and Minkowski spacetime solves the vacuum Einstein equations `G_{ij} = 0`.
+constant Lorentzian metric `η = diag(-1, 1, 1, 1)` bundled on `Set.univ` as
+`minkowskiCoordinateMetric`. Because every metric component is position independent, all
+Levi-Civita connection coefficients `Γ^k_{ij}` vanish identically, so the Riemann curvature, Ricci
+tensor, scalar curvature, and Einstein tensor all vanish identically and Minkowski spacetime solves
+the vacuum Einstein equations `G_{ij} = 0`.
 
 ## ii. Key results
 
 - `minkowskiCoordinateMetric` : four-dimensional Minkowski spacetime as a `CoordinateMetric 4`.
-- `minkowski_ricci_eq_zero`, `minkowski_ricciScalar_eq_zero`, `minkowski_einstein_eq_zero` :
-  Minkowski spacetime is Ricci flat, scalar flat, and a vacuum solution of `G = 0`.
 - `Pipeline.minkowski_christoffel`, `Pipeline.minkowski_riemann`, `Pipeline.minkowski_einstein`,
   `Pipeline.minkowski_riemannFromData` : Minkowski spacetime as a computed pipeline vacuum
   solution.
+- `minkowskiFlatRiemann`, `minkowski_ricci_eq_zero`, `minkowski_ricciScalar_eq_zero`,
+  `minkowski_einstein_eq_zero`, `minkowski_vacuum_iff_ricci_flat` : algebraic vacuum properties.
 
 ## iii. Table of contents
 
-- A. Algebraic vacuum Einstein equations on Minkowski spacetime
-- B. Pipeline vacuum verification on Minkowski spacetime
+- A. The Minkowski coordinate metric and pipeline flatness
+- B. Algebraic vacuum Einstein equations on Minkowski spacetime
 
 ## iv. References
 
@@ -53,35 +55,7 @@ namespace GeneralRelativity
 
 /-!
 
-## A. Algebraic vacuum Einstein equations on Minkowski spacetime
-
--/
-
-/-- The flat Riemann curvature tensor of four-dimensional Minkowski spacetime. -/
-def minkowskiFlatRiemann : RiemannTensor 4 := RiemannTensor.flat 4
-
-/-- The flat curvature tensor on Minkowski spacetime is Ricci flat. -/
-lemma minkowski_ricci_eq_zero : ricci minkowski (RiemannTensor.flat 4) = 0 :=
-  ricci_flat 4 minkowski
-
-/-- The flat curvature tensor on Minkowski spacetime has zero scalar curvature. -/
-lemma minkowski_ricciScalar_eq_zero : ricciScalar minkowski (RiemannTensor.flat 4) = 0 := by
-  simp [ricciScalar]
-
-/-- Minkowski spacetime is a vacuum solution of the Einstein equations. -/
-lemma minkowski_einstein_eq_zero : einstein minkowski (RiemannTensor.flat 4) = 0 := by
-  ext i j
-  simp [einstein, minkowski_ricciScalar_eq_zero]
-
-/-- `G = 0` and `Ric = 0` agree on Minkowski spacetime. -/
-lemma minkowski_vacuum_iff_ricci_flat :
-    einstein minkowski (RiemannTensor.flat 4) = 0 ↔
-      ricci minkowski (RiemannTensor.flat 4) = 0 :=
-  vacuum_iff_ricci_flat minkowski (RiemannTensor.flat 4)
-
-/-!
-
-## B. Pipeline vacuum verification on Minkowski spacetime
+## A. The Minkowski coordinate metric and pipeline flatness
 
 -/
 
@@ -126,5 +100,33 @@ lemma Pipeline.minkowski_riemannFromData (x : Fin 4 → ℝ) (ρ σ μ ν : Fin 
       x ρ σ μ ν = 0 := by
   rw [← Pipeline.riemann_eq_riemannFromData]
   exact Pipeline.minkowski_riemann x ρ σ μ ν
+
+/-!
+
+## B. Algebraic vacuum Einstein equations on Minkowski spacetime
+
+-/
+
+/-- The flat Riemann curvature tensor of four-dimensional Minkowski spacetime. -/
+def minkowskiFlatRiemann : RiemannTensor 4 := RiemannTensor.flat 4
+
+/-- The flat curvature tensor on Minkowski spacetime is Ricci flat. -/
+lemma minkowski_ricci_eq_zero : ricci minkowski (RiemannTensor.flat 4) = 0 :=
+  ricci_flat 4 minkowski
+
+/-- The flat curvature tensor on Minkowski spacetime has zero scalar curvature. -/
+lemma minkowski_ricciScalar_eq_zero : ricciScalar minkowski (RiemannTensor.flat 4) = 0 := by
+  simp [ricciScalar]
+
+/-- Minkowski spacetime is a vacuum solution of the Einstein equations. -/
+lemma minkowski_einstein_eq_zero : einstein minkowski (RiemannTensor.flat 4) = 0 := by
+  ext i j
+  simp [einstein, minkowski_ricciScalar_eq_zero]
+
+/-- `G = 0` and `Ric = 0` agree on Minkowski spacetime. -/
+lemma minkowski_vacuum_iff_ricci_flat :
+    einstein minkowski (RiemannTensor.flat 4) = 0 ↔
+      ricci minkowski (RiemannTensor.flat 4) = 0 :=
+  vacuum_iff_ricci_flat minkowski (RiemannTensor.flat 4)
 
 end GeneralRelativity
