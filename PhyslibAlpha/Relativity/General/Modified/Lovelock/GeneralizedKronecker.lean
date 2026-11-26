@@ -152,42 +152,45 @@ the five explicit curvature invariants forming the Lanczos tensor `H^i_j`.
 
 -/
 
-private abbrev p4 (a : Fin 4) (b : Fin 3) (c : Fin 2) : Perm (Fin 4) :=
+private abbrev permFin4OfTuple (a : Fin 4) (b : Fin 3) (c : Fin 2) : Perm (Fin 4) :=
   Perm.decomposeFin.symm (a, Perm.decomposeFin.symm (b, Perm.decomposeFin.symm (c, 1)))
 
-private lemma p4_sign (a : Fin 4) (b : Fin 3) (c : Fin 2) :
-    Perm.sign (p4 a b c) =
+private lemma permFin4OfTuple_sign (a : Fin 4) (b : Fin 3) (c : Fin 2) :
+    Perm.sign (permFin4OfTuple a b c) =
       (if a = 0 then 1 else -1) * (if b = 0 then 1 else -1) * (if c = 0 then 1 else -1) := by
-  simp only [p4, Equiv.Perm.decomposeFin.symm_sign, map_one, mul_one, mul_assoc]
+  simp only [permFin4OfTuple, Equiv.Perm.decomposeFin.symm_sign, map_one, mul_one, mul_assoc]
 
-private lemma p5_sign (k : Fin 5) (a : Fin 4) (b : Fin 3) (c : Fin 2) :
-    Perm.sign (Perm.decomposeFin.symm (k, p4 a b c)) =
-      (if k = 0 then 1 else -1) * Perm.sign (p4 a b c) := by
+private lemma perm5_sign (k : Fin 5) (a : Fin 4) (b : Fin 3) (c : Fin 2) :
+    Perm.sign (Perm.decomposeFin.symm (k, permFin4OfTuple a b c)) =
+      (if k = 0 then 1 else -1) * Perm.sign (permFin4OfTuple a b c) := by
   simp only [Equiv.Perm.decomposeFin.symm_sign]
 
-private lemma p4_apply_zero (a : Fin 4) (b : Fin 3) (c : Fin 2) : p4 a b c 0 = a :=
+private lemma permFin4OfTuple_apply_zero (a : Fin 4) (b : Fin 3) (c : Fin 2) :
+    permFin4OfTuple a b c 0 = a :=
   Perm.decomposeFin_symm_apply_zero _ _
 
-private lemma p4_apply_one (a : Fin 4) (b : Fin 3) (c : Fin 2) :
-    p4 a b c 1 = Equiv.swap 0 a b.succ := by
-  simp [p4, Perm.decomposeFin_symm_apply_one, Perm.decomposeFin_symm_apply_zero]
+private lemma permFin4OfTuple_apply_one (a : Fin 4) (b : Fin 3) (c : Fin 2) :
+    permFin4OfTuple a b c 1 = Equiv.swap 0 a b.succ := by
+  simp [permFin4OfTuple, Perm.decomposeFin_symm_apply_one, Perm.decomposeFin_symm_apply_zero]
 
-private lemma p4_apply_two (a : Fin 4) (b : Fin 3) (c : Fin 2) :
-    p4 a b c 2 = Equiv.swap 0 a (Equiv.swap 0 b c.succ).succ := by
+private lemma permFin4OfTuple_apply_two (a : Fin 4) (b : Fin 3) (c : Fin 2) :
+    permFin4OfTuple a b c 2 = Equiv.swap 0 a (Equiv.swap 0 b c.succ).succ := by
   have h2 : (2 : Fin 4) = (1 : Fin 3).succ := rfl
-  rw [p4, h2, Perm.decomposeFin_symm_apply_succ, Perm.decomposeFin_symm_apply_one,
+  rw [permFin4OfTuple, h2, Perm.decomposeFin_symm_apply_succ, Perm.decomposeFin_symm_apply_one,
     Perm.decomposeFin_symm_apply_zero]
 
-private lemma p4_apply_three (a : Fin 4) (b : Fin 3) (c : Fin 2) :
-    p4 a b c 3 = Equiv.swap 0 a (Equiv.swap 0 b (Equiv.swap 0 c (1 : Fin 2)).succ).succ := by
+private lemma permFin4OfTuple_apply_three (a : Fin 4) (b : Fin 3) (c : Fin 2) :
+    permFin4OfTuple a b c 3 =
+      Equiv.swap 0 a (Equiv.swap 0 b (Equiv.swap 0 c (1 : Fin 2)).succ).succ := by
   have h3 : (3 : Fin 4) = (2 : Fin 3).succ := rfl
   have h2 : (2 : Fin 3) = (1 : Fin 2).succ := rfl
   have h1 : (1 : Fin 2) = (0 : Fin 1).succ := rfl
-  rw [p4, h3, Perm.decomposeFin_symm_apply_succ, h2, Perm.decomposeFin_symm_apply_succ, h1,
-    Perm.decomposeFin_symm_apply_succ, Perm.one_apply]
+  rw [permFin4OfTuple, h3, Perm.decomposeFin_symm_apply_succ, h2, Perm.decomposeFin_symm_apply_succ,
+    h1, Perm.decomposeFin_symm_apply_succ, Perm.one_apply]
 
 private lemma sum_perm_fin4_eq (g : Perm (Fin 4) → ℝ) :
-    (∑ q : Perm (Fin 4), g q) = ∑ a : Fin 4, ∑ b : Fin 3, ∑ c : Fin 2, g (p4 a b c) := by
+    (∑ q : Perm (Fin 4), g q) =
+      ∑ a : Fin 4, ∑ b : Fin 3, ∑ c : Fin 2, g (permFin4OfTuple a b c) := by
   rw [← Perm.decomposeFin.symm.sum_comp, Fintype.sum_prod_type]
   refine Finset.sum_congr rfl fun a _ => ?_
   rw [← Perm.decomposeFin.symm.sum_comp, Fintype.sum_prod_type]
@@ -206,7 +209,8 @@ private lemma perm_fin4_split (F : Fin 4 → Fin 4 → Fin 4 → Fin 4 → ℝ)
       = 4 * (F 0 1 2 3 - F 0 2 1 3 + F 0 3 1 2 + F 1 2 0 3 - F 1 3 0 2 + F 2 3 0 1) := by
   rw [sum_perm_fin4_eq]
   simp only [Fin.sum_univ_four, Fin.sum_univ_three, Fin.sum_univ_two,
-    p4_sign, p4_apply_zero, p4_apply_one, p4_apply_two, p4_apply_three,
+    permFin4OfTuple_sign, permFin4OfTuple_apply_zero, permFin4OfTuple_apply_one,
+    permFin4OfTuple_apply_two, permFin4OfTuple_apply_three,
     Equiv.swap_apply_def, Fin.isValue, Fin.reduceEq, ↓reduceIte,
     Fin.succ_zero_eq_one, Fin.succ_one_eq_two,
     show (2 : Fin 3).succ = 3 from rfl, show (1 : Fin 2).succ = 2 from rfl,
@@ -217,24 +221,28 @@ private lemma perm_fin4_split (F : Fin 4 → Fin 4 → Fin 4 → Fin 4 → ℝ)
 
 private lemma perm5_fiber_term (k : Fin 5) (a : Fin 4) (b : Fin 3) (c : Fin 2)
     (F : Fin 5 → Fin 5 → Fin 5 → Fin 5 → ℝ) :
-    ((Perm.sign (Perm.decomposeFin.symm (k, p4 a b c)) : ℤ) : ℝ) *
-      F (Perm.decomposeFin.symm (k, p4 a b c) 1)
-        (Perm.decomposeFin.symm (k, p4 a b c) 2)
-        (Perm.decomposeFin.symm (k, p4 a b c) 3)
-        (Perm.decomposeFin.symm (k, p4 a b c) 4) =
+    ((Perm.sign (Perm.decomposeFin.symm (k, permFin4OfTuple a b c)) : ℤ) : ℝ) *
+      F (Perm.decomposeFin.symm (k, permFin4OfTuple a b c) 1)
+        (Perm.decomposeFin.symm (k, permFin4OfTuple a b c) 2)
+        (Perm.decomposeFin.symm (k, permFin4OfTuple a b c) 3)
+        (Perm.decomposeFin.symm (k, permFin4OfTuple a b c) 4) =
       (if k = 0 then (1 : ℝ) else -1) *
-        (((Perm.sign (p4 a b c) : ℤ) : ℝ) *
-          F (Equiv.swap 0 k (p4 a b c 0).succ) (Equiv.swap 0 k (p4 a b c 1).succ)
-            (Equiv.swap 0 k (p4 a b c 2).succ) (Equiv.swap 0 k (p4 a b c 3).succ)) := by
+        (((Perm.sign (permFin4OfTuple a b c) : ℤ) : ℝ) *
+          F (Equiv.swap 0 k (permFin4OfTuple a b c 0).succ)
+            (Equiv.swap 0 k (permFin4OfTuple a b c 1).succ)
+            (Equiv.swap 0 k (permFin4OfTuple a b c 2).succ)
+            (Equiv.swap 0 k (permFin4OfTuple a b c 3).succ)) := by
   have h1 : (1 : Fin 5) = (0 : Fin 4).succ := rfl
   have h2 : (2 : Fin 5) = (1 : Fin 4).succ := rfl
   have h3 : (3 : Fin 5) = (2 : Fin 4).succ := rfl
   have h4 : (4 : Fin 5) = (3 : Fin 4).succ := rfl
-  rw [h1, h2, h3, h4, p5_sign k a b c, Perm.decomposeFin_symm_apply_succ,
+  rw [h1, h2, h3, h4, perm5_sign k a b c, Perm.decomposeFin_symm_apply_succ,
     Perm.decomposeFin_symm_apply_succ, Perm.decomposeFin_symm_apply_succ,
     Perm.decomposeFin_symm_apply_succ, Units.val_mul, Int.cast_mul]
   split_ifs <;> simp
 
+/-- Coset fiber decomposition of the alternating permutation sum on `S_5` isolating index `p 0 = k`
+into six signed curvature pairings on the remaining four coordinates. -/
 lemma perm_fin5_fiber_split (k : Fin 5) (F : Fin 5 → Fin 5 → Fin 5 → Fin 5 → ℝ)
     (h12 : ∀ a b c d, F a b c d = -F b a c d)
     (h34 : ∀ a b c d, F a b c d = -F a b d c) :
@@ -261,9 +269,9 @@ lemma perm_fin5_fiber_split (k : Fin 5) (F : Fin 5 → Fin 5 → Fin 5 → Fin 5
     let q2 := (Perm.decomposeFin q1).2
     let c := (Perm.decomposeFin q2).1
     let d := (Perm.decomposeFin q2).2
-    have hq : q = p4 a b c := by
+    have hq : q = permFin4OfTuple a b c := by
       have hd : d = 1 := Subsingleton.elim d 1
-      dsimp [p4, a, b, c, q1, q2]
+      dsimp [permFin4OfTuple, a, b, c, q1, q2]
       rw [← hd]
       simp [d, q2, q1]
     rw [hq]

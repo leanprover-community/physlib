@@ -72,7 +72,8 @@ lemma linearizedChristoffel_symm (P : MetricPerturbation) (x : Fin 4 → ℝ) (k
   simp only [linearizedChristoffel, hij]
   ring
 
-/-- A `C²` metric perturbation `P` at `x` has differentiable linearized Christoffel symbols at `x`. -/
+/-- A `C²` metric perturbation `P` at `x` has differentiable linearized Christoffel symbols at
+`x`. -/
 lemma differentiableAt_linearizedChristoffel {P : MetricPerturbation} {x : Fin 4 → ℝ}
     (hP : P.IsC2At x) (k i j : Fin 4) :
     DifferentiableAt ℝ (fun y => linearizedChristoffel P y k i j) x := by

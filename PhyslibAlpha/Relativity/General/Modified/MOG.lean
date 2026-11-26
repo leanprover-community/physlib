@@ -24,23 +24,24 @@ Yukawa correction whose net effect is a radius-dependent enhancement of Newton's
 
 `Φ(r) = -(G M / r) (1 + α (1 - e^{-μ r}))`.
 
-This module formalises the enhancement factor `yukawaEnhancementFactor α μ r` and potential
-`potential G M α μ r`,
-proving that the enhancement equals `1` at `r = 0`, reduces to Newtonian gravity at `α = 0` or
-`μ = 0`, is strictly bounded in `[1, 1 + α)` for `α > 0` and `μ r ≥ 0`, and approaches `1 + α`
-asymptotically at large radius when `μ > 0`.
+This module packages `MOGTheory`, formalises `MOGTheory.yukawaEnhancementFactor` and
+`MOGTheory.potential` (taking `G : GravitationalConstant`), and proves that the enhancement equals
+`1` at `r = 0`, reduces to Newtonian gravity at `α = 0` or `μ = 0`, is strictly bounded in
+`[1, 1 + α)` for `α > 0` and `μ r ≥ 0`, and approaches `1 + α` asymptotically at large radius
+when `μ > 0`.
 
 ## ii. Key results
 
-- `MOGTheory` : MOG theory parameterized by enhancement strength `α` and Yukawa mass scale `μ`.
-- `yukawaEnhancementFactor`, `potential` : MOG enhancement factor and gravitational potential.
-- `yukawaEnhancementFactor_zero`, `yukawaEnhancementFactor_alpha_zero`,
-  `yukawaEnhancementFactor_mu_zero` : Newtonian reductions at `r = 0`,
-  `α = 0`, and `μ = 0`.
-- `yukawaEnhancementFactor_bounds` : for `α > 0` and `μ r ≥ 0`, `1 ≤ yukawaEnhancementFactor α μ r
-  < 1 + α`.
-- `yukawaEnhancementFactor_tendsto_atTop` : for `μ > 0`, `yukawaEnhancementFactor α μ r → 1 + α`
-  as `r → ∞`.
+- `MOGTheory`, `MOGTheory.yukawaEnhancementFactor`, `MOGTheory.potential` : MOG theory
+  parameterized by `α` and `μ`, enhancement factor, and gravitational potential on
+  `G : GravitationalConstant`.
+- `MOGTheory.yukawaEnhancementFactor_zero`, `MOGTheory.yukawaEnhancementFactor_alpha_zero`,
+  `MOGTheory.yukawaEnhancementFactor_mu_zero` : Newtonian reductions at `r = 0`, `α = 0`, and
+  `μ = 0`.
+- `MOGTheory.yukawaEnhancementFactor_bounds` : for `T.α > 0` and `T.μ * r ≥ 0`,
+  `1 ≤ T.yukawaEnhancementFactor r < 1 + T.α`.
+- `MOGTheory.yukawaEnhancementFactor_tendsto_atTop` : for `T.μ > 0`,
+  `T.yukawaEnhancementFactor r → 1 + T.α` as `r → ∞`.
 
 ## iii. Table of contents
 
@@ -70,6 +71,9 @@ namespace MOG
 
 ## A. The MOG enhancement factor and potential
 
+In `MOGTheory`, a repulsive massive vector field shifts the effective Newtonian attraction by the
+exponential Yukawa factor `1 + α (1 - e^{-μ r})`.
+
 -/
 
 /-- Moffat's Modified Gravity (MOG / STVG) theory parameterized by coupling strength `α` and
@@ -80,71 +84,69 @@ structure MOGTheory where
   /-- Inverse Yukawa range parameter `μ`. -/
   μ : ℝ
 
-/-- MOG enhancement factor `1 + α (1 - e^{-μ r})`. -/
-noncomputable def yukawaEnhancementFactor (α μ r : ℝ) : ℝ := 1 + α * (1 - Real.exp (-(μ * r)))
-
-/-- The MOG gravitational potential `-(G M / r) · yukawaEnhancementFactor α μ r`. -/
-noncomputable def potential (G M α μ r : ℝ) : ℝ := -((G * M) / r) * yukawaEnhancementFactor α μ r
-
-/-- The MOG enhancement factor evaluated for a `MOGTheory`. -/
+/-- MOG enhancement factor `1 + T.α (1 - e^{-T.μ r})` evaluated for a `MOGTheory`. -/
 noncomputable def MOGTheory.yukawaEnhancementFactor (T : MOGTheory) (r : ℝ) : ℝ :=
-  MOG.yukawaEnhancementFactor T.α T.μ r
+  1 + T.α * (1 - Real.exp (-(T.μ * r)))
 
-/-- The MOG gravitational potential evaluated for a `MOGTheory`. -/
-noncomputable def MOGTheory.potential (T : MOGTheory) (G M r : ℝ) : ℝ :=
-  MOG.potential G M T.α T.μ r
+/-- The MOG gravitational potential `-(G M / r) · T.yukawaEnhancementFactor r` evaluated for a
+`MOGTheory` and Newtonian constant `G : GravitationalConstant`. -/
+noncomputable def MOGTheory.potential (T : MOGTheory) (G : GravitationalConstant)
+    (M r : ℝ) : ℝ :=
+  -((G.val * M) / r) * T.yukawaEnhancementFactor r
 
 /-!
 
 ## B. Bounds, Newtonian limits, and asymptotic behaviour
 
+At short distances or vanishing vector couplings the enhancement factor collapses to `1`, while at
+large radii it saturates asymptotically at `1 + T.α`.
+
 -/
 
 /-- At `r = 0`, the MOG enhancement factor is exactly `1`. -/
-lemma yukawaEnhancementFactor_zero (α μ : ℝ) : yukawaEnhancementFactor α μ 0 = 1 := by
-  simp [yukawaEnhancementFactor]
+lemma MOGTheory.yukawaEnhancementFactor_zero (T : MOGTheory) :
+    T.yukawaEnhancementFactor 0 = 1 := by
+  simp [MOGTheory.yukawaEnhancementFactor]
 
-/-- At `α = 0`, MOG reduces to Newtonian gravity (`yukawaEnhancementFactor = 1`). -/
-lemma yukawaEnhancementFactor_alpha_zero (μ r : ℝ) :
-    yukawaEnhancementFactor 0 μ r = 1 := by
-  simp [yukawaEnhancementFactor]
+/-- At `T.α = 0`, MOG reduces to Newtonian gravity (`yukawaEnhancementFactor = 1`). -/
+lemma MOGTheory.yukawaEnhancementFactor_alpha_zero (μ r : ℝ) :
+    (⟨0, μ⟩ : MOGTheory).yukawaEnhancementFactor r = 1 := by
+  simp [MOGTheory.yukawaEnhancementFactor]
 
-/-- At `μ = 0`, MOG reduces to Newtonian gravity (`yukawaEnhancementFactor = 1`). -/
-lemma yukawaEnhancementFactor_mu_zero (α r : ℝ) : yukawaEnhancementFactor α 0 r = 1 := by
-  simp [yukawaEnhancementFactor]
+/-- At `T.μ = 0`, MOG reduces to Newtonian gravity (`yukawaEnhancementFactor = 1`). -/
+lemma MOGTheory.yukawaEnhancementFactor_mu_zero (α r : ℝ) :
+    (⟨α, 0⟩ : MOGTheory).yukawaEnhancementFactor r = 1 := by
+  simp [MOGTheory.yukawaEnhancementFactor]
 
-/-- For positive `α` and `μ r ≥ 0`, the MOG enhancement factor lies in `[1, 1 + α)`: a single
-Yukawa vector cannot absorb a mass discrepancy larger than `1 + α`. -/
-lemma yukawaEnhancementFactor_bounds (α μ r : ℝ) (hα : 0 < α) (hμr : 0 ≤ μ * r) :
-    1 ≤ yukawaEnhancementFactor α μ r ∧ yukawaEnhancementFactor α μ r < 1 + α := by
-  have hpos : 0 < Real.exp (-(μ * r)) := Real.exp_pos _
-  have hle : Real.exp (-(μ * r)) ≤ 1 := by
+/-- For positive `T.α` and `T.μ * r ≥ 0`, the MOG enhancement factor lies in `[1, 1 + T.α)`: a
+single Yukawa vector cannot absorb a mass discrepancy larger than `1 + T.α`. -/
+lemma MOGTheory.yukawaEnhancementFactor_bounds (T : MOGTheory) (r : ℝ) (hα : 0 < T.α)
+    (hμr : 0 ≤ T.μ * r) :
+    1 ≤ T.yukawaEnhancementFactor r ∧ T.yukawaEnhancementFactor r < 1 + T.α := by
+  have hpos : 0 < Real.exp (-(T.μ * r)) := Real.exp_pos _
+  have hle : Real.exp (-(T.μ * r)) ≤ 1 := by
     rw [← Real.exp_zero]
     exact Real.exp_le_exp.mpr (by linarith)
   constructor
-  · simp only [yukawaEnhancementFactor]
+  · simp only [MOGTheory.yukawaEnhancementFactor]
     nlinarith
-  · simp only [yukawaEnhancementFactor]
+  · simp only [MOGTheory.yukawaEnhancementFactor]
     nlinarith
 
-/-- For `μ > 0`, the MOG enhancement factor tends asymptotically to `1 + α` at large radius. -/
-lemma yukawaEnhancementFactor_tendsto_atTop (α μ : ℝ) (hμ : 0 < μ) :
-    Filter.Tendsto (fun r : ℝ => yukawaEnhancementFactor α μ r) Filter.atTop (nhds (1 + α)) := by
-  have hmul : Filter.Tendsto (fun r : ℝ => μ * r) Filter.atTop Filter.atTop :=
+/-- For `T.μ > 0`, the MOG enhancement factor tends asymptotically to `1 + T.α` at large
+radius. -/
+lemma MOGTheory.yukawaEnhancementFactor_tendsto_atTop (T : MOGTheory) (hμ : 0 < T.μ) :
+    Filter.Tendsto (fun r : ℝ => T.yukawaEnhancementFactor r) Filter.atTop (nhds (1 + T.α)) := by
+  have hmul : Filter.Tendsto (fun r : ℝ => T.μ * r) Filter.atTop Filter.atTop :=
     Filter.Tendsto.const_mul_atTop hμ Filter.tendsto_id
-  have hneg : Filter.Tendsto (fun r : ℝ => -(μ * r)) Filter.atTop Filter.atBot :=
+  have hneg : Filter.Tendsto (fun r : ℝ => -(T.μ * r)) Filter.atTop Filter.atBot :=
     Filter.tendsto_neg_atTop_atBot.comp hmul
-  have hexp : Filter.Tendsto (fun r : ℝ => Real.exp (-(μ * r))) Filter.atTop (nhds 0) :=
+  have hexp : Filter.Tendsto (fun r : ℝ => Real.exp (-(T.μ * r))) Filter.atTop (nhds 0) :=
     Real.tendsto_exp_atBot.comp hneg
-  have h1 : Filter.Tendsto (fun r : ℝ => 1 + α * (1 - Real.exp (-(μ * r))))
-      Filter.atTop (nhds (1 + α * (1 - 0))) :=
+  have h1 : Filter.Tendsto (fun r : ℝ => 1 + T.α * (1 - Real.exp (-(T.μ * r))))
+      Filter.atTop (nhds (1 + T.α * (1 - 0))) :=
     tendsto_const_nhds.add (tendsto_const_nhds.mul (tendsto_const_nhds.sub hexp))
-  simpa [yukawaEnhancementFactor] using h1
-
-/-- The MOG gravitational potential taking the Newtonian constant as a
-`GravitationalConstant`. -/
-noncomputable def potential_G (G : GravitationalConstant) (M α μ r : ℝ) : ℝ :=
-  potential G.val M α μ r
+  simpa [MOGTheory.yukawaEnhancementFactor] using h1
 
 end MOG
 

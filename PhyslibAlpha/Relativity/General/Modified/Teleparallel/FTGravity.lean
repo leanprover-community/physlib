@@ -18,13 +18,15 @@ General Relativity (TEGR) at `F = 0`.
 ## i. Overview
 
 Extending the TEGR torsion Lagrangian `T` to a nonlinear function `f(T) = T + F(T)` replaces the
-Einstein–Hilbert Friedmann left-hand side `3 H²` by `3 H² + ½ F(6 H²) - 6 H² F'(6 H²)`.
+Einstein–Hilbert Friedmann left-hand side `3 H²` by
+`3 H² + ½ F(6 H²) - 6 H² F'(6 H²)`.
 
 ## ii. Key results
 
-- `FTTheory` : `f(T) = T + F(T)` teleparallel theory specified by `F` and `dF`.
-- `fTFriedmannLHS`, `fTFriedmannLHS_tegr`, `fTFriedmannLHS_quadratic` : modified `f(T)` Friedmann
-  left-hand side and TEGR recovery.
+- `FTTheory`, `FTTheory.tegr`, `FTTheory.quadratic` : `f(T) = T + F(T)` teleparallel theory
+  specified by `F` and `dF`, with TEGR and quadratic instances.
+- `FTTheory.friedmannLHS`, `FTTheory.friedmannLHS_tegr`, `FTTheory.friedmannLHS_quadratic` :
+  modified `f(T)` Friedmann left-hand side and TEGR recovery.
 
 ## iii. Table of contents
 
@@ -55,6 +57,9 @@ namespace Teleparallel
 
 ## A. `f(T)` modified Friedmann cosmology
 
+Bundling the torsion modification `F` and its derivative `dF` in `FTTheory` produces the modified
+flat-FLRW Friedmann left-hand side evaluated at the Hubble scalar `T = 6 H²`.
+
 -/
 
 /-- Extended teleparallel gravity model `f(T) = T + F(T)` parameterized by deviation `F` and its
@@ -65,24 +70,33 @@ structure FTTheory where
   /-- First derivative `F'(T)`. -/
   dF : ℝ → ℝ
 
-/-- Modified first Friedmann equation left-hand side for an `f(T) = T + F(T)` teleparallel gravity
-action evaluated at `T = 6 H²`: `3 H² + ½ F(6 H²) - 6 H² F'(6 H²)`. -/
-noncomputable def fTFriedmannLHS (H : ℝ) (F dF : ℝ → ℝ) : ℝ :=
-  3 * H ^ 2 + (1 / 2) * F (6 * H ^ 2) - 6 * H ^ 2 * dF (6 * H ^ 2)
+/-- The Teleparallel Equivalent of General Relativity (`F = 0`, `dF = 0`). -/
+def FTTheory.tegr : FTTheory where
+  F _ := 0
+  dF _ := 0
 
-/-- In the Teleparallel Equivalent of General Relativity (`F = 0`, `dF = 0`), the `f(T)` Friedmann
-equation reduces identically to the standard General Relativity Friedmann left-hand side `3 H²`. -/
-lemma fTFriedmannLHS_tegr (H : ℝ) :
-    fTFriedmannLHS H (fun _ => 0) (fun _ => 0) = 3 * H ^ 2 := by
-  simp only [fTFriedmannLHS]
+/-- Quadratic modified teleparallel model `F(T) = α T²`, `dF(T) = 2 α T`. -/
+def FTTheory.quadratic (α : ℝ) : FTTheory where
+  F T := α * T ^ 2
+  dF T := 2 * α * T
+
+/-- Modified first Friedmann equation left-hand side for an `FTTheory` evaluated at `T = 6 H²`:
+`3 H² + ½ T.F(6 H²) - 6 H² T.dF(6 H²)`. -/
+noncomputable def FTTheory.friedmannLHS (T : FTTheory) (H : ℝ) : ℝ :=
+  3 * H ^ 2 + (1 / 2) * T.F (6 * H ^ 2) - 6 * H ^ 2 * T.dF (6 * H ^ 2)
+
+/-- In `FTTheory.tegr`, the `f(T)` Friedmann equation reduces identically to the standard General
+Relativity Friedmann left-hand side `3 H²`. -/
+lemma FTTheory.friedmannLHS_tegr (H : ℝ) :
+    FTTheory.tegr.friedmannLHS H = 3 * H ^ 2 := by
+  simp only [FTTheory.friedmannLHS, FTTheory.tegr]
   ring
 
-/-- For a quadratic teleparallel correction `F(T) = α T²` (`dF(T) = 2 α T`), the modified Friedmann
-left-hand side evaluates to `3 H² - 54 α H⁴`. -/
-lemma fTFriedmannLHS_quadratic (H α : ℝ) :
-    fTFriedmannLHS H (fun T => α * T ^ 2) (fun T => 2 * α * T) =
-      3 * H ^ 2 - 54 * α * H ^ 4 := by
-  simp only [fTFriedmannLHS]
+/-- For `FTTheory.quadratic α`, the modified Friedmann left-hand side evaluates to
+`3 H² - 54 α H⁴`. -/
+lemma FTTheory.friedmannLHS_quadratic (H α : ℝ) :
+    (FTTheory.quadratic α).friedmannLHS H = 3 * H ^ 2 - 54 * α * H ^ 4 := by
+  simp only [FTTheory.friedmannLHS, FTTheory.quadratic]
   ring
 
 end Teleparallel

@@ -113,7 +113,8 @@ lemma spaceDeriv_comp_spatialSliceEmbedding (g : (Fin 4 → ℝ) → ℝ) (t : �
 lemma laplacian3_eq_space_laplacian (Φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ)
     (hΦ : ContDiffAt ℝ 2 Φ x) :
     laplacian3 Φ x =
-      Space.laplacian (fun s : Space 3 => Φ (spatialSliceEmbedding (x 0) s)) ⟨![x 1, x 2, x 3]⟩ := by
+      Space.laplacian (fun s : Space 3 => Φ (spatialSliceEmbedding (x 0) s))
+        ⟨![x 1, x 2, x 3]⟩ := by
   let s₀ : Space 3 := ⟨![x 1, x 2, x 3]⟩
   have hfs0 : spatialSliceEmbedding (x 0) s₀ = x := by
     ext i; fin_cases i <;> rfl

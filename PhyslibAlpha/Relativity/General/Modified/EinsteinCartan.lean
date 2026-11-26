@@ -33,11 +33,12 @@ corollary `S = 0 → T = 0`.
 ## ii. Key results
 
 - `AffineConnection`, `EinsteinCartanData`, `torsion`, `torsion_antisymm` : affine connections,
-  bundled
-  Einstein–Cartan geometry, and torsion tensor.
-- `MetricCompatible`, `leviCivitaOfDeriv`, `contorsion` : metric compatibility and contorsion `K`.
-- `contorsion_torsion`, `leviCivita_add_contorsion_compatible`, `connection_unique` :
-  existence and uniqueness `Γ = Γ_LC + K` for arbitrary metric signature and dimension `n`.
+  bundled Einstein–Cartan geometry, and torsion tensor.
+- `EinsteinCartanData.torsion`, `EinsteinCartanData.MetricCompatible`, `MetricCompatible`,
+  `leviCivitaOfDeriv`, `contorsion` : metric compatibility and contorsion `K`.
+- `contorsion_torsion`, `leviCivita_add_contorsion_compatible`,
+  `EinsteinCartanData.connection_unique` : existence and uniqueness `Γ = Γ_LC + K` for arbitrary
+  metric signature and dimension `n`.
 - `palatiniTensor`, `cartan_algebraic_inversion`, `cartan_vacuum_torsion_zero` : 4D Cartan
   algebraic spin-torsion equation inversion and spinless GR reduction.
 
@@ -89,6 +90,10 @@ structure EinsteinCartanData (n : ℕ) where
 def torsion {n : ℕ} (Γ : AffineConnection n) : AffineConnection n :=
   fun k i j => Γ k i j - Γ k j i
 
+/-- Torsion tensor of the affine connection carried by an `EinsteinCartanData`. -/
+def EinsteinCartanData.torsion {n : ℕ} (D : EinsteinCartanData n) : AffineConnection n :=
+  EinsteinCartan.torsion D.conn
+
 /-- Antisymmetry of torsion in its lower two indices: `T^k_{ij} = -T^k_{ji}`. -/
 lemma torsion_antisymm {n : ℕ} (Γ : AffineConnection n) (k i j : Fin n) :
     torsion Γ k i j = -torsion Γ k j i := by
@@ -123,6 +128,11 @@ lemma torsion_add_symm {n : ℕ} (Γ S : AffineConnection n) (hs : ∀ k i j, S 
 def MetricCompatible {n : ℕ} (g : Tensor2 n) (dg : Fin n → Tensor2 n)
     (Γ : AffineConnection n) : Prop :=
   ∀ k i j : Fin n, dg k i j - (∑ m : Fin n, Γ m k i * g m j) - (∑ m : Fin n, Γ m k j * g i m) = 0
+
+/-- Metric compatibility of an `EinsteinCartanData` geometry against metric derivatives `dg`. -/
+def EinsteinCartanData.MetricCompatible {n : ℕ} (D : EinsteinCartanData n)
+    (dg : Fin n → Tensor2 n) : Prop :=
+  EinsteinCartan.MetricCompatible D.M.g dg D.conn
 
 /-- Levi-Civita connection constructed from metric inverse `ginv` and metric partial derivatives
 `dg k i j = ∂_k g_{ij}`. -/
@@ -320,6 +330,14 @@ lemma connection_unique {n : ℕ} (M : MetricTensor n) (dg : Fin n → Tensor2 n
   rw [hsplit, M.sum_ginv_mul_g_apply p (fun k => torsion Γ k i j)] at hdiv
   simp only [leviCivitaOfDeriv, contorsion]
   linarith
+
+/-- Uniqueness of metric-compatible connections packaged on `EinsteinCartanData`:
+`D.conn = leviCivitaOfDeriv D.M.ginv dg + contorsion D.M D.torsion`. -/
+lemma EinsteinCartanData.connection_unique {n : ℕ} (D : EinsteinCartanData n)
+    (dg : Fin n → Tensor2 n) (hmc : D.MetricCompatible dg) :
+    D.conn = fun k i j =>
+      leviCivitaOfDeriv D.M.ginv dg k i j + contorsion D.M D.torsion k i j :=
+  EinsteinCartan.connection_unique D.M dg D.conn hmc
 
 /-!
 

@@ -118,8 +118,8 @@ lemma contDiffAt_geodesicField (G : GeodesicSystem E) {x₀ v₀ : E}
 ## B. Local existence and uniqueness
 
 Because smooth Christoffel symbols give a locally Lipschitz phase-space flow `G.field`, initial
-position and velocity uniquely fix the freely falling particle trajectory over short affine-parameter
-intervals.
+position and velocity uniquely fix the freely falling particle trajectory over short
+affine-parameter intervals.
 
 -/
 

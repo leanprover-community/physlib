@@ -33,7 +33,7 @@ tracelessness constraint `h = 0` for `m ≠ 0`.
 
 - `FierzPauliTheory`, `FierzPauliTheory.ghostFree` : massive spin-2 theory parameterized by mass
   `m` and tuning `α`, and its ghost-free specialization `α = -1`.
-- `hContractionSq`, `FierzPauliTheory.lagrangian`, `FierzPauliTheory.massTensor` : mass
+- `minkowskiContractionSq`, `FierzPauliTheory.lagrangian`, `FierzPauliTheory.massTensor` : mass
   invariants and variation tensor contracted against `metricTrace minkowski`.
 - `FierzPauliTheory.massTensor_trace`, `FierzPauliTheory.massTensor_trace_tuned`,
   `FierzPauliTheory.longitudinal_time_ghost_free_iff`,
@@ -81,13 +81,13 @@ structure FierzPauliTheory where
 def FierzPauliTheory.ghostFree (m : ℝ) : FierzPauliTheory := ⟨m, -1⟩
 
 /-- Full Minkowski quadratic contraction `h_{ab} h^{ab} = ∑_{a,b} η^{aa} η^{bb} (h_{ab})²`. -/
-def hContractionSq (h : Tensor2 4) : ℝ :=
+def minkowskiContractionSq (h : Tensor2 4) : ℝ :=
   ∑ a : Fin 4, ∑ b : Fin 4, minkowskiMetric4 a a * minkowskiMetric4 b b * h a b * h a b
 
 /-- General Lorentz-invariant quadratic graviton mass Lagrangian density
 `ℒ_mass(α) = -(m² / 4) (h_{ab} h^{ab} + α h²)` evaluated for a `FierzPauliTheory`. -/
 noncomputable def FierzPauliTheory.lagrangian (T : FierzPauliTheory) (h : Tensor2 4) : ℝ :=
-  -(T.m ^ 2 / 4) * (hContractionSq h + T.α * metricTrace minkowski h ^ 2)
+  -(T.m ^ 2 / 4) * (minkowskiContractionSq h + T.α * metricTrace minkowski h ^ 2)
 
 /-- Mass-term contribution to the linearized field equations for a `FierzPauliTheory`:
 `M_{ij}(α) = (m² / 2) (h_{ij} + α η_{ij} h)`. -/
@@ -121,8 +121,8 @@ lemma FierzPauliTheory.longitudinal_time_ghost_free_iff (T : FierzPauliTheory) (
     T.lagrangian (fun i j => if i = 0 ∧ j = 0 then ϕdd else 0) = 0 ↔ T.α = -1 := by
   have ht : metricTrace minkowski (fun i j => if i = 0 ∧ j = 0 then ϕdd else 0) = -ϕdd := by
     simp [metricTrace, minkowski, Fin.sum_univ_four]
-  have hc : hContractionSq (fun i j => if i = 0 ∧ j = 0 then ϕdd else 0) = ϕdd ^ 2 := by
-    simp [hContractionSq, Fin.sum_univ_four]
+  have hc : minkowskiContractionSq (fun i j => if i = 0 ∧ j = 0 then ϕdd else 0) = ϕdd ^ 2 := by
+    simp [minkowskiContractionSq, Fin.sum_univ_four]
     ring
   simp only [lagrangian, hc, ht]
   constructor

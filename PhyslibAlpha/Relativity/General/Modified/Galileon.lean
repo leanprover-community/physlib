@@ -25,16 +25,18 @@ field equations. Its shift-symmetric subsector, the Galileon theories, remains s
 because higher-derivative interaction terms reduce to total derivatives under constant velocity
 shifts `φ' ↦ φ' + c`, while exact Galileon shift symmetry forbids a scalar potential.
 
-This module formalises the one-dimensional core of those two mechanisms:
+This module packages `CubicGalileon` and formalises the one-dimensional core of those mechanisms:
 
-- `(φ')² φ''` is the total derivative `d/dt ((φ')³ / 3)` (`cubic_total_derivative`);
+- `C.density v a t = C.c3 * (φ')² φ''` is the total derivative `d/dt (C.c3 * (φ')³ / 3)`
+  (`CubicGalileon.density_hasDerivAt`);
 - shifting `φ' ↦ φ' + c` changes `(φ')² φ''` by a total derivative (`shift_total_derivative`);
 - an invariant potential under `φ ↦ φ + c` must be constant (`shift_forbids_potential`).
 
 ## ii. Key results
 
-- `CubicGalileon`, `cubicGalileonDensity` : cubic Galileon model and 1D density `(φ')² φ''`.
-- `cubic_total_derivative` : `(v t)² a t = d/dt (v³ / 3)` whenever `v' = a`.
+- `CubicGalileon`, `CubicGalileon.density` : cubic Galileon model and 1D density `c₃ (φ')² φ''`.
+- `cubic_total_derivative`, `CubicGalileon.density_hasDerivAt` : `(v t)² a t = d/dt (v³ / 3)`
+  whenever `v' = a`.
 - `shift_total_derivative` : shifting velocity by `c` preserves total-derivative structure.
 - `shift_forbids_potential` : shift-symmetric potentials are constant.
 
@@ -70,6 +72,9 @@ namespace Galileon
 
 ## A. Cubic Galileon total derivative and shift symmetry
 
+Expressing the cubic Galileon 1D density as an exact total time derivative guarantees second-order
+equations of motion, while shift symmetry eliminates any non-constant potential.
+
 -/
 
 /-- Cubic Galileon scalar–tensor theory parameterized by its cubic interaction coupling `c₃`. -/
@@ -77,21 +82,24 @@ structure CubicGalileon where
   /-- Dimensionless cubic Galileon self-interaction coupling `c₃`. -/
   c3 : ℝ
 
-/-- One-dimensional cubic Galileon density `(φ')² φ''` for velocity `v = φ'` and
-acceleration `a = φ''`. -/
-def cubicGalileonDensity (v a : ℝ → ℝ) (t : ℝ) : ℝ := v t ^ 2 * a t
-
-/-- Scaled 1D cubic Galileon density `c₃ (φ')² φ''` for a `CubicGalileon` model. -/
+/-- Scaled 1D cubic Galileon density `c₃ (φ')² φ''` for a `CubicGalileon` model, with velocity
+`v = φ'` and acceleration `a = φ''`. -/
 def CubicGalileon.density (C : CubicGalileon) (v a : ℝ → ℝ) (t : ℝ) : ℝ :=
-  C.c3 * cubicGalileonDensity v a t
+  C.c3 * (v t ^ 2 * a t)
 
-/-- In one dimension, the cubic Galileon density `(φ')² φ''` is the total derivative
-`d/dt ((φ')³ / 3)`. -/
+/-- In one dimension, `(φ')² φ''` is the total derivative `d/dt ((φ')³ / 3)`. -/
 lemma cubic_total_derivative (v a : ℝ → ℝ) (t : ℝ) (hv : HasDerivAt v (a t) t) :
     HasDerivAt (fun s => v s ^ 3 / 3) (v t ^ 2 * a t) t := by
   have h := (hv.pow 3).div_const 3
   convert h using 1
   ring
+
+/-- The scaled cubic Galileon density `C.density v a t` is the exact total derivative
+`d/dt (C.c3 * v(t)³ / 3)`. -/
+lemma CubicGalileon.density_hasDerivAt (C : CubicGalileon) (v a : ℝ → ℝ) (t : ℝ)
+    (hv : HasDerivAt v (a t) t) :
+    HasDerivAt (fun s => C.c3 * (v s ^ 3 / 3)) (C.density v a t) t :=
+  (cubic_total_derivative v a t hv).const_mul C.c3
 
 /-- Shifting velocity by a constant `c` preserves the total-derivative structure of the cubic
 Galileon density. -/

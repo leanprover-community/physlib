@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.LinearAlgebra.Matrix.Trace
 public import PhyslibAlpha.Relativity.Tensors.Tensor2
 import Mathlib.Tactic.Ring
 
@@ -20,15 +21,15 @@ building-block matrix `K` and the ghost-free nonlinear potential on `DRGTTheory`
 ## i. Overview
 
 Nonlinear completion of massive gravity without reviving the Boulware–Deser ghost uses elementary
-symmetric polynomials `e_k(K)` of `K^a_b = δ^a_b - (√(g⁻¹ f))^a_b`. This module defines the power
-traces, elementary symmetric polynomials up to cubic order, isotropic evaluation, and the cubic
-dRGT potential `DRGTTheory.potential T K = e₂(K) + T.α₃ e₃(K)`.
+symmetric polynomials `e_k(K)` of `K^a_b = δ^a_b - (√(g⁻¹ f))^a_b`. This module defines the
+`Matrix.trace` power traces, elementary symmetric polynomials up to cubic order, isotropic
+evaluation, and the cubic dRGT potential `DRGTTheory.potential T K = e₂(K) + T.α₃ e₃(K)`.
 
 ## ii. Key results
 
 - `DRGTTheory` : cubic dRGT massive gravity model parameterized by coupling `α₃`.
 - `trK1`, `trK2`, `trK3`, `elemSymm0`, `elemSymm1`, `elemSymm2`, `elemSymm3` : matrix power traces
-  and elementary symmetric polynomials.
+  via `Matrix.trace` and elementary symmetric polynomials.
 - `elemSymm_isotropic3`, `DRGTTheory.potential`, `DRGTTheory.potential_vacuum_zero` : isotropic
   evaluation and vanishing Minkowski vacuum potential.
 
@@ -62,6 +63,10 @@ namespace MassiveGravity
 
 ## A. dRGT elementary symmetric potential polynomials
 
+Expressing the nonlinear graviton mass potential in terms of the elementary symmetric polynomials
+built from `Matrix.trace` powers guarantees the absence of the sixth Boulware–Deser ghost degree of
+freedom.
+
 -/
 
 /-- Cubic de Rham–Gabadadze–Tolley (dRGT) massive gravity theory parameterized by `α₃`. -/
@@ -69,15 +74,14 @@ structure DRGTTheory where
   /-- Dimensionless coupling `α₃` of the cubic elementary symmetric polynomial `e₃(K)`. -/
   α3 : ℝ
 
-/-- Matrix power traces `tr(K)`, `tr(K²)`, `tr(K³)` of the dRGT building-block tensor
-`K^a_b = δ^a_b - (√(g⁻¹ f))^a_b`. -/
-def trK1 (K : Tensor2 4) : ℝ := ∑ a : Fin 4, K a a
+/-- Linear trace `tr(K)` of the dRGT building-block tensor `K^a_b = δ^a_b - (√(g⁻¹ f))^a_b`. -/
+def trK1 (K : Tensor2 4) : ℝ := Matrix.trace K
 
-/-- Quadratic power trace `tr(K²) = ∑_{a,b} K^a_b K^b_a`. -/
-def trK2 (K : Tensor2 4) : ℝ := ∑ a : Fin 4, ∑ b : Fin 4, K a b * K b a
+/-- Quadratic power trace `tr(K²) = Matrix.trace (K * K)`. -/
+def trK2 (K : Tensor2 4) : ℝ := Matrix.trace (K * K)
 
-/-- Cubic power trace `tr(K³) = ∑_{a,b,c} K^a_b K^b_c K^c_a`. -/
-def trK3 (K : Tensor2 4) : ℝ := ∑ a : Fin 4, ∑ b : Fin 4, ∑ c : Fin 4, K a b * K b c * K c a
+/-- Cubic power trace `tr(K³) = Matrix.trace (K * K * K)`. -/
+def trK3 (K : Tensor2 4) : ℝ := Matrix.trace (K * K * K)
 
 /-- Zeroth dRGT elementary symmetric polynomial `e₀(K) = 1`. -/
 def elemSymm0 (_K : Tensor2 4) : ℝ := 1
@@ -104,6 +108,7 @@ lemma elemSymm_isotropic3 (lam : ℝ) :
   have h3 : K 3 3 = lam := rfl
   have hoff : ∀ i j : Fin 4, i ≠ j → K i j = 0 := fun i j hij => Matrix.diagonal_apply_ne _ hij
   simp only [elemSymm1, elemSymm2, elemSymm3, trK1, trK2, trK3,
+    Matrix.trace, Matrix.diag_apply, Matrix.mul_apply,
     Fin.sum_univ_four, h0, h1, h2, h3, hoff, ne_eq, Fin.reduceEq, not_false_eq_true]
   refine ⟨by ring, by ring, by ring⟩
 

@@ -32,7 +32,7 @@ of gravity in the weak-field, slow-motion solar-system regime by ten dimensionle
   momentum conservation.
 
 This module defines `PPNParameters`, the conservation predicates `IsFullyConservative` and
-`IsSemiconservative`, the canonical PPN embeddings of General Relativity, Brans–Dicke theory
+`IsSemiconservative`, the canonical PPN embeddings of General Relativity, `BransDickeTheory`
 (bridged to `GeneralRelativity.Modified.BransDicke`), unscreened metric `f(R)` gravity, and
 Nordström scalar gravity, and the four benchmark solar-system observable factors.
 
@@ -42,8 +42,8 @@ Nordström scalar gravity, and the four benchmark solar-system observable factor
   `IsFullyConservative.isSemiconservative` : Will–Nordtvedt 10-parameter structure and conservation
   hierarchy.
 - `grPPN`, `bransDickePPN`, `fRMetricPPN`, `nordstromPPN` : PPN parameter vectors of General
-  Relativity, Brans–Dicke (`γ = (1 + ω)/(2 + ω)`), metric `f(R)` (`γ = 1/2`), and Nordström
-  (`γ = -1`).
+  Relativity, `BransDickeTheory` (`γ = (1 + ω)/(2 + ω)`), metric `f(R)` (`γ = 1/2`), and
+  Nordström (`γ = -1`).
 - `lightDeflectionFactor`, `shapiroDelayFactor`, `perihelionPrecessionFactor`,
   `nordtvedtParameter` : solar-system observable factors and Strong Equivalence Principle parameter
   `η_N`.
@@ -69,8 +69,12 @@ Nordström scalar gravity, and the four benchmark solar-system observable factor
 * Clifford M. Will and Kenneth Nordtvedt, *Conservation Laws and Preferred Frames in Relativistic
   Gravity. II. Experimental Evidence to Rule Out Preferred-Frame Theories of Gravity*, *The
   Astrophysical Journal* 177, pp. 775-792 (1972). [ref: WillNordtvedt1972]
+* Bruno Bertotti, Luciano Iess, and Paolo Tortora, *A Test of General Relativity Using Radio Links
+  with the Cassini Spacecraft*, *Nature* 425, pp. 374-376 (2003). [ref: BertottiIessTortora2003]
 * Clifford M. Will, *The Confrontation between General Relativity and Experiment*, *Living Reviews
   in Relativity* 17, 4 (2014), Sec. 3 (https://arxiv.org/pdf/1403.7377#page=25). [ref: Will2014]
+* Clifford M. Will, *Theory and Experiment in Gravitational Physics* (2018), Ch. 4–5.
+  [ref: will_2018_tegp]
 -/
 
 @[expose] public section
@@ -84,6 +88,9 @@ namespace PPN
 /-!
 
 ## A. The ten Will–Nordtvedt PPN parameters and conservation classes
+
+These definitions encode the ten dimensionless post-Newtonian parameters and the standard hierarchy
+separating Lagrangian (semiconservative) theories from fully conservative theories.
 
 -/
 
@@ -131,6 +138,9 @@ lemma IsFullyConservative.isSemiconservative {P : PPNParameters} (h : IsFullyCon
 
 ## B. Embeddings of General Relativity and modified gravity theories
 
+Each classical weak-field gravity model maps into `PPNParameters`, allowing unified comparison of
+conservation classes across General Relativity, `BransDickeTheory`, metric `f(R)`, and Nordström.
+
 -/
 
 /-- PPN parameters of Einstein's General Relativity: `γ = 1, β = 1`, all other parameters `0`. -/
@@ -146,10 +156,10 @@ def grPPN : PPNParameters where
   zeta3 := 0
   zeta4 := 0
 
-/-- PPN parameters of massless Brans–Dicke scalar–tensor theory with coupling `ω`:
-`γ = (1 + ω) / (2 + ω)`, `β = 1`, all other parameters `0`. -/
-noncomputable def bransDickePPN (ω : ℝ) : PPNParameters where
-  gamma := BransDicke.gamma ω
+/-- PPN parameters of a massless `BransDickeTheory`: `γ = T.gamma`, `β = 1`, all other parameters
+`0`. -/
+noncomputable def bransDickePPN (T : BransDicke.BransDickeTheory) : PPNParameters where
+  gamma := T.gamma
   beta := 1
   xi := 0
   alpha1 := 0
@@ -192,17 +202,22 @@ noncomputable def nordstromPPN : PPNParameters where
 lemma grPPN_isFullyConservative : IsFullyConservative grPPN :=
   ⟨rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩
 
-/-- Brans–Dicke scalar–tensor gravity is a fully conservative PPN theory for every `ω`. -/
-lemma bransDickePPN_isFullyConservative (ω : ℝ) : IsFullyConservative (bransDickePPN ω) :=
+/-- Brans–Dicke scalar–tensor gravity is a fully conservative PPN theory for every
+`BransDickeTheory`. -/
+lemma bransDickePPN_isFullyConservative (T : BransDicke.BransDickeTheory) :
+    IsFullyConservative (bransDickePPN T) :=
   ⟨rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩
 
-/-- At `ω = 0`, `bransDickePPN 0` coincides with `fRMetricPPN`. -/
-lemma bransDickePPN_zero_eq_fRMetricPPN : bransDickePPN 0 = fRMetricPPN := by
-  simp [bransDickePPN, fRMetricPPN, BransDicke.fR_gamma]
+/-- At `ω = 0`, `bransDickePPN ⟨0⟩` coincides with `fRMetricPPN`. -/
+lemma bransDickePPN_zero_eq_fRMetricPPN : bransDickePPN ⟨0⟩ = fRMetricPPN := by
+  simp [bransDickePPN, fRMetricPPN, BransDicke.BransDickeTheory.gamma, BransDicke.fR_gamma]
 
 /-!
 
 ## C. Solar-system observables and the Nordtvedt SEP parameter
+
+Light deflection, Shapiro delay, perihelion precession, and lunar-laser-ranging SEP bounds depend
+algebraically on the post-Newtonian parameters carried by `PPNParameters`.
 
 -/
 
@@ -260,13 +275,14 @@ lemma perihelionPrecessionFactor_nordstrom :
   simp only [perihelionPrecessionFactor, nordstromPPN]
   norm_num
 
-/-- In Brans–Dicke theory (`2 + ω ≠ 0`), the perihelion precession factor is
+/-- In Brans–Dicke theory (`2 + T.ω ≠ 0`), the perihelion precession factor is
 `(4 + 3 ω) / (6 + 3 ω)`. -/
-lemma perihelionPrecessionFactor_bransDicke (ω : ℝ) (hω : 2 + ω ≠ 0) :
-    perihelionPrecessionFactor (bransDickePPN ω) = (4 + 3 * ω) / (6 + 3 * ω) := by
-  have h3 : 6 + 3 * ω ≠ 0 := by intro h; apply hω; linarith
-  simp only [perihelionPrecessionFactor, bransDickePPN]
-  rw [BransDicke.gamma_eq_one_sub ω hω, div_eq_div_iff (by norm_num) h3]
+lemma perihelionPrecessionFactor_bransDicke (T : BransDicke.BransDickeTheory)
+    (hω : 2 + T.ω ≠ 0) :
+    perihelionPrecessionFactor (bransDickePPN T) = (4 + 3 * T.ω) / (6 + 3 * T.ω) := by
+  have h3 : 6 + 3 * T.ω ≠ 0 := by intro h; apply hω; linarith
+  simp only [perihelionPrecessionFactor, bransDickePPN, BransDicke.BransDickeTheory.gamma]
+  rw [BransDicke.gamma_eq_one_sub T.ω hω, div_eq_div_iff (by norm_num) h3]
   field_simp [hω]
   ring
 
@@ -275,12 +291,12 @@ lemma nordtvedtParameter_gr : nordtvedtParameter grPPN = 0 := by
   simp only [nordtvedtParameter, grPPN]
   norm_num
 
-/-- In Brans–Dicke gravity (`2 + ω ≠ 0`), the Nordtvedt Strong Equivalence Principle violation
+/-- In Brans–Dicke gravity (`2 + T.ω ≠ 0`), the Nordtvedt Strong Equivalence Principle violation
 parameter is `η_N = 1 / (2 + ω)`. -/
-lemma nordtvedtParameter_bransDicke (ω : ℝ) (hω : 2 + ω ≠ 0) :
-    nordtvedtParameter (bransDickePPN ω) = 1 / (2 + ω) := by
-  simp only [nordtvedtParameter, bransDickePPN]
-  rw [BransDicke.gamma_eq_one_sub ω hω]
+lemma nordtvedtParameter_bransDicke (T : BransDicke.BransDickeTheory) (hω : 2 + T.ω ≠ 0) :
+    nordtvedtParameter (bransDickePPN T) = 1 / (2 + T.ω) := by
+  simp only [nordtvedtParameter, bransDickePPN, BransDicke.BransDickeTheory.gamma]
+  rw [BransDicke.gamma_eq_one_sub T.ω hω]
   ring
 
 /-- In unscreened metric `f(R)` gravity (`γ = 1/2, β = 1`), the Nordtvedt parameter is
@@ -289,18 +305,18 @@ lemma nordtvedtParameter_fRMetric : nordtvedtParameter fRMetricPPN = 1 / 2 := by
   simp only [nordtvedtParameter, fRMetricPPN]
   norm_num
 
-/-- Cassini solar-system bound lifted to `bransDickePPN`: `ω > 40000` implies
-`grPPN.gamma - (bransDickePPN ω).gamma < 1 / 40000` and `nordtvedtParameter (bransDickePPN ω) <
-1 / 40000`. -/
-lemma cassini_deviation_bransDickePPN (ω : ℝ) (hω : 40000 < ω) :
-    grPPN.gamma - (bransDickePPN ω).gamma < 1 / 40000 ∧
-      nordtvedtParameter (bransDickePPN ω) < 1 / 40000 := by
-  have h1 := BransDicke.cassini_deviation ω hω
-  have h2 : 2 + ω ≠ 0 := by linarith
-  have h3 := nordtvedtParameter_bransDicke ω h2
-  have h4 := BransDicke.gamma_eq_one_sub ω h2
+/-- Cassini solar-system bound lifted to `bransDickePPN`: `T.ω > 40000` implies
+`grPPN.gamma - (bransDickePPN T).gamma < 1 / 40000` and
+`nordtvedtParameter (bransDickePPN T) < 1 / 40000`. -/
+lemma cassini_deviation_bransDickePPN (T : BransDicke.BransDickeTheory) (hω : 40000 < T.ω) :
+    grPPN.gamma - (bransDickePPN T).gamma < 1 / 40000 ∧
+      nordtvedtParameter (bransDickePPN T) < 1 / 40000 := by
+  have h1 := BransDicke.cassini_deviation T.ω hω
+  have h2 : 2 + T.ω ≠ 0 := by linarith
+  have h3 := nordtvedtParameter_bransDicke T h2
+  have h4 := BransDicke.gamma_eq_one_sub T.ω h2
   rw [h3]
-  simp only [grPPN, bransDickePPN]
+  simp only [grPPN, bransDickePPN, BransDicke.BransDickeTheory.gamma] at *
   constructor <;> linarith
 
 end PPN

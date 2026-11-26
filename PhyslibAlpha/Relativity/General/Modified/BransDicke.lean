@@ -35,8 +35,8 @@ time delay to constrain `|γ - 1| ≲ 2.3 × 10⁻⁵`, forcing `ω > 40000` in 
 
 This module formalises `gamma` and `coupling`, proves `1/2 < γ < 1` for `ω > 0`, establishes the
 Cassini Shapiro time-delay bound `ω > 40000 ⇒ 1 - γ < 1/40000`, proves the `ω → ∞` limit `γ → 1`,
-exhibits `ω = 0` (`γ = 1/2`) as the metric `f(R)` value, proves `1 ≤ coupling ω ≤ 4/3` for
-`ω ≥ 0`, and records the ghost pole at `ω = -3/2`.
+exhibits `ω = 0` (`γ = 1/2`) as the metric `f(R)` value, and proves `1 ≤ coupling ω ≤ 4/3` for
+`ω ≥ 0`.
 
 ## ii. Key results
 
@@ -62,6 +62,8 @@ exhibits `ω = 0` (`γ = 1/2`) as the metric `f(R)` value, proves `1 ≤ couplin
 * Clifford M. Will, *The Confrontation between General Relativity and Experiment*, *Living Reviews
   in Relativity* 17, 4 (2014), Sec. 3.3 & Sec. 5.1 (https://arxiv.org/pdf/1403.7377#page=37).
   [ref: Will2014]
+* Clifford M. Will, *Theory and Experiment in Gravitational Physics* (2018), Ch. 5.
+  [ref: will_2018_tegp]
 -/
 
 @[expose] public section

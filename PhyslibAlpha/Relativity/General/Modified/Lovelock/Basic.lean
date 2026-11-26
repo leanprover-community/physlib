@@ -33,8 +33,8 @@ dimensions while contrasting with non-zero 5D dynamics on constant-curvature spa
   `lovelockContract5_eq_neg_eight_lanczos` : 5-index contraction and `L^i_j = -8 H^i_j`.
 - `bach_lanczos_lt_five`, `bach_lanczos_four` : 4D Bach–Lanczos
   vanishing theorem.
-- `constCurv`, `gaussBonnetScalar_constCurv_four`, `lanczosTensor_constCurv_five` : 4D
-  topological invariant vs non-zero 5D variation.
+- `constantCurvature`, `gaussBonnetScalar_constantCurvature_four`,
+  `lanczosTensor_constantCurvature_five` : 4D topological invariant vs non-zero 5D variation.
 
 ## iii. Table of contents
 
@@ -92,7 +92,7 @@ def AlgCurvature.ricciMixed {n : ℕ} (C : AlgCurvature n) (i j : Fin n) : ℝ :
 def AlgCurvature.ricciScalar {n : ℕ} (C : AlgCurvature n) : ℝ :=
   ∑ a : Fin n, ∑ b : Fin n, C.rUp a b a b
 
-/-- Trace of the squared Ricci tensor equals the scalar curvature: `∑_i R^i_i = R`. -/
+/-- Trace of the mixed Ricci tensor equals the scalar curvature: `∑_i R^i_i = R`. -/
 lemma AlgCurvature.trace_ricciMixed {n : ℕ} (C : AlgCurvature n) :
     (∑ i : Fin n, C.ricciMixed i i) = C.ricciScalar := by
   rfl
@@ -140,34 +140,13 @@ noncomputable def lovelockContract5 {n : ℕ} (C : AlgCurvature n) (i j : Fin n)
       C.rUp (![i, a, b, c, d] (p 1)) (![i, a, b, c, d] (p 2)) a b *
       C.rUp (![i, a, b, c, d] (p 3)) (![i, a, b, c, d] (p 4)) c d
 
-private lemma sum_ite_eq_mul {n : ℕ} (a : Fin n) (f : Fin n → ℝ) :
-    (∑ x : Fin n, (if a = x then (1 : ℝ) else 0) * f x) = f a := by
-  simp
-
 private lemma sum4_ite_eq_mul {n : ℕ} (a₁ a₂ a₃ a₄ : Fin n)
     (g : Fin n → Fin n → Fin n → Fin n → ℝ) :
     (∑ e : Fin n, ∑ f : Fin n, ∑ k : Fin n, ∑ h : Fin n,
       ((if a₁ = e then (1 : ℝ) else 0) * (if a₂ = f then (1 : ℝ) else 0) *
        (if a₃ = k then (1 : ℝ) else 0) * (if a₄ = h then (1 : ℝ) else 0)) * g e f k h) =
       g a₁ a₂ a₃ a₄ := by
-  have h1 : ∀ e f k : Fin n,
-      (∑ h : Fin n, ((if a₁ = e then (1 : ℝ) else 0) * (if a₂ = f then (1 : ℝ) else 0) *
-        (if a₃ = k then (1 : ℝ) else 0) * (if a₄ = h then (1 : ℝ) else 0)) * g e f k h) =
-        (if a₁ = e then (1 : ℝ) else 0) * (if a₂ = f then (1 : ℝ) else 0) *
-          (if a₃ = k then (1 : ℝ) else 0) * g e f k a₄ := by
-    intro e f k; simp
-  have h2 : ∀ e f : Fin n,
-      (∑ k : Fin n, (if a₁ = e then (1 : ℝ) else 0) * (if a₂ = f then (1 : ℝ) else 0) *
-        (if a₃ = k then (1 : ℝ) else 0) * g e f k a₄) =
-        (if a₁ = e then (1 : ℝ) else 0) * (if a₂ = f then (1 : ℝ) else 0) * g e f a₃ a₄ := by
-    intro e f; simp
-  have h3 : ∀ e : Fin n,
-      (∑ f : Fin n, (if a₁ = e then (1 : ℝ) else 0) * (if a₂ = f then (1 : ℝ) else 0) *
-        g e f a₃ a₄) =
-        (if a₁ = e then (1 : ℝ) else 0) * g e a₂ a₃ a₄ := by
-    intro e; simp
-  simp_rw [h1, h2, h3]
-  simp
+  simp [Finset.sum_ite_eq]
 
 /-- Equivalence of `lovelockContract5` with the full 8-index generalized Kronecker sum over
 `a, b, c, d, e, f, g, h`. -/
@@ -250,6 +229,50 @@ private lemma sum4_swap_pairs {n : ℕ} (f : Fin n → Fin n → Fin n → Fin n
     arg 2; ext c
     rw [Finset.sum_comm]
 
+private lemma fiber_zero_sum_1 {n : ℕ} (C : AlgCurvature n) :
+    (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp a b a b * C.rUp c d c d) =
+      C.ricciScalar ^ 2 := by
+  simp only [AlgCurvature.ricciScalar, sq]
+  simp_rw [Finset.sum_mul, Finset.mul_sum]
+
+private lemma fiber_zero_sum_2 {n : ℕ} (C : AlgCurvature n) :
+    (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp a c a b * C.rUp b d c d) =
+      C.ricciSq := by
+  simp only [AlgCurvature.ricciSq, AlgCurvature.ricciMixed]
+  simp_rw [Finset.sum_mul, Finset.mul_sum]
+  rw [sum4_swap13]
+  refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun b _ =>
+    Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun d _ => ?_
+  rw [C.antisymm12 a c a b, C.antisymm34 c a a b]; ring
+
+private lemma fiber_zero_sum_3 {n : ℕ} (C : AlgCurvature n) :
+    (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp a d a b * C.rUp b c c d) =
+      -C.ricciSq := by
+  rw [← fiber_zero_sum_2 C]
+  simp_rw [← Finset.sum_neg_distrib]
+  refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ => ?_
+  rw [C.antisymm34 b d d c]; ring
+
+private lemma fiber_zero_sum_4 {n : ℕ} (C : AlgCurvature n) :
+    (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp b c a b * C.rUp a d c d) =
+      -C.ricciSq := by
+  rw [← fiber_zero_sum_2 C, Finset.sum_comm]
+  simp_rw [← Finset.sum_neg_distrib]
+  refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ =>
+    Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ => ?_
+  rw [C.antisymm34 a c b a]; ring
+
+private lemma fiber_zero_sum_5 {n : ℕ} (C : AlgCurvature n) :
+    (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp b d a b * C.rUp a c c d) =
+      C.ricciSq := by
+  rw [← fiber_zero_sum_2 C, Finset.sum_comm]
+  refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ => ?_
+  rw [C.antisymm34 a c b a, C.antisymm34 b d d c]; ring
+
 private lemma fiber_zero_sum {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
     (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
       (if i = j then (1 : ℝ) else 0) * 4 *
@@ -257,44 +280,60 @@ private lemma fiber_zero_sum {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
           + C.rUp a d a b * C.rUp b c c d + C.rUp b c a b * C.rUp a d c d
           - C.rUp b d a b * C.rUp a c c d + C.rUp c d a b * C.rUp a b c d))
       = 4 * (if i = j then C.gaussBonnetScalar else 0) := by
-  have h1 : (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp a b a b * C.rUp c d c d)
-      = C.ricciScalar ^ 2 := by
-    simp only [AlgCurvature.ricciScalar, sq]
-    simp_rw [Finset.sum_mul, Finset.mul_sum]
-  have h2 : (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp a c a b * C.rUp b d c d)
-      = C.ricciSq := by
-    simp only [AlgCurvature.ricciSq, AlgCurvature.ricciMixed]
-    simp_rw [Finset.sum_mul, Finset.mul_sum]
-    rw [sum4_swap13]
-    refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun b _ =>
-      Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun d _ => ?_
-    rw [C.antisymm12 a c a b, C.antisymm34 c a a b]; ring
-  have h3 : (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp a d a b * C.rUp b c c d)
-      = -C.ricciSq := by
-    rw [← h2]
-    simp_rw [← Finset.sum_neg_distrib]
-    refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
-    rw [Finset.sum_comm]
-    refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ => ?_
-    rw [C.antisymm34 b d d c]; ring
-  have h4 : (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp b c a b * C.rUp a d c d)
-      = -C.ricciSq := by
-    rw [← h2, Finset.sum_comm]
-    simp_rw [← Finset.sum_neg_distrib]
-    refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ =>
-      Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ => ?_
-    rw [C.antisymm34 a c b a]; ring
-  have h5 : (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp b d a b * C.rUp a c c d)
-      = C.ricciSq := by
-    rw [← h2, Finset.sum_comm]
-    refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
-    rw [Finset.sum_comm]
-    refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ => ?_
-    rw [C.antisymm34 a c b a, C.antisymm34 b d d c]; ring
   simp_rw [← Finset.mul_sum]
-  simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, h1, h2, h3, h4, h5,
+  simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, fiber_zero_sum_1, fiber_zero_sum_2,
+    fiber_zero_sum_3, fiber_zero_sum_4, fiber_zero_sum_5,
     AlgCurvature.gaussBonnetScalar, AlgCurvature.riemannSq]
   split_ifs <;> ring
+
+private lemma fiber_one_sum_1 {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
+    (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp i b j b * C.rUp c d c d) =
+      C.ricciScalar * C.ricciMixed i j := by
+  simp only [AlgCurvature.ricciScalar, AlgCurvature.ricciMixed]
+  simp_rw [Finset.mul_sum, Finset.sum_mul]
+  refine Finset.sum_congr rfl fun b _ => Finset.sum_congr rfl fun c _ =>
+    Finset.sum_congr rfl fun d _ => by ring
+
+private lemma fiber_one_sum_2 {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
+    (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp i c j b * C.rUp b d c d) =
+      ∑ b : Fin n, ∑ c : Fin n, C.rUp i c j b * C.ricciMixed b c := by
+  simp only [AlgCurvature.ricciMixed]
+  simp_rw [Finset.mul_sum]
+
+private lemma fiber_one_sum_3 {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
+    (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp i d j b * C.rUp b c c d) =
+      -(∑ b : Fin n, ∑ c : Fin n, C.rUp i c j b * C.ricciMixed b c) := by
+  rw [← fiber_one_sum_2 C i j]
+  simp_rw [← Finset.sum_neg_distrib]
+  refine Finset.sum_congr rfl fun b _ => ?_
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ => ?_
+  rw [C.antisymm34 b d d c]; ring
+
+private lemma fiber_one_sum_4 {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
+    (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp b c j b * C.rUp i d c d) =
+      -(∑ c : Fin n, C.ricciMixed i c * C.ricciMixed c j) := by
+  simp only [AlgCurvature.ricciMixed]
+  simp_rw [Finset.sum_mul, Finset.mul_sum, ← Finset.sum_neg_distrib]
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun c _ => ?_
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun d _ => Finset.sum_congr rfl fun b _ => ?_
+  rw [C.antisymm12 b c j b]; ring
+
+private lemma fiber_one_sum_5 {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
+    (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp b d j b * C.rUp i c c d) =
+      ∑ c : Fin n, C.ricciMixed i c * C.ricciMixed c j := by
+  simp only [AlgCurvature.ricciMixed]
+  simp_rw [Finset.sum_mul, Finset.mul_sum]
+  rw [Finset.sum_comm]
+  conv_lhs =>
+    arg 2; ext c
+    rw [Finset.sum_comm]
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun d _ => Finset.sum_congr rfl fun c _ =>
+    Finset.sum_congr rfl fun b _ => ?_
+  rw [C.antisymm12 b d j b, C.antisymm34 i c c d]; ring
 
 private lemma fiber_one_sum {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
     (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
@@ -305,46 +344,8 @@ private lemma fiber_one_sum {n : ℕ} (C : AlgCurvature n) (i j : Fin n) :
         - 2 * (∑ c : Fin n, C.ricciMixed i c * C.ricciMixed c j)
         - 2 * (∑ b : Fin n, ∑ c : Fin n, C.rUp i c j b * C.ricciMixed b c)
         + (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp c d j b * C.rUp i b c d) := by
-  have h1 : (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp i b j b * C.rUp c d c d)
-      = C.ricciScalar * C.ricciMixed i j := by
-    simp only [AlgCurvature.ricciScalar, AlgCurvature.ricciMixed]
-    simp_rw [Finset.mul_sum, Finset.sum_mul]
-    refine Finset.sum_congr rfl fun b _ => Finset.sum_congr rfl fun c _ =>
-      Finset.sum_congr rfl fun d _ => by ring
-  have h2 : (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp i c j b * C.rUp b d c d)
-      = ∑ b : Fin n, ∑ c : Fin n, C.rUp i c j b * C.ricciMixed b c := by
-    simp only [AlgCurvature.ricciMixed]
-    simp_rw [Finset.mul_sum]
-  have h3 : (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp i d j b * C.rUp b c c d)
-      = -(∑ b : Fin n, ∑ c : Fin n, C.rUp i c j b * C.ricciMixed b c) := by
-    rw [← h2]
-    simp_rw [← Finset.sum_neg_distrib]
-    refine Finset.sum_congr rfl fun b _ => ?_
-    rw [Finset.sum_comm]
-    refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ => ?_
-    rw [C.antisymm34 b d d c]; ring
-  have h4 : (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp b c j b * C.rUp i d c d)
-      = -(∑ c : Fin n, C.ricciMixed i c * C.ricciMixed c j) := by
-    simp only [AlgCurvature.ricciMixed]
-    simp_rw [Finset.sum_mul, Finset.mul_sum, ← Finset.sum_neg_distrib]
-    rw [Finset.sum_comm]
-    refine Finset.sum_congr rfl fun c _ => ?_
-    rw [Finset.sum_comm]
-    refine Finset.sum_congr rfl fun d _ => Finset.sum_congr rfl fun b _ => ?_
-    rw [C.antisymm12 b c j b]; ring
-  have h5 : (∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n, C.rUp b d j b * C.rUp i c c d)
-      = ∑ c : Fin n, C.ricciMixed i c * C.ricciMixed c j := by
-    simp only [AlgCurvature.ricciMixed]
-    simp_rw [Finset.sum_mul, Finset.mul_sum]
-    rw [Finset.sum_comm]
-    conv_lhs =>
-      arg 2; ext c
-      rw [Finset.sum_comm]
-    rw [Finset.sum_comm]
-    refine Finset.sum_congr rfl fun d _ => Finset.sum_congr rfl fun c _ =>
-      Finset.sum_congr rfl fun b _ => ?_
-    rw [C.antisymm12 b d j b, C.antisymm34 i c c d]; ring
-  simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, h1, h2, h3, h4, h5]
+  simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, fiber_one_sum_1, fiber_one_sum_2,
+    fiber_one_sum_3, fiber_one_sum_4, fiber_one_sum_5]
   ring
 
 private lemma perm5_fiber_split_v {n : ℕ} (C : AlgCurvature n) (j a b c d : Fin n)
@@ -543,7 +544,7 @@ lemma bach_lanczos_four (C : AlgCurvature 4) (i j : Fin 4) :
   bach_lanczos_lt_five (by decide) C i j
 
 /-- Constant-curvature model `R^{ab}_{cd} = κ (δ^a_c δ^b_d - δ^a_d δ^b_c)` in `n` dimensions. -/
-def constCurv (n : ℕ) (κ : ℝ) : AlgCurvature n where
+def constantCurvature (n : ℕ) (κ : ℝ) : AlgCurvature n where
   rUp a b c d :=
     κ * ((if a = c then 1 else 0) * (if b = d then 1 else 0)
       - (if a = d then 1 else 0) * (if b = c then 1 else 0))
@@ -552,46 +553,46 @@ def constCurv (n : ℕ) (κ : ℝ) : AlgCurvature n where
 
 /-- In `n = 4`, a space of constant sectional curvature `κ` has non-vanishing Gauss–Bonnet
 topological density `𝒢 = 24 κ²`, even though its metric variation `H^i_j` vanishes identically. -/
-lemma gaussBonnetScalar_constCurv_four (κ : ℝ) :
-    (constCurv 4 κ).gaussBonnetScalar = 24 * κ ^ 2 := by
+lemma gaussBonnetScalar_constantCurvature_four (κ : ℝ) :
+    (constantCurvature 4 κ).gaussBonnetScalar = 24 * κ ^ 2 := by
   simp only [AlgCurvature.gaussBonnetScalar, AlgCurvature.ricciScalar, AlgCurvature.ricciSq,
-    AlgCurvature.riemannSq, AlgCurvature.ricciMixed, constCurv,
+    AlgCurvature.riemannSq, AlgCurvature.ricciMixed, constantCurvature,
     Fin.sum_univ_four, Fin.isValue, Fin.reduceEq, ↓reduceIte]
   ring
 
-private lemma ricciMixed_constCurv_five (κ : ℝ) (i j : Fin 5) :
-    (constCurv 5 κ).ricciMixed i j = if i = j then 4 * κ else 0 := by
+private lemma ricciMixed_constantCurvature_five (κ : ℝ) (i j : Fin 5) :
+    (constantCurvature 5 κ).ricciMixed i j = if i = j then 4 * κ else 0 := by
   have hi : i = 0 ∨ i = 1 ∨ i = 2 ∨ i = 3 ∨ i = 4 := by fin_cases i <;> decide
   have hj : j = 0 ∨ j = 1 ∨ j = 2 ∨ j = 3 ∨ j = 4 := by fin_cases j <;> decide
-  simp only [AlgCurvature.ricciMixed, constCurv]
+  simp only [AlgCurvature.ricciMixed, constantCurvature]
   rcases hi with rfl | rfl | rfl | rfl | rfl <;>
     rcases hj with rfl | rfl | rfl | rfl | rfl <;>
     simp only [Fin.sum_univ_five, Fin.isValue, Fin.reduceEq, ↓reduceIte] <;>
     ring
 
-private lemma scalarCurv_constCurv_five (κ : ℝ) :
-    (constCurv 5 κ).ricciScalar = 20 * κ := by
+private lemma ricciScalar_constantCurvature_five (κ : ℝ) :
+    (constantCurvature 5 κ).ricciScalar = 20 * κ := by
   rw [← AlgCurvature.trace_ricciMixed]
-  simp only [ricciMixed_constCurv_five, Fin.sum_univ_five, ↓reduceIte]
+  simp only [ricciMixed_constantCurvature_five, Fin.sum_univ_five, ↓reduceIte]
   ring
 
-private lemma gaussBonnetScalar_constCurv_five (κ : ℝ) :
-    (constCurv 5 κ).gaussBonnetScalar = 120 * κ ^ 2 := by
+private lemma gaussBonnetScalar_constantCurvature_five (κ : ℝ) :
+    (constantCurvature 5 κ).gaussBonnetScalar = 120 * κ ^ 2 := by
   simp only [AlgCurvature.gaussBonnetScalar, AlgCurvature.ricciSq, AlgCurvature.riemannSq]
-  rw [scalarCurv_constCurv_five]
-  simp only [ricciMixed_constCurv_five]
-  simp only [constCurv, Fin.sum_univ_five, Fin.isValue, Fin.reduceEq, ↓reduceIte]
+  rw [ricciScalar_constantCurvature_five]
+  simp only [ricciMixed_constantCurvature_five]
+  simp only [constantCurvature, Fin.sum_univ_five, Fin.isValue, Fin.reduceEq, ↓reduceIte]
   ring
 
 /-- In `n = 5`, the Gauss–Bonnet variation tensor `H^i_j` is dynamically non-trivial: on a 5D
 constant-curvature space it evaluates to `H^i_i = -12 κ²`. -/
-lemma lanczosTensor_constCurv_five (κ : ℝ) (i : Fin 5) :
-    (constCurv 5 κ).lanczosTensor i i = -12 * κ ^ 2 := by
+lemma lanczosTensor_constantCurvature_five (κ : ℝ) (i : Fin 5) :
+    (constantCurvature 5 κ).lanczosTensor i i = -12 * κ ^ 2 := by
   have hi : i = 0 ∨ i = 1 ∨ i = 2 ∨ i = 3 ∨ i = 4 := by fin_cases i <;> decide
   simp only [AlgCurvature.lanczosTensor]
-  rw [gaussBonnetScalar_constCurv_five, scalarCurv_constCurv_five]
-  simp only [ricciMixed_constCurv_five]
-  simp only [constCurv]
+  rw [gaussBonnetScalar_constantCurvature_five, ricciScalar_constantCurvature_five]
+  simp only [ricciMixed_constantCurvature_five]
+  simp only [constantCurvature]
   rcases hi with rfl | rfl | rfl | rfl | rfl <;>
     simp only [Fin.sum_univ_five, Fin.isValue, Fin.reduceEq, ↓reduceIte] <;>
     ring

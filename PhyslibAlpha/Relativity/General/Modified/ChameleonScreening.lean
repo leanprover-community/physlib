@@ -30,7 +30,7 @@ through chameleon screening: in high-density environments the effective scalar m
 grows, shrinking the Compton wavelength `λ = 1/m` and confining the fifth force of massive bodies
 to a thin outer shell of fractional thickness `Δ`.
 
-This module formalises both halves of the mechanism:
+This module packages `ChameleonModel` and formalises both halves of the mechanism:
 
 - the environment chain `density ↑ ⇒ mass ↑ ⇒ range ↓ ⇒ Yukawa suppression` (`e^{-1} < 1/2`);
 - the thin-shell exterior profile `φ(r) = φ∞ - Q/r` and fifth-force ratio `Δ = Q / (Φ R)`,
@@ -39,16 +39,16 @@ This module formalises both halves of the mechanism:
 
 ## ii. Key results
 
-- `ChameleonModel` : chameleon scalar model parameterized by density–mass coupling `c`.
-- `chameleonMass`, `comptonRange`, `yukawaSuppression` : effective mass, Compton range, and
-  Yukawa factor.
-- `chameleonMass_mono`, `chameleon_range_shrinks`, `yukawaSuppression_lt_half` : monotonicity and
-  suppression beyond one Compton wavelength.
+- `ChameleonModel`, `ChameleonModel.massSq`, `ChameleonModel.mass` : chameleon scalar model
+  parameterized by density–mass coupling `c` and effective mass in ambient density `ρ`.
+- `comptonRange`, `yukawaSuppression` : Compton range `1/m` and Yukawa suppression `e^{-x}`.
+- `ChameleonModel.mass_mono`, `ChameleonModel.range_shrinks`, `yukawaSuppression_lt_half` :
+  monotonicity and suppression beyond one Compton wavelength.
 - `thinShellParameter`, `screeningFactor`, `thin_shell_suppressed`, `screeningFactor_eq_one_iff` :
   thin-shell cap `min Δ 1`.
 - `exteriorScalarProfile`, `hasDerivAt_exteriorScalarProfile`, `fifthForceRatio_thin_shell`,
-  `thin_shell_weak`,
-  `thick_shell_strong` : exterior scalar profile and screened vs unscreened fifth-force bounds.
+  `thin_shell_weak`, `thick_shell_strong` : exterior scalar profile and screened vs unscreened
+  fifth-force bounds.
 
 ## iii. Table of contents
 
@@ -76,6 +76,9 @@ namespace ChameleonScreening
 
 ## A. Environment-dependent mass, range, and Yukawa suppression
 
+In dense ambient matter, `ChameleonModel.mass` grows with `ρ`, contracting `comptonRange` and
+exponentially damping fifth forces via `yukawaSuppression`.
+
 -/
 
 /-- Chameleon scalar screening model parameterized by its linear ambient-density mass coupling
@@ -84,23 +87,16 @@ structure ChameleonModel where
   /-- Ambient density-to-mass-squared coupling constant `c`. -/
   c : ℝ
 
-/-- Scalar mass-squared proportional to ambient density: `m² = ρ c`. -/
-noncomputable def chameleonMassSq (ρ c : ℝ) : ℝ := ρ * c
+/-- Environment-dependent mass squared `m² = ρ M.c` of a `ChameleonModel`. -/
+def ChameleonModel.massSq (M : ChameleonModel) (ρ : ℝ) : ℝ := ρ * M.c
 
-/-- The chameleon scalar mass `m = √(ρ c)`. -/
-noncomputable def chameleonMass (ρ c : ℝ) : ℝ := Real.sqrt (ρ * c)
-
-/-- Environment-dependent mass squared `m² = ρ c` of a `ChameleonModel`. -/
-noncomputable def ChameleonModel.massSq (M : ChameleonModel) (ρ : ℝ) : ℝ :=
-  chameleonMassSq ρ M.c
-
-/-- Environment-dependent chameleon mass `m = √(ρ c)` of a `ChameleonModel`. -/
+/-- Environment-dependent chameleon mass `m = √(ρ M.c)` of a `ChameleonModel`. -/
 noncomputable def ChameleonModel.mass (M : ChameleonModel) (ρ : ℝ) : ℝ :=
-  chameleonMass ρ M.c
+  Real.sqrt (M.massSq ρ)
 
 /-- A denser environment produces a heavier chameleon scalar. -/
-lemma chameleonMass_mono {ρ₁ ρ₂ c : ℝ} (hc : 0 ≤ c) (h : ρ₁ ≤ ρ₂) :
-    chameleonMass ρ₁ c ≤ chameleonMass ρ₂ c :=
+lemma ChameleonModel.mass_mono (M : ChameleonModel) {ρ₁ ρ₂ : ℝ} (hc : 0 ≤ M.c)
+    (h : ρ₁ ≤ ρ₂) : M.mass ρ₁ ≤ M.mass ρ₂ :=
   Real.sqrt_le_sqrt (mul_le_mul_of_nonneg_right h hc)
 
 /-- Compton wavelength `λ = 1 / m` of a scalar of mass `m`. -/
@@ -112,10 +108,10 @@ lemma comptonRange_antitone {m₁ m₂ : ℝ} (h₁ : 0 < m₁) (h : m₁ ≤ m�
   one_div_le_one_div_of_le h₁ h
 
 /-- In a denser environment, the chameleon Compton range shrinks. -/
-lemma chameleon_range_shrinks {ρ₁ ρ₂ c : ℝ} (hpos : 0 < chameleonMass ρ₁ c)
-    (hc : 0 ≤ c) (h : ρ₁ ≤ ρ₂) :
-    comptonRange (chameleonMass ρ₂ c) ≤ comptonRange (chameleonMass ρ₁ c) :=
-  comptonRange_antitone hpos (chameleonMass_mono hc h)
+lemma ChameleonModel.range_shrinks (M : ChameleonModel) {ρ₁ ρ₂ : ℝ} (hpos : 0 < M.mass ρ₁)
+    (hc : 0 ≤ M.c) (h : ρ₁ ≤ ρ₂) :
+    comptonRange (M.mass ρ₂) ≤ comptonRange (M.mass ρ₁) :=
+  comptonRange_antitone hpos (M.mass_mono hc h)
 
 /-- Yukawa suppression factor `e^{-x}` at dimensionless distance `x = r / λ`. -/
 noncomputable def yukawaSuppression (x : ℝ) : ℝ := Real.exp (-x)
@@ -134,6 +130,9 @@ lemma yukawaSuppression_lt_half {x : ℝ} (h : 1 ≤ x) : yukawaSuppression x < 
 /-!
 
 ## B. Thin-shell screening factor and exterior profile
+
+When only a thin surface layer of thickness `Δ = |δφ| / (2 β M_pl |Φ_N|) ≪ 1` sources the scalar
+gradient, the exterior scalar profile produces a suppressed fifth-force ratio.
 
 -/
 

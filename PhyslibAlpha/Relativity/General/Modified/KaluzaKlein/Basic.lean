@@ -324,6 +324,27 @@ noncomputable def kkMetricTensor (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : 
 noncomputable def KaluzaKleinData.metricInv (D : KaluzaKleinData) : Tensor2 5 :=
   kkMetricInv D.M.ginv D.A D.φ
 
+/-- Shift the electromagnetic four-potential of a `KaluzaKleinData` by a gradient `dlam`. -/
+def KaluzaKleinData.gaugeShift (D : KaluzaKleinData) (dlam : Fin 4 → ℝ) : KaluzaKleinData where
+  M := D.M
+  A μ := D.A μ + dlam μ
+  φ := D.φ
+
+/-- Left-inverse identity `D.metricInv * D.metric = 1` for `D.φ ≠ 0`. -/
+lemma KaluzaKleinData.metricInv_mul_metric (D : KaluzaKleinData) (hφ : D.φ ≠ 0) :
+    D.metricInv * D.metric = 1 :=
+  kkMetricInv_mul_kkMetric D.M D.A D.φ hφ
+
+/-- Right-inverse identity `D.metric * D.metricInv = 1` for `D.φ ≠ 0`. -/
+lemma KaluzaKleinData.metric_mul_metricInv (D : KaluzaKleinData) (hφ : D.φ ≠ 0) :
+    D.metric * D.metricInv = 1 :=
+  kkMetric_mul_kkMetricInv D.M D.A D.φ hφ
+
+/-- Package the 5D Kaluza–Klein metric of a `KaluzaKleinData` as a `MetricTensor 5`. -/
+noncomputable def KaluzaKleinData.toMetricTensor (D : KaluzaKleinData) (hφ : D.φ ≠ 0) :
+    MetricTensor 5 :=
+  kkMetricTensor D.M D.A D.φ hφ
+
 end KaluzaKlein
 
 end Modified

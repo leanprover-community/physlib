@@ -25,8 +25,8 @@ Einstein–Aether theory couples General Relativity to a dynamical unit-timelike
 ("the aether") that spontaneously breaks local Lorentz boost invariance by selecting a preferred
 rest frame at every spacetime event (`g_{ab} u^a u^b = -1` in `(-, +, +, +)` signature). The most
 general quadratic derivative action is parameterized by four dimensionless coupling constants
-`c₁, c₂, c₃, c₄` via the tensor `K^{ab}_{cd} = c₁ g^{ab} g_{cd} + c₂ δ^a_c δ^b_d + c₃ δ^a_d δ^b_c
-- c₄ u^a u^b g_{cd}`.
+`c₁, c₂, c₃, c₄` in `AetherCouplings` via the kinetic tensor
+`K^{ab}_{cd} = c₁ g^{ab} g_{cd} + c₂ δ^a_c δ^b_d + c₃ δ^a_d δ^b_c - c₄ u^a u^b g_{cd}`.
 
 Linearizing around flat Minkowski spacetime with rest-frame aether `u = (1, 0, 0, 0)` yields three
 propagating radiative modes (spin-2 tensor, spin-1 vector, and spin-0 scalar) with distinct
@@ -39,19 +39,20 @@ a full coordinate-chart Euler–Lagrange solver.
 
 ## ii. Key results
 
-- `AetherCouplings`, `c13`, `c14`, `c123` : Jacobson–Mattingly coupling structure and physical
-  linear combinations.
+- `AetherCouplings`, `AetherCouplings.c13`, `AetherCouplings.c14`, `AetherCouplings.c123` :
+  Jacobson–Mattingly coupling structure and physical linear combinations.
 - `IsUnitTimelike`, `minkowskiRestAether`, `minkowskiRestAether_unitTimelike`,
   `linUnitTimelike_time_zero` : unit-timelike constraint `g_{ab} u^a u^b = -1` and vanishing
   linearized time perturbation around the Minkowski rest frame.
-- `kineticTensor`, `aetherLagrangian` : four-index aether kinetic tensor `K^{ab}_{cd}` and
-  quadratic derivative Lagrangian density.
-- `spin2SpeedSq`, `spin1SpeedSq`, `spin0SpeedSq` : squared phase velocities of tensor, vector, and
-  scalar aether-gravity modes.
-- `spin2SpeedSq_eq_one_iff`, `spin1SpeedSq_luminal_graviton` : GW170817 luminal tensor graviton
-  condition `s₂² = 1 ↔ c₁ + c₃ = 0` and resulting vector mode speed `s₁² = c₁ / c₁₄`.
-- `effectiveNewtonG`, `effectiveNewtonG_eq_bare_iff` : renormalized Newtonian constant
-  `G_N = G_bare / (1 - c₁₄ / 2)`.
+- `AetherCouplings.kineticTensor`, `AetherCouplings.lagrangian` : four-index aether kinetic
+  tensor `K^{ab}_{cd}` and quadratic derivative Lagrangian density.
+- `AetherCouplings.spin2SpeedSq`, `AetherCouplings.spin1SpeedSq`, `AetherCouplings.spin0SpeedSq` :
+  squared phase velocities of tensor, vector, and scalar aether-gravity modes.
+- `AetherCouplings.spin2SpeedSq_eq_one_iff`, `AetherCouplings.spin1SpeedSq_luminal_graviton` :
+  GW170817 luminal tensor graviton condition `s₂² = 1 ↔ c₁ + c₃ = 0` and resulting vector mode speed
+  `s₁² = c₁ / c₁₄`.
+- `AetherCouplings.effectiveNewtonG`, `AetherCouplings.effectiveNewtonG_eq_bare_iff` : renormalized
+  Newtonian constant `G_N = G_bare / (1 - c₁₄ / 2)`.
 
 ## iii. Table of contents
 
@@ -83,6 +84,9 @@ namespace EinsteinAether
 /-!
 
 ## A. Aether coupling parameters and unit-timelike vector constraint
+
+The coupling constants `c₁, c₂, c₃, c₄` and unit-timelike vector constraint `g_{ab} u^a u^b = -1`
+fix the preferred-frame kinematics around flat Minkowski spacetime.
 
 -/
 
@@ -140,12 +144,15 @@ lemma linUnitTimelike_time_zero (h : Tensor2 4) (δu : Fin 4 → ℝ)
 
 ## B. Aether kinetic tensor and quadratic Lagrangian density
 
+Contracting `AetherCouplings.kineticTensor` against `∇u` gives the quadratic derivative Lagrangian
+whose Lagrange multiplier enforces `IsUnitTimelike M.g u` on shell.
+
 -/
 
 /-- Four-index aether kinetic tensor
 `K^{ab}_{cd} = c₁ g^{ab} g_{cd} + c₂ δ^a_c δ^b_d + c₃ δ^a_d δ^b_c - c₄ u^a u^b g_{cd}`. -/
-def kineticTensor {n : ℕ} (C : AetherCouplings) (M : MetricTensor n) (u : Fin n → ℝ)
-    (a b c d : Fin n) : ℝ :=
+def AetherCouplings.kineticTensor (C : AetherCouplings) {n : ℕ} (M : MetricTensor n)
+    (u : Fin n → ℝ) (a b c d : Fin n) : ℝ :=
   C.c1 * M.ginv a b * M.g c d
     + C.c2 * (if a = c then 1 else 0) * (if b = d then 1 else 0)
     + C.c3 * (if a = d then 1 else 0) * (if b = c then 1 else 0)
@@ -153,24 +160,24 @@ def kineticTensor {n : ℕ} (C : AetherCouplings) (M : MetricTensor n) (u : Fin 
 
 /-- Quadratic aether kinetic invariant `K^{ab}_{cd} (∇_a u^c) (∇_b u^d)` for a covariant derivative
 matrix `du a c = ∇_a u^c`. -/
-def aetherKineticInvariant {n : ℕ} (C : AetherCouplings) (M : MetricTensor n) (u : Fin n → ℝ)
-    (du : Tensor2 n) : ℝ :=
+def AetherCouplings.kineticInvariant (C : AetherCouplings) {n : ℕ} (M : MetricTensor n)
+    (u : Fin n → ℝ) (du : Tensor2 n) : ℝ :=
   ∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
-    kineticTensor C M u a b c d * du a c * du b d
+    C.kineticTensor M u a b c d * du a c * du b d
 
 /-- Full Einstein–Aether Lagrangian density (excluding the `(16 π G_æ)⁻¹` overall factor):
 `ℒ_æ = R - K^{ab}_{cd} ∇_a u^c ∇_b u^d + λ (g_{ab} u^a u^b + 1)`. -/
-def aetherLagrangian {n : ℕ} (C : AetherCouplings) (M : MetricTensor n) (R : ℝ)
+def AetherCouplings.lagrangian (C : AetherCouplings) {n : ℕ} (M : MetricTensor n) (R : ℝ)
     (u : Fin n → ℝ) (du : Tensor2 n) (lam : ℝ) : ℝ :=
-  R - aetherKineticInvariant C M u du
+  R - C.kineticInvariant M u du
     + lam * ((∑ a : Fin n, ∑ b : Fin n, M.g a b * u a * u b) + 1)
 
 /-- On the constraint surface `IsUnitTimelike M.g u`, the Lagrange multiplier term in
-`aetherLagrangian` vanishes identically. -/
-lemma aetherLagrangian_on_shell {n : ℕ} (C : AetherCouplings) (M : MetricTensor n) (R : ℝ)
-    (u : Fin n → ℝ) (du : Tensor2 n) (lam : ℝ) (hu : IsUnitTimelike M.g u) :
-    aetherLagrangian C M R u du lam = R - aetherKineticInvariant C M u du := by
-  simp only [aetherLagrangian]
+`C.lagrangian` vanishes identically. -/
+lemma AetherCouplings.lagrangian_on_shell (C : AetherCouplings) {n : ℕ} (M : MetricTensor n)
+    (R : ℝ) (u : Fin n → ℝ) (du : Tensor2 n) (lam : ℝ) (hu : IsUnitTimelike M.g u) :
+    C.lagrangian M R u du lam = R - C.kineticInvariant M u du := by
+  simp only [AetherCouplings.lagrangian]
   rw [hu]
   ring
 
@@ -178,62 +185,65 @@ lemma aetherLagrangian_on_shell {n : ℕ} (C : AetherCouplings) (M : MetricTenso
 
 ## C. Radiative mode propagation speeds and GW170817 constraints
 
+The squared speeds of spin-2, spin-1, and spin-0 excitations and the renormalized Newtonian
+gravitational constant depend rationally on `C : AetherCouplings`.
+
 -/
 
 /-- Squared propagation speed of the spin-2 transverse-traceless tensor graviton mode:
 `s₂² = 1 / (1 - c₁₃)`. -/
-noncomputable def spin2SpeedSq (C : AetherCouplings) : ℝ :=
+noncomputable def AetherCouplings.spin2SpeedSq (C : AetherCouplings) : ℝ :=
   1 / (1 - C.c13)
 
 /-- Squared propagation speed of the spin-1 transverse vector aether mode:
 `s₁² = (2 c₁ - c₁² + c₃²) / (2 c₁₄ (1 - c₁₃))`. -/
-noncomputable def spin1SpeedSq (C : AetherCouplings) : ℝ :=
+noncomputable def AetherCouplings.spin1SpeedSq (C : AetherCouplings) : ℝ :=
   (2 * C.c1 - C.c1 ^ 2 + C.c3 ^ 2) / (2 * C.c14 * (1 - C.c13))
 
 /-- Squared propagation speed of the spin-0 longitudinal scalar breathing mode:
 `s₀² = c₁₂₃ (2 - c₁₄) / (c₁₄ (1 - c₁₃) (2 + c₁₃ + 3 c₂))`. -/
-noncomputable def spin0SpeedSq (C : AetherCouplings) : ℝ :=
+noncomputable def AetherCouplings.spin0SpeedSq (C : AetherCouplings) : ℝ :=
   C.c123 * (2 - C.c14) / (C.c14 * (1 - C.c13) * (2 + C.c13 + 3 * C.c2))
 
 /-- GW170817 / GRB 170817A constraint: the tensor graviton propagates at the speed of light
 (`s₂² = 1`) if and only if `c₁₃ = c₁ + c₃ = 0`. -/
-lemma spin2SpeedSq_eq_one_iff (C : AetherCouplings) (h : 1 - C.c13 ≠ 0) :
-    spin2SpeedSq C = 1 ↔ C.c13 = 0 := by
-  simp only [spin2SpeedSq, div_eq_iff h]
+lemma AetherCouplings.spin2SpeedSq_eq_one_iff (C : AetherCouplings) (h : 1 - C.c13 ≠ 0) :
+    C.spin2SpeedSq = 1 ↔ C.c13 = 0 := by
+  simp only [AetherCouplings.spin2SpeedSq, div_eq_iff h]
   constructor <;> intro h1 <;> linarith
 
 /-- When tensor gravitons are luminal (`c₁₃ = c₁ + c₃ = 0`), the spin-1 vector mode squared speed
 simplifies to `s₁² = c₁ / c₁₄`. -/
-lemma spin1SpeedSq_luminal_graviton (C : AetherCouplings) (hc13 : C.c13 = 0)
-    (hc14 : C.c14 ≠ 0) : spin1SpeedSq C = C.c1 / C.c14 := by
+lemma AetherCouplings.spin1SpeedSq_luminal_graviton (C : AetherCouplings) (hc13 : C.c13 = 0)
+    (hc14 : C.c14 ≠ 0) : C.spin1SpeedSq = C.c1 / C.c14 := by
   have hc3 : C.c3 = -C.c1 := by
     simp only [AetherCouplings.c13] at hc13
     linarith
-  simp only [spin1SpeedSq, hc13, hc3]
+  simp only [AetherCouplings.spin1SpeedSq, hc13, hc3]
   field_simp [hc14]
   ring
 
 /-- When tensor gravitons are luminal (`c₁₃ = 0`), the spin-0 scalar mode squared speed simplifies
 to `s₀² = c₂ (2 - c₁₄) / (c₁₄ (2 + 3 c₂))`. -/
-lemma spin0SpeedSq_luminal_graviton (C : AetherCouplings) (hc13 : C.c13 = 0) :
-    spin0SpeedSq C = C.c2 * (2 - C.c14) / (C.c14 * (2 + 3 * C.c2)) := by
+lemma AetherCouplings.spin0SpeedSq_luminal_graviton (C : AetherCouplings) (hc13 : C.c13 = 0) :
+    C.spin0SpeedSq = C.c2 * (2 - C.c14) / (C.c14 * (2 + 3 * C.c2)) := by
   have hc123 : C.c123 = C.c2 := by
     simp only [AetherCouplings.c123, AetherCouplings.c13] at *
     linarith
-  simp only [spin0SpeedSq, hc13, hc123]
+  simp only [AetherCouplings.spin0SpeedSq, hc13, hc123]
   ring
 
 /-- Renormalized Newtonian gravitational constant measured in weak-field static gravity:
 `G_N = G_bare / (1 - c₁₄ / 2)`. -/
-noncomputable def effectiveNewtonG (Gbare : ℝ) (C : AetherCouplings) : ℝ :=
+noncomputable def AetherCouplings.effectiveNewtonG (C : AetherCouplings) (Gbare : ℝ) : ℝ :=
   Gbare / (1 - C.c14 / 2)
 
 /-- The effective Newtonian gravitational constant equals the bare action constant `G_bare ≠ 0`
 if and only if `c₁₄ = c₁ + c₄ = 0`. -/
-lemma effectiveNewtonG_eq_bare_iff (Gbare : ℝ) (C : AetherCouplings) (hG : Gbare ≠ 0)
-    (hd : 1 - C.c14 / 2 ≠ 0) :
-    effectiveNewtonG Gbare C = Gbare ↔ C.c14 = 0 := by
-  simp only [effectiveNewtonG, div_eq_iff hd]
+lemma AetherCouplings.effectiveNewtonG_eq_bare_iff (C : AetherCouplings) (Gbare : ℝ)
+    (hG : Gbare ≠ 0) (hd : 1 - C.c14 / 2 ≠ 0) :
+    C.effectiveNewtonG Gbare = Gbare ↔ C.c14 = 0 := by
+  simp only [AetherCouplings.effectiveNewtonG, div_eq_iff hd]
   constructor
   · intro h
     have h1 : Gbare * (1 - C.c14 / 2) = Gbare * 1 := by linarith
