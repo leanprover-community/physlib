@@ -743,9 +743,20 @@ lemma isSymmetric_iff_inner_map_self_real :
   rw [inner_map_polarization']
   simp [sub_eq_add_neg]
 
+/-- The inner product `⟪T x, x⟫` of a symmetric operator is real. -/
+@[simp]
+lemma IsSymmetric.im_inner_map_self_eq_zero (h : T.IsSymmetric) (x : T.domain) :
+    (⟪T x, x⟫_ℂ).im = 0 :=
+  conj_eq_iff_im.mp <| isSymmetric_iff_inner_map_self_real.mp h x
+
 lemma IsSymmetric.isClosable [CompleteSpace H] (h : T.IsSymmetric) (h' : T.HasDenseDomain) :
     T.IsClosable :=
   isClosable_iff_exists_closed_extension.mpr ⟨T†, adjoint_isClosed h', h.le_adjoint h'⟩
+
+/-- The closure of a symmetric densely-defined operator is closed. -/
+lemma IsSymmetric.closure_isClosed [CompleteSpace H] (h : T.IsSymmetric) (h' : T.HasDenseDomain) :
+    T.closure.IsClosed :=
+  (h.isClosable h').closure_isClosed
 
 lemma IsSymmetric.isUnbounded_iff_hasDenseDomain [CompleteSpace H] (h : T.IsSymmetric) :
     T.IsUnbounded ↔ T.HasDenseDomain :=

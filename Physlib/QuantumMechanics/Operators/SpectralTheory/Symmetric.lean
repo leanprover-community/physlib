@@ -36,6 +36,8 @@ Plancherel's theorem), so this Hamiltonian, defined on their span, is essentiall
     all complex numbers with non-zero imaginary part.
 - `regularityDomain_isConnected_iff` : The regularity domain of a symmetric operator is connected
     if and only if it contains a real number.
+- `IsSymmetric.norm_sub_smul_I_sq` : `‖(T - μ i) x‖² = ‖T x‖² + μ² ‖x‖²` for a symmetric operator
+    and real `μ`.
 - `IsSymmetric.isEssentiallySelfAdjoint_of_defectNumber_eq_zero` : The basic criterion for
     essential self-adjointness: symmetric + densely defined + vanishing defect numbers at `± i`.
 - `IsSymmetric.isEssentiallySelfAdjoint_of_dense_span_eigenvectors` : A symmetric operator whose
@@ -46,7 +48,8 @@ Plancherel's theorem), so this Hamiltonian, defined on their span, is essentiall
 - A. Numerical range
 - B. Regularity domain
 - C. Point spectrum
-- D. Essential self-adjointness
+- D. The norm of `T - μ i`
+- E. Essential self-adjointness
 
 ## iv. References
 
@@ -242,7 +245,20 @@ lemma mem_range_sub_of_apply_eq_of_im_ne_zero {x : T.domain} {c z : ℂ}
     exact mem_range_sub_of_apply_eq hx fun h ↦ (h ▸ hz) rfl
 
 /-!
-## D. Essential self-adjointness
+
+## D. The norm of `T - μ i`
+
+-/
+
+/-- For a symmetric operator and real `μ`, `‖(T - μ i) x‖² = ‖T x‖² + μ² ‖x‖²`. -/
+lemma norm_sub_smul_I_sq (μ : ℝ) (x : T.domain) :
+    ‖T x - ((μ : ℂ) * I) • (x : H)‖ ^ 2 = ‖T x‖ ^ 2 + μ ^ 2 * ‖(x : H)‖ ^ 2 := by
+  simp [@norm_sub_sq ℂ, inner_smul_right, hT, norm_smul, mul_pow]
+
+/-!
+
+## E. Essential self-adjointness
+
 -/
 
 variable [CompleteSpace H]
@@ -255,7 +271,7 @@ lemma isEssentiallySelfAdjoint_of_defectNumber_eq_zero
   have hrange {z : ℂ} (hz : z.im ≠ 0) (hd : T.defectNumber z = 0) :
       (T.closure - z • 1).toFun.range = ⊤ := by
     have hz' : z ∈ T.regularityDomain := hT.mem_regularityDomain_of_im_ne_zero hz
-    have hcl : T.closure.IsClosed := (hT.isClosable hdense).closure_isClosed
+    have hcl : T.closure.IsClosed := hT.closure_isClosed hdense
     rw [← hcl.defectNumber_eq_zero_iff (T.regularityDomain_closure ▸ hz'),
       defectNumber_closure hz']
     exact hd

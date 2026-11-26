@@ -5,9 +5,9 @@ Authors: Daniel Leonforte
 -/
 module
 
-public import Physlib.QuantumMechanics.Operators.SpectralTheory.SelfAdjoint
-public import Physlib.QuantumMechanics.Operators.SpectralTheory.Symmetric
+public import Physlib.QuantumMechanics.Operators.SpectralTheory.EssentiallySelfAdjoint
 public import Mathlib.Analysis.Complex.Convex
+
 /-!
 
 # The Kato–Rellich theorem
@@ -27,17 +27,14 @@ to the range of `A + B - μ i` satisfies `‖y‖² ≤ c ‖y‖²` and vanishe
 
 ## ii. Key results
 
-- `LinearPMap.IsSymmetric.norm_sub_smul_I_sq` : `‖(A - μ i) x‖² = ‖A x‖² + μ² ‖x‖²` for symmetric
-  `A`.
-- `LinearPMap.IsEssentiallySelfAdjoint.range_sub_orthogonal_eq_bot` : for an essentially
-  self-adjoint operator the range of `A - z` is dense for non-real `z`.
+- `LinearPMap.IsEssentiallySelfAdjoint.defectNumber_add_eq_zero` : a relative bound
+  `‖B x‖ ≤ c ‖(A - μ i) x‖` with `c < 1` forces the defect number of `A + B` at `μ i` to vanish.
 - `LinearPMap.IsEssentiallySelfAdjoint.add_of_relBound` : the Kato–Rellich theorem.
 
 ## iii. Table of contents
 
-- A. Estimates for symmetric operators
-- B. Dense ranges and defect numbers
-- C. The Kato–Rellich theorem
+- A. Defect numbers of relatively bounded perturbations
+- B. The Kato–Rellich theorem
 
 ## iv. References
 
@@ -53,54 +50,19 @@ namespace LinearPMap
 open Complex
 open scoped InnerProductSpace
 
-/-!
-## A. Estimates for symmetric operators
--/
-
-variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
+variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 variable {A B : H →ₗ.[ℂ] H}
 
-/-- For a symmetric operator and real `μ`, `‖(A - μ i) x‖² = ‖A x‖² + μ² ‖x‖²`. -/
-lemma IsSymmetric.norm_sub_smul_I_sq (hA : A.IsSymmetric) (μ : ℝ) (x : A.domain) :
-    ‖A x - ((μ : ℂ) * I) • (x : H)‖ ^ 2 = ‖A x‖ ^ 2 + μ ^ 2 * ‖(x : H)‖ ^ 2 := by
-  have h : (⟪A x, (x : H)⟫_ℂ).im = 0 := by
-    refine conj_eq_iff_im.mp ?_
-    rw [inner_conj_symm]
-    exact (hA x x).symm
-  have hre : RCLike.re ⟪A x, ((μ : ℂ) * I) • (x : H)⟫_ℂ = 0 := by
-    rw [inner_smul_right]
-    simp [h]
-  rw [@norm_sub_sq ℂ, norm_smul, hre, norm_mul, Complex.norm_I, Complex.norm_real,
-    Real.norm_eq_abs, mul_one, mul_pow, sq_abs]
-  ring
-
-variable [CompleteSpace H]
-
 /-!
-## B. Dense ranges and defect numbers
--/
 
-/-- If `A` is essentially self-adjoint, symmetric and densely defined, then for non-real `z` the
-orthogonal complement of the range of `A - z` is trivial. -/
-lemma IsEssentiallySelfAdjoint.range_sub_orthogonal_eq_bot (hA : A.IsEssentiallySelfAdjoint)
-    (hsym : A.IsSymmetric) (hdense : A.HasDenseDomain) {z : ℂ} (hz : z.im ≠ 0) :
-    (A - z • 1).toFun.rangeᗮ = ⊥ := by
-  have hreg := hsym.mem_regularityDomain_of_im_ne_zero hz
-  have hcl : A.closure.IsClosed := (hsym.isClosable hdense).closure_isClosed
-  have h1 : A.closure.defectNumber z = 0 := by
-    have hregc : z ∈ A.closure.regularityDomain := by
-      rwa [regularityDomain_closure]
-    exact (hcl.defectNumber_eq_zero_iff hregc).mpr
-      (LinearMap.range_eq_top.mpr (IsSelfAdjoint.sub_smul_surjective hA hz))
-  rw [defectNumber_closure hreg, defectNumber_eq] at h1
-  have := Submodule.rank_eq_zero.mp h1
-  simpa using this
+## A. Defect numbers of relatively bounded perturbations
+
+-/
 
 /-- Key step of the Kato–Rellich theorem: a relative bound `‖B x‖ ≤ c ‖(A - μ i) x‖` with
 `c < 1` forces the defect number of `A + B` at `μ i` to vanish. -/
 lemma IsEssentiallySelfAdjoint.defectNumber_add_eq_zero (hA : A.IsEssentiallySelfAdjoint)
-    (hAsym : A.IsSymmetric) (hAdense : A.HasDenseDomain) (hdom : A.domain ≤ B.domain)
-    {μ : ℝ} (hμ : μ ≠ 0) {c : ℝ} (hc : c < 1)
+    (hdom : A.domain ≤ B.domain) {μ : ℝ} (hμ : μ ≠ 0) {c : ℝ} (hc : c < 1)
     (hbound : ∀ (x : H) (hx : x ∈ A.domain),
       ‖B ⟨x, hdom hx⟩‖ ≤ c * ‖A ⟨x, hx⟩ - ((μ : ℂ) * I) • x‖) :
     (A + B).defectNumber ((μ : ℂ) * I) = 0 := by
@@ -123,10 +85,7 @@ lemma IsEssentiallySelfAdjoint.defectNumber_add_eq_zero (hA : A.IsEssentiallySel
     rw [inner_sub_left]
     linear_combination h0'
   -- The range of `A - z` is dense.
-  have hK := hA.range_sub_orthogonal_eq_bot hAsym hAdense hz
-  have hKdense : Dense ((A - z • 1).toFun.range : Set H) := by
-    refine Submodule.dense_iff_topologicalClosure_eq_top.mpr ?_
-    rw [← Submodule.orthogonal_orthogonal_eq_closure, hK, Submodule.bot_orthogonal_eq_top]
+  have hKdense := hA.dense_range_sub_smul hz
   -- The estimate `‖⟪u, y⟫‖ ≤ c ‖u‖ ‖y‖` holds on the range and hence everywhere.
   have hS : ((A - z • 1).toFun.range : Set H) ⊆ {u | ‖⟪u, y⟫_ℂ‖ ≤ c * ‖u‖ * ‖y‖} := by
     rintro _ ⟨⟨x, hx⟩, rfl⟩
@@ -151,18 +110,20 @@ lemma IsEssentiallySelfAdjoint.defectNumber_add_eq_zero (hA : A.IsEssentiallySel
   exact norm_eq_zero.mp (by nlinarith [norm_nonneg y])
 
 /-!
-## C. The Kato–Rellich theorem
+
+## B. The Kato–Rellich theorem
+
 -/
 
 /-- **Kato–Rellich theorem** (essentially self-adjoint version). Let `A` be essentially
 self-adjoint and `B` symmetric with `D(A) ⊆ D(B)` and `‖B x‖ ≤ a ‖A x‖ + b ‖x‖` for some `a < 1`.
 Then `A + B` is essentially self-adjoint on `D(A)`. -/
 lemma IsEssentiallySelfAdjoint.add_of_relBound (hA : A.IsEssentiallySelfAdjoint)
-    (hAsym : A.IsSymmetric) (hAdense : A.HasDenseDomain) (hB : B.IsSymmetric)
-    (hdom : A.domain ≤ B.domain) {a b : ℝ} (ha : a < 1)
+    (hB : B.IsSymmetric) (hdom : A.domain ≤ B.domain) {a b : ℝ} (ha : a < 1)
     (hbound : ∀ (x : H) (hx : x ∈ A.domain),
       ‖B ⟨x, hdom hx⟩‖ ≤ a * ‖A ⟨x, hx⟩‖ + b * ‖x‖) :
     (A + B).IsEssentiallySelfAdjoint := by
+  have hAsym := hA.isSymmetric
   set a' := max a 0 with ha'_def
   set b' := max b 0 with hb'_def
   have ha' : a' < 1 := max_lt ha one_pos
@@ -184,7 +145,7 @@ lemma IsEssentiallySelfAdjoint.add_of_relBound (hA : A.IsEssentiallySelfAdjoint)
     have hN := hAsym.norm_sub_smul_I_sq s ⟨x, hx⟩
     have hs2 : s ^ 2 = μ ^ 2 := by rw [← sq_abs, hs]
     have hN0 : 0 ≤ N := norm_nonneg _
-    have hAx : ‖A ⟨x, hx⟩‖ ≤ N := by
+    have hAN : ‖A ⟨x, hx⟩‖ ≤ N := by
       nlinarith [norm_nonneg (A ⟨x, hx⟩), sq_nonneg (s * ‖x‖)]
     have hxN : μ * ‖x‖ ≤ N := by
       nlinarith [norm_nonneg x, sq_nonneg ‖A ⟨x, hx⟩‖, hμ]
@@ -196,14 +157,14 @@ lemma IsEssentiallySelfAdjoint.add_of_relBound (hA : A.IsEssentiallySelfAdjoint)
       rw [div_mul_eq_mul_div, le_div_iff₀ hμ]
       nlinarith [norm_nonneg x]
     calc ‖B ⟨x, hdom hx⟩‖ ≤ a' * ‖A ⟨x, hx⟩‖ + b' * ‖x‖ := hB1
-      _ ≤ a' * N + b' / μ * N := add_le_add (mul_le_mul_of_nonneg_left hAx ha'0) hbx
+      _ ≤ a' * N + b' / μ * N := add_le_add (mul_le_mul_of_nonneg_left hAN ha'0) hbx
       _ = c * N := by rw [hc_def]; ring
   have hsum := hAsym.add hB
   have hdense' : (A + B).HasDenseDomain := by
     rw [LinearPMap.HasDenseDomain, add_domain, inf_eq_left.mpr hdom]
-    exact hAdense
-  have hdp := hA.defectNumber_add_eq_zero hAsym hAdense hdom hμ.ne' hc (hrel μ (abs_of_pos hμ))
-  have hdm := hA.defectNumber_add_eq_zero hAsym hAdense hdom (neg_ne_zero.mpr hμ.ne') hc
+    exact hA.hasDenseDomain
+  have hdp := hA.defectNumber_add_eq_zero hdom hμ.ne' hc (hrel μ (abs_of_pos hμ))
+  have hdm := hA.defectNumber_add_eq_zero hdom (neg_ne_zero.mpr hμ.ne') hc
     (hrel (-μ) (by rw [abs_neg, abs_of_pos hμ]))
   have hcl := hsum.isClosable hdense'
   refine hsum.isEssentiallySelfAdjoint_of_defectNumber_eq_zero hdense' ?_ ?_
