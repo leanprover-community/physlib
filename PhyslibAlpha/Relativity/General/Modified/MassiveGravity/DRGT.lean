@@ -15,22 +15,22 @@ import Mathlib.Tactic.Ring
 # Ghost-free dRGT massive gravity potentials
 
 Elementary symmetric polynomials `e₀(K), …, e₃(K)` of the de Rham–Gabadadze–Tolley (dRGT)
-building-block matrix `K` and the ghost-free nonlinear potential.
+building-block matrix `K` and the ghost-free nonlinear potential on `DRGTTheory`.
 
 ## i. Overview
 
 Nonlinear completion of massive gravity without reviving the Boulware–Deser ghost uses elementary
 symmetric polynomials `e_k(K)` of `K^a_b = δ^a_b - (√(g⁻¹ f))^a_b`. This module defines the power
 traces, elementary symmetric polynomials up to cubic order, isotropic evaluation, and the cubic
-dRGT potential `e₂(K) + α₃ e₃(K)`.
+dRGT potential `DRGTTheory.potential T K = e₂(K) + T.α₃ e₃(K)`.
 
 ## ii. Key results
 
 - `DRGTTheory` : cubic dRGT massive gravity model parameterized by coupling `α₃`.
 - `trK1`, `trK2`, `trK3`, `elemSymm0`, `elemSymm1`, `elemSymm2`, `elemSymm3` : matrix power traces
   and elementary symmetric polynomials.
-- `elemSymm_isotropic3`, `dRGTPotential`, `dRGTPotential_vacuum_zero` : isotropic evaluation and
-  vanishing Minkowski vacuum potential.
+- `elemSymm_isotropic3`, `DRGTTheory.potential`, `DRGTTheory.potential_vacuum_zero` : isotropic
+  evaluation and vanishing Minkowski vacuum potential.
 
 ## iii. Table of contents
 
@@ -107,16 +107,16 @@ lemma elemSymm_isotropic3 (lam : ℝ) :
     Fin.sum_univ_four, h0, h1, h2, h3, hoff, ne_eq, Fin.reduceEq, not_false_eq_true]
   refine ⟨by ring, by ring, by ring⟩
 
-/-- Cubic dRGT ghost-free potential `U(K) = e₂(K) + α₃ e₃(K)` with free parameter `α₃`
+/-- Cubic dRGT ghost-free potential `U(K) = e₂(K) + T.α₃ e₃(K)` for a `DRGTTheory`
 (normalized so the quadratic term reproduces the Fierz–Pauli mass term). -/
-noncomputable def dRGTPotential (α3 : ℝ) (K : Tensor2 4) : ℝ :=
-  elemSymm2 K + α3 * elemSymm3 K
+noncomputable def DRGTTheory.potential (T : DRGTTheory) (K : Tensor2 4) : ℝ :=
+  elemSymm2 K + T.α3 * elemSymm3 K
 
-/-- At the Minkowski vacuum `K = 0` (`g = f`), the dRGT potential vanishes identically
-(zero cosmological constant / tadpole-free vacuum). -/
-lemma dRGTPotential_vacuum_zero (α3 : ℝ) :
-    dRGTPotential α3 0 = 0 := by
-  simp [dRGTPotential, elemSymm2, elemSymm3, trK1, trK2, trK3]
+/-- At the Minkowski vacuum `K = 0` (`g = f`), the dRGT potential of any `DRGTTheory` vanishes
+identically (zero cosmological constant / tadpole-free vacuum). -/
+lemma DRGTTheory.potential_vacuum_zero (T : DRGTTheory) :
+    T.potential 0 = 0 := by
+  simp [potential, elemSymm2, elemSymm3, trK1, trK2, trK3]
 
 end MassiveGravity
 

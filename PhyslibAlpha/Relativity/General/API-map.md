@@ -318,15 +318,16 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
     `spin1SpeedSq`, `spin0SpeedSq`, `spin2SpeedSq_eq_one_iff`, `spin1SpeedSq_luminal_graviton`,
     `spin0SpeedSq_luminal_graviton`, `effectiveNewtonG`, `effectiveNewtonG_eq_bare_iff`
 51. PhyslibAlpha/Relativity/General/Modified/MassiveGravity/FierzPauli.lean — `FierzPauliTheory`,
-    `FierzPauliTheory.lagrangian`, `FierzPauliTheory.massTensor`,
-    `hContractionSq`, `fierzPauliLagrangian`, `fpMassTensor`,
-    `fpMassTensor_trace`, `fpMassTensor_trace_tuned`, `longitudinal_time_ghost_free_iff`,
-    `fp_traceless_of_zero_trace_source`
+    `FierzPauliTheory.ghostFree`, `FierzPauliTheory.lagrangian`, `FierzPauliTheory.massTensor`,
+    `hContractionSq`, `FierzPauliTheory.massTensor_trace`,
+    `FierzPauliTheory.massTensor_trace_tuned`, `FierzPauliTheory.longitudinal_time_ghost_free_iff`,
+    `FierzPauliTheory.traceless_of_zero_trace_source`
 52. PhyslibAlpha/Relativity/General/Modified/MassiveGravity/VDVZ.lean — `grPropagatorCoupling`,
-    `massivePropagatorCoupling`, `staticSource`, `vdvz_static_ratio`, `vdvz_light_deflection_ratio`
+    `FierzPauliTheory.propagatorCoupling`, `staticSource`, `FierzPauliTheory.vdvz_static_ratio`,
+    `FierzPauliTheory.vdvz_light_deflection_ratio`
 53. PhyslibAlpha/Relativity/General/Modified/MassiveGravity/DRGT.lean — `DRGTTheory`, `trK1`,
     `trK2`, `trK3`, `elemSymm0`, `elemSymm1`, `elemSymm2`, `elemSymm3`, `elemSymm_isotropic3`,
-    `dRGTPotential`, `dRGTPotential_vacuum_zero`
+    `DRGTTheory.potential`, `DRGTTheory.potential_vacuum_zero`
 54. PhyslibAlpha/Relativity/General/Modified/MOND.lean — `MONDTheory`, `MONDTheory.deepAccel`,
     `MONDTheory.Relation`, `newtonAccel`, `newtonAccel_G`,
     `norm_pairGravityAcceleration_eq_newtonAccel`, `deepAccel`, `Relation`, `newtonian_limit`,

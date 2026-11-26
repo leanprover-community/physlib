@@ -6,6 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
+public import PhyslibAlpha.Relativity.General.Modified.MassiveGravity.FierzPauli
 public import PhyslibAlpha.Relativity.Metrics.MetricTrace
 public import PhyslibAlpha.Relativity.Metrics.Minkowski
 import Mathlib.Tactic.Ring
@@ -19,17 +20,18 @@ the massless limit of Fierz–Pauli massive gravity.
 
 ## i. Overview
 
-In the massless limit `m → 0` of Fierz–Pauli massive gravity, the helicity-0 mode remains coupled
-to the trace of the stress-energy tensor with coefficient `1/3` instead of the General Relativity
-factor `1/2`, producing the van Dam–Veltman–Zakharov (vDVZ) discontinuity.
+In the massless limit `m → 0` of a `FierzPauliTheory`, the helicity-0 mode remains coupled to the
+trace of the stress-energy tensor with coefficient `1/3` instead of the General Relativity factor
+`1/2`, producing the van Dam–Veltman–Zakharov (vDVZ) discontinuity between
+`FierzPauliTheory.propagatorCoupling` and `grPropagatorCoupling`.
 
 ## ii. Key results
 
 - `staticSource` : static point-mass stress-energy tensor.
-- `grPropagatorCoupling`, `massivePropagatorCoupling` : massless GR and massive spin-2 residues
-  using `metricTrace minkowski`.
-- `vdvz_static_ratio`, `vdvz_light_deflection_ratio` : static `4/3` enhancement and `3/4`
-  light-bending discontinuity.
+- `grPropagatorCoupling`, `FierzPauliTheory.propagatorCoupling` : massless GR and massive spin-2
+  residues using `metricTrace minkowski`.
+- `FierzPauliTheory.vdvz_static_ratio`, `FierzPauliTheory.vdvz_light_deflection_ratio` : static
+  `4/3` enhancement and `3/4` light-bending discontinuity.
 
 ## iii. Table of contents
 
@@ -72,7 +74,8 @@ noncomputable def grPropagatorCoupling (T1 T2 : Tensor2 4) : ℝ :=
 
 /-- Massive Fierz–Pauli spin-2 propagator residue in the `m → 0` limit contracted between two
 conserved stress-energy tensors `T₁, T₂`: `T₁_{ab} T₂^{ab} - ⅓ T₁ T₂`. -/
-noncomputable def massivePropagatorCoupling (T1 T2 : Tensor2 4) : ℝ :=
+noncomputable def FierzPauliTheory.propagatorCoupling (_T : FierzPauliTheory)
+    (T1 T2 : Tensor2 4) : ℝ :=
   (∑ a : Fin 4, ∑ b : Fin 4, minkowskiMetric4 a a * minkowskiMetric4 b b * T1 a b * T2 a b)
     - (1 / 3) * metricTrace minkowski T1 * metricTrace minkowski T2
 
@@ -82,11 +85,12 @@ def staticSource (ρ : ℝ) : Tensor2 4 :=
   fun i j => if i = 0 ∧ j = 0 then ρ else 0
 
 /-- The vDVZ static discontinuity: for two static non-relativistic sources `ρ₁, ρ₂`, the massive
-graviton exchange amplitude is `4/3` times the massless General Relativity amplitude. -/
-lemma vdvz_static_ratio (ρ1 ρ2 : ℝ) :
-    massivePropagatorCoupling (staticSource ρ1) (staticSource ρ2) =
+graviton exchange amplitude of a `FierzPauliTheory` is `4/3` times the massless General Relativity
+amplitude. -/
+lemma FierzPauliTheory.vdvz_static_ratio (T : FierzPauliTheory) (ρ1 ρ2 : ℝ) :
+    T.propagatorCoupling (staticSource ρ1) (staticSource ρ2) =
       (4 / 3) * grPropagatorCoupling (staticSource ρ1) (staticSource ρ2) := by
-  simp only [massivePropagatorCoupling, grPropagatorCoupling, metricTrace_minkowski, staticSource,
+  simp only [propagatorCoupling, grPropagatorCoupling, metricTrace_minkowski, staticSource,
     Fin.sum_univ_four, minkowskiMetric4_apply]
   norm_num
   ring
@@ -95,11 +99,11 @@ lemma vdvz_static_ratio (ρ1 ρ2 : ℝ) :
 (`metricTrace minkowski T_light = 0`), after calibrating the massive gravitational coupling by
 `3/4` to reproduce Newton's law for static masses, the effective coupling to light is strictly `3/4`
 of the General Relativity coupling. -/
-lemma vdvz_light_deflection_ratio (Tmass Tlight : Tensor2 4)
-    (hnull : metricTrace minkowski Tlight = 0) :
-    (3 / 4) * massivePropagatorCoupling Tmass Tlight =
+lemma FierzPauliTheory.vdvz_light_deflection_ratio (T : FierzPauliTheory)
+    (Tmass Tlight : Tensor2 4) (hnull : metricTrace minkowski Tlight = 0) :
+    (3 / 4) * T.propagatorCoupling Tmass Tlight =
       (3 / 4) * grPropagatorCoupling Tmass Tlight := by
-  simp only [massivePropagatorCoupling, grPropagatorCoupling, hnull]
+  simp only [propagatorCoupling, grPropagatorCoupling, hnull]
   ring
 
 end MassiveGravity
