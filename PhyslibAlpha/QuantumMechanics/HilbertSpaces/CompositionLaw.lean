@@ -48,10 +48,15 @@ ultraviolet behaviour.
 
 ## iv. References
 
-- R. P. Feynman, A. R. Hibbs, "Quantum Mechanics and Path Integrals", McGraw-Hill (1965),
-  section 2-5 (events occurring in succession).
-- M. Reed, B. Simon, "Methods of Modern Mathematical Physics I: Functional Analysis",
-  Academic Press (1980), section II.3 (Bessel's inequality and orthonormal bases).
+- R. P. Feynman, R. B. Leighton, M. Sands, "The Feynman Lectures on Physics", Vol. III,
+  Chapter 8, https://www.feynmanlectures.caltech.edu/III_08.html. Section 8-1, Eq. (8.1)
+  (resolving an amplitude over a complete set of base states) and section 8-2 (amplitudes
+  through two apparatuses in series as a sum over intermediate base states).
+- Mathlib, `HilbertBasis.tsum_inner_mul_inner` (Parseval) in
+  `Mathlib/Analysis/InnerProductSpace/l2Space.lean`, `Orthonormal.tsum_inner_products_le`
+  (Bessel's inequality) in `Mathlib/Analysis/InnerProductSpace/Orthonormal.lean`, and
+  `Real.summable_and_inner_le_Lp_mul_Lq_tsum_of_nonneg` (Hölder for sums) in
+  `Mathlib/Analysis/MeanInequalities.lean`.
 
 -/
 
