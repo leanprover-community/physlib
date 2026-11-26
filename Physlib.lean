@@ -431,12 +431,14 @@ public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.Completen
 public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.Eigenfunction
 public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.Examples
 public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.TISE
+public import Physlib.QuantumMechanics.HilbertSpaces.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.FiniteTarget.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.Gaussians
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.PlaneWaves
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.PositionStates
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.SchwartzSubmodule
+public import Physlib.QuantumMechanics.HilbertSpaces.Qubit.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.DirichletSubmodule
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.Fourier
