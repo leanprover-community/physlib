@@ -9,9 +9,9 @@ public import PhyslibAlpha.QuantumMechanics.Hydrogen.BoundStatesL2
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.GreenIdentity
 
 /-!
-# Green's identity for the hydrogen bound states
+# The weak eigenvalue equation of the hydrogen bound states
 
-Regularised bound states and Green's identity for the kinetic term of a bound state.
+Green's identity for a hydrogen bound state and the weak eigenvalue equation.
 
 ## i. Overview
 
@@ -20,14 +20,10 @@ The bound states are not smooth at the nucleus, so they do not lie in the domain
 Hamiltonian from a Schwartz map onto a bound state `ψ`, one works with the regularised bound
 states `ψ_ε(y) = R(√(‖y‖² + ε²)) P(y)` of `GreenIdentity` and lets `ε → 0`.
 
-This part collects the regularised bound states: their Laplacian away from the origin
-(`laplacian_regBoundState`), the bound state as the case `ε = 0` (`boundState_eq_regG`), and
-Green's identity for `ψ_ε` with `ε ≠ 0` (`integral_regBoundState_mul_sum_deriv_deriv`).
-
-The Hamiltonian acts on its domain as `-ℏ²/(2m) Σᵢ ∂ᵢ∂ᵢ f + V f`
-(`hamiltonianOperator_apply_ae`), and `|Δψ_ε|` has a bound uniform in `|ε| ≤ 1`
-(`exists_abs_laplacian_regBoundState_le`). With it, dominated convergence gives Green's identity
-for the kinetic term of the bound state itself (`integral_boundState_mul_sum_deriv_deriv`).
+With Green's identity for the kinetic term (`integral_boundState_mul_sum_deriv_deriv`) and the
+Coulomb term, the Hamiltonian moves from a Schwartz map onto the bound state
+(`integral_boundState_mul_hamiltonian`), which gives the weak eigenvalue equation
+`⟪E ψ, φ⟫ = ⟪ψ, H φ⟫` for all `φ` in the domain of `H` (`inner_boundStateHS_hamiltonianOperator`).
 
 ## ii. Key results
 
@@ -43,6 +39,10 @@ for the kinetic term of the bound state itself (`integral_boundState_mul_sum_der
   bound state `ψ`, the limit `ε → 0` by dominated convergence
   (`tendsto_integral_regBoundState_mul_sum_deriv_deriv`,
   `tendsto_integral_laplacian_regBoundState_mul`).
+- `integral_boundState_mul_hamiltonian` : Green's identity `∫ ψ H f = ∫ (H ψ) f` for a bound state
+  `ψ` and a Schwartz map `f`.
+- `inner_boundStateHS_hamiltonianOperator` : the weak eigenvalue equation
+  `⟪E ψ, φ⟫ = ⟪ψ, H φ⟫` for `φ` in the domain of the Hamiltonian.
 
 ## iii. Table of contents
 
@@ -517,5 +517,145 @@ lemma integral_boundState_mul_sum_deriv_deriv (H : HydrogenAtom d) (hd : 2 ≤ d
   exact tendsto_nhds_unique
     ((tendsto_integral_regBoundState_mul_sum_deriv_deriv hκ N α P hεs_le hεs f).congr hreg)
     (tendsto_integral_laplacian_regBoundState_mul hd hκ N α hP hεs_le hεs f)
+
+/-- A hydrogen bound state is polynomially bounded. -/
+lemma isPolyBounded_boundState (H : HydrogenAtom d) (hd : 2 ≤ d) (hk : 0 < H.k) (N l : ℕ)
+    (P : MvPolynomial (Fin d) ℝ) : IsPolyBounded (boundState H N l (toFun P)) := by
+  have hκ : 0 ≤ boundKappa H (N + l) := (boundKappa_pos H hd hk (N + l)).le
+  obtain ⟨C₀, k₀, hC₀, hb₀⟩ := exists_abs_poly_exp_regRadius_le (d := d)
+    (laguerreScaled (boundKappa H (N + l)) N (2 * l + d - 2)) hκ
+  have hG0 : IsPolyBounded fun y : Space d =>
+      regG (radialFactor (boundKappa H (N + l)) N (2 * l + d - 2)) 0 (‖y‖ ^ 2) :=
+    ⟨C₀, k₀, hC₀, fun y => by
+      have h := hb₀ 0 (by simp) y
+      simpa [regG, radialFactor, abs_mul] using h⟩
+  rw [boundState_eq_regG H N l P]
+  exact hG0.mul (IsPolyBounded.toFun P)
+
+/-- The Coulomb term `ψ V f` of a bound state `ψ` and a Schwartz map `f` is integrable. -/
+lemma integrable_boundState_mul_potential_mul (H : HydrogenAtom d) (hd : 2 ≤ d) (hk : 0 < H.k)
+    (N l : ℕ) (P : MvPolynomial (Fin d) ℝ) (f : 𝓢(Space d, ℂ)) :
+    Integrable fun y => (boundState H N l (toFun P) y : ℂ) * ((H.potential y : ℂ) * f y) := by
+  set ψ := boundState H N l (toFun P)
+  have hψc : Continuous ψ := continuous_boundState H N l P
+  have hV : ∀ y, H.potential y = -H.k * ‖y‖⁻¹ := fun y => by simp
+  have hVm : Measurable fun y : Space d => H.potential y := by
+    simp only [hV]; fun_prop
+  have hkψ : IsPolyBounded fun y => H.k * ψ y :=
+    (IsPolyBounded.const H.k).mul (isPolyBounded_boundState H hd hk N l P)
+  have hkψm : AEStronglyMeasurable fun y => H.k * ψ y := (by fun_prop : Continuous fun y =>
+    H.k * ψ y).aestronglyMeasurable
+  refine (hkψ.integrable_inv_norm_mul hd hkψm f).mono'
+    ((Complex.continuous_ofReal.comp hψc).aestronglyMeasurable.mul
+      ((Complex.continuous_ofReal.measurable.comp hVm).aestronglyMeasurable.mul
+        f.continuous.aestronglyMeasurable)) (Filter.Eventually.of_forall fun y => ?_)
+  rw [norm_mul, norm_mul, Complex.norm_real, Complex.norm_real, Real.norm_eq_abs,
+    Real.norm_eq_abs, hV, abs_mul, abs_mul, abs_neg, abs_of_pos hk,
+    abs_of_nonneg (inv_nonneg.mpr (norm_nonneg y))]
+  exact le_of_eq (by ring)
+
+/-- The kinetic term `(Δψ) f` of a bound state `ψ` and a Schwartz map `f` is integrable. -/
+lemma integrable_laplacian_boundState_mul (H : HydrogenAtom d) (hd : 2 ≤ d) (hk : 0 < H.k)
+    (N l : ℕ) {P : MvPolynomial (Fin d) ℝ} (hP : P ∈ harmonicSubmodule d l)
+    (f : 𝓢(Space d, ℂ)) :
+    Integrable fun y => ((Δ (boundState H N l (toFun P)) y : ℝ) : ℂ) * f y := by
+  have hκ : 0 ≤ boundKappa H (N + l) := (boundKappa_pos H hd hk (N + l)).le
+  obtain ⟨A, C₂, k₁, k₂, hA, hC₂, hbound⟩ := exists_abs_laplacian_regBoundState_le hκ N
+    (2 * l + d - 2) hP
+  have hΔm : Measurable (Δ (boundState H N l (toFun P))) := by
+    rw [laplacian_eq_sum_snd_deriv]
+    exact Finset.measurable_sum _ fun i _ => measurable_fderiv_apply_const ℝ _ _
+  refine (integrable_laplacianBound_mul hd P A C₂ k₁ k₂ f).mono'
+    ((Complex.continuous_ofReal.measurable.comp hΔm).aestronglyMeasurable.mul
+      f.continuous.aestronglyMeasurable) ?_
+  filter_upwards [ae_ne_zero_of_two_le hd] with y hy
+  have hb := hbound 0 (by simp) y hy
+  rw [← boundState_eq_regG H N l P] at hb
+  exact norm_mul_le_laplacianBound hA hC₂ P f hb
+
+/-- **Green's identity for a bound state.** Moving the Hamiltonian from a Schwartz map `f` onto
+the bound state `ψ`, which is smooth away from the nucleus:
+`∫ ψ (-ℏ²/(2m) Σᵢ ∂ᵢ∂ᵢ f + V f) = ∫ (-ℏ²/(2m) Δψ + V ψ) f`. -/
+lemma integral_boundState_mul_hamiltonian (H : HydrogenAtom d) (hd : 2 ≤ d) (hk : 0 < H.k)
+    (N l : ℕ) {P : MvPolynomial (Fin d) ℝ} (hP : P ∈ harmonicSubmodule d l)
+    (f : 𝓢(Space d, ℂ)) :
+    ∫ y, (boundState H N l (toFun P) y : ℂ) *
+        ((-((Constants.ℏ : ℝ) : ℂ) ^ 2 / (2 * H.m)) * ∑ i, ∂[i] (∂[i] ⇑f) y +
+          (H.potential y : ℂ) * f y) =
+      ∫ y, ((-((Constants.ℏ : ℝ) ^ 2 / (2 * H.m)) * Δ (boundState H N l (toFun P)) y +
+          H.potential y * boundState H N l (toFun P) y : ℝ) : ℂ) * f y := by
+  set ψ := boundState H N l (toFun P)
+  set c : ℂ := -((Constants.ℏ : ℝ) : ℂ) ^ 2 / (2 * H.m)
+  have hψc : Continuous ψ := continuous_boundState H N l P
+  -- the second derivatives of `f` form a Schwartz map
+  set S : 𝓢(Space d, ℂ) := ∑ i : Fin d, ∂_{Space.basis i} (∂_{Space.basis i} f)
+  have hS : ∀ y, ∑ i, ∂[i] (∂[i] ⇑f) y = S y := fun y => by
+    simp only [S, _root_.sum_apply]
+    refine Finset.sum_congr rfl fun i _ => ?_
+    rw [deriv_schwartz f i, deriv_schwartz]
+  -- integrability of the three pieces
+  have I₁ : Integrable fun y => (ψ y : ℂ) * (c * S y) := by
+    simpa [mul_left_comm] using
+      ((isPolyBounded_boundState H hd hk N l P).integrable_ofReal_mul_schwartz
+        hψc.aestronglyMeasurable S).const_mul c
+  have I₂ := integrable_boundState_mul_potential_mul H hd hk N l P f
+  have I₃ := integrable_laplacian_boundState_mul H hd hk N l hP f
+  -- assemble
+  have hkin : ∫ y, (ψ y : ℂ) * S y = ∫ y, ((Δ ψ y : ℝ) : ℂ) * f y := by
+    have h := integral_boundState_mul_sum_deriv_deriv H hd hk N l hP f
+    simp only [hS] at h
+    exact h
+  simp only [hS]
+  have hL : ∫ y, (ψ y : ℂ) * (c * S y + (H.potential y : ℂ) * f y) =
+      c * (∫ y, (ψ y : ℂ) * S y) + ∫ y, (ψ y : ℂ) * ((H.potential y : ℂ) * f y) := by
+    simp only [mul_add]
+    rw [integral_add I₁ I₂]
+    congr 1
+    rw [← integral_const_mul]
+    exact integral_congr_ae (Filter.Eventually.of_forall fun y => by ring)
+  have hR : ∫ y, ((-((Constants.ℏ : ℝ) ^ 2 / (2 * H.m)) * Δ ψ y + H.potential y * ψ y : ℝ) : ℂ) *
+      f y = c * (∫ y, ((Δ ψ y : ℝ) : ℂ) * f y) +
+        ∫ y, (ψ y : ℂ) * ((H.potential y : ℂ) * f y) := by
+    rw [show c * (∫ y, ((Δ ψ y : ℝ) : ℂ) * f y) = ∫ y, c * (((Δ ψ y : ℝ) : ℂ) * f y) from
+      (integral_const_mul c _).symm, ← integral_add (I₃.const_mul c) I₂]
+    refine integral_congr_ae (Filter.Eventually.of_forall fun y => ?_)
+    simp only [c]
+    push_cast
+    ring
+  rw [hL, hR, hkin]
+
+/-- The weak eigenvalue equation `⟪E ψ, φ⟫ = ⟪ψ, H φ⟫` of a bound state `ψ` of the level `N + l`,
+for every `φ` in the domain of the Hamiltonian. -/
+lemma inner_boundStateHS_hamiltonianOperator (H : HydrogenAtom d) (hd : 2 ≤ d) (hk : 0 < H.k)
+    (N l : ℕ) {P : MvPolynomial (Fin d) ℝ} (hP : P ∈ harmonicSubmodule d l)
+    (φ : H.hamiltonianOperator.domain) :
+    ⟪(H.energyLevel (N + l) : ℂ) • boundStateHS H hd hk N l P, (φ : SpaceDHilbertSpace d)⟫_ℂ =
+      ⟪boundStateHS H hd hk N l P, H.hamiltonianOperator φ⟫_ℂ := by
+  obtain ⟨f, hφ, hHφ⟩ := hamiltonianOperator_apply_ae H φ
+  set ψ := boundState H N l (toFun P)
+  have hψ : (boundStateHS H hd hk N l P : SpaceDHilbertSpace d) =ᵐ[volume]
+      fun y => (ψ y : ℂ) := coeFn_mk _
+  rw [inner_smul_left, L2.inner_def, L2.inner_def, Complex.conj_ofReal]
+  -- left side: `E ∫ ψ f`
+  have hL : ∫ y, ⟪(boundStateHS H hd hk N l P : SpaceDHilbertSpace d) y,
+      (φ : SpaceDHilbertSpace d) y⟫_ℂ = ∫ y, (ψ y : ℂ) * f y := by
+    refine integral_congr_ae ?_
+    filter_upwards [hψ, hφ] with y h₁ h₂
+    rw [h₁, h₂, RCLike.inner_apply, Complex.conj_ofReal, mul_comm]
+  -- right side: `∫ ψ H f`
+  have hR : ∫ y, ⟪(boundStateHS H hd hk N l P : SpaceDHilbertSpace d) y,
+      (H.hamiltonianOperator φ : SpaceDHilbertSpace d) y⟫_ℂ =
+      ∫ y, (ψ y : ℂ) * ((-((Constants.ℏ : ℝ) : ℂ) ^ 2 / (2 * H.m)) * ∑ i, ∂[i] (∂[i] ⇑f) y +
+        (H.potential y : ℂ) * f y) := by
+    refine integral_congr_ae ?_
+    filter_upwards [hψ, hHφ] with y h₁ h₂
+    rw [h₁, h₂, RCLike.inner_apply, Complex.conj_ofReal, mul_comm]
+  rw [hL, hR, integral_boundState_mul_hamiltonian H hd hk N l hP f, ← integral_const_mul]
+  -- away from the nucleus the eigenvalue equation holds pointwise
+  refine integral_congr_ae ?_
+  filter_upwards [ae_ne_zero_of_two_le hd] with y hy
+  rw [boundState_eigen_of_mem_harmonicSubmodule H hd hk N l hP hy]
+  push_cast
+  ring
 
 end PhyslibAlpha.Hydrogen
