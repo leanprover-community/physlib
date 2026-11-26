@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Alex Vergara Gil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Vergara Gil
+Authors: Alex Vergara Gil, thunder-detector
 -/
 module
 
@@ -20,15 +20,16 @@ superpotential tensors, and quadratic torsion scalar `T`.
 In the Teleparallel Equivalent of General Relativity (TEGR), gravitational dynamics is formulated in
 terms of an orthonormal tetrad `e^A_i` and its Weitzenböck connection `Γ^k_{ij} = e_A^k ∂_i e^A_j`
 carrying torsion `T^k_{ij}` rather than curvature. This module defines `Tetrad`,
-`weitzenbockConn`, `weitzenbockTorsion`, `superpotential`, and `torsionScalar`, decoupling the
-algebraic tetrad-torsion invariants from coordinate variational derivations so cosmological FLRW
-and `f(T)` reductions can instantiate them directly.
+`Tetrad.weitzenbockConnection`, `Tetrad.weitzenbockTorsion`, `superpotential`, and `torsionScalar`,
+decoupling the algebraic tetrad-torsion invariants from coordinate variational derivations so
+cosmological FLRW and `f(T)` reductions can instantiate them directly.
 
 ## ii. Key results
 
 - `Tetrad` : invertible tetrad frame `e^A_i` and inverse `e_A^i`.
-- `weitzenbockConn`, `weitzenbockTorsion`, `weitzenbockTorsion_eq`,
-  `weitzenbockTorsion_antisymm` : Weitzenböck connection and torsion tensor.
+- `Tetrad.weitzenbockConnection`, `Tetrad.mul_weitzenbockConnection`,
+  `Tetrad.weitzenbockTorsion`, `Tetrad.weitzenbockTorsion_eq`,
+  `Tetrad.weitzenbockTorsion_antisymm` : Weitzenböck connection and torsion tensor.
 - `superpotential`, `superpotential_antisymm`, `torsionScalar` : teleparallel superpotential and
   quadratic torsion scalar `T`.
 
@@ -71,50 +72,74 @@ dimensions. -/
 structure Tetrad (n : ℕ) where
   /-- Coframe tetrad components `e^A_i`. -/
   e : Tensor2 n
-  /-- Inverse frame components `e_A^i`. -/
+  /-- Inverse frame components `e_A^i` stored as `einv i A`. -/
   einv : Tensor2 n
   /-- Left-to-right inverse relation `e * einv = 1`. -/
   inv_left : e * einv = 1
   /-- Right-to-left inverse relation `einv * e = 1`. -/
   inv_right : einv * e = 1
 
-/-- Weitzenböck affine connection `Γ^k_{ij} = ∑_A e_A^k ∂_i e^A_j` constructed from the inverse
-tetrad `einv A k = e_A^k` and tetrad partial derivatives `de i A j = ∂_i e^A_j`. -/
-def weitzenbockConn {n : ℕ} (einv : Tensor2 n) (de : Fin n → Tensor2 n) :
+namespace Tetrad
+
+/-- Weitzenböck affine connection `Γ^k_{ij} = ∑_A e_A^k ∂_i e^A_j` constructed from a `Tetrad`
+and coframe partial derivatives `de i A j = ∂_i e^A_j`, satisfying `e * Γ_i = ∂_i e` (the `einv k A`
+index contraction correction was identified by `thunder-detector`). -/
+def weitzenbockConnection {n : ℕ} (T : Tetrad n) (de : Fin n → Tensor2 n) :
     AffineConnection n :=
-  fun k i j => ∑ A : Fin n, einv A k * de i A j
+  fun k i j => ∑ A : Fin n, T.einv k A * de i A j
+
+/-- Left-multiplication by the coframe recovers the tetrad derivative:
+`e^A_k Γ^k_{ij} = ∂_i e^A_j`. -/
+lemma mul_weitzenbockConnection {n : ℕ} (T : Tetrad n) (de : Fin n → Tensor2 n) (i : Fin n) :
+    T.e * Matrix.of (fun k j => T.weitzenbockConnection de k i j) = de i := by
+  ext a j
+  rw [Matrix.mul_apply]
+  have hswap : (∑ k : Fin n, T.e a k * ∑ A : Fin n, T.einv k A * de i A j) =
+      ∑ A : Fin n, (∑ k : Fin n, T.e a k * T.einv k A) * de i A j := by
+    simp_rw [Finset.mul_sum]
+    rw [Finset.sum_comm]
+    refine Finset.sum_congr rfl fun A _ => ?_
+    rw [Finset.sum_mul]
+    refine Finset.sum_congr rfl fun k _ => by ring
+  have hinv : ∀ A : Fin n, (∑ k : Fin n, T.e a k * T.einv k A) = if a = A then 1 else 0 := by
+    intro A
+    simpa [Matrix.mul_apply, Matrix.one_apply] using congrFun (congrFun T.inv_left a) A
+  simp [weitzenbockConnection, hswap, hinv]
 
 /-- Weitzenböck torsion tensor `T^k_{ij} = Γ^k_{ij} - Γ^k_{ji}`. -/
-def weitzenbockTorsion {n : ℕ} (einv : Tensor2 n) (de : Fin n → Tensor2 n) :
+def weitzenbockTorsion {n : ℕ} (T : Tetrad n) (de : Fin n → Tensor2 n) :
     AffineConnection n :=
-  torsion (weitzenbockConn einv de)
+  torsion (T.weitzenbockConnection de)
 
 /-- Explicit tetrad-derivative formula for the Weitzenböck torsion:
 `T^k_{ij} = ∑_A e_A^k (∂_i e^A_j - ∂_j e^A_i)`. -/
-lemma weitzenbockTorsion_eq {n : ℕ} (einv : Tensor2 n) (de : Fin n → Tensor2 n) (k i j : Fin n) :
-    weitzenbockTorsion einv de k i j = ∑ A : Fin n, einv A k * (de i A j - de j A i) := by
-  simp only [weitzenbockTorsion, torsion, weitzenbockConn, ← Finset.sum_sub_distrib]
+lemma weitzenbockTorsion_eq {n : ℕ} (T : Tetrad n) (de : Fin n → Tensor2 n) (k i j : Fin n) :
+    T.weitzenbockTorsion de k i j = ∑ A : Fin n, T.einv k A * (de i A j - de j A i) := by
+  simp only [weitzenbockTorsion, torsion, weitzenbockConnection, ← Finset.sum_sub_distrib]
   refine Finset.sum_congr rfl fun A _ => by ring
 
 /-- Antisymmetry of the Weitzenböck torsion in its lower indices:
 `T^k_{ij} = -T^k_{ji}`. -/
-lemma weitzenbockTorsion_antisymm {n : ℕ} (einv : Tensor2 n) (de : Fin n → Tensor2 n)
+lemma weitzenbockTorsion_antisymm {n : ℕ} (T : Tetrad n) (de : Fin n → Tensor2 n)
     (k i j : Fin n) :
-    weitzenbockTorsion einv de k i j = -weitzenbockTorsion einv de k j i :=
-  torsion_antisymm (weitzenbockConn einv de) k i j
+    T.weitzenbockTorsion de k i j = -T.weitzenbockTorsion de k j i :=
+  torsion_antisymm (T.weitzenbockConnection de) k i j
+
+end Tetrad
 
 /-- Covariant teleparallel superpotential
-`S_{k i j} = ½ (g_{ip} T^p_{kj} - g_{jp} T^p_{ki} - g_{kp} T^p_{ij}) + g_{ki} T^m_{jm}
-- g_{kj} T^m_{im}`, antisymmetric in its last two indices `(i, j)`. -/
+`S_{k i j} = ¼ (T_{kij} + T_{jik} - T_{ijk}) + ½ (g_{ki} T^m_{jm} - g_{kj} T^m_{im})`,
+antisymmetric in its last two indices `(i, j)` and matching `T = S_k^{ij} T^k_{ij}` (this TEGR
+superpotential normalization reconciling `torsionScalar` with `flrwTorsionScalar` was identified
+by `thunder-detector`). -/
 noncomputable def superpotential (M : MetricTensor 4) (T : AffineConnection 4) :
     AffineConnection 4 :=
   fun k i j =>
-    (1 / 2) *
-      ((∑ p : Fin 4, M.g i p * T p k j)
-        - (∑ p : Fin 4, M.g j p * T p k i)
-        - (∑ p : Fin 4, M.g k p * T p i j))
-      + M.g k i * torsionTrace T j
-      - M.g k j * torsionTrace T i
+    (1 / 4) *
+      ((∑ p : Fin 4, M.g k p * T p i j)
+        + (∑ p : Fin 4, M.g j p * T p i k)
+        - (∑ p : Fin 4, M.g i p * T p j k))
+      + (1 / 2) * (M.g k i * torsionTrace T j - M.g k j * torsionTrace T i)
 
 /-- Antisymmetry of the teleparallel superpotential in its last two indices `(i, j)` whenever
 `T` is antisymmetric in its lower indices. -/
@@ -128,8 +153,8 @@ lemma superpotential_antisymm (M : MetricTensor 4) (T : AffineConnection 4)
   rw [hsum]
   ring
 
-/-- Quadratic teleparallel torsion scalar `T = ∑_{k,i,j} S_{k i j} T^k_{i j}` (in orthonormal or
-index-raised contraction). -/
+/-- Quadratic teleparallel torsion scalar `T = ∑_{k,i,j} S_k^{ij} T^k_{ij}` formed by
+contracting the superpotential with the torsion tensor. -/
 noncomputable def torsionScalar (M : MetricTensor 4) (T : AffineConnection 4) : ℝ :=
   ∑ k : Fin 4, ∑ p : Fin 4, ∑ i : Fin 4, ∑ j : Fin 4,
     M.ginv k p * superpotential M T p i j *

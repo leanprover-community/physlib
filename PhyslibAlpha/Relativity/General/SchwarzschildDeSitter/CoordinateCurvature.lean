@@ -339,7 +339,7 @@ lemma ricciTensorOf (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr
   simp only [toStaticSpherical] at *
   rw [hf1, hf2]
   fin_cases σ <;> fin_cases ν <;>
-    simp [StaticSphericalMetric.metric, toStaticSpherical, lapse, lapseHalfDeriv]
+    simp [StaticSphericalMetric.metric, lapse, lapseHalfDeriv]
   · field_simp [hr]; ring
   · field_simp [hr, hf]; ring
   · field_simp [hr]; ring

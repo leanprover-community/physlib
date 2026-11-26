@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Alex Vergara Gil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Vergara Gil
+Authors: Alex Vergara Gil, thunder-detector
 -/
 module
 
@@ -21,7 +21,10 @@ The Hamiltonian and momentum constraints on a three-dimensional Cauchy slice.
 In the ADM 3+1 decomposition of vacuum general relativity, initial data on a spatial slice `Σ`
 consist of a Riemannian 3-metric `h`, its 3D curvature tensor `R3`, and a symmetric extrinsic
 curvature `K`. The normal components of `G = 0` impose the Hamiltonian constraint
-`H = ³R + (tr K)² - K_ij K^ij = 0` and the momentum constraint `M_i = ∂_j K_{ij} - ∂_i (tr K) = 0`.
+`H = ³R + (tr K)² - K_ij K^ij = 0` and the momentum constraint
+`M_i = g^{jk} (∇_j K_{ik} - ∇_i K_{jk}) = 0`,
+where `∇` is the 3D Levi-Civita covariant derivative of `h` (reducing to coordinate partial
+derivatives `∂` in locally flat / normal coordinates where `Γ = 0`).
 
 This module defines `InitialData` and formalises the constraint functions together with their
 reductions under time symmetry (`K = 0`) and maximal slicing (`tr K = 0`). Global development
@@ -81,8 +84,24 @@ structure InitialData where
 
 namespace InitialData
 
-/-- The momentum constraint `M_i = g^{jk} ∂_j K_{ik} - g^{jk} ∂_i K_{jk}` on a spatial slice `D`,
-with partial derivatives supplied as `dK μ i j = ∂_μ K_{ij}`. -/
+/-- Three-dimensional Levi-Civita covariant derivative of a rank-2 tensor `K`:
+`∇_μ K_{ij} = ∂_μ K_{ij} - Γ^l_{μi} K_{lj} - Γ^l_{μj} K_{il}`. The 3D Levi-Civita
+covariant-derivative correction (versus raw partial derivatives in curved coordinates) was
+identified by `thunder-detector`. -/
+def covariantDerivTensor2 (Γ : Fin 3 → Fin 3 → Fin 3 → ℝ) (dK : Fin 3 → Tensor2 3)
+    (K : Tensor2 3) : Fin 3 → Tensor2 3 :=
+  fun μ i j => dK μ i j - (∑ l, Γ l μ i * K l j) - (∑ l, Γ l μ j * K i l)
+
+/-- In locally flat / normal coordinates where the 3D Christoffel symbols vanish (`Γ = 0`),
+the covariant derivative `covariantDerivTensor2` reduces to the partial derivative table `dK`. -/
+lemma covariantDerivTensor2_eq_of_zero (dK : Fin 3 → Tensor2 3) (K : Tensor2 3) :
+    covariantDerivTensor2 0 dK K = dK := by
+  ext μ i j
+  simp [covariantDerivTensor2]
+
+/-- The momentum constraint `M_i = g^{jk} (∇_j K_{ik} - ∇_i K_{jk})` on a spatial slice,
+where `dK μ i j = ∇_μ K_{ij}` is the 3D Levi-Civita covariant derivative of the extrinsic
+curvature (coinciding with coordinate partial derivatives in locally inertial coordinates). -/
 noncomputable def momentumConstraint (D : InitialData) (dK : Fin 3 → Tensor2 3) (i : Fin 3) :
     ℝ :=
   (∑ j, ∑ k, D.h.ginv j k * dK j i k) - ∑ j, ∑ k, D.h.ginv j k * dK i j k

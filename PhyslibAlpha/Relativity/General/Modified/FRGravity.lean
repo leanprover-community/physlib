@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Alex Vergara Gil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Vergara Gil
+Authors: Alex Vergara Gil, thunder-detector
 -/
 module
 
@@ -35,11 +35,11 @@ or General Relativity solutions) and formalises:
 
 - the algebraic part `algebraicFieldEqn` of the `f(R)` field equation and its reduction to `G + Λ
   g` when `f(R) = R - 2 Λ` (`linear_is_einstein`);
-- the `n`-dimensional trace identity `f'(S) S - (n/2) f(S) + (n - 1) □f' = 0`
+- the `n`-dimensional trace identity `f'(S) S - (n/2) f(S) + (n - 1) □f'`
   (`trace_algebraicFieldEqn`)
   and its four-dimensional `3 □f'` specialisation (`trace_algebraicFieldEqn_four`);
-- Starobinsky's `R + α R²` Legendre potential `(φ - 1)² / (8 α)`, scalar mass `m² = 1 / (6 α)`,
-  and the Einstein-frame plateau `U(φ) = (1 - 1/φ)² / (16 α) → 1 / (16 α)` as `φ → ∞`.
+- Starobinsky's `R + α R²` Legendre potential `(φ - 1)² / (8 α)` and the Einstein-frame plateau
+  `U(φ) = (1 - 1/φ)² / (8 α) → 1 / (8 α)` as `φ → ∞`.
 
 ## ii. Key results
 
@@ -50,8 +50,8 @@ or General Relativity solutions) and formalises:
   propagating scalar mode.
 - `starobinskyPotential`, `starobinsky_scalar_inversion`, `starobinskyPotential_eq`,
   `starobinsky_nonconstant_deriv` : Starobinsky `R + α R²` potential and scalar degree of freedom.
-- `einsteinFrameV`, `starobinsky_einsteinFrame_form`, `starobinsky_plateau` : Einstein-frame
-  conformal potential and asymptotic slow-roll plateau.
+- `einsteinFramePotential`, `starobinsky_einsteinFrame_form`, `starobinsky_plateau` :
+  Einstein-frame conformal potential and asymptotic slow-roll plateau.
 
 ## iii. Table of contents
 
@@ -112,11 +112,8 @@ lemma linear_is_einstein {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) (�
   simp only [algebraicFieldEqn, einstein]
   ring
 
-/-- Trace of the metric-formalism `f(R)` field equation `df(S) Ric_{ij} - ½ f(S) g_{ij} +
-(g_{ij} □f' - ∇_i ∇_j f')` in `n` dimensions: evaluating `g^{ij} (...)` yields the dynamical
-scalar-trace identity `f'(S) S - (n/2) f(S) + (n - 1) □f' = κ T`. Unlike the algebraic trace of GR,
-for non-linear `f(R)` the `□f'` term propagates the additional scalaron degree of freedom unless
-`n = 1` or curvature is constant (`□f' = 0`). -/
+/-- Trace of the metric-formalism `f(R)` field equation tensor `df(S) Ric_{ij} - ½ f(S) g_{ij} +
+(g_{ij} □f' - ∇_i ∇_j f')` in `n` dimensions, yielding `f'(S) S - (n/2) f(S) + (n - 1) □f'`. -/
 lemma trace_algebraicFieldEqn {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) (f df : ℝ → ℝ)
     (box : ℝ) (d2 : Tensor2 n) (hbox : metricTrace M d2 = box) :
     metricTrace M (fun i j => df (ricciScalar M R) * ricci M R i j
@@ -139,10 +136,8 @@ lemma trace_algebraicFieldEqn {n : ℕ} (M : MetricTensor n) (R : RiemannTensor 
   rw [h1, h2, h3, hcomm, h5, h6, h4, ← ricciScalar_eq_metricTrace, hbox]
   ring
 
-/-- Four-dimensional trace of the `f(R)` field equation, `f'(S) S - 2 f(S) + 3 □f' = κ T`:
-reduces in vacuum with constant curvature (`□f' = 0`) to the algebraic condition
-`f'(S) S = 2 f(S)` for maximally symmetric de Sitter solutions, while `□f' ≠ 0` drives the
-propagating scalar mode absent in `f(R) = R - 2 Λ`. -/
+/-- Four-dimensional trace of the `f(R)` field equation tensor:
+`f'(S) S - 2 f(S) + 3 □f'`. -/
 lemma trace_algebraicFieldEqn_four (M : MetricTensor 4) (R : RiemannTensor 4) (f df : ℝ → ℝ)
     (box : ℝ) (d2 : Tensor2 4) (hbox : metricTrace M d2 = box) :
     metricTrace M (fun i j => df (ricciScalar M R) * ricci M R i j
@@ -192,41 +187,43 @@ lemma starobinsky_nonconstant_deriv (α : ℝ) (hα : α ≠ 0) : ∃ S : ℝ, 1
   rw [h] at heq
   norm_num at heq
 
-/-- The Einstein-frame potential `U(φ) = V(φ) / (2 φ²)` under conformal rescaling `g̃ = φ g`. -/
-noncomputable def einsteinFrameV (V : ℝ → ℝ) (φ : ℝ) : ℝ := V φ / (2 * φ ^ 2)
+/-- The Einstein-frame potential `U(φ) = V(φ) / φ²` under conformal rescaling `g̃ = φ g` in 4D,
+preserving `√(-g) V(φ) = √(-g̃) U(φ)` when `V` is the normalized Jordan-frame potential
+`(φ R - f) / 2` (this `V(φ) / φ²` volume-density normalization correction was identified by
+`thunder-detector`). -/
+noncomputable def einsteinFramePotential (V : ℝ → ℝ) (φ : ℝ) : ℝ := V φ / φ ^ 2
 
-/-- Einstein-frame Starobinsky potential: `U(φ) = (φ - 1)² / (16 α φ²)`. -/
+/-- Einstein-frame Starobinsky potential: `U(φ) = (φ - 1)² / (8 α φ²)`. -/
 lemma starobinsky_einsteinFrame (α φ : ℝ) (hα : α ≠ 0) (hφ : φ ≠ 0) :
-    einsteinFrameV (starobinskyPotential α) φ = (φ - 1) ^ 2 / (16 * α * φ ^ 2) := by
+    einsteinFramePotential (starobinskyPotential α) φ = (φ - 1) ^ 2 / (8 * α * φ ^ 2) := by
   have h8 : (8 : ℝ) * α ≠ 0 := mul_ne_zero (by norm_num) hα
-  have h2 : (2 : ℝ) * φ ^ 2 ≠ 0 := mul_ne_zero (by norm_num) (pow_ne_zero 2 hφ)
-  simp only [einsteinFrameV, starobinskyPotential]
+  have hφ2 : φ ^ 2 ≠ 0 := pow_ne_zero 2 hφ
+  simp only [einsteinFramePotential, starobinskyPotential]
   field_simp
-  ring
 
 /-- Plateau form of the Einstein-frame Starobinsky potential:
-`U(φ) = (1 / (16 α)) (1 - 1 / φ)²`. -/
+`U(φ) = (1 / (8 α)) (1 - 1 / φ)²`. -/
 lemma starobinsky_einsteinFrame_form (α φ : ℝ) (hα : α ≠ 0) (hφ : φ ≠ 0) :
-    einsteinFrameV (starobinskyPotential α) φ = (1 / (16 * α)) * (1 - 1 / φ) ^ 2 := by
+    einsteinFramePotential (starobinskyPotential α) φ = (1 / (8 * α)) * (1 - 1 / φ) ^ 2 := by
   rw [starobinsky_einsteinFrame α φ hα hφ]
-  have h16 : (16 : ℝ) * α * φ ^ 2 ≠ 0 :=
+  have h8 : (8 : ℝ) * α * φ ^ 2 ≠ 0 :=
     mul_ne_zero (mul_ne_zero (by norm_num) hα) (pow_ne_zero 2 hφ)
   field_simp
 
-/-- The slow-roll plateau: as `φ → ∞`, the Einstein-frame potential approaches `1 / (16 α)`. -/
+/-- The slow-roll plateau: as `φ → ∞`, the Einstein-frame potential approaches `1 / (8 α)`. -/
 lemma starobinsky_plateau (α : ℝ) (hα : α ≠ 0) :
-    Filter.Tendsto (fun φ : ℝ => einsteinFrameV (starobinskyPotential α) φ) Filter.atTop
-      (nhds (1 / (16 * α))) := by
+    Filter.Tendsto (fun φ : ℝ => einsteinFramePotential (starobinskyPotential α) φ) Filter.atTop
+      (nhds (1 / (8 * α))) := by
   have hinv : Filter.Tendsto (fun φ : ℝ => 1 / φ) Filter.atTop (nhds 0) :=
     tendsto_const_nhds.div_atTop Filter.tendsto_id
   have h1 : Filter.Tendsto (fun φ : ℝ => 1 - 1 / φ) Filter.atTop (nhds 1) := by
     simpa using tendsto_const_nhds.sub hinv
   have hsq : Filter.Tendsto (fun φ : ℝ => (1 - 1 / φ) ^ 2) Filter.atTop (nhds 1) := by
     simpa using h1.pow 2
-  have hmul : Filter.Tendsto (fun φ : ℝ => (1 / (16 * α)) * (1 - 1 / φ) ^ 2)
-      Filter.atTop (nhds ((1 / (16 * α)) * 1)) := tendsto_const_nhds.mul hsq
-  have heq : (fun φ : ℝ => einsteinFrameV (starobinskyPotential α) φ)
-      =ᶠ[Filter.atTop] fun φ : ℝ => (1 / (16 * α)) * (1 - 1 / φ) ^ 2 := by
+  have hmul : Filter.Tendsto (fun φ : ℝ => (1 / (8 * α)) * (1 - 1 / φ) ^ 2)
+      Filter.atTop (nhds ((1 / (8 * α)) * 1)) := tendsto_const_nhds.mul hsq
+  have heq : (fun φ : ℝ => einsteinFramePotential (starobinskyPotential α) φ)
+      =ᶠ[Filter.atTop] fun φ : ℝ => (1 / (8 * α)) * (1 - 1 / φ) ^ 2 := by
     filter_upwards [Filter.eventually_atTop.2 ⟨1, fun b hb => hb⟩] with φ hφ
     exact starobinsky_einsteinFrame_form α φ hα (by linarith)
   refine Filter.Tendsto.congr' heq.symm ?_
