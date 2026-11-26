@@ -35,6 +35,10 @@ derivative operators. [TODO] The angular momentum and angular momentum-squared o
 on the Hilbert space [TODO], as does the reflection through a general hyperplane. [TODO]
 The general theory of these operators lives in the operator algebra {2}.
 
+A symbol of temperate growth acts on Schwartz maps by pointwise multiplication. [9] The position
+state at a point is a generalized eigenvector in the bra form, with eigenvalue given by the value
+of the symbol at that point. [10]
+
 ## Lean References
 
 1. Physlib/QuantumMechanics/HilbertSpaces/SpaceD/Basic.lean — `SpaceDHilbertSpace`
@@ -47,6 +51,8 @@ The general theory of these operators lives in the operator algebra {2}.
 6. Physlib/QuantumMechanics/HilbertSpaces/SpaceD/DirichletSubmodule.lean — `DirichletSubmoduleOn`
 7. Physlib/QuantumMechanics/Operators/SpaceD/Multiplication.lean — `mulOperator`
 8. Physlib/QuantumMechanics/Operators/SpaceD/Position.lean — `positionOperator`
+9. Physlib/QuantumMechanics/Operators/SpaceD/Multiplication.lean — `mulOperator_apply_schwartzIncl`
+10. Physlib/QuantumMechanics/HilbertSpaces/SpaceD/PositionStates.lean — `positionState_comp_smulLeftCLM`
 
 ## References
 
