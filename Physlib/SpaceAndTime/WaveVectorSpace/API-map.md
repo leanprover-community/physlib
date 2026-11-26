@@ -45,10 +45,11 @@ Changing the reference point changes the phase at all points in space by the sam
 The Fourier transform (FT) takes a suitably nice function of space to a function of wavevector,
 resolving its spatial dependence into plane-wave components; the inverse Fourier transform (IFT)
 reconstructs the spatial function from those components. [8]
-The FT maps derivatives with respect to space to multiplication by wavevector and *vice versa*,
-under suitable regularity and integrability assumptions. [9]
-The FT and IFT are in fact left and right inverses with a consistent choice of normalization
-under suitable continuity and integrability assumptions. [10]
+Under suitable regularity and integrability assumptions,
+the FT maps derivatives with respect to space to multiplication by wavevector and *vice versa* [9],
+the FT and IFT are in fact left and right inverses with a consistent choice of normalization [10],
+and the FT and IFT are continuously differentiable [11].
+
 Both FT and IFT preserve inner products up to a constant normalization factor. [TODO]
 
 ## Lean References
@@ -69,6 +70,8 @@ Both FT and IFT preserve inner products up to a constant normalization factor. [
    `fourierIntegralInv_deriv`
 10. Physlib/SpaceAndTime/WaveVectorSpace/Fourier.lean —
    `fourierIntegralInv_fourierIntegral_eq`, `fourierIntegral_fourierIntegralInv_eq`
+11. Physlib/SpaceAndTime/WaveVectorSpace/Fourier.lean — `differentiable_fourierIntegral`,
+   `differentiable_fourierIntegralInv`, `contDiff_fourierIntegral`, `contDiff_fourierIntegralInv`
 
 ## References
 

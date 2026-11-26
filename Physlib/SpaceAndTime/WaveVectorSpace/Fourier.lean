@@ -70,6 +70,7 @@ for $(a,b) = (1,-1)$). If a common convention is missing it can be added below i
   - A.3. Derivatives
     - A.3.1. Fréchet derivatives
     - A.3.2. Partial derivatives
+    - A.3.3. (Continuous) differentiability
   - A.4. Inversion
 - B. Fourier instances
   - B.1. `(a, b) = (0, 1)` (default)
@@ -368,6 +369,37 @@ lemma fourierIntegralInv_deriv (i : Fin d) {g : WaveVectorSpace d → E}
   simp [deriv_eq_fun, ← fourierIntegralInv_continuousLinearMap_apply, fourierIntegralInv_fderiv,
     Space.coord_apply, Space.dual_apply, dotProduct, ← coe_smul, smul_smul, ← nsmul_eq_mul,
     hg, hg', hg'']
+
+/-!
+#### A.3.3. (Continuous) differentiability
+-/
+
+/-- If both `f` and `‖x‖ * ‖f x‖` are integrable,
+then the Fourier integral of `f` is differentiable. -/
+lemma differentiable_fourierIntegral
+    {f : Space d → E} (hf : Integrable f) (hf' : Integrable fun x ↦ ‖x‖ * ‖f x‖) :
+    Differentiable ℝ (fourierIntegral a b f) :=
+  VectorFourier.differentiable_fourierIntegral _ hf hf' |>.const_smul _
+
+/-- If both `g` and `‖k‖ * ‖g k‖` are integrable,
+then the inverse Fourier integral of `g` is differentiable. -/
+lemma differentiable_fourierIntegralInv
+    {g : WaveVectorSpace d → E} (hg : Integrable g) (hg' : Integrable fun k ↦ ‖k‖ * ‖g k‖) :
+    Differentiable ℝ (fourierIntegralInv a b g) :=
+  VectorFourier.differentiable_fourierIntegral _ hg hg' |>.const_smul _
+
+/-- If `‖x‖^n * ‖f x‖` is integrable for all `n ≤ N`, then the Fourier integral of `f` is `C^N`. -/
+lemma contDiff_fourierIntegral {f : Space d → E} {N : ℕ∞}
+    (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun x ↦ ‖x‖ ^ n * ‖f x‖)) :
+    ContDiff ℝ N (fourierIntegral a b f) :=
+  VectorFourier.contDiff_fourierIntegral _ hf |>.const_smul _
+
+/-- If `‖k‖^n * ‖g k‖` is integrable for all `n ≤ N`,
+then the inverse Fourier integral of `g` is `C^N`. -/
+lemma contDiff_fourierIntegralInv {g : WaveVectorSpace d → E} {N : ℕ∞}
+    (hg : ∀ (n : ℕ), n ≤ N → Integrable (fun k ↦ ‖k‖ ^ n * ‖g k‖)) :
+    ContDiff ℝ N (fourierIntegralInv a b g) :=
+  VectorFourier.contDiff_fourierIntegral _ hg |>.const_smul _
 
 /-!
 ### A.4. Inversion
