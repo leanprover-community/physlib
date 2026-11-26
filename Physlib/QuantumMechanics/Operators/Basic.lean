@@ -21,7 +21,7 @@ which we refer to as _unbounded_. When `H = H'` operators may also be symmetric,
 essentially self-adjoint (closure is self-adjoint).
 
 In this module we collect results on how the properties `HasDenseDomain`, `IsUnbounded`,
-`IsSymmetric`, `IsSelfAdjoint` and `IsEssentiallySelfAdjoint` interact with the basic algebraic
+`IsSymmetric`, and `IsSelfAdjoint` interact with the basic algebraic
 operations, closure, adjoints, unitary conjugation and each other.
 
 **Notes**
@@ -44,8 +44,6 @@ Definitions
 - `IsUnbounded` : An operator is unbounded if it is both densely defined and closable.
 - `IsSymmetric` : An operator `T : H →ₗ.[ℂ] H` is symmetric if `⟪T x, y⟫_ℂ = ⟪x, T y⟫_ℂ` holds
     for all `x y : T.domain`.
-- `IsEssentiallySelfAdjoint` : An operator `T : H →ₗ.[ℂ] H` is essentially self-adjoint if
-    its closure is self-adjoint.
 
 Results
 - `adjoint_add_le_add_adjoint` : The inequality `U₁† + U₂† ≤ (U₁ + U₂)†` when `U₁ + U₂` has
@@ -62,8 +60,6 @@ Results
 - `IsUnbounded.adjoint_closure_eq_adjoint` : An unbounded operator and its closure have
     the same adjoint.
 - `IsUnbounded.adjoint_adjoint_eq_closure` : An unbounded operator `U` satisfies `U†† = U.closure`.
-- `IsEssentiallySelfAdjoint.unique_self_adjoint_extension` : The closure of an essentially
-    self-adjoint unbounded operator is its unique self-adjoint extension.
 
 ## iii. Table of contents
 
@@ -78,7 +74,6 @@ Results
   - C.1. Unbounded operators
   - C.2. Symmetric operators
   - C.3. Self-adjoint operators
-  - C.4. Essentially self-adjoint operators
 
 ## iv. References
 
@@ -132,12 +127,6 @@ lemma isUnbounded_def : U.IsUnbounded ↔ U.HasDenseDomain ∧ U.IsClosable := I
 def IsSymmetric (T : H →ₗ.[ℂ] H) : Prop := T.IsFormalAdjoint T
 
 lemma isSymmetric_def : T.IsSymmetric ↔ T.IsFormalAdjoint T := Iff.rfl
-
-/-- A LinearPMap is essentially self-adjoint iff its closure is self-adjoint. -/
-def IsEssentiallySelfAdjoint [CompleteSpace H] (T : H →ₗ.[ℂ] H) : Prop := IsSelfAdjoint T.closure
-
-lemma isEssentiallySelfAdjoint_def [CompleteSpace H] :
-    T.IsEssentiallySelfAdjoint ↔ IsSelfAdjoint T.closure := Iff.rfl
 
 lemma isStarNormal_def [CompleteSpace H] : IsStarNormal T ↔ T† * T = T * T† := isStarNormal_iff _
 
@@ -777,15 +766,6 @@ lemma IsSymmetric.closure_le_adjoint [CompleteSpace H] (h : T.IsSymmetric) (h' :
   have h_adj : T†.IsClosed := adjoint_isClosed h'
   exact h_adj.closure_eq ▸ h_adj.isClosable.closure_mono (h.le_adjoint h')
 
-lemma IsSymmetric.isEssentiallySelfAdjoint_iff [CompleteSpace H]
-    (h : T.IsSymmetric) (h' : T.HasDenseDomain) :
-    T.IsEssentiallySelfAdjoint ↔ T†.domain = T.closure.domain := by
-  rw [isEssentiallySelfAdjoint_def, isSelfAdjoint_def,
-    (h.isUnbounded_iff_hasDenseDomain.mpr h').adjoint_closure_eq_adjoint]
-  constructor <;> intro h''
-  · congr
-  · exact (eq_of_le_of_domain_eq (h.closure_le_adjoint h') h''.symm).symm
-
 lemma IsSymmetric.isSelfAdjoint_iff [CompleteSpace H] (h : T.IsSymmetric) (h' : T.HasDenseDomain) :
     IsSelfAdjoint T ↔ T†.domain = T.domain := by
   constructor <;> intro h''
@@ -893,10 +873,6 @@ lemma IsSelfAdjoint.isClosable [CompleteSpace H] (h : IsSelfAdjoint T) : T.IsClo
 lemma IsSelfAdjoint.isUnbounded [CompleteSpace H] (h : IsSelfAdjoint T) : T.IsUnbounded :=
   ⟨h.dense_domain, isClosable h⟩
 
-lemma IsSelfAdjoint.isEssentiallySelfAdjoint [CompleteSpace H] (h : IsSelfAdjoint T) :
-    T.IsEssentiallySelfAdjoint :=
-  isEssentiallySelfAdjoint_def.mpr (h.isClosed.closure_eq.symm ▸ h)
-
 @[aesop safe apply]
 lemma IsSelfAdjoint.adjoint [CompleteSpace H] (h : IsSelfAdjoint T) : IsSelfAdjoint T† := by
   apply isSelfAdjoint_def.mp at h
@@ -950,50 +926,5 @@ lemma IsSymmetric.isSelfAdjoint_of_range_eq_top [CompleteSpace H] (hsym : T.IsSy
     ring
   obtain rfl : w = (x : H) := sub_eq_zero.mp (hker (W - X) hdiff)
   exact ⟨hw, x.2, hxeq⟩
-
-/-!
-### C.4. Essentially self-adjoint operators
--/
-
-lemma IsEssentiallySelfAdjoint.hasDenseDomain [CompleteSpace H] (h : T.IsEssentiallySelfAdjoint) :
-    T.HasDenseDomain :=
-  hasDenseDomain_iff_closure_hasDenseDomain.mpr h.dense_domain
-
-lemma IsEssentiallySelfAdjoint.isSymmetric [CompleteSpace H] (h : T.IsEssentiallySelfAdjoint) :
-    T.IsSymmetric :=
-  (IsSelfAdjoint.isSymmetric h).of_le T.le_closure
-
-lemma IsEssentiallySelfAdjoint.isClosable [CompleteSpace H] (h : T.IsEssentiallySelfAdjoint) :
-    T.IsClosable :=
-  h.isSymmetric.isClosable h.hasDenseDomain
-
-lemma IsEssentiallySelfAdjoint.isUnbounded [CompleteSpace H] (h : T.IsEssentiallySelfAdjoint) :
-    T.IsUnbounded :=
-  h.isSymmetric.isUnbounded_iff_hasDenseDomain.mpr h.hasDenseDomain
-
-/-- The closure is the unique self-adjoint extension of an essentially self-adjoint operator. -/
-lemma IsEssentiallySelfAdjoint.unique_self_adjoint_extension [CompleteSpace H]
-    (h : T.IsEssentiallySelfAdjoint) {T₂ : H →ₗ.[ℂ] H} (h_le : T ≤ T₂) (h₂ : IsSelfAdjoint T₂) :
-    T₂ = T.closure := by
-  have h_cl : T₂.IsClosed := IsSelfAdjoint.isClosed h₂
-  have h_le' : T.closure ≤ T₂ := h_cl.closure_eq ▸ h_cl.isClosable.closure_mono h_le
-  exact eq_of_le_of_ge (h ▸ h₂ ▸ adjoint_antitone (Or.inl h.hasDenseDomain.closure) h_le') h_le'
-
-@[aesop safe apply]
-lemma IsEssentiallySelfAdjoint.smul [CompleteSpace H]
-    (h : T.IsEssentiallySelfAdjoint) {c : ℂ} (hc : c ≠ 0) (hc' : conj c = c) :
-    (c • T).IsEssentiallySelfAdjoint := by
-  simp_all [isEssentiallySelfAdjoint_def, isSelfAdjoint_def, closure_smul _ hc, adjoint_smul _ hc]
-
-@[aesop safe apply]
-lemma IsEssentiallySelfAdjoint.real_smul [CompleteSpace H]
-    (h : T.IsEssentiallySelfAdjoint) {r : ℝ} (hr : r ≠ 0) :
-    (r • T).IsEssentiallySelfAdjoint :=
-  h.smul (ofReal_ne_zero.mpr hr) (conj_ofReal r)
-
-@[aesop safe apply]
-lemma IsEssentiallySelfAdjoint.neg [CompleteSpace H] (h : T.IsEssentiallySelfAdjoint) :
-    (-T).IsEssentiallySelfAdjoint :=
-  neg_eq_neg_one_smul T ▸ h.smul (by norm_num) (by norm_num)
 
 end LinearPMap

@@ -5,7 +5,7 @@ Authors: Gregory J. Loges
 -/
 module
 
-public import Physlib.QuantumMechanics.Operators.Basic
+public import Physlib.QuantumMechanics.Operators.EssentiallySelfAdjoint
 /-!
 
 # Quantum system
