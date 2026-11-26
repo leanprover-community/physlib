@@ -32,6 +32,8 @@ hyperspherical harmonics. In such cases the energies only depend on the radial q
 
 ## ii. Key results
 
+- `eigenfunction_zero_apply`, `eigenfunction_zero_apply_ne_zero`: the ground state `ψ₀` is a
+  Gaussian centred at the origin and has no zero.
 - `raising_eigenfunction`, `lowering_eigenfunction`: `aᵢ† ψₙ = √(nᵢ + 1) ψₙ₊ₑᵢ`,
   `aᵢ ψₙ = √nᵢ ψₙ₋ₑᵢ`; `lowering_eigenfunction_zero`: `aᵢ ψ₀ = 0`.
 - `number_eigenfunction`: `Nᵢ ψₙ = nᵢ ψₙ`.
@@ -156,6 +158,26 @@ lemma eigenfunction_apply :
   rw [eigenfunction_eq, compCLMOfContinuousLinearEquiv_apply, Function.comp_apply,
     smulLeftCLM_apply_apply (by fun_prop)]
   simp [div_eq_mul_inv, prod_mul_distrib, exp_neg, norm_sq_eq, mul_sum, mul_comm, exp_sum]
+
+/-- The ground-state wavefunction `ψ₀` is a Gaussian centred at the origin: a constant multiple
+  of `gaussian ℂ Q.ξEquiv 0`. -/
+lemma eigenfunction_zero_apply :
+    Q.eigenfunction 0 x = (∏ i, (Q.eigenCoeff 0 i : ℂ)) * gaussian ℂ Q.ξEquiv 0 x := by
+  rw [eigenfunction_eq, compCLMOfContinuousLinearEquiv_apply, Function.comp_apply,
+    smulLeftCLM_apply_apply (by fun_prop)]
+  simp
+
+/-- The ground-state wavefunction `ψ₀` has no zero: the ground state has no node. -/
+lemma eigenfunction_zero_apply_ne_zero : Q.eigenfunction 0 x ≠ 0 := by
+  rw [eigenfunction_apply]
+  refine Finset.prod_ne_zero_iff.mpr fun i _ ↦ ?_
+  have hp : 0 < (2 : ℝ) ^ ((0 : Fin d → ℕ) i) * (((0 : Fin d → ℕ) i).factorial : ℝ) *
+      √Real.pi * Q.ξ i :=
+    mul_pos (mul_pos (mul_pos (by positivity) (by positivity)) (by positivity)) (Q.ξ_pos i)
+  have hc : Q.eigenCoeff 0 i ≠ 0 := by
+    rw [eigenCoeff_eq]
+    exact one_div_ne_zero (Real.sqrt_pos.mpr hp).ne'
+  simp [hc, Complex.exp_ne_zero]
 
 /-- The one-dimensional harmonic oscillator of mass `m` and angular frequency `ωⱼ`, along the
   `j`th axis. `Q.eigenfunction n` is the product over `j` of the `nⱼ`th eigenfunctions of these
