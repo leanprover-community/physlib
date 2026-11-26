@@ -218,13 +218,17 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
     `electricPart_symm`, `electricPart_trace`, `frameSqSum`, `schwarzschild`, `ricci_eq_zero`,
     `frameSqSum_eq`, `kretschmann_scalar`, `weyl_purely_electric`
 23. PhyslibAlpha/Relativity/General/Schwarzschild/Basic.lean — `SchwarzschildSpacetime`,
-    `SchwarzschildSpacetime.lapse`, `SchwarzschildSpacetime.metric`, `schwarzschildMetric`,
-    `schwarzschildLapse`, `schwarzschildLapse_of_incompressibleSphere`, `schwarzschildMetric_rr`,
-    `gammaTtr_from_metric`, `gammaRrr_from_metric`, `riemann_t_rtr_from_metric`,
-    `electric_r_from_metric`, `electricPart_from_metric`, `riemann_components_from_metric`
-24. PhyslibAlpha/Relativity/General/Schwarzschild/CoordinateCurvature.lean — `schwarzschildMetricField`,
-    `schwarzschildMetricInv`, `riemann_schwarzschild_components`, `ricciTensorOf_schwarzschild`,
-    `ricciScalarOf_schwarzschild`, `einsteinTensorOf_schwarzschild`
+    `SchwarzschildSpacetime.lapse`, `SchwarzschildSpacetime.metric`,
+    `SchwarzschildSpacetime.lapse_ofIncompressibleSphere`, `SchwarzschildSpacetime.metric_rr`,
+    `SchwarzschildSpacetime.gammaTtr_from_metric`, `SchwarzschildSpacetime.gammaRrr_from_metric`,
+    `SchwarzschildSpacetime.riemann_t_rtr_from_metric`,
+    `SchwarzschildSpacetime.electric_r_from_metric`,
+    `SchwarzschildSpacetime.electricPart_from_metric`,
+    `SchwarzschildSpacetime.riemann_components_from_metric`
+24. PhyslibAlpha/Relativity/General/Schwarzschild/CoordinateCurvature.lean —
+    `SchwarzschildSpacetime.toDeSitter`, `SchwarzschildSpacetime.toDeSitter_metric`,
+    `SchwarzschildSpacetime.riemann_components`, `SchwarzschildSpacetime.ricciTensorOf`,
+    `SchwarzschildSpacetime.ricciScalarOf`, `SchwarzschildSpacetime.einsteinTensorOf`
 25. PhyslibAlpha/Relativity/General/Schwarzschild/IncompressibleSphere.lean —
     `IncompressibleSphere`, `rs`, `chia`, `cosChia`, `cosChia_sq`, `cosChia_pos`,
     `cosChia_lt_one`, `rs_div_Ra`
@@ -232,26 +236,46 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
     `sdsFrameSqSum`, `sdsFrameSqSum_eq`, `kretschmann_sds`, `sdsFrameComp`, `sdsRic`,
     `weylRic_zero`, `sds_frame_bianchi`, `sds_frame_einstein_conserved`
 27. PhyslibAlpha/Relativity/General/SchwarzschildDeSitter/Basic.lean —
-    `SchwarzschildDeSitterSpacetime`, `sdsLapse`, `sdsLapseHalfDeriv`, `sdsMetric`, `sdsMetricInv`,
-    `sdsLapse_zero_lambda`, `hasDerivAt_sdsLapse`, `gammaTtr_sds`, `gammaRrr_sds`, `weyl_rr_sds`,
-    `weyl_thetatheta_sds`, `weyl_phiphi_sds`
-28. PhyslibAlpha/Relativity/General/SchwarzschildDeSitter/CoordinateCurvature.lean — `sdsChristoffel`,
-    `sdsChristoffelDeriv`, `christoffel_eq_sdsChristoffel`, `riemann_sds_components`, `ricciTensorOf_sds`, `ricciScalarOf_sds`,
-    `einsteinTensorOf_sds`
+    `SchwarzschildDeSitterSpacetime`, `SchwarzschildDeSitterSpacetime.lapse`,
+    `SchwarzschildDeSitterSpacetime.lapseHalfDeriv`, `SchwarzschildDeSitterSpacetime.metric`,
+    `SchwarzschildDeSitterSpacetime.metricInv`,
+    `SchwarzschildDeSitterSpacetime.lapse_zero_lambda`,
+    `SchwarzschildDeSitterSpacetime.hasDerivAt_lapse`,
+    `SchwarzschildDeSitterSpacetime.gammaTtr`, `SchwarzschildDeSitterSpacetime.gammaRrr`,
+    `SchwarzschildDeSitterSpacetime.weyl_rr`, `SchwarzschildDeSitterSpacetime.weyl_thetatheta`,
+    `SchwarzschildDeSitterSpacetime.weyl_phiphi`
+28. PhyslibAlpha/Relativity/General/SchwarzschildDeSitter/CoordinateCurvature.lean —
+    `SchwarzschildDeSitterSpacetime.christoffel`,
+    `SchwarzschildDeSitterSpacetime.christoffelDeriv`,
+    `SchwarzschildDeSitterSpacetime.christoffel_eq`,
+    `SchwarzschildDeSitterSpacetime.riemann_components_pipeline`,
+    `SchwarzschildDeSitterSpacetime.ricciTensorOf`,
+    `SchwarzschildDeSitterSpacetime.ricciScalarOf`,
+    `SchwarzschildDeSitterSpacetime.einsteinTensorOf`
 29. PhyslibAlpha/Relativity/General/ReissnerNordstrom/Basic.lean — `ReissnerNordstromSpacetime`,
-    `rnLapse`, `rnMetric`, `rnMetricInv`, `rnMetric_eq_staticSpherical`, `rnMetricInv_eq_staticSpherical`,
-    `deriv_rnLapse`, `deriv_deriv_rnLapse`, `rnLapse_zero_charge`, `maxwellF`, `maxwellF_antisymm`,
-    `maxwellStressEnergy`, `einsteinTensorOf_rn_eq_maxwell`
-30. PhyslibAlpha/Relativity/General/Kerr/Basic.lean — `KerrSpacetime`, `sigma`, `delta`, `kerrAxialFactor`,
-    `kerrAxialFactor_eq_sigma`, `kerr_tphi_det_id`, `kerrMetric`, `kerrMetricInv`, `kerrMetric_symm`,
-    `kerrMetricInv_mul_kerrMetric`, `kerrMetric_mul_kerrMetricInv`, `kerrMetricTensor`,
-    `kerrMetric_zero_spin`
-31. PhyslibAlpha/Relativity/General/Kerr/Christoffel.lean — `kerrMetricD`, `pd_kerrMetric_eq`,
-    `kerrChristoffel`, `kerrChristoffel_symm`, `christoffel_kerr_eq`, `eventually_christoffel_kerr_eq`, `kerrChristoffelTrace`,
-    `sum_kerrChristoffel_trace`
-32. PhyslibAlpha/Relativity/General/Kerr/RicciCurvature.lean — `kerrRicci`, `kerrEinstein`,
-    `pd_kerrChristoffelTrace_11`, `pd_kerrChristoffelTrace_21`, `pd_kerrChristoffelTrace_12`, `pd_kerrChristoffelTrace_22`, `ricciTensorOf_kerr_eq_zero`,
-    `ricciScalarOf_kerr_eq_zero`, `einsteinTensorOf_kerr_eq_zero`
+    `ReissnerNordstromSpacetime.lapse`, `ReissnerNordstromSpacetime.metric`,
+    `ReissnerNordstromSpacetime.metricInv`,
+    `ReissnerNordstromSpacetime.metric_eq_staticSpherical`,
+    `ReissnerNordstromSpacetime.metricInv_eq_staticSpherical`,
+    `ReissnerNordstromSpacetime.deriv_lapse`, `ReissnerNordstromSpacetime.deriv_deriv_lapse`,
+    `ReissnerNordstromSpacetime.lapse_zero_charge`, `ReissnerNordstromSpacetime.maxwellF`,
+    `ReissnerNordstromSpacetime.maxwellF_antisymm`, `maxwellStressEnergy`,
+    `ReissnerNordstromSpacetime.einsteinTensorOf_eq_maxwell`
+30. PhyslibAlpha/Relativity/General/Kerr/Basic.lean — `KerrSpacetime`, `KerrSpacetime.sigma`,
+    `KerrSpacetime.delta`, `KerrSpacetime.axialFactor`, `KerrSpacetime.axialFactor_eq_sigma`,
+    `KerrSpacetime.tphi_det_id`, `KerrSpacetime.metric`, `KerrSpacetime.metricInv`,
+    `KerrSpacetime.metric_symm`, `KerrSpacetime.metricInv_mul_metric`,
+    `KerrSpacetime.metric_mul_metricInv`, `KerrSpacetime.metricTensor`,
+    `KerrSpacetime.metric_zero_spin`
+31. PhyslibAlpha/Relativity/General/Kerr/Christoffel.lean — `KerrSpacetime.metricD`,
+    `KerrSpacetime.pd_metric_eq`, `KerrSpacetime.christoffel`, `KerrSpacetime.christoffel_symm`,
+    `KerrSpacetime.christoffel_eq`, `KerrSpacetime.eventually_christoffel_eq`,
+    `KerrSpacetime.christoffelTrace`, `KerrSpacetime.sum_christoffel_trace`
+32. PhyslibAlpha/Relativity/General/Kerr/RicciCurvature.lean — `KerrSpacetime.ricci`,
+    `KerrSpacetime.einstein`, `KerrSpacetime.pd_christoffelTrace_11`,
+    `KerrSpacetime.pd_christoffelTrace_21`, `KerrSpacetime.pd_christoffelTrace_12`,
+    `KerrSpacetime.pd_christoffelTrace_22`, `KerrSpacetime.ricciTensorOf_eq_zero`,
+    `KerrSpacetime.ricciScalarOf_eq_zero`, `KerrSpacetime.einsteinTensorOf_eq_zero`
 33. PhyslibAlpha/Cosmology/FLRW/Metric.lean — `FLRWSpacetime`, `FLRWSpacetime.metric`,
     `FLRWSpacetime.metricInv`, `FLRWSpacetime.metric_symm`, `FLRWSpacetime.metric_mul_inv`,
     `FLRWSpacetime.metricTensor`

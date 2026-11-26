@@ -24,36 +24,43 @@ import Mathlib.Tactic.Ring
 # The Reissner–Nordström electrovacuum black hole
 
 Coordinate metric, electrovacuum Maxwell stress-energy tensor, pipeline verification of
-`G_{ij} = 8 π T_{ij}`, vanishing scalar curvature, and inner/outer horizon structure.
+`G_{ij} = 8 π T_{ij}`, vanishing scalar curvature, and inner/outer horizon structure for
+`ReissnerNordstromSpacetime`.
 
 ## i. Overview
 
-A static spherically symmetric charged black hole of mass `M` and electric charge `Q` has line
-element `ds² = -f(r) dt² + f(r)⁻¹ dr² + r² dΩ²` with lapse function `f(r) = 1 - 2 M / r + Q² / r²`,
-sourced by a radial Coulomb electric field `F_{01} = -Q / r²`, `F_{10} = Q / r²`.
+A static spherically symmetric charged black hole `S : ReissnerNordstromSpacetime` of mass `S.M`
+and electric charge `S.Q` has line element `ds² = -f(r) dt² + f(r)⁻¹ dr² + r² dΩ²` with lapse
+function `f(r) = 1 - 2 M / r + Q² / r²`, sourced by a radial Coulomb electric field
+`F_{01} = -Q / r²`, `F_{10} = Q / r²`.
 
-Feeding `rnMetric M Q` through `GeneralRelativity.StaticSpherical` and
-`GeneralRelativity.Pipeline`, this module proves:
+Feeding `S.metric` through `GeneralRelativity.StaticSpherical` and `GeneralRelativity.Pipeline`,
+this module proves:
 
-- `ricciScalarOf_rn` : vanishing Ricci scalar `S = 0`, matching `maxwellStressEnergy_rn_trace_zero`
-  (`g^{ij} T^{EM}_{ij} = 0` in 4D);
-- `einsteinTensorOf_rn_eq_maxwell` : the full 4D electrovacuum Einstein–Maxwell field equations
-  `G_{ij} = 8 π T^{EM}_{ij}` at every index pair `(i, j)`;
-- horizon theorems (`rnLapse_horizonPlus`, `rnLapse_horizonMinus`, extremal double root
-  when `Q² = M²`, and positivity `0 < rnLapse` in the overcharged naked-singularity regime
-  `M² < Q²`).
+- `ReissnerNordstromSpacetime.ricciScalarOf` : vanishing Ricci scalar `R = 0`, matching
+  `ReissnerNordstromSpacetime.maxwellStressEnergy_trace_zero` (`g^{ij} T^{EM}_{ij} = 0` in 4D);
+- `ReissnerNordstromSpacetime.einsteinTensorOf_eq_maxwell` : the full 4D electrovacuum
+  Einstein–Maxwell field equations `G_{ij} = 8 π T^{EM}_{ij}` at every index pair `(i, j)`;
+- horizon theorems (`ReissnerNordstromSpacetime.lapse_horizonPlus`,
+  `ReissnerNordstromSpacetime.lapse_horizonMinus`, extremal double root when `Q² = M²`, and
+  positivity `0 < S.lapse r` in the overcharged naked-singularity regime `M² < Q²`).
 
 ## ii. Key results
 
-- `ReissnerNordstromSpacetime`, `rnLapse`, `rnMetric`, `rnMetricInv` : Reissner–Nordström
+- `ReissnerNordstromSpacetime`, `ReissnerNordstromSpacetime.lapse`,
+  `ReissnerNordstromSpacetime.metric`, `ReissnerNordstromSpacetime.metricInv` : Reissner–Nordström
   spacetime structure, lapse function, and coordinate metric.
-- `maxwellF`, `maxwellStressEnergy` : radial electric field strength and Maxwell stress-energy.
-- `ricciTensorOf_rn`, `ricciScalarOf_rn`, `maxwellStressEnergy_rn_trace_zero`,
-  `einsteinTensorOf_rn_eq_maxwell` :
-  verified Einstein–Maxwell solution through `GeneralRelativity.Pipeline`.
-- `horizonPlus`, `horizonMinus`, `rnLapse_horizonPlus`, `rnLapse_horizonMinus`,
-  `rnLapse_extremal`, `rnLapse_pos_of_overcharged` : Cauchy/event horizons, extremal coalescence,
-  and overcharged regime.
+- `ReissnerNordstromSpacetime.maxwellF`, `maxwellStressEnergy` : radial electric field strength
+  and Maxwell stress-energy.
+- `ReissnerNordstromSpacetime.ricciTensorOf`, `ReissnerNordstromSpacetime.ricciScalarOf`,
+  `ReissnerNordstromSpacetime.maxwellStressEnergy_trace_zero`,
+  `ReissnerNordstromSpacetime.einsteinTensorOf_eq_maxwell` : verified Einstein–Maxwell solution
+  through `GeneralRelativity.Pipeline`.
+- `ReissnerNordstromSpacetime.horizonPlus`, `ReissnerNordstromSpacetime.horizonMinus`,
+  `ReissnerNordstromSpacetime.lapse_horizonPlus`, `ReissnerNordstromSpacetime.lapse_horizonMinus`,
+  `ReissnerNordstromSpacetime.lapse_extremal`,
+  `ReissnerNordstromSpacetime.lapse_pos_of_overcharged` : Cauchy/event horizons, extremal
+  coalescence, and overcharged regime.
 
 ## iii. Table of contents
 
@@ -93,53 +100,52 @@ structure ReissnerNordstromSpacetime where
   /-- Electric charge parameter `Q`. -/
   Q : ℝ
 
+/-- Electromagnetic stress-energy tensor `T^{EM}_{ij} = (1 / (4π)) (F_{ik} F_j{}^k - (1/4) g_{ij}
+F_{ab} F^{ab})` in Gaussian-cgs/geometrized units (`G = c = 1`). -/
+noncomputable def maxwellStressEnergy (g ginv F : Tensor2 4) : Tensor2 4 :=
+  fun i j => (1 / (4 * Real.pi)) * maxwellStressEnergyRaw g ginv F i j
+
+namespace ReissnerNordstromSpacetime
+
 /-- The Reissner–Nordström radial lapse function `f(r) = 1 - 2 M / r + Q² / r²`. -/
-noncomputable def rnLapse (M Q r : ℝ) : ℝ := 1 - 2 * M / r + Q ^ 2 / r ^ 2
+noncomputable def lapse (S : ReissnerNordstromSpacetime) (r : ℝ) : ℝ :=
+  1 - 2 * S.M / r + S.Q ^ 2 / r ^ 2
+
+/-- View a Reissner–Nordström spacetime as a `StaticSphericalMetric` with profile `S.lapse`. -/
+noncomputable def toStaticSpherical (S : ReissnerNordstromSpacetime) : StaticSphericalMetric :=
+  ⟨S.lapse⟩
 
 /-- The Reissner–Nordström metric in Schwarzschild-like coordinates `(t, r, θ, φ)`. -/
-noncomputable def rnMetric (M Q : ℝ) : (Fin 4 → ℝ) → Tensor2 4 :=
-  StaticSphericalMetric.metric ⟨rnLapse M Q⟩
+noncomputable def metric (S : ReissnerNordstromSpacetime) : (Fin 4 → ℝ) → Tensor2 4 :=
+  S.toStaticSpherical.metric
 
 /-- The inverse of the Reissner–Nordström metric in `(t, r, θ, φ)` coordinates. -/
-noncomputable def rnMetricInv (M Q : ℝ) : (Fin 4 → ℝ) → Tensor2 4 :=
-  StaticSphericalMetric.metricInv ⟨rnLapse M Q⟩
+noncomputable def metricInv (S : ReissnerNordstromSpacetime) : (Fin 4 → ℝ) → Tensor2 4 :=
+  S.toStaticSpherical.metricInv
 
-/-- The lapse function `rnLapse` of a Reissner–Nordström spacetime. -/
-noncomputable def ReissnerNordstromSpacetime.lapse (S : ReissnerNordstromSpacetime)
-    (r : ℝ) : ℝ :=
-  rnLapse S.M S.Q r
+/-- `S.metric` is definitionally `S.toStaticSpherical.metric`. -/
+lemma metric_eq_staticSpherical (S : ReissnerNordstromSpacetime) :
+    S.metric = S.toStaticSpherical.metric := rfl
 
-/-- The coordinate metric of a Reissner–Nordström spacetime. -/
-noncomputable def ReissnerNordstromSpacetime.metric (S : ReissnerNordstromSpacetime)
-    (x : Fin 4 → ℝ) : Tensor2 4 :=
-  rnMetric S.M S.Q x
+/-- `S.metricInv` is definitionally `S.toStaticSpherical.metricInv`. -/
+lemma metricInv_eq_staticSpherical (S : ReissnerNordstromSpacetime) :
+    S.metricInv = S.toStaticSpherical.metricInv := rfl
 
-/-- The inverse coordinate metric of a Reissner–Nordström spacetime. -/
-noncomputable def ReissnerNordstromSpacetime.metricInv (S : ReissnerNordstromSpacetime)
-    (x : Fin 4 → ℝ) : Tensor2 4 :=
-  rnMetricInv S.M S.Q x
+/-- At `Q = 0`, the Reissner–Nordström lapse reduces to the Schwarzschild lapse function. -/
+lemma lapse_zero_charge (M r : ℝ) :
+    (ReissnerNordstromSpacetime.mk M 0).lapse r =
+      (Schwarzschild.SchwarzschildSpacetime.mk M).lapse r := by
+  simp [lapse, Schwarzschild.SchwarzschildSpacetime.lapse]
 
-/-- `rnMetric M Q` is definitionally `StaticSphericalMetric.metric ⟨rnLapse M Q⟩`. -/
-lemma rnMetric_eq_staticSpherical (M Q : ℝ) :
-    rnMetric M Q = StaticSphericalMetric.metric ⟨rnLapse M Q⟩ := rfl
-
-/-- `rnMetricInv M Q` is definitionally `StaticSphericalMetric.metricInv ⟨rnLapse M Q⟩`. -/
-lemma rnMetricInv_eq_staticSpherical (M Q : ℝ) :
-    rnMetricInv M Q = StaticSphericalMetric.metricInv ⟨rnLapse M Q⟩ := rfl
-
-/-- At `Q = 0`, `rnLapse` reduces to the Schwarzschild lapse function. -/
-lemma rnLapse_zero_charge (M r : ℝ) : rnLapse M 0 r = Schwarzschild.schwarzschildLapse M r := by
-  simp [rnLapse, Schwarzschild.schwarzschildLapse]
-
-/-- First radial derivative of `rnLapse`: `f'(r) = 2 M / r² - 2 Q² / r³`. -/
-lemma hasDerivAt_rnLapse (M Q r : ℝ) (hr : r ≠ 0) :
-    HasDerivAt (rnLapse M Q) (2 * M / r ^ 2 - 2 * Q ^ 2 / r ^ 3) r := by
+/-- First radial derivative of `S.lapse`: `f'(r) = 2 M / r² - 2 Q² / r³`. -/
+lemma hasDerivAt_lapse (S : ReissnerNordstromSpacetime) (r : ℝ) (hr : r ≠ 0) :
+    HasDerivAt S.lapse (2 * S.M / r ^ 2 - 2 * S.Q ^ 2 / r ^ 3) r := by
   have h1 : HasDerivAt (fun s : ℝ => (1 : ℝ)) 0 r := hasDerivAt_const r 1
   have hinv : HasDerivAt (fun s : ℝ => s⁻¹) (-1 / r ^ 2) r := by
     convert hasDerivAt_inv hr using 1
     ring
-  have h2M : HasDerivAt (fun s : ℝ => 2 * M * s⁻¹) (-2 * M / r ^ 2) r := by
-    convert hinv.const_mul (2 * M) using 1
+  have h2M : HasDerivAt (fun s : ℝ => 2 * S.M * s⁻¹) (-2 * S.M / r ^ 2) r := by
+    convert hinv.const_mul (2 * S.M) using 1
     ring
   have hsqInv : HasDerivAt (fun s : ℝ => (s ^ 2)⁻¹) (-2 / r ^ 3) r := by
     have hpow : HasDerivAt (fun s : ℝ => s ^ 2) (2 * r) r := by
@@ -148,27 +154,27 @@ lemma hasDerivAt_rnLapse (M Q r : ℝ) (hr : r ≠ 0) :
     have hdiv := hpow.inv (pow_ne_zero 2 hr)
     convert hdiv using 1
     field_simp [hr]
-  have hQ : HasDerivAt (fun s : ℝ => Q ^ 2 * (s ^ 2)⁻¹) (-2 * Q ^ 2 / r ^ 3) r := by
-    convert hsqInv.const_mul (Q ^ 2) using 1
+  have hQ : HasDerivAt (fun s : ℝ => S.Q ^ 2 * (s ^ 2)⁻¹) (-2 * S.Q ^ 2 / r ^ 3) r := by
+    convert hsqInv.const_mul (S.Q ^ 2) using 1
     ring
   have hsum := (h1.sub h2M).add hQ
   convert hsum using 1
   · funext s
-    simp only [Pi.add_apply, Pi.sub_apply, rnLapse, div_eq_mul_inv]
+    simp only [Pi.add_apply, Pi.sub_apply, lapse, div_eq_mul_inv]
   · ring
 
-/-- Neighbourhood differentiability of `rnLapse M Q` away from `r = 0`. -/
-lemma eventually_differentiableAt_rnLapse (M Q r : ℝ) (hr : r ≠ 0) :
-    ∀ᶠ s in nhds r, DifferentiableAt ℝ (rnLapse M Q) s := by
+/-- Neighbourhood differentiability of `S.lapse` away from `r = 0`. -/
+lemma eventually_differentiableAt_lapse (S : ReissnerNordstromSpacetime) (r : ℝ) (hr : r ≠ 0) :
+    ∀ᶠ s in nhds r, DifferentiableAt ℝ S.lapse s := by
   filter_upwards [eventually_ne_nhds hr] with s hs
-  exact (hasDerivAt_rnLapse M Q s hs).differentiableAt
+  exact (S.hasDerivAt_lapse s hs).differentiableAt
 
-/-- Second radial derivative of `rnLapse`: `f''(r) = -4 M / r³ + 6 Q² / r⁴`. -/
-lemma hasDerivAt_deriv_rnLapse (M Q r : ℝ) (hr : r ≠ 0) :
-    HasDerivAt (deriv (rnLapse M Q)) (-4 * M / r ^ 3 + 6 * Q ^ 2 / r ^ 4) r := by
-  have heq : deriv (rnLapse M Q) =ᶠ[nhds r] fun s => 2 * M / s ^ 2 - 2 * Q ^ 2 / s ^ 3 := by
+/-- Second radial derivative of `S.lapse`: `f''(r) = -4 M / r³ + 6 Q² / r⁴`. -/
+lemma hasDerivAt_deriv_lapse (S : ReissnerNordstromSpacetime) (r : ℝ) (hr : r ≠ 0) :
+    HasDerivAt (deriv S.lapse) (-4 * S.M / r ^ 3 + 6 * S.Q ^ 2 / r ^ 4) r := by
+  have heq : deriv S.lapse =ᶠ[nhds r] fun s => 2 * S.M / s ^ 2 - 2 * S.Q ^ 2 / s ^ 3 := by
     filter_upwards [eventually_ne_nhds hr] with s hs
-    exact (hasDerivAt_rnLapse M Q s hs).deriv
+    exact (S.hasDerivAt_lapse s hs).deriv
   have hinv2 : HasDerivAt (fun s : ℝ => (s ^ 2)⁻¹) (-2 / r ^ 3) r := by
     have h := (hasDerivAt_pow 2 r).inv (pow_ne_zero 2 hr)
     convert h using 1
@@ -179,13 +185,13 @@ lemma hasDerivAt_deriv_rnLapse (M Q r : ℝ) (hr : r ≠ 0) :
     convert h using 1
     simp only [Nat.cast_ofNat, Nat.add_one_sub_one]
     field_simp [hr]
-  have hd : HasDerivAt (fun s : ℝ => 2 * M / s ^ 2 - 2 * Q ^ 2 / s ^ 3)
-      (-4 * M / r ^ 3 + 6 * Q ^ 2 / r ^ 4) r := by
-    have hA : HasDerivAt (fun s : ℝ => 2 * M * (s ^ 2)⁻¹) (-4 * M / r ^ 3) r := by
-      convert hinv2.const_mul (2 * M) using 1
+  have hd : HasDerivAt (fun s : ℝ => 2 * S.M / s ^ 2 - 2 * S.Q ^ 2 / s ^ 3)
+      (-4 * S.M / r ^ 3 + 6 * S.Q ^ 2 / r ^ 4) r := by
+    have hA : HasDerivAt (fun s : ℝ => 2 * S.M * (s ^ 2)⁻¹) (-4 * S.M / r ^ 3) r := by
+      convert hinv2.const_mul (2 * S.M) using 1
       ring
-    have hB : HasDerivAt (fun s : ℝ => 2 * Q ^ 2 * (s ^ 3)⁻¹) (-6 * Q ^ 2 / r ^ 4) r := by
-      convert hinv3.const_mul (2 * Q ^ 2) using 1
+    have hB : HasDerivAt (fun s : ℝ => 2 * S.Q ^ 2 * (s ^ 3)⁻¹) (-6 * S.Q ^ 2 / r ^ 4) r := by
+      convert hinv3.const_mul (2 * S.Q ^ 2) using 1
       ring
     convert hA.sub hB using 1
     · funext s
@@ -193,31 +199,27 @@ lemma hasDerivAt_deriv_rnLapse (M Q r : ℝ) (hr : r ≠ 0) :
     · ring
   exact hd.congr_of_eventuallyEq heq
 
-/-- Pointwise formula for the first derivative `deriv (rnLapse M Q) r`. -/
-lemma deriv_rnLapse (M Q r : ℝ) (hr : r ≠ 0) :
-    deriv (rnLapse M Q) r = 2 * M / r ^ 2 - 2 * Q ^ 2 / r ^ 3 :=
-  (hasDerivAt_rnLapse M Q r hr).deriv
+/-- Pointwise formula for the first derivative `deriv S.lapse r`. -/
+lemma deriv_lapse (S : ReissnerNordstromSpacetime) (r : ℝ) (hr : r ≠ 0) :
+    deriv S.lapse r = 2 * S.M / r ^ 2 - 2 * S.Q ^ 2 / r ^ 3 :=
+  (S.hasDerivAt_lapse r hr).deriv
 
-/-- Pointwise formula for the second derivative `deriv (deriv (rnLapse M Q)) r`. -/
-lemma deriv_deriv_rnLapse (M Q r : ℝ) (hr : r ≠ 0) :
-    deriv (deriv (rnLapse M Q)) r = -4 * M / r ^ 3 + 6 * Q ^ 2 / r ^ 4 :=
-  (hasDerivAt_deriv_rnLapse M Q r hr).deriv
+/-- Pointwise formula for the second derivative `deriv (deriv S.lapse) r`. -/
+lemma deriv_deriv_lapse (S : ReissnerNordstromSpacetime) (r : ℝ) (hr : r ≠ 0) :
+    deriv (deriv S.lapse) r = -4 * S.M / r ^ 3 + 6 * S.Q ^ 2 / r ^ 4 :=
+  (S.hasDerivAt_deriv_lapse r hr).deriv
 
 /-- Radial electric Maxwell field strength tensor `F_{ab}` (`F_{01} = -Q/r²`, `F_{10} = Q/r²`). -/
-noncomputable def maxwellF (Q r : ℝ) : Tensor2 4 :=
+noncomputable def maxwellF (S : ReissnerNordstromSpacetime) (r : ℝ) : Tensor2 4 :=
   fun i j =>
-    if i = 0 ∧ j = 1 then -Q / r ^ 2
-    else if i = 1 ∧ j = 0 then Q / r ^ 2
+    if i = 0 ∧ j = 1 then -S.Q / r ^ 2
+    else if i = 1 ∧ j = 0 then S.Q / r ^ 2
     else 0
 
-/-- Antisymmetry of the Maxwell field strength tensor `maxwellF`. -/
-lemma maxwellF_antisymm (Q r : ℝ) (i j : Fin 4) : maxwellF Q r i j = -maxwellF Q r j i := by
+/-- Antisymmetry of the Maxwell field strength tensor `S.maxwellF`. -/
+lemma maxwellF_antisymm (S : ReissnerNordstromSpacetime) (r : ℝ) (i j : Fin 4) :
+    S.maxwellF r i j = -S.maxwellF r j i := by
   fin_cases i <;> fin_cases j <;> simp [maxwellF] <;> ring
-
-/-- Electromagnetic stress-energy tensor `T^{EM}_{ij} = (1 / (4π)) (F_{ik} F_j{}^k - (1/4) g_{ij}
-F_{ab} F^{ab})` in Gaussian-cgs/geometrized units (`G = c = 1`). -/
-noncomputable def maxwellStressEnergy (g ginv F : Tensor2 4) : Tensor2 4 :=
-  fun i j => (1 / (4 * Real.pi)) * maxwellStressEnergyRaw g ginv F i j
 
 /-!
 
@@ -225,66 +227,66 @@ noncomputable def maxwellStressEnergy (g ginv F : Tensor2 4) : Tensor2 4 :=
 
 -/
 
-/-- Metric-level Ricci tensor of the Reissner–Nordström spacetime computed via `Pipeline`. -/
-lemma ricciTensorOf_rn (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : rnLapse M Q (x 1) ≠ 0)
-    (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
-    ricciTensorOf (rnMetric M Q) (rnMetricInv M Q) x σ ν
+/-- Metric-level Ricci tensor of a Reissner–Nordström spacetime computed via `Pipeline`. -/
+lemma ricciTensorOf (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+    (hf : S.lapse (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
+    Pipeline.ricciTensorOf S.metric S.metricInv x σ ν
       = if σ = ν then
-          if σ = 0 then rnLapse M Q (x 1) * Q ^ 2 / (x 1) ^ 4
-          else if σ = 1 then -(Q ^ 2 / ((x 1) ^ 4 * rnLapse M Q (x 1)))
-          else if σ = 2 then Q ^ 2 / (x 1) ^ 2
-          else Q ^ 2 * Real.sin (x 2) ^ 2 / (x 1) ^ 2
+          if σ = 0 then S.lapse (x 1) * S.Q ^ 2 / (x 1) ^ 4
+          else if σ = 1 then -(S.Q ^ 2 / ((x 1) ^ 4 * S.lapse (x 1)))
+          else if σ = 2 then S.Q ^ 2 / (x 1) ^ 2
+          else S.Q ^ 2 * Real.sin (x 2) ^ 2 / (x 1) ^ 2
         else 0 := by
-  have hfdiff := eventually_differentiableAt_rnLapse M Q (x 1) hr
-  have hf2diff := (hasDerivAt_deriv_rnLapse M Q (x 1) hr).differentiableAt
-  rw [rnMetric_eq_staticSpherical, rnMetricInv_eq_staticSpherical,
-    StaticSphericalMetric.ricciTensorOf ⟨rnLapse M Q⟩ x hr hf hsin hfdiff hf2diff σ ν]
-  dsimp
-  rw [deriv_rnLapse M Q (x 1) hr, deriv_deriv_rnLapse M Q (x 1) hr]
+  have hfdiff := S.eventually_differentiableAt_lapse (x 1) hr
+  have hf2diff := (S.hasDerivAt_deriv_lapse (x 1) hr).differentiableAt
+  rw [S.metric_eq_staticSpherical, S.metricInv_eq_staticSpherical,
+    S.toStaticSpherical.ricciTensorOf x hr hf hsin hfdiff hf2diff σ ν]
+  dsimp [toStaticSpherical]
+  rw [S.deriv_lapse (x 1) hr, S.deriv_deriv_lapse (x 1) hr]
   fin_cases σ <;> fin_cases ν <;> simp
   · field_simp [hr]; ring
   · field_simp [hr, hf]; ring
-  · simp only [rnLapse]; field_simp [hr]; ring
-  · simp only [rnLapse]; field_simp [hr]; ring
+  · simp only [lapse]; field_simp [hr]; ring
+  · simp only [lapse]; field_simp [hr]; ring
 
-/-- The Reissner–Nordström spacetime has identically vanishing scalar curvature (`S = 0`),
+/-- The Reissner–Nordström spacetime has identically vanishing scalar curvature (`R = 0`),
 reflecting conformal invariance of 4D Maxwell electromagnetism. -/
-lemma ricciScalarOf_rn (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : rnLapse M Q (x 1) ≠ 0)
-    (hsin : Real.sin (x 2) ≠ 0) :
-    ricciScalarOf (rnMetric M Q) (rnMetricInv M Q) x = 0 := by
-  have hfdiff := eventually_differentiableAt_rnLapse M Q (x 1) hr
-  have hf2diff := (hasDerivAt_deriv_rnLapse M Q (x 1) hr).differentiableAt
-  rw [rnMetric_eq_staticSpherical, rnMetricInv_eq_staticSpherical,
-    StaticSphericalMetric.ricciScalarOf ⟨rnLapse M Q⟩ x hr hf hsin hfdiff hf2diff]
-  dsimp
-  rw [deriv_rnLapse M Q (x 1) hr, deriv_deriv_rnLapse M Q (x 1) hr, rnLapse]
+lemma ricciScalarOf (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+    (hf : S.lapse (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
+    Pipeline.ricciScalarOf S.metric S.metricInv x = 0 := by
+  have hfdiff := S.eventually_differentiableAt_lapse (x 1) hr
+  have hf2diff := (S.hasDerivAt_deriv_lapse (x 1) hr).differentiableAt
+  rw [S.metric_eq_staticSpherical, S.metricInv_eq_staticSpherical,
+    S.toStaticSpherical.ricciScalarOf x hr hf hsin hfdiff hf2diff]
+  dsimp [toStaticSpherical]
+  rw [S.deriv_lapse (x 1) hr, S.deriv_deriv_lapse (x 1) hr, lapse]
   field_simp [hr]
   ring
 
 /-- Four-dimensional Maxwell stress-energy is trace-free: `g^{ij} T^{EM}_{ij} = 0`. -/
-lemma maxwellStressEnergy_rn_trace_zero (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
-    (hf : rnLapse M Q (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
-    metricTrace (StaticSphericalMetric.metricTensor ⟨rnLapse M Q⟩ x hr hf hsin)
-      (maxwellStressEnergy (rnMetric M Q x) (rnMetricInv M Q x) (maxwellF Q (x 1))) = 0 := by
+lemma maxwellStressEnergy_trace_zero (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ)
+    (hr : x 1 ≠ 0) (hf : S.lapse (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
+    metricTrace (S.toStaticSpherical.metricTensor x hr hf hsin)
+      (maxwellStressEnergy (S.metric x) (S.metricInv x) (S.maxwellF (x 1))) = 0 := by
   have h := maxwellStressEnergyRaw_trace_zero
-    (StaticSphericalMetric.metricTensor ⟨rnLapse M Q⟩ x hr hf hsin) (maxwellF Q (x 1))
+    (S.toStaticSpherical.metricTensor x hr hf hsin) (S.maxwellF (x 1))
   show metricTrace _ (fun i j => (1 / (4 * Real.pi)) *
-    maxwellStressEnergyRaw (rnMetric M Q x) (rnMetricInv M Q x) (maxwellF Q (x 1)) i j) = 0
+    maxwellStressEnergyRaw (S.metric x) (S.metricInv x) (S.maxwellF (x 1)) i j) = 0
   rw [metricTrace_smul]
   exact mul_eq_zero_of_right _ h
 
 /-- Electrovacuum Einstein–Maxwell equations verified directly through `GeneralRelativity.Pipeline`:
 `G_{ij} = 8 π T^{EM}_{ij}` at every coordinate index `(i, j)`. -/
-lemma einsteinTensorOf_rn_eq_maxwell (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
-    (hf : rnLapse M Q (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
-    einsteinTensorOf (rnMetric M Q) (rnMetricInv M Q) x i j
+lemma einsteinTensorOf_eq_maxwell (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ)
+    (hr : x 1 ≠ 0) (hf : S.lapse (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
+    Pipeline.einsteinTensorOf S.metric S.metricInv x i j
       = 8 * Real.pi
-          * maxwellStressEnergy (rnMetric M Q x) (rnMetricInv M Q x) (maxwellF Q (x 1)) i j := by
+          * maxwellStressEnergy (S.metric x) (S.metricInv x) (S.maxwellF (x 1)) i j := by
   have hpi : Real.pi ≠ 0 := Real.pi_ne_zero
-  simp only [einsteinTensorOf, ricciTensorOf_rn M Q x hr hf hsin, ricciScalarOf_rn M Q x hr hf hsin]
-  simp only [maxwellStressEnergy, maxwellStressEnergyRaw, maxwellFieldInvariant, rnMetric,
-    rnMetricInv, StaticSphericalMetric.metric, StaticSphericalMetric.metricInv, maxwellF,
-    Fin.sum_univ_four]
+  simp only [Pipeline.einsteinTensorOf, S.ricciTensorOf x hr hf hsin, S.ricciScalarOf x hr hf hsin]
+  simp only [maxwellStressEnergy, maxwellStressEnergyRaw, maxwellFieldInvariant, metric,
+    metricInv, toStaticSpherical, StaticSphericalMetric.metric, StaticSphericalMetric.metricInv,
+    maxwellF, Fin.sum_univ_four]
   fin_cases i <;> fin_cases j <;> simp
   · field_simp [hr, hf, hpi]; ring
   · field_simp [hr, hf, hpi]; ring
@@ -298,66 +300,74 @@ lemma einsteinTensorOf_rn_eq_maxwell (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 �
 -/
 
 /-- Outer event horizon radius `r₊ = M + √(M² - Q²)` for `|Q| ≤ M`. -/
-noncomputable def horizonPlus (M Q : ℝ) : ℝ := M + Real.sqrt (M ^ 2 - Q ^ 2)
+noncomputable def horizonPlus (S : ReissnerNordstromSpacetime) : ℝ :=
+  S.M + Real.sqrt (S.M ^ 2 - S.Q ^ 2)
 
 /-- Inner Cauchy horizon radius `r₋ = M - √(M² - Q²)` for `|Q| ≤ M`. -/
-noncomputable def horizonMinus (M Q : ℝ) : ℝ := M - Real.sqrt (M ^ 2 - Q ^ 2)
+noncomputable def horizonMinus (S : ReissnerNordstromSpacetime) : ℝ :=
+  S.M - Real.sqrt (S.M ^ 2 - S.Q ^ 2)
 
-/-- Vanishing of the Reissner–Nordström lapse function at any root of `r² - 2 M r + Q² = 0`. -/
-lemma rnLapse_eq_zero_of_quad {M Q r : ℝ} (hr : r ≠ 0) (hq : r ^ 2 - 2 * M * r + Q ^ 2 = 0) :
-    rnLapse M Q r = 0 := by
-  simp only [rnLapse]
+/-- Vanishing of `S.lapse` at any root of `r² - 2 M r + Q² = 0`. -/
+lemma lapse_eq_zero_of_quad (S : ReissnerNordstromSpacetime) {r : ℝ} (hr : r ≠ 0)
+    (hq : r ^ 2 - 2 * S.M * r + S.Q ^ 2 = 0) :
+    S.lapse r = 0 := by
+  simp only [lapse]
   field_simp [hr]
   linear_combination hq
 
-/-- The outer horizon radius is a root of `rnLapse M Q = 0` when `Q² ≤ M²` and `r₊ ≠ 0`. -/
-lemma rnLapse_horizonPlus {M Q : ℝ} (hQ : Q ^ 2 ≤ M ^ 2) (hr : horizonPlus M Q ≠ 0) :
-    rnLapse M Q (horizonPlus M Q) = 0 := by
-  refine rnLapse_eq_zero_of_quad hr ?_
-  have hsq : Real.sqrt (M ^ 2 - Q ^ 2) ^ 2 = M ^ 2 - Q ^ 2 :=
+/-- The outer horizon radius is a root of `S.lapse = 0` when `Q² ≤ M²` and `r₊ ≠ 0`. -/
+lemma lapse_horizonPlus (S : ReissnerNordstromSpacetime) (hQ : S.Q ^ 2 ≤ S.M ^ 2)
+    (hr : S.horizonPlus ≠ 0) :
+    S.lapse S.horizonPlus = 0 := by
+  refine S.lapse_eq_zero_of_quad hr ?_
+  have hsq : Real.sqrt (S.M ^ 2 - S.Q ^ 2) ^ 2 = S.M ^ 2 - S.Q ^ 2 :=
     Real.sq_sqrt (sub_nonneg.mpr hQ)
   simp only [horizonPlus]
   linear_combination hsq
 
-/-- The inner Cauchy horizon radius is a root of `rnLapse M Q = 0` when `Q² ≤ M²` and `r₋ ≠ 0`. -/
-lemma rnLapse_horizonMinus {M Q : ℝ} (hQ : Q ^ 2 ≤ M ^ 2) (hr : horizonMinus M Q ≠ 0) :
-    rnLapse M Q (horizonMinus M Q) = 0 := by
-  refine rnLapse_eq_zero_of_quad hr ?_
-  have hsq : Real.sqrt (M ^ 2 - Q ^ 2) ^ 2 = M ^ 2 - Q ^ 2 :=
+/-- The inner Cauchy horizon radius is a root of `S.lapse = 0` when `Q² ≤ M²` and `r₋ ≠ 0`. -/
+lemma lapse_horizonMinus (S : ReissnerNordstromSpacetime) (hQ : S.Q ^ 2 ≤ S.M ^ 2)
+    (hr : S.horizonMinus ≠ 0) :
+    S.lapse S.horizonMinus = 0 := by
+  refine S.lapse_eq_zero_of_quad hr ?_
+  have hsq : Real.sqrt (S.M ^ 2 - S.Q ^ 2) ^ 2 = S.M ^ 2 - S.Q ^ 2 :=
     Real.sq_sqrt (sub_nonneg.mpr hQ)
   simp only [horizonMinus]
   linear_combination hsq
 
 /-- Extremal double horizon (`Q² = M²`, `M ≠ 0`): the horizons coalesce at `r = M`, where both
-`rnLapse` and its radial derivative vanish. -/
-lemma rnLapse_extremal {M Q : ℝ} (hQ : Q ^ 2 = M ^ 2) (hM : M ≠ 0) :
-    horizonPlus M Q = M ∧ horizonMinus M Q = M ∧ rnLapse M Q M = 0
-      ∧ HasDerivAt (rnLapse M Q) 0 M := by
-  have hsub : M ^ 2 - Q ^ 2 = 0 := sub_eq_zero.mpr hQ.symm
+`S.lapse` and its radial derivative vanish. -/
+lemma lapse_extremal (S : ReissnerNordstromSpacetime) (hQ : S.Q ^ 2 = S.M ^ 2) (hM : S.M ≠ 0) :
+    S.horizonPlus = S.M ∧ S.horizonMinus = S.M ∧ S.lapse S.M = 0
+      ∧ HasDerivAt S.lapse 0 S.M := by
+  have hsub : S.M ^ 2 - S.Q ^ 2 = 0 := sub_eq_zero.mpr hQ.symm
   refine ⟨?_, ?_, ?_, ?_⟩
   · simp [horizonPlus, hsub]
   · simp [horizonMinus, hsub]
-  · simp [rnLapse, hQ]
+  · simp [lapse, hQ]
     field_simp [hM]
     ring
-  · have h := hasDerivAt_rnLapse M Q M hM
-    have hder : 2 * M / M ^ 2 - 2 * Q ^ 2 / M ^ 3 = 0 := by
+  · have h := S.hasDerivAt_lapse S.M hM
+    have hder : 2 * S.M / S.M ^ 2 - 2 * S.Q ^ 2 / S.M ^ 3 = 0 := by
       rw [hQ]
       field_simp [hM]
       ring
     rwa [hder] at h
 
-/-- Overcharged regime (`M² < Q²`): `rnLapse M Q r > 0` for all `r ≠ 0` (no event horizon; naked
+/-- Overcharged regime (`M² < Q²`): `S.lapse r > 0` for all `r ≠ 0` (no event horizon; naked
 singularity). -/
-lemma rnLapse_pos_of_overcharged {M Q r : ℝ} (hQ : M ^ 2 < Q ^ 2) (hr : r ≠ 0) :
-    0 < rnLapse M Q r := by
-  have hnum : 0 < (r - M) ^ 2 + (Q ^ 2 - M ^ 2) := by positivity
-  have hid : rnLapse M Q r = ((r - M) ^ 2 + (Q ^ 2 - M ^ 2)) / r ^ 2 := by
-    simp only [rnLapse]
+lemma lapse_pos_of_overcharged (S : ReissnerNordstromSpacetime) (hQ : S.M ^ 2 < S.Q ^ 2)
+    {r : ℝ} (hr : r ≠ 0) :
+    0 < S.lapse r := by
+  have hnum : 0 < (r - S.M) ^ 2 + (S.Q ^ 2 - S.M ^ 2) := by positivity
+  have hid : S.lapse r = ((r - S.M) ^ 2 + (S.Q ^ 2 - S.M ^ 2)) / r ^ 2 := by
+    simp only [lapse]
     field_simp [hr]
     ring
   rw [hid]
   exact div_pos hnum (sq_pos_iff.mpr hr)
+
+end ReissnerNordstromSpacetime
 
 end ReissnerNordstrom
 

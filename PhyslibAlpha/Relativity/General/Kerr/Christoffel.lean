@@ -20,31 +20,29 @@ import Mathlib.Tactic.Ring
 
 # Boyer–Lindquist Kerr metric partial derivatives and Christoffel symbols
 
-Analytical partial derivatives of `kerrMetric`, all 20 independent Christoffel connection
-coefficients `kerrChristoffel`, their agreement with `Pipeline.christoffel`, and the contracted
-trace
-`kerrChristoffelTrace`.
+Analytical partial derivatives of `KerrSpacetime.metric`, all 20 independent Christoffel connection
+coefficients `KerrSpacetime.christoffel`, their agreement with `Pipeline.christoffel`, and the
+contracted trace `KerrSpacetime.christoffelTrace`.
 
 ## i. Overview
 
-This module evaluates the Boyer–Lindquist metric partial derivatives `kerrMetricD` (`∂_r` and
-`∂_θ`, with `∂_t = ∂_φ = 0`), proves `pd_kerrMetric_eq`, defines the analytical closed-form
-Christoffel symbol table `kerrChristoffel` (20 non-zero symmetric components) and its contraction
-trace
-`kerrChristoffelTrace` (`tr_r = 2 r / Σ`, `tr_θ = cot θ - 2 a² cos θ sin θ / Σ`), and establishes
-that
-`christoffel (kerrMetric M a) (kerrMetricInv M a)` equals `kerrChristoffel M a` everywhere on
-regular
+This module evaluates the Boyer–Lindquist metric partial derivatives `KerrSpacetime.metricD` (`∂_r`
+and `∂_θ`, with `∂_t = ∂_φ = 0`), proves `pd_metric_eq`, defines the analytical closed-form
+Christoffel symbol table `KerrSpacetime.christoffel` (20 non-zero symmetric components) and its
+contraction trace `KerrSpacetime.christoffelTrace`
+(`tr_r = 2 r / Σ`, `tr_θ = cot θ - 2 a² cos θ sin θ / Σ`), and establishes that
+`Pipeline.christoffel K.metric K.metricInv` equals `K.christoffel` everywhere on regular
 coordinates (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`) and on a neighborhood thereof.
 
 ## ii. Key results
 
-- `kerrMetricD`, `pd_kerrMetric_eq` : partial derivatives of the Kerr metric.
-- `kerrChristoffel`, `kerrChristoffel_symm` : explicit Christoffel symbols of Boyer–Lindquist Kerr
-  spacetime.
-- `christoffel_kerr_eq`, `eventually_christoffel_kerr_eq` : agreement with `Pipeline.christoffel`.
-- `kerrChristoffelTrace`, `sum_kerrChristoffel_trace` : contracted Christoffel trace `∑ ρ, Γ^ρ_{ρ
-  μ}`.
+- `KerrSpacetime.metricD`, `KerrSpacetime.pd_metric_eq` : partial derivatives of the Kerr metric.
+- `KerrSpacetime.christoffel`, `KerrSpacetime.christoffel_symm` : explicit Christoffel symbols of
+  Boyer–Lindquist Kerr spacetime.
+- `KerrSpacetime.christoffel_eq`, `KerrSpacetime.eventually_christoffel_eq` : agreement with
+  `Pipeline.christoffel`.
+- `KerrSpacetime.christoffelTrace`, `KerrSpacetime.sum_christoffel_trace` : contracted Christoffel
+  trace `∑ ρ, Γ^ρ_{ρ μ}`.
 
 ## iii. Table of contents
 
@@ -70,264 +68,277 @@ namespace Kerr
 
 open Pipeline
 
+namespace KerrSpacetime
+
 /-!
 
 ## A. Partial derivatives of the Kerr metric
 
 -/
 
-/-- Analytical coordinate partial derivatives `∂_μ (kerrMetric M a · i j)` in Boyer–Lindquist
-coordinates `x = (t, r, θ, φ)`. -/
-noncomputable def kerrMetricD (M a : ℝ) (μ : Fin 4) (x : Fin 4 → ℝ) (i j : Fin 4) : ℝ :=
+/-- Analytical coordinate partial derivatives `∂_μ (K.metric · i j)` in Boyer–Lindquist coordinates
+`x = (t, r, θ, φ)`. -/
+noncomputable def metricD (K : KerrSpacetime) (μ : Fin 4) (x : Fin 4 → ℝ) (i j : Fin 4) : ℝ :=
   let r := x 1
   let c := Real.cos (x 2)
   let s := Real.sin (x 2)
-  let sig := sigma a r (x 2)
-  let del := delta M a r
-  let bval := kerrAxialFactor M a r (x 2)
+  let sig := K.sigma r (x 2)
+  let del := K.delta r
+  let aval := K.axialFactor r (x 2)
   if μ = 1 then
-    if i = 0 ∧ j = 0 then -(2 * M * (r ^ 2 - a ^ 2 * c ^ 2) / sig ^ 2)
+    if i = 0 ∧ j = 0 then -(2 * K.M * (r ^ 2 - K.a ^ 2 * c ^ 2) / sig ^ 2)
     else if (i = 0 ∧ j = 3) ∨ (i = 3 ∧ j = 0) then
-      2 * M * a * s ^ 2 * (r ^ 2 - a ^ 2 * c ^ 2) / sig ^ 2
-    else if i = 1 ∧ j = 1 then (2 * r * del - sig * (2 * r - 2 * M)) / del ^ 2
+      2 * K.M * K.a * s ^ 2 * (r ^ 2 - K.a ^ 2 * c ^ 2) / sig ^ 2
+    else if i = 1 ∧ j = 1 then (2 * r * del - sig * (2 * r - 2 * K.M)) / del ^ 2
     else if i = 2 ∧ j = 2 then 2 * r
     else if i = 3 ∧ j = 3 then
-      s ^ 2 * ((4 * r * (r ^ 2 + a ^ 2) - a ^ 2 * (2 * r - 2 * M) * s ^ 2) * sig
-        - 2 * r * bval) / sig ^ 2
+      s ^ 2 * ((4 * r * (r ^ 2 + K.a ^ 2) - K.a ^ 2 * (2 * r - 2 * K.M) * s ^ 2) * sig
+        - 2 * r * aval) / sig ^ 2
     else 0
   else if μ = 2 then
-    if i = 0 ∧ j = 0 then 4 * M * a ^ 2 * r * c * s / sig ^ 2
+    if i = 0 ∧ j = 0 then 4 * K.M * K.a ^ 2 * r * c * s / sig ^ 2
     else if (i = 0 ∧ j = 3) ∨ (i = 3 ∧ j = 0) then
-      -4 * M * a * r * s * c * (r ^ 2 + a ^ 2) / sig ^ 2
-    else if i = 1 ∧ j = 1 then -2 * a ^ 2 * c * s / del
-    else if i = 2 ∧ j = 2 then -2 * a ^ 2 * c * s
+      -4 * K.M * K.a * r * s * c * (r ^ 2 + K.a ^ 2) / sig ^ 2
+    else if i = 1 ∧ j = 1 then -2 * K.a ^ 2 * c * s / del
+    else if i = 2 ∧ j = 2 then -2 * K.a ^ 2 * c * s
     else if i = 3 ∧ j = 3 then
-      ((-2 * a ^ 2 * del * s ^ 3 * c + 2 * bval * s * c) * sig
-        + 2 * a ^ 2 * c * s ^ 3 * bval) / sig ^ 2
+      ((-2 * K.a ^ 2 * del * s ^ 3 * c + 2 * aval * s * c) * sig
+        + 2 * K.a ^ 2 * c * s ^ 3 * aval) / sig ^ 2
     else 0
   else 0
 
 /-- Radial derivative of Boyer–Lindquist `Σ = r² + a² cos² θ`: `∂_r Σ = 2 r`. -/
-lemma hasDerivAt_sigma_r (a r θ : ℝ) :
-    HasDerivAt (fun s => sigma a s θ) (2 * r) r :=
-  ((hasDerivAt_pow 2 r).add_const (a ^ 2 * Real.cos θ ^ 2)).congr_deriv (by ring)
+lemma hasDerivAt_sigma_r (K : KerrSpacetime) (r θ : ℝ) :
+    HasDerivAt (fun s => K.sigma s θ) (2 * r) r :=
+  ((hasDerivAt_pow 2 r).add_const (K.a ^ 2 * Real.cos θ ^ 2)).congr_deriv (by ring)
 
 /-- Angular derivative of Boyer–Lindquist `Σ = r² + a² cos² θ`:
 `∂_θ Σ = -2 a² cos θ sin θ`. -/
-lemma hasDerivAt_sigma_th (a r θ : ℝ) :
-    HasDerivAt (fun t => sigma a r t) (-2 * a ^ 2 * Real.cos θ * Real.sin θ) θ :=
-  (((hasDerivAt_cos_sq θ).const_mul (a ^ 2)).const_add (r ^ 2)).congr_deriv (by ring)
+lemma hasDerivAt_sigma_th (K : KerrSpacetime) (r θ : ℝ) :
+    HasDerivAt (fun t => K.sigma r t) (-2 * K.a ^ 2 * Real.cos θ * Real.sin θ) θ :=
+  (((hasDerivAt_cos_sq θ).const_mul (K.a ^ 2)).const_add (r ^ 2)).congr_deriv (by ring)
 
 /-- Radial derivative of Boyer–Lindquist `Δ = r² - 2 M r + a²`: `∂_r Δ = 2 r - 2 M`. -/
-lemma hasDerivAt_delta_r (M a r : ℝ) :
-    HasDerivAt (fun s => delta M a s) (2 * r - 2 * M) r := by
+lemma hasDerivAt_delta_r (K : KerrSpacetime) (r : ℝ) :
+    HasDerivAt K.delta (2 * r - 2 * K.M) r := by
   have h1 := ((hasDerivAt_pow 2 r).fun_sub
-    ((hasDerivAt_const r (2 * M)).fun_mul (hasDerivAt_id r))).fun_add (hasDerivAt_const r (a ^ 2))
+    ((hasDerivAt_const r (2 * K.M)).fun_mul (hasDerivAt_id r))).fun_add
+      (hasDerivAt_const r (K.a ^ 2))
   exact h1.congr_deriv (by ring)
 
-private lemma hasDerivAt_bigB_r (M a r θ : ℝ) :
-    HasDerivAt (fun s => kerrAxialFactor M a s θ)
-      (4 * r * (r ^ 2 + a ^ 2) - a ^ 2 * (2 * r - 2 * M) * Real.sin θ ^ 2) r := by
-  have h1 : HasDerivAt (fun s : ℝ => (s ^ 2 + a ^ 2) ^ 2) (2 * (r ^ 2 + a ^ 2) * (2 * r)) r :=
-    (((hasDerivAt_pow 2 r).add_const (a ^ 2)).pow 2).congr_deriv (by ring)
-  have h2 : HasDerivAt (fun s : ℝ => a ^ 2 * delta M a s * Real.sin θ ^ 2)
-      (a ^ 2 * (2 * r - 2 * M) * Real.sin θ ^ 2) r :=
-    (((hasDerivAt_delta_r M a r).const_mul (a ^ 2)).mul_const (Real.sin θ ^ 2)).congr_deriv
+private lemma hasDerivAt_axialFactor_r (K : KerrSpacetime) (r θ : ℝ) :
+    HasDerivAt (fun s => K.axialFactor s θ)
+      (4 * r * (r ^ 2 + K.a ^ 2) - K.a ^ 2 * (2 * r - 2 * K.M) * Real.sin θ ^ 2) r := by
+  have h1 : HasDerivAt (fun s : ℝ => (s ^ 2 + K.a ^ 2) ^ 2)
+      (2 * (r ^ 2 + K.a ^ 2) * (2 * r)) r :=
+    (((hasDerivAt_pow 2 r).add_const (K.a ^ 2)).pow 2).congr_deriv (by ring)
+  have h2 : HasDerivAt (fun s : ℝ => K.a ^ 2 * K.delta s * Real.sin θ ^ 2)
+      (K.a ^ 2 * (2 * r - 2 * K.M) * Real.sin θ ^ 2) r :=
+    (((K.hasDerivAt_delta_r r).const_mul (K.a ^ 2)).mul_const (Real.sin θ ^ 2)).congr_deriv
       (by ring)
   exact (h1.fun_sub h2).congr_deriv (by ring)
 
-private lemma hasDerivAt_bigB_th (M a r θ : ℝ) :
-    HasDerivAt (fun t => kerrAxialFactor M a r t)
-      (-2 * a ^ 2 * delta M a r * Real.sin θ * Real.cos θ) θ :=
-  ((hasDerivAt_const θ ((r ^ 2 + a ^ 2) ^ 2)).fun_sub
-    ((hasDerivAt_sin_sq θ).const_mul (a ^ 2 * delta M a r))).congr_deriv (by ring)
+private lemma hasDerivAt_axialFactor_th (K : KerrSpacetime) (r θ : ℝ) :
+    HasDerivAt (fun t => K.axialFactor r t)
+      (-2 * K.a ^ 2 * K.delta r * Real.sin θ * Real.cos θ) θ :=
+  ((hasDerivAt_const θ ((r ^ 2 + K.a ^ 2) ^ 2)).fun_sub
+    ((hasDerivAt_sin_sq θ).const_mul (K.a ^ 2 * K.delta r))).congr_deriv (by ring)
 
-private lemma pd_kerrMetric_1_00 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1) (x 2) ≠ 0) :
-    coordDeriv 1 (fun y => kerrMetric M a y 0 0) x = kerrMetricD M a 1 x 0 0 := by
-  have hfun : (fun s => kerrMetric M a (Function.update x 1 s) 0 0)
-      = fun s => -(1 - 2 * M * s / sigma a s (x 2)) := by funext s; simp [kerrMetric]
-  have hm : HasDerivAt (fun s : ℝ => 2 * M * s) (2 * M) (x 1) :=
-    ((hasDerivAt_const (x 1) (2 * M)).fun_mul (hasDerivAt_id (x 1))).congr_deriv (by ring)
-  have hq := hm.fun_div (hasDerivAt_sigma_r a (x 1) (x 2)) hsig
+private lemma pd_metric_1_00 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+    coordDeriv 1 (fun y => K.metric y 0 0) x = K.metricD 1 x 0 0 := by
+  have hfun : (fun s => K.metric (Function.update x 1 s) 0 0)
+      = fun s => -(1 - 2 * K.M * s / K.sigma s (x 2)) := by funext s; simp [metric]
+  have hm : HasDerivAt (fun s : ℝ => 2 * K.M * s) (2 * K.M) (x 1) :=
+    ((hasDerivAt_const (x 1) (2 * K.M)).fun_mul (hasDerivAt_id (x 1))).congr_deriv (by ring)
+  have hq := hm.fun_div (K.hasDerivAt_sigma_r (x 1) (x 2)) hsig
   have hd := ((hasDerivAt_const (x 1) 1).fun_sub hq).fun_neg
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
-  simp only [kerrMetricD, sigma, Fin.isValue, and_self, ↓reduceIte]
+  simp only [metricD, sigma, Fin.isValue, and_self, ↓reduceIte]
   field_simp [hsig]; ring
 
-private lemma pd_kerrMetric_1_03 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1) (x 2) ≠ 0) :
-    coordDeriv 1 (fun y => kerrMetric M a y 0 3) x = kerrMetricD M a 1 x 0 3 := by
-  have hfun : (fun s => kerrMetric M a (Function.update x 1 s) 0 3)
-      = fun s => -(2 * M * a * s * Real.sin (x 2) ^ 2 / sigma a s (x 2)) := by
-    funext s; simp [kerrMetric]
-  have hm : HasDerivAt (fun s : ℝ => 2 * M * a * s * Real.sin (x 2) ^ 2)
-      (2 * M * a * Real.sin (x 2) ^ 2) (x 1) :=
-    ((((hasDerivAt_const (x 1) (2 * M * a)).fun_mul (hasDerivAt_id (x 1))).mul_const
+private lemma pd_metric_1_03 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+    coordDeriv 1 (fun y => K.metric y 0 3) x = K.metricD 1 x 0 3 := by
+  have hfun : (fun s => K.metric (Function.update x 1 s) 0 3)
+      = fun s => -(2 * K.M * K.a * s * Real.sin (x 2) ^ 2 / K.sigma s (x 2)) := by
+    funext s; simp [metric]
+  have hm : HasDerivAt (fun s : ℝ => 2 * K.M * K.a * s * Real.sin (x 2) ^ 2)
+      (2 * K.M * K.a * Real.sin (x 2) ^ 2) (x 1) :=
+    ((((hasDerivAt_const (x 1) (2 * K.M * K.a)).fun_mul (hasDerivAt_id (x 1))).mul_const
       (Real.sin (x 2) ^ 2))).congr_deriv (by ring)
-  have hq := (hm.fun_div (hasDerivAt_sigma_r a (x 1) (x 2)) hsig).fun_neg
+  have hq := (hm.fun_div (K.hasDerivAt_sigma_r (x 1) (x 2)) hsig).fun_neg
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hq)]
-  simp only [kerrMetricD, sigma, Fin.isValue, Fin.reduceEq, and_false, and_true, or_false,
+  simp only [metricD, sigma, Fin.isValue, Fin.reduceEq, and_false, and_true, or_false,
     ↓reduceIte]
   field_simp [hsig]; ring
 
-private lemma pd_kerrMetric_1_11 (M a : ℝ) (x : Fin 4 → ℝ) (hdel : delta M a (x 1) ≠ 0) :
-    coordDeriv 1 (fun y => kerrMetric M a y 1 1) x = kerrMetricD M a 1 x 1 1 := by
-  have hfun : (fun s => kerrMetric M a (Function.update x 1 s) 1 1)
-      = fun s => sigma a s (x 2) / delta M a s := by funext s; simp [kerrMetric]
-  have hd := (hasDerivAt_sigma_r a (x 1) (x 2)).fun_div (hasDerivAt_delta_r M a (x 1)) hdel
+private lemma pd_metric_1_11 (K : KerrSpacetime) (x : Fin 4 → ℝ) (hdel : K.delta (x 1) ≠ 0) :
+    coordDeriv 1 (fun y => K.metric y 1 1) x = K.metricD 1 x 1 1 := by
+  have hfun : (fun s => K.metric (Function.update x 1 s) 1 1)
+      = fun s => K.sigma s (x 2) / K.delta s := by funext s; simp [metric]
+  have hd := (K.hasDerivAt_sigma_r (x 1) (x 2)).fun_div (K.hasDerivAt_delta_r (x 1)) hdel
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
-  simp [kerrMetricD]
+  simp [metricD]
 
-private lemma pd_kerrMetric_1_22 (M a : ℝ) (x : Fin 4 → ℝ) :
-    coordDeriv 1 (fun y => kerrMetric M a y 2 2) x = kerrMetricD M a 1 x 2 2 := by
-  have hfun : (fun s => kerrMetric M a (Function.update x 1 s) 2 2)
-      = fun s => sigma a s (x 2) := by funext s; simp [kerrMetric]
-  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ (hasDerivAt_sigma_r a (x 1) (x 2)))]
-  simp [kerrMetricD]
+private lemma pd_metric_1_22 (K : KerrSpacetime) (x : Fin 4 → ℝ) :
+    coordDeriv 1 (fun y => K.metric y 2 2) x = K.metricD 1 x 2 2 := by
+  have hfun : (fun s => K.metric (Function.update x 1 s) 2 2)
+      = fun s => K.sigma s (x 2) := by funext s; simp [metric]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ (K.hasDerivAt_sigma_r (x 1) (x 2)))]
+  simp [metricD]
 
-private lemma pd_kerrMetric_1_33 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1) (x 2) ≠ 0) :
-    coordDeriv 1 (fun y => kerrMetric M a y 3 3) x = kerrMetricD M a 1 x 3 3 := by
-  have hfun : (fun s => kerrMetric M a (Function.update x 1 s) 3 3)
-      = fun s => kerrAxialFactor M a s (x 2) * Real.sin (x 2) ^ 2 / sigma a s (x 2) := by
-    funext s; simp [kerrMetric]
-  have hnum := (hasDerivAt_bigB_r M a (x 1) (x 2)).mul_const (Real.sin (x 2) ^ 2)
-  have hq := hnum.fun_div (hasDerivAt_sigma_r a (x 1) (x 2)) hsig
+private lemma pd_metric_1_33 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+    coordDeriv 1 (fun y => K.metric y 3 3) x = K.metricD 1 x 3 3 := by
+  have hfun : (fun s => K.metric (Function.update x 1 s) 3 3)
+      = fun s => K.axialFactor s (x 2) * Real.sin (x 2) ^ 2 / K.sigma s (x 2) := by
+    funext s; simp [metric]
+  have hnum := (K.hasDerivAt_axialFactor_r (x 1) (x 2)).mul_const (Real.sin (x 2) ^ 2)
+  have hq := hnum.fun_div (K.hasDerivAt_sigma_r (x 1) (x 2)) hsig
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hq)]
-  have hval : kerrMetricD M a 1 x 3 3 = Real.sin (x 2) ^ 2 *
-      ((4 * x 1 * (x 1 ^ 2 + a ^ 2) - a ^ 2 * (2 * x 1 - 2 * M) * Real.sin (x 2) ^ 2)
-          * sigma a (x 1) (x 2) - 2 * x 1 * kerrAxialFactor M a (x 1) (x 2))
-        / sigma a (x 1) (x 2) ^ 2 := by
-    simp [kerrMetricD]
+  have hval : K.metricD 1 x 3 3 = Real.sin (x 2) ^ 2 *
+      ((4 * x 1 * (x 1 ^ 2 + K.a ^ 2) - K.a ^ 2 * (2 * x 1 - 2 * K.M) * Real.sin (x 2) ^ 2)
+          * K.sigma (x 1) (x 2) - 2 * x 1 * K.axialFactor (x 1) (x 2))
+        / K.sigma (x 1) (x 2) ^ 2 := by
+    simp [metricD]
   rw [hval]
   ring
 
-private lemma pd_kerrMetric_1_30 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1) (x 2) ≠ 0) :
-    coordDeriv 1 (fun y => kerrMetric M a y 3 0) x = kerrMetricD M a 1 x 3 0 := by
-  have hs : (fun y => kerrMetric M a y 3 0) = fun y => kerrMetric M a y 0 3 := by
-    funext y; exact (kerrMetric_symm M a y).apply 0 3
-  rw [hs, pd_kerrMetric_1_03 M a x hsig]
-  simp [kerrMetricD]
+private lemma pd_metric_1_30 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+    coordDeriv 1 (fun y => K.metric y 3 0) x = K.metricD 1 x 3 0 := by
+  have hs : (fun y => K.metric y 3 0) = fun y => K.metric y 0 3 := by
+    funext y; exact (K.metric_symm y).apply 0 3
+  rw [hs, pd_metric_1_03 K x hsig]
+  simp [metricD]
 
-private lemma pd_kerrMetric_1 (M a : ℝ) (x : Fin 4 → ℝ)
-    (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (i j : Fin 4) :
-    coordDeriv 1 (fun y => kerrMetric M a y i j) x = kerrMetricD M a 1 x i j := by
+private lemma pd_metric_1 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (i j : Fin 4) :
+    coordDeriv 1 (fun y => K.metric y i j) x = K.metricD 1 x i j := by
   fin_cases i <;> fin_cases j
-  · exact pd_kerrMetric_1_00 M a x hsig
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · exact pd_kerrMetric_1_03 M a x hsig
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · exact pd_kerrMetric_1_11 M a x hdel
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · exact pd_kerrMetric_1_22 M a x
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · exact pd_kerrMetric_1_30 M a x hsig
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · exact pd_kerrMetric_1_33 M a x hsig
+  · exact pd_metric_1_00 K x hsig
+  · simp [coordDeriv, metric, metricD]
+  · simp [coordDeriv, metric, metricD]
+  · exact pd_metric_1_03 K x hsig
+  · simp [coordDeriv, metric, metricD]
+  · exact pd_metric_1_11 K x hdel
+  · simp [coordDeriv, metric, metricD]
+  · simp [coordDeriv, metric, metricD]
+  · simp [coordDeriv, metric, metricD]
+  · simp [coordDeriv, metric, metricD]
+  · exact pd_metric_1_22 K x
+  · simp [coordDeriv, metric, metricD]
+  · exact pd_metric_1_30 K x hsig
+  · simp [coordDeriv, metric, metricD]
+  · simp [coordDeriv, metric, metricD]
+  · exact pd_metric_1_33 K x hsig
 
-private lemma pd_kerrMetric_2_00 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1) (x 2) ≠ 0) :
-    coordDeriv 2 (fun y => kerrMetric M a y 0 0) x = kerrMetricD M a 2 x 0 0 := by
-  have hfun : (fun t => kerrMetric M a (Function.update x 2 t) 0 0)
-      = fun t => -(1 - 2 * M * x 1 / sigma a (x 1) t) := by funext t; simp [kerrMetric]
-  have hq := (hasDerivAt_const (x 2) (2 * M * x 1)).fun_div (hasDerivAt_sigma_th a (x 1) (x 2)) hsig
+private lemma pd_metric_2_00 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+    coordDeriv 2 (fun y => K.metric y 0 0) x = K.metricD 2 x 0 0 := by
+  have hfun : (fun t => K.metric (Function.update x 2 t) 0 0)
+      = fun t => -(1 - 2 * K.M * x 1 / K.sigma (x 1) t) := by funext t; simp [metric]
+  have hq := (hasDerivAt_const (x 2) (2 * K.M * x 1)).fun_div
+    (K.hasDerivAt_sigma_th (x 1) (x 2)) hsig
   have hd := ((hasDerivAt_const (x 2) 1).fun_sub hq).fun_neg
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
-  simp only [kerrMetricD, Fin.isValue, Fin.reduceEq, and_self, ↓reduceIte]
+  simp only [metricD, Fin.isValue, Fin.reduceEq, and_self, ↓reduceIte]
   ring
 
-private lemma pd_kerrMetric_2_03 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1) (x 2) ≠ 0) :
-    coordDeriv 2 (fun y => kerrMetric M a y 0 3) x = kerrMetricD M a 2 x 0 3 := by
-  have hfun : (fun t => kerrMetric M a (Function.update x 2 t) 0 3)
-      = fun t => -(2 * M * a * x 1 * Real.sin t ^ 2 / sigma a (x 1) t) := by
-    funext t; simp [kerrMetric]
-  have hm := (hasDerivAt_sin_sq (x 2)).const_mul (2 * M * a * x 1)
-  have hq := (hm.fun_div (hasDerivAt_sigma_th a (x 1) (x 2)) hsig).fun_neg
+private lemma pd_metric_2_03 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+    coordDeriv 2 (fun y => K.metric y 0 3) x = K.metricD 2 x 0 3 := by
+  have hfun : (fun t => K.metric (Function.update x 2 t) 0 3)
+      = fun t => -(2 * K.M * K.a * x 1 * Real.sin t ^ 2 / K.sigma (x 1) t) := by
+    funext t; simp [metric]
+  have hm := (hasDerivAt_sin_sq (x 2)).const_mul (2 * K.M * K.a * x 1)
+  have hq := (hm.fun_div (K.hasDerivAt_sigma_th (x 1) (x 2)) hsig).fun_neg
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hq)]
-  have hval : kerrMetricD M a 2 x 0 3 =
-      -4 * M * a * x 1 * Real.sin (x 2) * Real.cos (x 2) * (x 1 ^ 2 + a ^ 2)
-        / sigma a (x 1) (x 2) ^ 2 := by
-    simp [kerrMetricD]
+  have hval : K.metricD 2 x 0 3 =
+      -4 * K.M * K.a * x 1 * Real.sin (x 2) * Real.cos (x 2) * (x 1 ^ 2 + K.a ^ 2)
+        / K.sigma (x 1) (x 2) ^ 2 := by
+    simp [metricD]
   rw [hval]
   field_simp [hsig]
   simp only [sigma, Real.sin_sq (x 2)]
   ring
 
-private lemma pd_kerrMetric_2_11 (M a : ℝ) (x : Fin 4 → ℝ) :
-    coordDeriv 2 (fun y => kerrMetric M a y 1 1) x = kerrMetricD M a 2 x 1 1 := by
-  have hfun : (fun t => kerrMetric M a (Function.update x 2 t) 1 1)
-      = fun t => sigma a (x 1) t / delta M a (x 1) := by funext t; simp [kerrMetric]
-  have hd := (hasDerivAt_sigma_th a (x 1) (x 2)).div_const (delta M a (x 1))
-  have hval : kerrMetricD M a 2 x 1 1 =
-      -2 * a ^ 2 * Real.cos (x 2) * Real.sin (x 2) / delta M a (x 1) := by
-    simp [kerrMetricD]
+private lemma pd_metric_2_11 (K : KerrSpacetime) (x : Fin 4 → ℝ) :
+    coordDeriv 2 (fun y => K.metric y 1 1) x = K.metricD 2 x 1 1 := by
+  have hfun : (fun t => K.metric (Function.update x 2 t) 1 1)
+      = fun t => K.sigma (x 1) t / K.delta (x 1) := by funext t; simp [metric]
+  have hd := (K.hasDerivAt_sigma_th (x 1) (x 2)).div_const (K.delta (x 1))
+  have hval : K.metricD 2 x 1 1 =
+      -2 * K.a ^ 2 * Real.cos (x 2) * Real.sin (x 2) / K.delta (x 1) := by
+    simp [metricD]
   rw [coordDeriv, hfun, hd.deriv, hval]
 
-private lemma pd_kerrMetric_2_22 (M a : ℝ) (x : Fin 4 → ℝ) :
-    coordDeriv 2 (fun y => kerrMetric M a y 2 2) x = kerrMetricD M a 2 x 2 2 := by
-  have hfun : (fun t => kerrMetric M a (Function.update x 2 t) 2 2)
-      = fun t => sigma a (x 1) t := by funext t; simp [kerrMetric]
-  have hval : kerrMetricD M a 2 x 2 2 = -2 * a ^ 2 * Real.cos (x 2) * Real.sin (x 2) := by
-    simp [kerrMetricD]
-  rw [coordDeriv, hfun, (hasDerivAt_sigma_th a (x 1) (x 2)).deriv, hval]
+private lemma pd_metric_2_22 (K : KerrSpacetime) (x : Fin 4 → ℝ) :
+    coordDeriv 2 (fun y => K.metric y 2 2) x = K.metricD 2 x 2 2 := by
+  have hfun : (fun t => K.metric (Function.update x 2 t) 2 2)
+      = fun t => K.sigma (x 1) t := by funext t; simp [metric]
+  have hval : K.metricD 2 x 2 2 = -2 * K.a ^ 2 * Real.cos (x 2) * Real.sin (x 2) := by
+    simp [metricD]
+  rw [coordDeriv, hfun, (K.hasDerivAt_sigma_th (x 1) (x 2)).deriv, hval]
 
-private lemma pd_kerrMetric_2_33 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1) (x 2) ≠ 0) :
-    coordDeriv 2 (fun y => kerrMetric M a y 3 3) x = kerrMetricD M a 2 x 3 3 := by
-  have hfun : (fun t => kerrMetric M a (Function.update x 2 t) 3 3)
-      = fun t => kerrAxialFactor M a (x 1) t * Real.sin t ^ 2 / sigma a (x 1) t := by
-    funext t; simp [kerrMetric]
-  have hnum := (hasDerivAt_bigB_th M a (x 1) (x 2)).fun_mul (hasDerivAt_sin_sq (x 2))
-  have hq := hnum.fun_div (hasDerivAt_sigma_th a (x 1) (x 2)) hsig
+private lemma pd_metric_2_33 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+    coordDeriv 2 (fun y => K.metric y 3 3) x = K.metricD 2 x 3 3 := by
+  have hfun : (fun t => K.metric (Function.update x 2 t) 3 3)
+      = fun t => K.axialFactor (x 1) t * Real.sin t ^ 2 / K.sigma (x 1) t := by
+    funext t; simp [metric]
+  have hnum := (K.hasDerivAt_axialFactor_th (x 1) (x 2)).fun_mul (hasDerivAt_sin_sq (x 2))
+  have hq := hnum.fun_div (K.hasDerivAt_sigma_th (x 1) (x 2)) hsig
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hq)]
-  have hval : kerrMetricD M a 2 x 3 3 =
-      ((-2 * a ^ 2 * delta M a (x 1) * Real.sin (x 2) ^ 3 * Real.cos (x 2)
-            + 2 * kerrAxialFactor M a (x 1) (x 2) * Real.sin (x 2) * Real.cos (x 2))
-          * sigma a (x 1) (x 2)
-        + 2 * a ^ 2 * Real.cos (x 2) * Real.sin (x 2) ^ 3 * kerrAxialFactor M a (x 1) (x 2))
-      / sigma a (x 1) (x 2) ^ 2 := by
-    simp [kerrMetricD]
+  have hval : K.metricD 2 x 3 3 =
+      ((-2 * K.a ^ 2 * K.delta (x 1) * Real.sin (x 2) ^ 3 * Real.cos (x 2)
+            + 2 * K.axialFactor (x 1) (x 2) * Real.sin (x 2) * Real.cos (x 2))
+          * K.sigma (x 1) (x 2)
+        + 2 * K.a ^ 2 * Real.cos (x 2) * Real.sin (x 2) ^ 3 * K.axialFactor (x 1) (x 2))
+      / K.sigma (x 1) (x 2) ^ 2 := by
+    simp [metricD]
   rw [hval]
   ring
 
-private lemma pd_kerrMetric_2_30 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1) (x 2) ≠ 0) :
-    coordDeriv 2 (fun y => kerrMetric M a y 3 0) x = kerrMetricD M a 2 x 3 0 := by
-  have hs : (fun y => kerrMetric M a y 3 0) = fun y => kerrMetric M a y 0 3 := by
-    funext y; exact (kerrMetric_symm M a y).apply 0 3
-  rw [hs, pd_kerrMetric_2_03 M a x hsig]
-  simp [kerrMetricD]
+private lemma pd_metric_2_30 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) :
+    coordDeriv 2 (fun y => K.metric y 3 0) x = K.metricD 2 x 3 0 := by
+  have hs : (fun y => K.metric y 3 0) = fun y => K.metric y 0 3 := by
+    funext y; exact (K.metric_symm y).apply 0 3
+  rw [hs, pd_metric_2_03 K x hsig]
+  simp [metricD]
 
-private lemma pd_kerrMetric_2 (M a : ℝ) (x : Fin 4 → ℝ)
-    (hsig : sigma a (x 1) (x 2) ≠ 0) (i j : Fin 4) :
-    coordDeriv 2 (fun y => kerrMetric M a y i j) x = kerrMetricD M a 2 x i j := by
+private lemma pd_metric_2 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) (i j : Fin 4) :
+    coordDeriv 2 (fun y => K.metric y i j) x = K.metricD 2 x i j := by
   fin_cases i <;> fin_cases j
-  · exact pd_kerrMetric_2_00 M a x hsig
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · exact pd_kerrMetric_2_03 M a x hsig
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · exact pd_kerrMetric_2_11 M a x
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · exact pd_kerrMetric_2_22 M a x
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · exact pd_kerrMetric_2_30 M a x hsig
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · simp [coordDeriv, kerrMetric, kerrMetricD]
-  · exact pd_kerrMetric_2_33 M a x hsig
+  · exact pd_metric_2_00 K x hsig
+  · simp [coordDeriv, metric, metricD]
+  · simp [coordDeriv, metric, metricD]
+  · exact pd_metric_2_03 K x hsig
+  · simp [coordDeriv, metric, metricD]
+  · exact pd_metric_2_11 K x
+  · simp [coordDeriv, metric, metricD]
+  · simp [coordDeriv, metric, metricD]
+  · simp [coordDeriv, metric, metricD]
+  · simp [coordDeriv, metric, metricD]
+  · exact pd_metric_2_22 K x
+  · simp [coordDeriv, metric, metricD]
+  · exact pd_metric_2_30 K x hsig
+  · simp [coordDeriv, metric, metricD]
+  · simp [coordDeriv, metric, metricD]
+  · exact pd_metric_2_33 K x hsig
 
-/-- Complete identification of all 64 partial derivatives of `kerrMetric M a` with `kerrMetricD`. -/
-lemma pd_kerrMetric_eq (M a : ℝ) (μ : Fin 4) (x : Fin 4 → ℝ)
-    (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (i j : Fin 4) :
-    coordDeriv μ (fun y => kerrMetric M a y i j) x = kerrMetricD M a μ x i j := by
+/-- Complete identification of all 64 partial derivatives of `K.metric` with `K.metricD`. -/
+lemma pd_metric_eq (K : KerrSpacetime) (μ : Fin 4) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (i j : Fin 4) :
+    coordDeriv μ (fun y => K.metric y i j) x = K.metricD μ x i j := by
   fin_cases μ
-  · simp [coordDeriv, kerrMetric, kerrMetricD, sigma, delta, kerrAxialFactor]
-  · exact pd_kerrMetric_1 M a x hsig hdel i j
-  · exact pd_kerrMetric_2 M a x hsig i j
-  · simp [coordDeriv, kerrMetric, kerrMetricD, sigma, delta, kerrAxialFactor]
+  · simp [coordDeriv, metric, metricD, sigma, delta, axialFactor]
+  · exact pd_metric_1 K x hsig hdel i j
+  · exact pd_metric_2 K x hsig i j
+  · simp [coordDeriv, metric, metricD, sigma, delta, axialFactor]
 
 /-!
 
@@ -337,71 +348,76 @@ lemma pd_kerrMetric_eq (M a : ℝ) (μ : Fin 4) (x : Fin 4 → ℝ)
 
 -- Factored out from `Pipeline.christoffel` so rational derivative reductions remain tractable.
 /-- Closed-form Levi-Civita Christoffel symbols `Γ^k_{ij}` of the Boyer–Lindquist Kerr metric. -/
-noncomputable def kerrChristoffel (M a : ℝ) (x : Fin 4 → ℝ) (k i j : Fin 4) : ℝ :=
+noncomputable def christoffel (K : KerrSpacetime) (x : Fin 4 → ℝ) (k i j : Fin 4) : ℝ :=
   let r := x 1
   let c := Real.cos (x 2)
   let s := Real.sin (x 2)
-  let sig := sigma a r (x 2)
-  let del := delta M a r
+  let sig := K.sigma r (x 2)
+  let del := K.delta r
   if k = 0 then
     if (i = 0 ∧ j = 1) ∨ (i = 1 ∧ j = 0) then
-      M * (a ^ 2 + r ^ 2) * (r ^ 2 - a ^ 2 * c ^ 2) / (sig ^ 2 * del)
+      K.M * (K.a ^ 2 + r ^ 2) * (r ^ 2 - K.a ^ 2 * c ^ 2) / (sig ^ 2 * del)
     else if (i = 0 ∧ j = 2) ∨ (i = 2 ∧ j = 0) then
-      -2 * M * a ^ 2 * c * r * s / sig ^ 2
+      -2 * K.M * K.a ^ 2 * c * r * s / sig ^ 2
     else if (i = 1 ∧ j = 3) ∨ (i = 3 ∧ j = 1) then
-      -M * a * s ^ 2 * (-a ^ 4 * c ^ 2 + a ^ 2 * c ^ 2 * r ^ 2 + a ^ 2 * r ^ 2 + 3 * r ^ 4)
+      -K.M * K.a * s ^ 2
+          * (-K.a ^ 4 * c ^ 2 + K.a ^ 2 * c ^ 2 * r ^ 2 + K.a ^ 2 * r ^ 2 + 3 * r ^ 4)
         / (sig ^ 2 * del)
     else if (i = 2 ∧ j = 3) ∨ (i = 3 ∧ j = 2) then
-      2 * M * a ^ 3 * c * r * s ^ 3 / sig ^ 2
+      2 * K.M * K.a ^ 3 * c * r * s ^ 3 / sig ^ 2
     else 0
   else if k = 1 then
-    if i = 0 ∧ j = 0 then M * (r ^ 2 - a ^ 2 * c ^ 2) * del / sig ^ 3
+    if i = 0 ∧ j = 0 then K.M * (r ^ 2 - K.a ^ 2 * c ^ 2) * del / sig ^ 3
     else if (i = 0 ∧ j = 3) ∨ (i = 3 ∧ j = 0) then
-      -M * a * s ^ 2 * (r ^ 2 - a ^ 2 * c ^ 2) * del / sig ^ 3
+      -K.M * K.a * s ^ 2 * (r ^ 2 - K.a ^ 2 * c ^ 2) * del / sig ^ 3
     else if i = 1 ∧ j = 1 then
-      -(-M * a ^ 2 * c ^ 2 + M * r ^ 2 + a ^ 2 * c ^ 2 * r - a ^ 2 * r) / (sig * del)
-    else if (i = 1 ∧ j = 2) ∨ (i = 2 ∧ j = 1) then -a ^ 2 * c * s / sig
+      -(-K.M * K.a ^ 2 * c ^ 2 + K.M * r ^ 2 + K.a ^ 2 * c ^ 2 * r - K.a ^ 2 * r) / (sig * del)
+    else if (i = 1 ∧ j = 2) ∨ (i = 2 ∧ j = 1) then -K.a ^ 2 * c * s / sig
     else if i = 2 ∧ j = 2 then -r * del / sig
     else if i = 3 ∧ j = 3 then
-      -s ^ 2 * del * (-M * a ^ 4 * c ^ 4 + M * a ^ 4 * c ^ 2 + M * a ^ 2 * c ^ 2 * r ^ 2
-        - M * a ^ 2 * r ^ 2 + a ^ 4 * c ^ 4 * r + 2 * a ^ 2 * c ^ 2 * r ^ 3 + r ^ 5) / sig ^ 3
+      -s ^ 2 * del * (-K.M * K.a ^ 4 * c ^ 4 + K.M * K.a ^ 4 * c ^ 2
+        + K.M * K.a ^ 2 * c ^ 2 * r ^ 2 - K.M * K.a ^ 2 * r ^ 2 + K.a ^ 4 * c ^ 4 * r
+        + 2 * K.a ^ 2 * c ^ 2 * r ^ 3 + r ^ 5) / sig ^ 3
     else 0
   else if k = 2 then
-    if i = 0 ∧ j = 0 then -2 * M * a ^ 2 * c * r * s / sig ^ 3
+    if i = 0 ∧ j = 0 then -2 * K.M * K.a ^ 2 * c * r * s / sig ^ 3
     else if (i = 0 ∧ j = 3) ∨ (i = 3 ∧ j = 0) then
-      2 * M * a * c * r * s * (a ^ 2 + r ^ 2) / sig ^ 3
-    else if i = 1 ∧ j = 1 then a ^ 2 * c * s / (sig * del)
+      2 * K.M * K.a * c * r * s * (K.a ^ 2 + r ^ 2) / sig ^ 3
+    else if i = 1 ∧ j = 1 then K.a ^ 2 * c * s / (sig * del)
     else if (i = 1 ∧ j = 2) ∨ (i = 2 ∧ j = 1) then r / sig
-    else if i = 2 ∧ j = 2 then -a ^ 2 * c * s / sig
+    else if i = 2 ∧ j = 2 then -K.a ^ 2 * c * s / sig
     else if i = 3 ∧ j = 3 then
-      -c * s * (-2 * M * a ^ 4 * c ^ 4 * r + 2 * M * a ^ 4 * r - 4 * M * a ^ 2 * c ^ 2 * r ^ 3
-        + 4 * M * a ^ 2 * r ^ 3 + a ^ 6 * c ^ 4 + a ^ 4 * c ^ 4 * r ^ 2
-        + 2 * a ^ 4 * c ^ 2 * r ^ 2 + 2 * a ^ 2 * c ^ 2 * r ^ 4 + a ^ 2 * r ^ 4 + r ^ 6) / sig ^ 3
+      -c * s * (-2 * K.M * K.a ^ 4 * c ^ 4 * r + 2 * K.M * K.a ^ 4 * r
+        - 4 * K.M * K.a ^ 2 * c ^ 2 * r ^ 3 + 4 * K.M * K.a ^ 2 * r ^ 3 + K.a ^ 6 * c ^ 4
+        + K.a ^ 4 * c ^ 4 * r ^ 2 + 2 * K.a ^ 4 * c ^ 2 * r ^ 2 + 2 * K.a ^ 2 * c ^ 2 * r ^ 4
+        + K.a ^ 2 * r ^ 4 + r ^ 6) / sig ^ 3
     else 0
   else
-    if (i = 0 ∧ j = 1) ∨ (i = 1 ∧ j = 0) then M * a * (r ^ 2 - a ^ 2 * c ^ 2) / (sig ^ 2 * del)
-    else if (i = 0 ∧ j = 2) ∨ (i = 2 ∧ j = 0) then -2 * M * a * c * r / (s * sig ^ 2)
+    if (i = 0 ∧ j = 1) ∨ (i = 1 ∧ j = 0) then
+      K.M * K.a * (r ^ 2 - K.a ^ 2 * c ^ 2) / (sig ^ 2 * del)
+    else if (i = 0 ∧ j = 2) ∨ (i = 2 ∧ j = 0) then -2 * K.M * K.a * c * r / (s * sig ^ 2)
     else if (i = 1 ∧ j = 3) ∨ (i = 3 ∧ j = 1) then
-      (-M * a ^ 4 * c ^ 4 + M * a ^ 4 * c ^ 2 - M * a ^ 2 * c ^ 2 * r ^ 2 - M * a ^ 2 * r ^ 2
-        - 2 * M * r ^ 4 + a ^ 4 * c ^ 4 * r + 2 * a ^ 2 * c ^ 2 * r ^ 3 + r ^ 5) / (sig ^ 2 * del)
+      (-K.M * K.a ^ 4 * c ^ 4 + K.M * K.a ^ 4 * c ^ 2 - K.M * K.a ^ 2 * c ^ 2 * r ^ 2
+        - K.M * K.a ^ 2 * r ^ 2 - 2 * K.M * r ^ 4 + K.a ^ 4 * c ^ 4 * r
+        + 2 * K.a ^ 2 * c ^ 2 * r ^ 3 + r ^ 5) / (sig ^ 2 * del)
     else if (i = 2 ∧ j = 3) ∨ (i = 3 ∧ j = 2) then
-      c * (-2 * M * a ^ 2 * c ^ 2 * r + 2 * M * a ^ 2 * r + a ^ 4 * c ^ 4
-        + 2 * a ^ 2 * c ^ 2 * r ^ 2 + r ^ 4) / (s * sig ^ 2)
+      c * (-2 * K.M * K.a ^ 2 * c ^ 2 * r + 2 * K.M * K.a ^ 2 * r + K.a ^ 4 * c ^ 4
+        + 2 * K.a ^ 2 * c ^ 2 * r ^ 2 + r ^ 4) / (s * sig ^ 2)
     else 0
 
-/-- Lower-index symmetry of `kerrChristoffel`. -/
-lemma kerrChristoffel_symm (M a : ℝ) (x : Fin 4 → ℝ) (k i j : Fin 4) :
-    kerrChristoffel M a x k i j = kerrChristoffel M a x k j i := by
-  fin_cases k <;> fin_cases i <;> fin_cases j <;> simp [kerrChristoffel]
+/-- Lower-index symmetry of `K.christoffel`. -/
+lemma christoffel_symm (K : KerrSpacetime) (x : Fin 4 → ℝ) (k i j : Fin 4) :
+    K.christoffel x k i j = K.christoffel x k j i := by
+  fin_cases k <;> fin_cases i <;> fin_cases j <;> simp [christoffel]
 
-/-- `kerrChristoffel` does not depend on the `t` (`μ = 0`) or `φ` (`μ = 3`) coordinates. -/
-lemma pd_kerrG_const_03 (M a : ℝ) (x : Fin 4 → ℝ) (μ : Fin 4) (hμ : μ = 0 ∨ μ = 3)
-    (k i j : Fin 4) : coordDeriv μ (fun y => kerrChristoffel M a y k i j) x = 0 := by
+/-- `K.christoffel` does not depend on the `t` (`μ = 0`) or `φ` (`μ = 3`) coordinates. -/
+lemma pd_christoffel_const_03 (K : KerrSpacetime) (x : Fin 4 → ℝ) (μ : Fin 4) (hμ : μ = 0 ∨ μ = 3)
+    (k i j : Fin 4) : coordDeriv μ (fun y => K.christoffel y k i j) x = 0 := by
   rcases hμ with rfl | rfl
-  · exact coordDeriv_const_slice 0 (kerrChristoffel M a x k i j)
-      (fun _ => by simp [kerrChristoffel, sigma, delta])
-  · exact coordDeriv_const_slice 3 (kerrChristoffel M a x k i j)
-      (fun _ => by simp [kerrChristoffel, sigma, delta])
+  · exact coordDeriv_const_slice 0 (K.christoffel x k i j)
+      (fun _ => by simp [christoffel, sigma, delta])
+  · exact coordDeriv_const_slice 3 (K.christoffel x k i j)
+      (fun _ => by simp [christoffel, sigma, delta])
 
 /-!
 
@@ -409,115 +425,116 @@ lemma pd_kerrG_const_03 (M a : ℝ) (x : Fin 4 → ℝ) (μ : Fin 4) (hμ : μ =
 
 -/
 
-private lemma christoffel_kerr_0 (M a : ℝ) (x : Fin 4 → ℝ)
-    (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
+private lemma christoffel_0 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (i j : Fin 4) :
-    christoffel (kerrMetric M a) (kerrMetricInv M a) x 0 i j = kerrChristoffel M a x 0 i j := by
+    Pipeline.christoffel K.metric K.metricInv x 0 i j = K.christoffel x 0 i j := by
   have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  simp only [christoffel, Fin.sum_univ_four, pd_kerrMetric_eq M a _ x hsig hdel]
+  simp only [Pipeline.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel]
   fin_cases i <;> fin_cases j <;>
-    simp only [kerrMetricInv, kerrMetricD, kerrChristoffel] <;> norm_num
+    simp only [metricInv, metricD, christoffel] <;> norm_num
   all_goals
     field_simp [hsig, hdel, hs]
-    simp -failIfUnchanged only [sigma, delta, kerrAxialFactor, hs2]
+    simp -failIfUnchanged only [sigma, delta, axialFactor, hs2]
     ring
 
-private lemma christoffel_kerr_1 (M a : ℝ) (x : Fin 4 → ℝ)
-    (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
+private lemma christoffel_1 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (i j : Fin 4) :
-    christoffel (kerrMetric M a) (kerrMetricInv M a) x 1 i j = kerrChristoffel M a x 1 i j := by
+    Pipeline.christoffel K.metric K.metricInv x 1 i j = K.christoffel x 1 i j := by
   have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  simp only [christoffel, Fin.sum_univ_four, pd_kerrMetric_eq M a _ x hsig hdel]
+  simp only [Pipeline.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel]
   fin_cases i <;> fin_cases j <;>
-    simp only [kerrMetricInv, kerrMetricD, kerrChristoffel] <;> norm_num
+    simp only [metricInv, metricD, christoffel] <;> norm_num
   all_goals field_simp [hsig, hdel, hs]
-  all_goals simp -failIfUnchanged only [sigma, delta, kerrAxialFactor, hs2]
+  all_goals simp -failIfUnchanged only [sigma, delta, axialFactor, hs2]
   all_goals ring
 
-private lemma christoffel_kerr_2 (M a : ℝ) (x : Fin 4 → ℝ)
-    (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
+private lemma christoffel_2 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (i j : Fin 4) :
-    christoffel (kerrMetric M a) (kerrMetricInv M a) x 2 i j = kerrChristoffel M a x 2 i j := by
+    Pipeline.christoffel K.metric K.metricInv x 2 i j = K.christoffel x 2 i j := by
   have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  simp only [christoffel, Fin.sum_univ_four, pd_kerrMetric_eq M a _ x hsig hdel]
+  simp only [Pipeline.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel]
   fin_cases i <;> fin_cases j <;>
-    simp only [kerrMetricInv, kerrMetricD, kerrChristoffel] <;> norm_num
+    simp only [metricInv, metricD, christoffel] <;> norm_num
   all_goals field_simp [hsig, hdel, hs]
-  all_goals simp -failIfUnchanged only [sigma, delta, kerrAxialFactor, hs2]
+  all_goals simp -failIfUnchanged only [sigma, delta, axialFactor, hs2]
   all_goals ring
 
-private lemma christoffel_kerr_3 (M a : ℝ) (x : Fin 4 → ℝ)
-    (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
+private lemma christoffel_3 (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (i j : Fin 4) :
-    christoffel (kerrMetric M a) (kerrMetricInv M a) x 3 i j = kerrChristoffel M a x 3 i j := by
+    Pipeline.christoffel K.metric K.metricInv x 3 i j = K.christoffel x 3 i j := by
   have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  simp only [christoffel, Fin.sum_univ_four, pd_kerrMetric_eq M a _ x hsig hdel]
+  simp only [Pipeline.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel]
   fin_cases i <;> fin_cases j <;>
-    simp only [kerrMetricInv, kerrMetricD, kerrChristoffel] <;> norm_num
+    simp only [metricInv, metricD, christoffel] <;> norm_num
   all_goals
     field_simp [hsig, hdel, hs]
-    simp -failIfUnchanged only [sigma, delta, kerrAxialFactor, hs2]
+    simp -failIfUnchanged only [sigma, delta, axialFactor, hs2]
     ring
 
-/-- Every Christoffel symbol computed via `Pipeline.christoffel` agrees with `kerrChristoffel` at
-every
-regular coordinate point (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`). -/
-lemma christoffel_kerr_eq (M a : ℝ) (x : Fin 4 → ℝ)
-    (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
+/-- Every Christoffel symbol computed via `Pipeline.christoffel` agrees with `K.christoffel` at
+every regular coordinate point (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`). -/
+lemma christoffel_eq (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (k i j : Fin 4) :
-    christoffel (kerrMetric M a) (kerrMetricInv M a) x k i j = kerrChristoffel M a x k i j := by
+    Pipeline.christoffel K.metric K.metricInv x k i j = K.christoffel x k i j := by
   fin_cases k
-  · exact christoffel_kerr_0 M a x hsig hdel hs i j
-  · exact christoffel_kerr_1 M a x hsig hdel hs i j
-  · exact christoffel_kerr_2 M a x hsig hdel hs i j
-  · exact christoffel_kerr_3 M a x hsig hdel hs i j
+  · exact christoffel_0 K x hsig hdel hs i j
+  · exact christoffel_1 K x hsig hdel hs i j
+  · exact christoffel_2 K x hsig hdel hs i j
+  · exact christoffel_3 K x hsig hdel hs i j
 
-/-- Continuity-neighborhood equality between `Pipeline.christoffel` and `kerrChristoffel`. -/
-lemma eventually_christoffel_kerr_eq (M a : ℝ) (x : Fin 4 → ℝ)
-    (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
+/-- Continuity-neighborhood equality between `Pipeline.christoffel` and `K.christoffel`. -/
+lemma eventually_christoffel_eq (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (k i j : Fin 4) :
-    (fun y => christoffel (kerrMetric M a) (kerrMetricInv M a) y k i j)
-      =ᶠ[nhds x] fun y => kerrChristoffel M a y k i j := by
-  have hcSig : Continuous (fun y : Fin 4 → ℝ => sigma a (y 1) (y 2)) := by
+    (fun y => Pipeline.christoffel K.metric K.metricInv y k i j)
+      =ᶠ[nhds x] fun y => K.christoffel y k i j := by
+  have hcSig : Continuous (fun y : Fin 4 → ℝ => K.sigma (y 1) (y 2)) := by
     simp only [sigma]; fun_prop
-  have hcDel : Continuous (fun y : Fin 4 → ℝ => delta M a (y 1)) := by
+  have hcDel : Continuous (fun y : Fin 4 → ℝ => K.delta (y 1)) := by
     simp only [delta]; fun_prop
   have hcS : Continuous (fun y : Fin 4 → ℝ => Real.sin (y 2)) := by fun_prop
   have hmem := (hcSig.continuousAt.eventually_ne hsig).and
     ((hcDel.continuousAt.eventually_ne hdel).and (hcS.continuousAt.eventually_ne hs))
   filter_upwards [hmem] with y ⟨hySig, hyDel, hyS⟩
-  exact christoffel_kerr_eq M a y hySig hyDel hyS k i j
+  exact K.christoffel_eq y hySig hyDel hyS k i j
 
 -- Factored out as an auxiliary scalar table because contracted derivatives simplify the vacuum
 -- Ricci calculation.
 /-- Contracted Boyer–Lindquist Kerr Christoffel trace `∑ ρ, Γ^ρ_{ρ μ} = ∂_μ ln(Σ sin θ)`. -/
-noncomputable def kerrChristoffelTrace (a : ℝ) (x : Fin 4 → ℝ) (μ : Fin 4) : ℝ :=
-  if μ = 1 then 2 * x 1 / sigma a (x 1) (x 2)
+noncomputable def christoffelTrace (K : KerrSpacetime) (x : Fin 4 → ℝ) (μ : Fin 4) : ℝ :=
+  if μ = 1 then 2 * x 1 / K.sigma (x 1) (x 2)
   else if μ = 2 then
     Real.cos (x 2) / Real.sin (x 2)
-      - 2 * a ^ 2 * Real.cos (x 2) * Real.sin (x 2) / sigma a (x 1) (x 2)
+      - 2 * K.a ^ 2 * Real.cos (x 2) * Real.sin (x 2) / K.sigma (x 1) (x 2)
   else 0
 
-/-- Exact contraction identity `∑ ρ, kerrChristoffel M a x ρ ρ μ = kerrChristoffelTrace a x μ`. -/
-lemma sum_kerrChristoffel_trace (M a : ℝ) (x : Fin 4 → ℝ)
-    (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
+/-- Exact contraction identity `∑ ρ, K.christoffel x ρ ρ μ = K.christoffelTrace x μ`. -/
+lemma sum_christoffel_trace (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (μ : Fin 4) :
-    (∑ ρ : Fin 4, kerrChristoffel M a x ρ ρ μ) = kerrChristoffelTrace a x μ := by
+    (∑ ρ : Fin 4, K.christoffel x ρ ρ μ) = K.christoffelTrace x μ := by
   have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
   fin_cases μ
-  · simp [Fin.sum_univ_four, kerrChristoffel, kerrChristoffelTrace]
-  · simp only [Fin.sum_univ_four, kerrChristoffel, kerrChristoffelTrace]
+  · simp [Fin.sum_univ_four, christoffel, christoffelTrace]
+  · simp only [Fin.sum_univ_four, christoffel, christoffelTrace]
     norm_num
     field_simp [hsig, hdel]
     simp only [sigma, delta]
     ring
-  · simp only [Fin.sum_univ_four, kerrChristoffel, kerrChristoffelTrace]
+  · simp only [Fin.sum_univ_four, christoffel, christoffelTrace]
     norm_num
     field_simp [hsig, hs]
     simp only [sigma]
     rw [hs2]
     ring
-  · simp [Fin.sum_univ_four, kerrChristoffel, kerrChristoffelTrace]
+  · simp [Fin.sum_univ_four, christoffel, christoffelTrace]
+
+end KerrSpacetime
 
 end Kerr
 
