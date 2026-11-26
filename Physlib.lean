@@ -462,6 +462,7 @@ public import Physlib.QuantumMechanics.Operators.OneDimension.Momentum
 public import Physlib.QuantumMechanics.Operators.OneDimension.Parity
 public import Physlib.QuantumMechanics.Operators.OneDimension.Position
 public import Physlib.QuantumMechanics.Operators.OneDimension.Unbounded
+public import Physlib.QuantumMechanics.Operators.SelfAdjoint
 public import Physlib.QuantumMechanics.Operators.SpaceD.AngularMomentum
 public import Physlib.QuantumMechanics.Operators.SpaceD.AngularMomentum.DimThree
 public import Physlib.QuantumMechanics.Operators.SpaceD.Momentum
