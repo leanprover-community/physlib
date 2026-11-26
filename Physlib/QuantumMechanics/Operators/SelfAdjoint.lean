@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gregory J. Loges
+Authors: Adam Bornemann, Gregory J. Loges
 -/
 module
 
@@ -11,6 +11,11 @@ public import Physlib.QuantumMechanics.Operators.Basic
 # Self-adjoint operators
 
 ## i. Overview
+
+The purpose of this module is to collect basic properties of self-adjoint operators.
+
+See `LinearPMap.instStar` and `LinearPMap.isSelfAdjoint_def` for the definition of `IsSelfAdjoint`
+for `LinearPMap`s.
 
 ## ii. Key results
 
@@ -34,6 +39,8 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteS
 ## A. Self-adjoint from symmetric
 -/
 
+/-- A densely-defined symmetric operators is self-adjoint *if and only if*
+it has the same domain as its adjoint. -/
 lemma IsSymmetric.isSelfAdjoint_iff (h : T.IsSymmetric) (h' : T.HasDenseDomain) :
     IsSelfAdjoint T ↔ T†.domain = T.domain := by
   constructor <;> intro h''
@@ -84,19 +91,21 @@ variable (h : IsSelfAdjoint T)
 
 include h
 
+/-- A self-adjoint operator is symmetric. -/
 lemma isSymmetric : T.IsSymmetric := by
   rw [isSymmetric_def]
   nth_rw 1 [← h]
   exact adjoint_isFormalAdjoint h.dense_domain
 
+/-- A self-adjoint operator is closable. -/
 lemma isClosable : T.IsClosable := h.isClosed.isClosable
 
+/-- A self-adjoint operator is unbounded (densely defined and closable). -/
 lemma isUnbounded : T.IsUnbounded := ⟨h.dense_domain, isClosable h⟩
 
+/-- The adjoint of a self-adjoint operator is self-adjoint. -/
 @[aesop safe apply]
-protected lemma adjoint : IsSelfAdjoint T† := by
-  apply isSelfAdjoint_def.mp at h
-  exact h.symm ▸ h
+protected lemma adjoint : IsSelfAdjoint T† := by simp_all only [isSelfAdjoint_def]
 
 open scoped ComplexConjugate in
 @[aesop safe apply]
