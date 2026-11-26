@@ -6,9 +6,9 @@ Within Physlib mathematics and physics often intertwine, and it is important to 
 
 1. [General physics results in Physlib](#physics-results)
 2. [The ./Mathematics directory](#mathematics-directory)
-3. [Don't put physics in ./Mathematics](#no-physics-in-mathematics)
-4. [Use physics where possible](#use-physics-where-possible)
-5. [The ./Mathematics/ForMathlib directory](#formathlib-directory)
+3. [The ./Mathematics/ForMathlib directory](#formathlib-directory)
+4. [Don't put physics in ./Mathematics](#no-physics-in-mathematics)
+5. [Use physics where possible](#use-physics-where-possible)
 6. [Check Mathlib first](#check-mathlib-first)
 
 <a id="physics-results"></a>
