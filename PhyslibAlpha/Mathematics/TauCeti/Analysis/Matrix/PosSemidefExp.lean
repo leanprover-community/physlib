@@ -6,8 +6,8 @@ Authors: Daniel Leonforte
 module
 
 public import PhyslibAlpha.Mathematics.TauCeti.LinearAlgebra.Matrix.PosSemidef
+public import PhyslibAlpha.Mathematics.TauCeti.Topology.Instances.Matrix
 public import Mathlib.Analysis.SpecialFunctions.Exponential
-public import Mathlib.Topology.Instances.Matrix
 
 /-!
 # The entrywise exponential of a positive-semidefinite matrix
@@ -59,7 +59,7 @@ variable {ι : Type*}
 lemma map_exp {K : Matrix ι ι ℝ} (hK : K.PosSemidef) : (K.map Real.exp).PosSemidef := by
   have h : HasSum (fun n : ℕ => ((Nat.factorial n : ℝ)⁻¹) • (fun i j => K i j ^ n : Matrix ι ι ℝ))
       (K.map Real.exp) := by
-    refine Pi.hasSum.mpr fun i => Pi.hasSum.mpr fun j => ?_
+    refine Matrix.hasSum_iff.mpr fun i j => ?_
     rw [Matrix.map_apply, Real.exp_eq_exp_ℝ]
     exact NormedSpace.exp_series_hasSum_exp' (𝕂 := ℝ) (K i j)
   exact PosSemidef.of_hasSum h fun n => (hK.hadamard_pow n).smul (by positivity)

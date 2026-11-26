@@ -422,6 +422,7 @@ public import PhyslibAlpha.Mathematics.TauCeti.RepresentationTheory.Continuous.S
 public import PhyslibAlpha.Mathematics.TauCeti.RepresentationTheory.Continuous.Unitary.Basic
 public import PhyslibAlpha.Mathematics.TauCeti.Topology.Algebra.ContinuousMonoidHom.Polish
 public import PhyslibAlpha.Mathematics.TauCeti.Topology.Algebra.PontryaginDual
+public import PhyslibAlpha.Mathematics.TauCeti.Topology.Instances.Matrix
 public import PhyslibAlpha.Mathematics.TensorProductComm
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.GeorgiGlashow.StandardModelHom
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.ChargeBalance
