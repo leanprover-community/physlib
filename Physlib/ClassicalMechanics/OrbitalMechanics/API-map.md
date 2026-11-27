@@ -72,8 +72,8 @@ force at a focus, and their squared periods are proportional to a³ {1}. [TODO]
    `VisViva.speedEscape_sq_eq_two_mul_speedCircular_sq`, `VisViva.speedCircular_lt_speedEscape`
 9. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/BinaryStar.lean —
    `binarySignedSweptArea_eq_of_gravity`, `binarySignedSweptArea_eq_of_eq_duration`
-10. Physlib/ClassicalMechanics/OrbitalMechanics/ReducedMass.lean —
-    `ClassicalMechanics.PointParticle.NewtonianSystem.sum_relativeKineticEnergy_eq_reducedMass`
+10. Physlib/ClassicalMechanics/OrbitalMechanics/TwoBodyKineticEnergy.lean —
+    `binaryReducedMass`, `sum_relativeKineticEnergy_eq_binaryReducedMass`
 
 ## References
 
