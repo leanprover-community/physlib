@@ -56,7 +56,7 @@ into a manifold is differentiable. [TODO]
 9. Physlib/SpaceAndTime/SpaceTime/Basic.lean — `MeasurableSpace`, `BorelSpace`, `MeasureSpace`,
    `IsOpenPosMeasure`, `IsFiniteMeasureOnCompacts`, `Measure.IsAddHaarMeasure`
 10. Physlib/SpaceAndTime/SpaceTime/TimeSlice.lean — `timeSlice`, `timeSliceLinearEquiv`,
-   `distTimeSlice`
+   `timeSliceOfDist`, `timeSliceOfTempDist`
 
 ## References
 
