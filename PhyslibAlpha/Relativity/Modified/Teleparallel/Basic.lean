@@ -5,7 +5,7 @@ Authors: Alex Vergara Gil, thunder-detector
 -/
 module
 
-public import PhyslibAlpha.Relativity.General.Modified.EinsteinCartan
+public import PhyslibAlpha.Relativity.Modified.EinsteinCartan
 import Mathlib.Tactic.Ring
 
 /-!

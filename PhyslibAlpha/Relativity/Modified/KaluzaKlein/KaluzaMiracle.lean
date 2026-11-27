@@ -6,7 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
-public import PhyslibAlpha.Relativity.General.Modified.KaluzaKlein.Basic
+public import PhyslibAlpha.Relativity.Modified.KaluzaKlein.Basic
 public import PhyslibAlpha.Relativity.Metrics.Basic
 public import PhyslibAlpha.Relativity.Tensors.MaxwellStressEnergy
 import Mathlib.Tactic.Linarith

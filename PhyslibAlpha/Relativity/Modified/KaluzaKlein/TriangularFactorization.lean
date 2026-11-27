@@ -6,7 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-public import PhyslibAlpha.Relativity.General.Modified.KaluzaKlein.Basic
+public import PhyslibAlpha.Relativity.Modified.KaluzaKlein.Basic
 import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Ring

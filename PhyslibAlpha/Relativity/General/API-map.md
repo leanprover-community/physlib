@@ -358,76 +358,76 @@ Equivalence Principle violation parameter η_N [78].
 54. PhyslibAlpha/Cosmology/FLRW/FriedmannBridge.lean — `flrwScaleFactorOfReal`,
     `FLRWSpacetime.ofCosmology`, `einsteinTensorOf_ofCosmology_iff_friedmann`,
     `friedmannSolution_of_einsteinTensorOf`
-55. PhyslibAlpha/Relativity/General/Modified/Nordstrom.lean — `NordstromSpacetime`,
+55. PhyslibAlpha/Relativity/Modified/Nordstrom.lean — `NordstromSpacetime`,
     `NordstromSpacetime.metric`, `NordstromSpacetime.metricInv`, `NordstromSpacetime.metricTensor`,
     `NordstromSpacetime.toCoordinateMetric`, `NordstromSpacetime.light_deflection_zero`,
     `NordstromSpacetime.christoffel`, `NordstromSpacetime.christoffel_eq`,
     `NordstromSpacetime.ricciScalarOf`, `NordstromSpacetime.einsteinFokker_iff`
-56. PhyslibAlpha/Relativity/General/Modified/BransDicke.lean — `BransDickeTheory`,
+56. PhyslibAlpha/Relativity/Modified/BransDicke.lean — `BransDickeTheory`,
     `BransDickeTheory.gamma`, `BransDickeTheory.coupling`, `gamma`, `gamma_eq_one_sub`,
     `gamma_bounds`, `cassini_deviation`, `gamma_tendsto_atTop`, `fR_gamma`, `coupling`,
     `coupling_eq_one_add`, `coupling_bounds`
-57. PhyslibAlpha/Relativity/General/Modified/FRGravity.lean — `FRTheory`,
+57. PhyslibAlpha/Relativity/Modified/FRGravity.lean — `FRTheory`,
     `FRTheory.generalRelativity`, `FRTheory.starobinsky`, `FRTheory.algebraicFieldEqn`,
     `linear_is_einstein`, `trace_algebraicFieldEqn`, `trace_algebraicFieldEqn_four`,
     `starobinskyPotential`, `starobinsky_scalar_inversion`, `starobinskyPotential_eq`,
     `starobinsky_nonconstant_deriv`, `einsteinFramePotential`, `starobinsky_einsteinFrame`,
     `starobinsky_plateau`
-58. PhyslibAlpha/Relativity/General/Modified/Ostrogradsky.lean — `HigherDerivativeModel`,
+58. PhyslibAlpha/Relativity/Modified/Ostrogradsky.lean — `HigherDerivativeModel`,
     `kineticMatrix`, `kineticMatrix_degenerate`, `HigherDerivativeModel.hamiltonian`,
     `HigherDerivativeModel.hamiltonian_add`, `HigherDerivativeModel.ostrogradsky_unbounded_below`,
     `kinetic_nonneg`, `kinetic_zero_iff`
-59. PhyslibAlpha/Relativity/General/Modified/Galileon.lean — `CubicGalileon`,
+59. PhyslibAlpha/Relativity/Modified/Galileon.lean — `CubicGalileon`,
     `CubicGalileon.density`, `cubic_total_derivative`, `CubicGalileon.density_hasDerivAt`,
     `shift_total_derivative`, `shift_forbids_potential`
-60. PhyslibAlpha/Relativity/General/Modified/ChameleonScreening.lean — `ChameleonModel`,
+60. PhyslibAlpha/Relativity/Modified/ChameleonScreening.lean — `ChameleonModel`,
     `ChameleonModel.massSq`, `ChameleonModel.mass`, `ChameleonModel.mass_mono`, `comptonRange`,
     `comptonRange_antitone`, `ChameleonModel.range_shrinks`, `yukawaSuppression`,
     `yukawaSuppression_lt_half`, `thinShellParameter`, `screeningFactor`, `thin_shell_suppressed`
-61. PhyslibAlpha/Relativity/General/Modified/EinsteinCartan.lean — `AffineConnection`,
+61. PhyslibAlpha/Relativity/Modified/EinsteinCartan.lean — `AffineConnection`,
     `EinsteinCartanData`, `EinsteinCartanData.torsion`, `EinsteinCartanData.MetricCompatible`,
     `EinsteinCartanData.connection_unique`, `torsion`, `torsion_antisymm`, `MetricCompatible`,
     `leviCivitaOfDeriv`, `leviCivitaOfDeriv_compatible`, `contorsion`,
     `contorsion_antisymm_outer`, `contorsion_torsion`, `connection_unique`, `palatiniTensor`,
     `invertPalatiniTensor`
-62. PhyslibAlpha/Relativity/General/Modified/Teleparallel/Basic.lean — `Tetrad`,
+62. PhyslibAlpha/Relativity/Modified/Teleparallel/Basic.lean — `Tetrad`,
     `Tetrad.weitzenbockConnection`, `Tetrad.mul_weitzenbockConnection`,
     `Tetrad.weitzenbockTorsion`, `Tetrad.weitzenbockTorsion_eq`,
     `Tetrad.weitzenbockTorsion_antisymm`, `superpotential`, `superpotential_antisymm`,
     `torsionScalar`
-63. PhyslibAlpha/Relativity/General/Modified/Teleparallel/FLRWTorsion.lean — `flrwTetrad`,
+63. PhyslibAlpha/Relativity/Modified/Teleparallel/FLRWTorsion.lean — `flrwTetrad`,
     `flrwTetradInv`, `flrwTetrad_mul_inv`, `flrwTetradFrame`, `flrwWeitzenbock_hubble`,
     `flrwTorsionScalar`, `torsionScalar_flrw_eq_flrwTorsionScalar`,
     `flrwTorsionScalar_ofCosmology`, `flrwBoundaryTerm`,
     `ricciScalarOf_flrw_flat_eq_neg_torsion_add_boundary`
-64. PhyslibAlpha/Relativity/General/Modified/Teleparallel/FTGravity.lean — `FTTheory`,
+64. PhyslibAlpha/Relativity/Modified/Teleparallel/FTGravity.lean — `FTTheory`,
     `FTTheory.tegr`, `FTTheory.quadratic`, `FTTheory.friedmannLHS`, `FTTheory.friedmannLHS_tegr`,
     `FTTheory.friedmannLHS_quadratic`
-65. PhyslibAlpha/Relativity/General/Modified/Lovelock/GeneralizedKronecker.lean — `genKronecker`,
+65. PhyslibAlpha/Relativity/Modified/Lovelock/GeneralizedKronecker.lean — `genKronecker`,
     `genKronecker_eq_zero_of_lt`, `genKronecker_five_eq_sum_perm`, `perm_fin5_fiber_split`
-66. PhyslibAlpha/Relativity/General/Modified/Lovelock/Basic.lean — `AlgCurvature`,
+66. PhyslibAlpha/Relativity/Modified/Lovelock/Basic.lean — `AlgCurvature`,
     `AlgCurvature.ricciMixed`, `AlgCurvature.ricciScalar`, `AlgCurvature.ricciSq`,
     `AlgCurvature.riemannSq`, `AlgCurvature.gaussBonnetScalar`, `AlgCurvature.lanczosTensor`,
     `lovelockContract5`, `lovelockContract5_eq_kronecker_sum`, `lovelockContract5_eq_zero_of_lt`,
     `lovelockContract5_eq_neg_eight_lanczos`, `bach_lanczos_lt_five`, `bach_lanczos_four`,
     `constantCurvature`, `gaussBonnetScalar_constantCurvature_four`,
     `lanczosTensor_constantCurvature_five`
-67. PhyslibAlpha/Relativity/General/Modified/KaluzaKlein/Basic.lean — `KaluzaKleinData`,
+67. PhyslibAlpha/Relativity/Modified/KaluzaKlein/Basic.lean — `KaluzaKleinData`,
     `KaluzaKleinData.metric`, `KaluzaKleinData.metricInv`, `KaluzaKleinData.gaugeShift`,
     `KaluzaKleinData.toMetricTensor`, `extendedPotential`, `metric4Ext`, `kkMetric`,
     `kkMetric_symm`, `contravariantPotential`, `kkMetricInv`, `kkMetricInv_mul_kkMetric`,
     `kkMetricInv_symm`, `kkMetric_mul_kkMetricInv`, `kkMetricTensor`
-68. PhyslibAlpha/Relativity/General/Modified/KaluzaKlein/TriangularFactorization.lean —
+68. PhyslibAlpha/Relativity/Modified/KaluzaKlein/TriangularFactorization.lean —
     `kkTriangular`, `kkBlockDiag`, `det_kkTriangular`, `kkMetric_eq_triangular_conj`,
     `KaluzaKleinData.metric_eq_triangular_conj`
-69. PhyslibAlpha/Relativity/General/Modified/KaluzaKlein/GaugeTransform.lean —
+69. PhyslibAlpha/Relativity/Modified/KaluzaKlein/GaugeTransform.lean —
     `kkGaugeJacobian`, `det_kkGaugeJacobian`, `kkGaugeJacobian_pullback`,
     `KaluzaKleinData.gaugeJacobian_pullback`
-70. PhyslibAlpha/Relativity/General/Modified/KaluzaKlein/KaluzaMiracle.lean — `maxwellF2`,
+70. PhyslibAlpha/Relativity/Modified/KaluzaKlein/KaluzaMiracle.lean — `maxwellF2`,
     `maxwellStressEnergy`, `maxwellStressEnergy_trace_zero`, `KaluzaKleinData.ricci44`,
     `KaluzaKleinData.ricci4D`, `KaluzaKleinData.scalar5D`, `KaluzaKleinData.kaluza_miracle`,
     `KaluzaKleinData.einstein4D_eq_zero_iff`
-71. PhyslibAlpha/Relativity/General/Modified/EinsteinAether.lean — `AetherCouplings`,
+71. PhyslibAlpha/Relativity/Modified/EinsteinAether.lean — `AetherCouplings`,
     `AetherCouplings.c13`, `AetherCouplings.c14`, `AetherCouplings.c123`,
     `AetherCouplings.c1Sub3`, `IsUnitTimelike`, `minkowskiRestAether`,
     `minkowskiRestAether_unitTimelike`, `linUnitTimelike_time_zero`,
@@ -438,33 +438,33 @@ Equivalence Principle violation parameter η_N [78].
     `AetherCouplings.spin1SpeedSq_luminal_graviton`,
     `AetherCouplings.spin0SpeedSq_luminal_graviton`, `AetherCouplings.effectiveNewtonG`,
     `AetherCouplings.effectiveNewtonG_eq_bare_iff`
-72. PhyslibAlpha/Relativity/General/Modified/MassiveGravity/FierzPauli.lean —
+72. PhyslibAlpha/Relativity/Modified/MassiveGravity/FierzPauli.lean —
     `FierzPauliTheory`, `FierzPauliTheory.ghostFree`, `minkowskiContractionSq`,
     `FierzPauliTheory.lagrangian`, `FierzPauliTheory.massTensor`,
     `FierzPauliTheory.massTensor_trace`, `FierzPauliTheory.massTensor_trace_tuned`,
     `FierzPauliTheory.longitudinal_time_ghost_free_iff`,
     `FierzPauliTheory.traceless_of_zero_trace_source`
-73. PhyslibAlpha/Relativity/General/Modified/MassiveGravity/VDVZ.lean — `grPropagatorCoupling`,
+73. PhyslibAlpha/Relativity/Modified/MassiveGravity/VDVZ.lean — `grPropagatorCoupling`,
     `massivePropagatorCoupling`, `staticSource`, `vdvz_static_ratio`,
     `vdvz_light_deflection_ratio`
-74. PhyslibAlpha/Relativity/General/Modified/MassiveGravity/DRGT.lean — `DRGTTheory`, `trK1`,
+74. PhyslibAlpha/Relativity/Modified/MassiveGravity/DRGT.lean — `DRGTTheory`, `trK1`,
     `trK2`, `trK3`, `elemSymm0`, `elemSymm1`, `elemSymm2`, `elemSymm3`, `elemSymm_isotropic3`,
     `DRGTTheory.potential`, `DRGTTheory.potential_vacuum_zero`
-75. PhyslibAlpha/Relativity/General/Modified/MOND.lean — `MONDTheory`, `newtonianAcceleration`,
+75. PhyslibAlpha/Relativity/Modified/MOND.lean — `MONDTheory`, `newtonianAcceleration`,
     `MONDTheory.deepMONDAcceleration`, `MONDTheory.Relation`, `MONDTheory.newtonian_limit`,
     `MONDTheory.deepMONDAcceleration_sq`, `MONDTheory.flat_rotation`, `newtonian_velocity_ne`,
     `simpleMu`, `standardMu`, `simpleMu_bounds`,
     `norm_pairGravityAcceleration_eq_newtonianAcceleration`
-76. PhyslibAlpha/Relativity/General/Modified/TeVeS.lean — `TeVeSMetric`, `TeVeSMetric.metric`,
+76. PhyslibAlpha/Relativity/Modified/TeVeS.lean — `TeVeSMetric`, `TeVeSMetric.metric`,
     `TeVeSMetric.metricInv`, `TeVeSMetric.symm`, `TeVeSMetric.lorentzian`,
     `TeVeSMetric.spatial`, `TeVeSMetric.mul_inv`, `TeVeSMetric.inv_mul`,
     `TeVeSMetric.metricTensor`
-77. PhyslibAlpha/Relativity/General/Modified/MOG.lean — `MOGTheory`,
+77. PhyslibAlpha/Relativity/Modified/MOG.lean — `MOGTheory`,
     `MOGTheory.yukawaEnhancementFactor`, `MOGTheory.potential`,
     `MOGTheory.yukawaEnhancementFactor_zero`, `MOGTheory.yukawaEnhancementFactor_alpha_zero`,
     `MOGTheory.yukawaEnhancementFactor_mu_zero`, `MOGTheory.yukawaEnhancementFactor_bounds`,
     `MOGTheory.yukawaEnhancementFactor_tendsto_atTop`
-78. PhyslibAlpha/Relativity/General/Modified/PPNParameters.lean — `PPNParameters`,
+78. PhyslibAlpha/Relativity/Modified/PPNParameters.lean — `PPNParameters`,
     `IsFullyConservative`, `IsSemiconservative`, `IsFullyConservative.isSemiconservative`,
     `grPPN`, `bransDickePPN`, `fRMetricPPN`, `nordstromPPN`, `grPPN_isFullyConservative`,
     `bransDickePPN_isFullyConservative`, `bransDickePPN_zero_eq_fRMetricPPN`,

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import PhyslibAlpha.Cosmology.FLRW.FriedmannBridge
-public import PhyslibAlpha.Relativity.General.Modified.Teleparallel.Basic
+public import PhyslibAlpha.Relativity.Modified.Teleparallel.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Ring
