@@ -108,7 +108,9 @@ private lemma differentiableAt_christoffel_r (K : KerrSpacetime) (x : Fin 4 → 
     simp only [christoffel, Function.update_self,
       Function.update_of_ne (by decide : (2 : Fin 4) ≠ 1)] <;>
     norm_num
-  all_goals fun_prop (disch := positivity)
+  all_goals first
+    | exact differentiableAt_const 0
+    | fun_prop (disch := positivity)
 
 private lemma differentiableAt_christoffel_theta (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (_hsig : K.sigma (x 1) (x 2) ≠ 0) (_hdel : K.delta (x 1) ≠ 0) (_hs : Real.sin (x 2) ≠ 0)
@@ -120,7 +122,9 @@ private lemma differentiableAt_christoffel_theta (K : KerrSpacetime) (x : Fin 4 
     simp only [christoffel, Function.update_self,
       Function.update_of_ne (by decide : (1 : Fin 4) ≠ 2)] <;>
     norm_num
-  all_goals fun_prop (disch := positivity)
+  all_goals first
+    | exact differentiableAt_const 0
+    | fun_prop (disch := positivity)
 
 /-- Radial partial derivative of the radial trace `∂_r (K.christoffelTrace · 1)`. -/
 lemma christoffelTraceDeriv_rr (K : KerrSpacetime) (x : Fin 4 → ℝ)
@@ -588,22 +592,17 @@ private lemma sin_pow_four_eq (θ : ℝ) :
     Real.sin θ ^ 4 = (1 - Real.cos θ ^ 2) ^ 2 := by
   rw [show Real.sin θ ^ 4 = (Real.sin θ ^ 2) ^ 2 by ring, Real.sin_sq]
 
-local macro "kerr_ricci_clear" : tactic =>
-  `(tactic| {
-    simp only [Fin.sum_univ_four, KerrSpacetime.christoffelTrace, KerrSpacetime.christoffel]
-    norm_num
-    field_simp
-    simp -failIfUnchanged only [KerrSpacetime.sigma, KerrSpacetime.delta, Real.sin_sq,
-      sin_pow_four_eq]
-    ring
-  })
-
 private lemma ricciOf_00 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     CoordinateCurvature.ricciTensor K.metric K.metricInv x 0 0 = 0 := by
   rw [ricciOf_eq_sum K x hsig hdel hs 0 0, christoffelDeriv_r_00 K x hsig hdel,
     christoffelDeriv_theta_00 K x hsig]
-  kerr_ricci_clear
+  simp only [Fin.sum_univ_four, KerrSpacetime.christoffelTrace, KerrSpacetime.christoffel]
+  norm_num
+  field_simp [hsig, hdel, hs]
+  simp -failIfUnchanged only [KerrSpacetime.sigma, KerrSpacetime.delta, Real.sin_sq,
+    sin_pow_four_eq]
+  ring
 
 private lemma ricciOf_03 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
@@ -611,14 +610,24 @@ private lemma ricciOf_03 (K : KerrSpacetime) (x : Fin 4 → ℝ)
   rw [ricciOf_eq_sum K x hsig hdel hs 0 3,
     christoffel_swap_slice K 1 3 0, christoffel_swap_slice K 2 3 0,
     christoffelDeriv_r_03 K x hsig, christoffelDeriv_theta_03 K x hsig]
-  kerr_ricci_clear
+  simp only [Fin.sum_univ_four, KerrSpacetime.christoffelTrace, KerrSpacetime.christoffel]
+  norm_num
+  field_simp [hsig, hdel, hs]
+  simp -failIfUnchanged only [KerrSpacetime.sigma, KerrSpacetime.delta, Real.sin_sq,
+    sin_pow_four_eq]
+  ring
 
 private lemma ricciOf_30 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     CoordinateCurvature.ricciTensor K.metric K.metricInv x 3 0 = 0 := by
   rw [ricciOf_eq_sum K x hsig hdel hs 3 0, christoffelDeriv_r_03 K x hsig,
     christoffelDeriv_theta_03 K x hsig]
-  kerr_ricci_clear
+  simp only [Fin.sum_univ_four, KerrSpacetime.christoffelTrace, KerrSpacetime.christoffel]
+  norm_num
+  field_simp [hsig, hdel, hs]
+  simp -failIfUnchanged only [KerrSpacetime.sigma, KerrSpacetime.delta, Real.sin_sq,
+    sin_pow_four_eq]
+  ring
 
 private lemma ricciOf_11 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
@@ -627,7 +636,12 @@ private lemma ricciOf_11 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     christoffelDeriv_theta_11 K x hsig hdel]
   simp only [Fin.isValue, ↓reduceIte, true_or]
   rw [K.christoffelTraceDeriv_rr x hsig]
-  kerr_ricci_clear
+  simp only [Fin.sum_univ_four, KerrSpacetime.christoffelTrace, KerrSpacetime.christoffel]
+  norm_num
+  field_simp [hsig, hdel, hs]
+  simp -failIfUnchanged only [KerrSpacetime.sigma, KerrSpacetime.delta, Real.sin_sq,
+    sin_pow_four_eq]
+  ring
 
 private lemma ricciOf_12 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
@@ -637,7 +651,12 @@ private lemma ricciOf_12 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     christoffelDeriv_r_12 K x hsig, christoffelDeriv_theta_12 K x hsig]
   simp only [Fin.isValue, ↓reduceIte, or_true]
   rw [K.christoffelTraceDeriv_thetar x hsig]
-  kerr_ricci_clear
+  simp only [Fin.sum_univ_four, KerrSpacetime.christoffelTrace, KerrSpacetime.christoffel]
+  norm_num
+  field_simp [hsig, hdel, hs]
+  simp -failIfUnchanged only [KerrSpacetime.sigma, KerrSpacetime.delta, Real.sin_sq,
+    sin_pow_four_eq]
+  ring
 
 private lemma ricciOf_21 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
@@ -646,7 +665,12 @@ private lemma ricciOf_21 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     christoffelDeriv_theta_12 K x hsig]
   simp only [Fin.isValue, ↓reduceIte, true_or]
   rw [K.christoffelTraceDeriv_rtheta x hsig]
-  kerr_ricci_clear
+  simp only [Fin.sum_univ_four, KerrSpacetime.christoffelTrace, KerrSpacetime.christoffel]
+  norm_num
+  field_simp [hsig, hdel, hs]
+  simp -failIfUnchanged only [KerrSpacetime.sigma, KerrSpacetime.delta, Real.sin_sq,
+    sin_pow_four_eq]
+  ring
 
 private lemma ricciOf_22 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
@@ -655,14 +679,24 @@ private lemma ricciOf_22 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     christoffelDeriv_theta_22 K x hsig]
   simp only [Fin.isValue, ↓reduceIte, or_true]
   rw [K.christoffelTraceDeriv_thetatheta x hsig hs]
-  kerr_ricci_clear
+  simp only [Fin.sum_univ_four, KerrSpacetime.christoffelTrace, KerrSpacetime.christoffel]
+  norm_num
+  field_simp [hsig, hdel, hs]
+  simp -failIfUnchanged only [KerrSpacetime.sigma, KerrSpacetime.delta, Real.sin_sq,
+    sin_pow_four_eq]
+  ring
 
 private lemma ricciOf_33 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     CoordinateCurvature.ricciTensor K.metric K.metricInv x 3 3 = 0 := by
   rw [ricciOf_eq_sum K x hsig hdel hs 3 3, christoffelDeriv_r_33 K x hsig,
     christoffelDeriv_theta_33 K x hsig]
-  kerr_ricci_clear
+  simp only [Fin.sum_univ_four, KerrSpacetime.christoffelTrace, KerrSpacetime.christoffel]
+  norm_num
+  field_simp [hsig, hdel, hs]
+  simp -failIfUnchanged only [KerrSpacetime.sigma, KerrSpacetime.delta, Real.sin_sq,
+    sin_pow_four_eq]
+  ring
 
 private lemma christoffelDeriv_zero_of_const (K : KerrSpacetime) (x : Fin 4 → ℝ) (μ k i j : Fin 4)
     (h : ∀ s, K.christoffel (Function.update x μ s) k i j = 0) :
