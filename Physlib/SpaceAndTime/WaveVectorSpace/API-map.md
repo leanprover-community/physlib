@@ -77,8 +77,8 @@ For a certain choice of parameter the transforms are linear isometries. [TODO]
    `fourierIntegralInv_fourierIntegral_eq`, `fourierIntegral_fourierIntegralInv_eq`
 11. Physlib/SpaceAndTime/WaveVectorSpace/Fourier/Basic.lean — `differentiable_fourierIntegral`,
    `differentiable_fourierIntegralInv`, `contDiff_fourierIntegral`, `contDiff_fourierIntegralInv`
-12. Physlib/SpaceAndTime/WaveVectorSpace/Fourier/SchwartzMap.lean — `fourierTransformCLM`,
-   `fourierTransformInvCLM`, `fourierTransformCLE`
+12. Physlib/SpaceAndTime/WaveVectorSpace/Fourier/SchwartzMap.lean — `fourierSchwartz`,
+   `fourierSchwartzInv`, `fourierSchwartzEquiv`
 
 ## References
 
