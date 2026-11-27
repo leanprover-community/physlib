@@ -358,7 +358,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `FLRWSpacetime.einsteinTensor_00_iff_friedmann`,
     `FLRWSpacetime.einsteinTensor_spatial_iff_friedmann`,
     `FLRWSpacetime.einsteinTensor_iff_friedmann`
-54. PhyslibAlpha/Cosmology/FLRW/FriedmannBridge.lean — `flrwScaleFactorOfReal`,
+54. PhyslibAlpha/Cosmology/FLRW/FriedmannEquations.lean — `flrwScaleFactorOfReal`,
     `FLRWSpacetime.ofCosmology`, `einsteinTensor_ofCosmology_iff_friedmann`,
     `friedmannSolution_of_einsteinTensor`
 55. PhyslibAlpha/Relativity/Modified/Nordstrom.lean — `NordstromSpacetime`,

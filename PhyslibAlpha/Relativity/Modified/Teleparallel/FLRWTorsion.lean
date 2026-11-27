@@ -6,7 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Notation
-public import PhyslibAlpha.Cosmology.FLRW.FriedmannBridge
+public import PhyslibAlpha.Cosmology.FLRW.FriedmannEquations
 public import PhyslibAlpha.Relativity.Modified.Teleparallel.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases

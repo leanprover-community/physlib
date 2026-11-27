@@ -34,7 +34,7 @@ Equating the Einstein tensor of an FLRW spacetime (in length-dimensioned time co
    `a''/a = -(4 π G / (3 c²)) (ρ + 3 p / c²) + Λ / 3`.
 
 Here primes denote differentiation with respect to `τ = c t`; multiplying by `c²` converts these
-to the standard cosmic-time Friedmann equations bridged in `FriedmannBridge.lean`.
+to the standard cosmic-time Friedmann equations bridged in `FriedmannEquations.lean`.
 
 ## ii. Key results
 
