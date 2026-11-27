@@ -74,14 +74,16 @@ variable {κ₁ κ₂ : Type} [Fintype κ₁] [DecidableEq κ₁] [Fintype κ₂
   block-diagonal embedding of pairs of invertible matrices, which is closed since taking the
   two diagonal blocks is a continuous left inverse. -/
 def prod : GlobalGaugeGroup (κ₁ ⊕ κ₂) where
-  group := (G₁.group.prod G₂.group).map <|
+  toSubgroup := (G₁.group.prod G₂.group).map <|
     (Units.map
       { toFun A := fromBlocks A.1 0 0 A.2
         map_one' := fromBlocks_one
         map_mul' A B := by simp [fromBlocks_multiply] :
         Matrix κ₁ κ₁ ℂ × Matrix κ₂ κ₂ ℂ →* Matrix (κ₁ ⊕ κ₂) (κ₁ ⊕ κ₂) ℂ}).comp
       MulEquiv.prodUnits.symm.toMonoidHom
-  isClosed := by
+  isClosed' := by
+    change IsClosed ((Subgroup.map _ _ : Subgroup (GeneralLinearGroup (κ₁ ⊕ κ₂) ℂ)) :
+      Set (GeneralLinearGroup (κ₁ ⊕ κ₂) ℂ))
     rw [Subgroup.coe_map, Subgroup.coe_prod]
     refine IsClosedEmbedding.isClosedMap ?_ _ (G₁.isClosed.prod G₂.isClosed)
     rw [MonoidHom.coe_comp]

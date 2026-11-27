@@ -77,6 +77,14 @@ gradient with the Minkowski metric: the bare gradient of a scalar can have nonze
 strength. [6] Gauge transformations compose: the trivial shift is the identity and successive shifts
 add. [7] They commute with the action of the Lorentz group. [8]
 
+#### Global gauge groups
+
+The global gauge group of a gauge theory is a closed group of invertible complex matrices, a matrix
+Lie group, and its elements are the global gauge transformations. [16] A group cut out of the
+matrices by closed conditions, such as unitarity or a fixed determinant, is built from the closed
+submonoid those conditions define. For unitary conditions an invertible matrix lies in the group
+exactly when it satisfies them. [17]
+
 #### The Standard Model gauge group
 
 The Standard Model gauge group {3} is SU(3) × SU(2) × U(1), with its projections onto the three
@@ -123,6 +131,10 @@ principal bundles. [TODO] Progress on this API is tracked in a GitHub issue {5}.
 14. Physlib/ClassicalFieldTheory/GaugeTheory/LocalGaugeData/Basic.lean — `LocalGaugeData.Hom`,
    `LocalGaugeData.Hom.lie_adjoint`, `LocalGaugeData.Hom.lieJ_iteratedDeriv`
 15. Physlib/ClassicalFieldTheory/GaugeTheory/LocalGaugeData/Basic.lean — `LocalGaugeData.Hom.id`, `LocalGaugeData.Hom.comp`
+16. Physlib/ClassicalFieldTheory/GaugeTheory/GlobalGaugeGroup/Basic.lean — `GlobalGaugeGroup`,
+   `GlobalGaugeGroup.group`, `GlobalGaugeGroup.isClosed`
+17. Physlib/ClassicalFieldTheory/GaugeTheory/GlobalGaugeGroup/Basic.lean — `GlobalGaugeGroup.ofSubmonoid`,
+   `GlobalGaugeGroup.mem_ofSubmonoid_iff`, `GlobalGaugeGroup.mem_ofSubmonoid_iff_of_star_mem`
 
 ## References
 

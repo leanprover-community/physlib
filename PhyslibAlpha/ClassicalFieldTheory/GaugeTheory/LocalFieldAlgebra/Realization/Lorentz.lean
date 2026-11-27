@@ -93,19 +93,21 @@ namespace GlobalGaugeGroup
 
 /-- The global gauge group `SL(n, ℂ)`, the complex `n × n` matrices of determinant one. -/
 def SL (n : ℕ) : GlobalGaugeGroup (Fin n) where
-  group := GeneralLinearGroup.det.ker
-  isClosed := by
+  toSubgroup := GeneralLinearGroup.det.ker
+  isClosed' := by
     have h : ((GeneralLinearGroup.det.ker : Subgroup (GL (Fin n) ℂ)) : Set (GL (Fin n) ℂ)) =
         (fun g : GL (Fin n) ℂ => (g : Matrix (Fin n) (Fin n) ℂ).det) ⁻¹' {1} := by
       ext g
       simp [Units.ext_iff]
+    change IsClosed ((GeneralLinearGroup.det.ker : Subgroup (GL (Fin n) ℂ)) :
+      Set (GL (Fin n) ℂ))
     rw [h]
     exact isClosed_singleton.preimage (Units.continuous_val.matrix_det)
 
 /-- An invertible matrix lies in `SL(n, ℂ)` exactly when it has determinant one. -/
 lemma mem_SL_iff {n : ℕ} {g : GL (Fin n) ℂ} :
     g ∈ (SL n).group ↔ (g : Matrix (Fin n) (Fin n) ℂ).det = 1 := by
-  simp [SL, Units.ext_iff]
+  simp [SL, group, Units.ext_iff]
 
 /-- A traceless matrix is a generator of `SL(n, ℂ)`, since `det (exp (t X)) = exp (t tr X) = 1`. -/
 lemma mem_lieAlgebra_SL {n : ℕ} {X : Matrix (Fin n) (Fin n) ℂ} (htr : X.trace = 0) :
