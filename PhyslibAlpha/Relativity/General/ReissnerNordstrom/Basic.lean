@@ -308,6 +308,52 @@ lemma maxwellStressEnergy_trace_zero (S : ReissnerNordstromSpacetime) (x : Fin 4
   rw [maxwellStressEnergyGaussian_eq_smul, metricTrace_smul,
     GeneralRelativity.maxwellStressEnergy_trace_zero, mul_zero]
 
+/-- The Maxwell field-strength invariant of the Coulomb field: `F_{ab} F^{ab} = -2 Q² / r⁴`. -/
+lemma maxwellFieldInvariant_coulomb (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ)
+    (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
+    GeneralRelativity.maxwellFieldInvariant (S.toStaticSpherical.metricTensor x hr hf hsin)
+      (S.coulombFieldStrength (x 1)) = -2 * S.Q ^ 2 / (x 1) ^ 4 := by
+  simp only [GeneralRelativity.maxwellFieldInvariant, Metric.metricTensor, Metric.metric,
+    Metric.metricInv, toStaticSpherical, coulombFieldStrength, Matrix.of_apply, Fin.sum_univ_four]
+  norm_num
+  field_simp [hr, hf, hsin]
+  ring
+
+/-- Component form of the Maxwell stress-energy tensor of the Reissner–Nordström Coulomb field at a
+regular chart point. -/
+lemma maxwellStressEnergy_apply (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ)
+    (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
+    GeneralRelativity.maxwellStressEnergy (S.toStaticSpherical.metricTensor x hr hf hsin)
+      (S.coulombFieldStrength (x 1)) i j =
+      if i = j then
+        if i = 0 then (1 / 2 : ℝ) * S.metricFn (x 1) * S.Q ^ 2 / (x 1) ^ 4
+        else if i = 1 then -S.Q ^ 2 / (2 * S.metricFn (x 1) * (x 1) ^ 4)
+        else if i = 2 then (1 / 2 : ℝ) * S.Q ^ 2 / (x 1) ^ 2
+        else (1 / 2 : ℝ) * S.Q ^ 2 * Real.sin (x 2) ^ 2 / (x 1) ^ 2
+      else 0 := by
+  simp only [GeneralRelativity.maxwellStressEnergy]
+  rw [maxwellFieldInvariant_coulomb S x hr hf hsin]
+  simp only [Metric.metricTensor, Metric.metric, Metric.metricInv, toStaticSpherical,
+    coulombFieldStrength, Matrix.of_apply, Fin.sum_univ_four]
+  fin_cases i <;> fin_cases j <;> simp
+  all_goals field_simp [hr, hf, hsin]
+  all_goals ring
+
+/-- Component form of the Gaussian-unit Maxwell stress-energy of the Coulomb field. -/
+lemma maxwellStressEnergyGaussian_apply (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ)
+    (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
+    maxwellStressEnergyGaussian (S.toStaticSpherical.metricTensor x hr hf hsin)
+        (S.coulombFieldStrength (x 1)) i j =
+      (1 / (4 * Real.pi)) *
+        (if i = j then
+          if i = 0 then (1 / 2 : ℝ) * S.metricFn (x 1) * S.Q ^ 2 / (x 1) ^ 4
+          else if i = 1 then -S.Q ^ 2 / (2 * S.metricFn (x 1) * (x 1) ^ 4)
+          else if i = 2 then (1 / 2 : ℝ) * S.Q ^ 2 / (x 1) ^ 2
+          else (1 / 2 : ℝ) * S.Q ^ 2 * Real.sin (x 2) ^ 2 / (x 1) ^ 2
+        else 0) := by
+  simp only [maxwellStressEnergyGaussian]
+  rw [S.maxwellStressEnergy_apply x hr hf hsin i j]
+
 /-- Field equations of the electrovacuum Reissner–Nordström solution, obtained from the coordinate
 curvature of `S.metric`: `G_{ij} = 8 π T^{EM}_{ij}` at every coordinate index `(i, j)`. -/
 private lemma einsteinTensor_eq_maxwell_raw (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ)
@@ -319,11 +365,7 @@ private lemma einsteinTensor_eq_maxwell_raw (S : ReissnerNordstromSpacetime) (x 
   have hpi : Real.pi ≠ 0 := Real.pi_ne_zero
   simp only [CoordinateCurvature.einsteinTensor, S.ricciTensor_raw x hr hf hsin,
     S.ricciScalar_raw x hr hf hsin]
-  simp only [maxwellStressEnergyGaussian, GeneralRelativity.maxwellStressEnergy,
-    maxwellFieldInvariant,
-    Metric.metricTensor, Metric.metric,
-    Metric.metricInv, toStaticSpherical, coulombFieldStrength, Matrix.of_apply,
-    Fin.sum_univ_four]
+  rw [S.maxwellStressEnergyGaussian_apply x hr hf hsin i j]
   fin_cases i <;> fin_cases j <;> simp
   · field_simp [hr, hf, hpi]; ring
   · field_simp [hr, hf, hpi]; ring
