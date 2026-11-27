@@ -23,11 +23,12 @@ Hamiltonian for non-degenerate second-order Lagrangians.
 ## i. Overview
 
 By Ostrogradsky's theorem, a non-degenerate Lagrangian depending on second time derivatives
-`L(q, q̇, q̈)` introduces a second canonical pair `(q̇, p₁)` whose canonical momentum `p₁`
-enters the canonical Hamiltonian only linearly as `p₁ q̇`. For any non-zero velocity `q̇ ≠ 0`,
-the Hamiltonian is unbounded below — the Ostrogradsky ghost — explaining why viable modified
-gravity theories must either reduce to healthy scalar–tensor theories (`f(R)`) or restrict to
-second-order field equations (Horndeski / Galileons).
+`L(q, q̇, q̈)` has two canonical coordinate–momentum pairs `(Q₁, p₁) = (q, ∂L/∂q̇ - d/dt(∂L/∂q̈))`
+and `(Q₂, p₂) = (q̇, ∂L/∂q̈)`. Because `p₁` enters the canonical Hamiltonian only linearly through
+`p₁ q̇` for any non-degenerate second-order Lagrangian, the Hamiltonian is unbounded below whenever
+`q̇ ≠ 0` — the Ostrogradsky ghost — explaining why viable modified gravity theories must either
+reduce to healthy scalar–tensor theories (`f(R)`) or restrict to second-order field equations
+(Horndeski / Galileons).
 
 This module formalises `HigherDerivativeModel` and the algebraic core for `L = (1/2) q̈² -
 (1/2) m² q²`, contrasting its linear ghost instability with a standard positive-definite quadratic
@@ -76,9 +77,9 @@ namespace Ostrogradsky
 
 ## A. Degenerate kinetic matrix and Ostrogradsky ghost
 
-Because `q̇` enters without a quadratic velocity kinetic term in `L = ½ q̈² - ½ m² q²`, its
-conjugate momentum `p₁` appears only linearly in `H.hamiltonian`, making the energy unbounded from
-below.
+In Ostrogradsky's canonical formulation of `L = ½ q̈² - ½ m² q²`, the momentum `p₁` conjugate to
+the position `q` appears only linearly as `p₁ q̇` in the Hamiltonian, making the energy unbounded
+from below whenever `q̇ ≠ 0`.
 
 -/
 
@@ -95,8 +96,9 @@ def kineticMatrix : Tensor2 2 :=
 lemma kineticMatrix_degenerate : Matrix.det kineticMatrix = 0 := by
   simp [kineticMatrix, Matrix.det_fin_two]
 
-/-- Canonical Ostrogradsky Hamiltonian for a `HigherDerivativeModel` (`L = (1/2) q̈² -
-(1/2) m² q²`), with `p₁` conjugate to `q̇` and `p₂ = q̈`. -/
+/-- Canonical Ostrogradsky Hamiltonian for `L = (1/2) q̈² - (1/2) m² q²`, with canonical pairs
+`(q, p₁)` and `(q̇, p₂)` where `p₁` is conjugate to position `q` and `p₂ = q̈` is conjugate to
+velocity `q̇`. -/
 noncomputable def HigherDerivativeModel.hamiltonian (H : HigherDerivativeModel)
     (v a p₁ p₂ q : ℝ) : ℝ :=
   p₁ * v + p₂ * a - a ^ 2 / 2 + H.m ^ 2 * q ^ 2 / 2

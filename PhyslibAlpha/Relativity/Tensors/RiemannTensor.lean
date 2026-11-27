@@ -30,7 +30,8 @@ is derived from the other two rather than assumed.
   antisymmetry in the last pair.
 - `RiemannTensor.zero_of_repeated_first`, `RiemannTensor.zero_of_repeated_last`,
   `RiemannTensor.swap_mixed` : vanishing and mixed-swap identities.
-- `RiemannTensor.frameKretschmannScalar` : quadratic Kretschmann invariant in an orthonormal frame.
+- `RiemannTensor.frameKretschmannScalar` : sum of squared orthonormal-frame curvature components
+  (matching the Lorentzian Kretschmann scalar when odd-time-index components vanish).
 - `RiemannTensor.flat`, `RiemannTensor.flat_comp` : flat curvature tensor.
 
 ## iii. Table of contents
@@ -109,7 +110,11 @@ lemma swap_mixed (i j k l : Fin n) : R.comp i j k l = R.comp j i l k := by
   rw [R.skew_first i j k l, R.skew_last j i k l]
   ring
 
-/-- Quadratic Kretschmann invariant `K = ∑_{a,b,c,d} R_{abcd}²` in an orthonormal frame. -/
+/-- Sum of squared orthonormal-frame curvature components `∑_{a,b,c,d} R_{abcd}²`. In a Lorentzian
+orthonormal frame of signature `(-, +, +, +)`, `R_{abcd} R^{abcd}` weights components with an odd
+number of temporal indices by `-1`, so this expression coincides with the Lorentzian Kretschmann
+scalar whenever odd-time-index (gravitomagnetic) components vanish (such as purely electric static
+curvature), as well as in any Riemannian orthonormal frame. -/
 noncomputable def frameKretschmannScalar (R : RiemannTensor 4) : ℝ :=
   ∑ i, ∑ j, ∑ l, ∑ m, R.comp i j l m * R.comp i j l m
 

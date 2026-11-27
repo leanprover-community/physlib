@@ -128,8 +128,8 @@ variable (S : IncompressibleSphere)
 
 ## B. The Schwarzschild radius and the angle of the surface
 
-These geometric parameters relate the exterior Schwarzschild radius `r_s` to the surface radius `R`
-and interior polar angle `χ_a` of the constant-density star.
+These geometric parameters relate the exterior Schwarzschild radius `α` to the surface areal
+radius `Ra` and interior polar angle `χ_a` of the constant-density sphere.
 
 -/
 
@@ -193,8 +193,8 @@ lemma rs_lt_Ra : S.rs < S.Ra := by
 
 ## C. The pressure
 
-The Tolman–Oppenheimer–Volkoff hydrostatic equilibrium profile determines how the interior fluid
-pressure grows inward from the zero-pressure boundary at `r = R`.
+Schwarzschild's 1916 constant-density interior solution determines how the fluid pressure grows
+inward from the zero-pressure surface at `χ = χ_a` (`r = Ra`).
 
 -/
 
@@ -409,7 +409,7 @@ lemma gttIn_zero_of_cosChia_eq (hcrit : S.cosChia = 1 / 3) : S.gttIn 0 = 0 := by
 ## E. Derivatives of the metric coefficients at the surface
 
 Differentiating both interior and exterior metric coefficients prepares the junction verification
-of `C¹` continuity across the stellar boundary `r = R`.
+of `C¹` continuity across the surface `r = Ra`.
 
 -/
 

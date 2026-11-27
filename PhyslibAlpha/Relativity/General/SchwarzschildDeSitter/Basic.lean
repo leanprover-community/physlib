@@ -84,9 +84,8 @@ namespace SchwarzschildDeSitter
 
 ## A. Metric function, half-derivative, and Christoffel symbols
 
-The Kottler metric depends solely on the cubic-plus-coulombic radial profile
-`f(r) = 1 - 2M/r - Λr²/3`, whose half-derivative `n(r) = M/r² - Λr/3` governs all non-vanishing
-radial Christoffel symbols.
+The Kottler metric is determined by the radial metric function `f(r) = 1 - 2M/r - Λr²/3`, whose
+half-derivative `n(r) = M/r² - Λr/3` governs all non-vanishing radial Christoffel symbols.
 
 -/
 
@@ -104,8 +103,8 @@ namespace SchwarzschildDeSitterSpacetime
 noncomputable def metricFn (S : SchwarzschildDeSitterSpacetime) (r : ℝ) : ℝ :=
   1 - 2 * S.M / r - S.Λ * r ^ 2 / 3
 
-/-- Half the radial derivative of the metric function, `n = f'/2 = M / r² - Λ r / 3`, factored out
-so rational Christoffel and Riemann expressions avoid repeated factor-of-2 cancellation. -/
+/-- Half the radial derivative of the metric function, `n = f'/2 = M / r² - Λ r / 3`. -/
+-- Factored out to avoid repeated factor-of-2 cancellation in Christoffel and Riemann expressions.
 noncomputable def metricFnHalfDeriv (S : SchwarzschildDeSitterSpacetime) (r : ℝ) : ℝ :=
   S.M / r ^ 2 - S.Λ * r / 3
 

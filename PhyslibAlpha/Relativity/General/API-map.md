@@ -70,22 +70,22 @@ symbols and derivatives [37], and pipeline Riemann, Ricci, and Einstein curvatur
 The orthonormal Schwarzschild Weyl electric tidal tensor yields the Kretschmann scalar 48 M² / r⁶
 and proves purely electric Weyl curvature [39], while `SchwarzschildSpacetime` with metric
 function f(r) = 1 - 2 M / r gives direct metric-derivative Christoffel and Riemann components and
-matches the exterior of `IncompressibleSphere` [40], with full coordinate-pipeline vacuum flatness
-proved by specializing the Schwarzschild-de Sitter pipeline at Λ = 0 [41]. Inside the fluid sphere,
-`IncompressibleSphere` formalizes the Tolman-Oppenheimer-Volkoff pressure profile, surface
-continuity/differentiability junction properties, and Schwarzschild compactness bound r_s < (8 / 9) R
-[42]. Including a cosmological constant Λ in the Schwarzschild-de Sitter (Kottler) metric
-f(r) = 1 - 2 M / r - Λ r² / 3 yields constant-curvature de Sitter frame components, Kretschmann
-invariant 48 M² / r⁶ + 8 Λ² / 3, and frame Bianchi conservation [43], Λ-independent Weyl electric
-components [44], and full coordinate-pipeline verification of R_{ij} = Λ g_{ij}, R = 4 Λ, and
-G_{ij} = -Λ g_{ij} [45]. Adding electric charge yields the Reissner-Nordström electrovacuum metric
-f(r) = 1 - 2 M / r + Q² / r², the radial Coulomb-Maxwell field strength tensor F_{ab}, and the
-trace-free electromagnetic stress-energy tensor satisfying the Einstein-Maxwell equations through the
-coordinate pipeline [46]. Rotating black holes are represented by `KerrSpacetime` in
-Boyer-Lindquist coordinates (t, r, θ, φ) with spin a, polynomial functions Σ = r² + a² cos²θ and
-Δ = r² - r_s r + a², and exact block inverse metric [47], metric coordinate partial derivatives
-[48], all 64 Levi-Civita Christoffel symbols and contracted trace [49], and full differential
-pipeline verification that the Ricci tensor, Ricci scalar, and Einstein tensor vanish identically in
+matches the exterior of `IncompressibleSphere` [40], with vacuum flatness proved by specializing
+the Schwarzschild-de Sitter coordinate metric at Λ = 0 [41]. Inside the fluid sphere,
+`IncompressibleSphere` formalizes Schwarzschild's 1916 constant-density interior pressure profile,
+surface continuity/differentiability junction properties, and compactness bound `α < (8 / 9) Ra`
+[42]. Including a cosmological constant Λ in the
+Schwarzschild-de Sitter (Kottler) metric f(r) = 1 - 2 M / r - Λ r² / 3 yields constant-curvature
+de Sitter frame components, Kretschmann invariant 48 M² / r⁶ + 8 Λ² / 3, and frame Bianchi
+conservation [43], Λ-independent Weyl electric components [44], and full coordinate-metric
+verification of R_{ij} = Λ g_{ij}, R = 4 Λ, and G_{ij} = -Λ g_{ij} [45]. Adding electric charge
+yields the Reissner-Nordström electrovacuum metric f(r) = 1 - 2 M / r + Q² / r², the radial
+Coulomb-Maxwell field strength tensor F_{ab}, and the trace-free electromagnetic stress-energy
+tensor satisfying the Einstein-Maxwell equations [46]. Rotating black holes are represented by
+`KerrSpacetime` in Boyer-Lindquist coordinates (t, r, θ, φ) with spin a, polynomial functions
+Σ = r² + a² cos²θ and Δ = r² - r_s r + a², and exact block inverse metric [47], metric coordinate
+partial derivatives [48], all 64 Levi-Civita Christoffel symbols and contracted trace [49], and
+full verification that the Ricci tensor, Ricci scalar, and Einstein tensor vanish identically in
 vacuum [50]. Homogeneous and isotropic cosmology is formalized on `FLRWSpacetime` with scale
 factor a(t) and spatial curvature k [51], evaluating all FLRW Christoffel symbols, Ricci
 components, scalar curvature, and Einstein tensor from the coordinate metric [52], proving
@@ -97,21 +97,21 @@ light c and gravitational constant G [53], and bridging directly to Physlib's `C
 
 Historically, Nordström's relativistic scalar gravity restricts the spacetime metric of a
 `NordstromSpacetime` to the conformally flat form φ(x)² η_{μν}, preserving null cones (producing
-zero gravitational light deflection) while the differential pipeline evaluates its Christoffel
-symbols and proves the four-dimensional Einstein-Fokker curvature identity R = -6 □_η φ / φ³ and
-its equivalence to the nonlinear scalar wave equation □_η φ = -4 π φ³ T [55]. Brans-Dicke
-scalar-tensor gravity couples a scalar mode to curvature with dimensionless parameter ω on
-`BransDickeTheory`, yielding the post-Newtonian parameter γ(ω) = (1 + ω) / (2 + ω) approaching the
-General Relativity value 1 under the Cassini bound ω > 40000, the weak-field effective
-gravitational coupling `coupling(ω) = (4 + 2ω) / (3 + 2ω) = 1 + 1 / (3 + 2ω)` bounded in `[1, 4/3]`
-for ω ≥ 0, and the ω = 0 metric f(R) value γ = 1 / 2 [56]. Non-linear f(R) gravity (`FRTheory`)
-replaces the Einstein-Hilbert density R with f(R), modifying the algebraic field equations,
-recovering General Relativity with Λ via `FRTheory.generalRelativity Λ`, deriving the `n`-dimensional
-and 4D `3 □f'` trace identities, and supplying Starobinsky's `R + α R²` Legendre potential
-`(φ - 1)² / (8 α)` and normalized Einstein-frame slow-roll plateau `V(φ) / φ² → 1 / (8 α)` [57].
-By Ostrogradsky's theorem (`HigherDerivativeModel`), a second-order higher-derivative benchmark
-Lagrangian `L = ½ q̈² - ½ m² q²` has a degenerate kinetic Hessian matrix `Matrix.det kineticMatrix = 0`
-in `(q̇, q̈)` and a canonical Hamiltonian linear in the velocity-conjugate momentum `p₁`, making it
+zero gravitational light deflection) while evaluating its Christoffel symbols and proving the
+four-dimensional Einstein-Fokker curvature identity R = -6 □_η φ / φ³ and its equivalence to the
+nonlinear scalar wave equation □_η φ = -4 π φ³ T [55]. Brans-Dicke scalar-tensor gravity couples a
+scalar mode to curvature with dimensionless parameter ω on `BransDickeTheory`, yielding the
+post-Newtonian parameter γ(ω) = (1 + ω) / (2 + ω) approaching the General Relativity value 1 under
+the Cassini bound ω > 40000, the weak-field effective gravitational coupling
+`coupling(ω) = (4 + 2ω) / (3 + 2ω) = 1 + 1 / (3 + 2ω)` bounded in `[1, 4/3]` for ω ≥ 0, and the
+ω = 0 metric f(R) value γ = 1 / 2 [56]. Non-linear f(R) gravity (`FRTheory`) replaces the
+Einstein-Hilbert density R with f(R), modifying the algebraic field equations, recovering General
+Relativity with Λ via `FRTheory.generalRelativity Λ`, deriving the `n`-dimensional and 4D `3 □f'`
+trace identities, and supplying Starobinsky's `R + α R²` Legendre potential `(φ - 1)² / (8 α)` and
+normalized Einstein-frame slow-roll plateau `V(φ) / φ² → 1 / (8 α)` [57]. By Ostrogradsky's
+theorem (`HigherDerivativeModel`), a second-order higher-derivative benchmark Lagrangian
+`L = ½ q̈² - ½ m² q²` has a degenerate kinetic Hessian matrix `Matrix.det kineticMatrix = 0` in
+`(q̇, q̈)` and a canonical Hamiltonian linear in the position-conjugate momentum `p₁`, making it
 unbounded below for any `v ≠ 0` in contrast to positive-definite first-order kinetic energy [58].
 Cubic Galileon scalar-tensor theories (`CubicGalileon`) achieve second-order equations of motion
 because their one-dimensional cubic density reduces to a total time derivative even under constant
