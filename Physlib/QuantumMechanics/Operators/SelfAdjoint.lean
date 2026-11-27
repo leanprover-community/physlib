@@ -5,7 +5,7 @@ Authors: Adam Bornemann, Gregory J. Loges
 -/
 module
 
-public import Physlib.QuantumMechanics.Operators.Basic
+public import Physlib.QuantumMechanics.Operators.Symmetric
 /-!
 
 # Self-adjoint operators

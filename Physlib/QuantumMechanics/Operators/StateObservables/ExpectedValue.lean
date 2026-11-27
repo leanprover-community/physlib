@@ -5,7 +5,7 @@ Authors: Matteo Cipollina, Krystian Nowakowski
 -/
 module
 
-public import Physlib.QuantumMechanics.Operators.Basic
+public import Physlib.QuantumMechanics.Operators.Symmetric
 /-!
 # Expectation values and centered vectors
 

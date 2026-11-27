@@ -119,11 +119,6 @@ def IsUnbounded (U : H →ₗ.[ℂ] H') : Prop := U.HasDenseDomain ∧ U.IsClosa
 
 lemma isUnbounded_def : U.IsUnbounded ↔ U.HasDenseDomain ∧ U.IsClosable := Iff.rfl
 
-/-- A LinearPMap `T` is symmetric iff `⟪T x, y⟫_ℂ = ⟪x, T y⟫_ℂ` for all `x y : T.domain`. -/
-def IsSymmetric (T : H →ₗ.[ℂ] H) : Prop := T.IsFormalAdjoint T
-
-lemma isSymmetric_def : T.IsSymmetric ↔ T.IsFormalAdjoint T := Iff.rfl
-
 lemma isStarNormal_def [CompleteSpace H] : IsStarNormal T ↔ T† * T = T * T† := isStarNormal_iff _
 
 /-!
@@ -733,116 +728,5 @@ theorem inner_map_polarization' (x y : T.domain) :
     neg_mul, inner_smul_right, mul_add, mul_neg, ← mul_assoc, ← pow_two, I_sq, one_mul, neg_neg,
     sub_neg_eq_add, mul_sub]
   ring
-
--- The analogue of `LinearMap.isSymmetric_iff_inner_map_self_real` for LinearPMap.
-lemma isSymmetric_iff_inner_map_self_real :
-    T.IsSymmetric ↔ ∀ x : T.domain, conj ⟪T x, x⟫_ℂ = ⟪T x, x⟫_ℂ := by
-  refine ⟨fun h_symm x ↦ by simp [h_symm x x], fun h_re x y ↦ ?_⟩
-  nth_rw 2 [← inner_conj_symm, inner_map_polarization]
-  simp only [map_div₀, _root_.map_sub, _root_.map_add, map_mul, neg_mul, conj_ofNat, conj_I, h_re]
-  rw [inner_map_polarization']
-  simp [sub_eq_add_neg]
-
-lemma IsSymmetric.isClosable [CompleteSpace H] (h : T.IsSymmetric) (h' : T.HasDenseDomain) :
-    T.IsClosable :=
-  isClosable_iff_exists_closed_extension.mpr ⟨T†, adjoint_isClosed h', h.le_adjoint h'⟩
-
-lemma IsSymmetric.isUnbounded_iff_hasDenseDomain [CompleteSpace H] (h : T.IsSymmetric) :
-    T.IsUnbounded ↔ T.HasDenseDomain :=
-  and_iff_left_of_imp h.isClosable
-
-lemma isSymmetric_iff_le_adjoint [CompleteSpace H] (h : T.HasDenseDomain) :
-    T.IsSymmetric ↔ T ≤ T† := by
-  refine ⟨fun h_symm ↦ h_symm.le_adjoint h, fun h_le x y ↦ ?_⟩
-  have h_eq : T x = T† ⟨x, h_le.1 x.2⟩ := @h_le.2 x ⟨x, h_le.1 x.2⟩ rfl
-  exact h_eq ▸ adjoint_isFormalAdjoint h _ _
-
-lemma IsSymmetric.closure_le_adjoint [CompleteSpace H] (h : T.IsSymmetric) (h' : T.HasDenseDomain) :
-    T.closure ≤ T† := by
-  have h_adj : T†.IsClosed := adjoint_isClosed h'
-  exact h_adj.closure_eq ▸ h_adj.isClosable.closure_mono (h.le_adjoint h')
-
-lemma add_adjoint_isSymmetric [CompleteSpace H] (h : T.HasDenseDomain) :
-    (T + T.adjoint).IsSymmetric := by
-  intro x y
-  have h₁ := adjoint_isFormalAdjoint h ⟨x, x.2.2⟩ ⟨y, y.2.1⟩
-  have h₂ := congrArg conj (adjoint_isFormalAdjoint h ⟨y, y.2.2⟩ ⟨x, x.2.1⟩)
-  simp only [inner_conj_symm] at h₂
-  simp only [add_apply, inner_add_left, inner_add_right, h₁, h₂]
-  exact add_comm _ _
-
-@[aesop safe apply]
-lemma IsSymmetric.pow (h : T.IsSymmetric) (n : ℕ) : (T ^ n).IsSymmetric := by
-  induction n with
-  | zero => exact fun _ _ ↦ rfl
-  | succ n ih =>
-    intro x y
-    let y' : (T * T ^ n).domain := ⟨y, pow_succ' T n ▸ y.2⟩
-    let Tx : (T ^ n).domain := ⟨T ⟨x, x.2.2⟩, mem_domain_of_mem_compRestricted_domain x⟩
-    let Tny : T.domain := ⟨(T ^ n) ⟨y', y'.2.2⟩, mem_domain_of_mem_compRestricted_domain y'⟩
-    have h_eq : T Tny = (T ^ (n + 1)) y := by
-      change (T * T ^ n) y' = (T ^ (n + 1)) y
-      congr 1
-      · exact (pow_succ' T n).symm
-      · exact (Subtype.heq_iff_coe_eq <| by simp [pow_succ']).mpr rfl
-    exact (ih Tx ⟨y', y'.2.2⟩).trans (h_eq ▸ h ⟨x, x.2.2⟩ Tny)
-
-@[aesop safe apply]
-lemma IsSymmetric.neg (h : T.IsSymmetric) : (-T).IsSymmetric := fun x y ↦ by simp [h x y]
-
-@[aesop safe apply]
-lemma IsSymmetric.add (h₁ : T₁.IsSymmetric) (h₂ : T₂.IsSymmetric) : (T₁ + T₂).IsSymmetric := by
-  intro x y
-  simp [h₁ ⟨x, x.2.1⟩ ⟨y, y.2.1⟩, h₂ ⟨x, x.2.2⟩ ⟨y, y.2.2⟩, add_apply, inner_add_left,
-    inner_add_right]
-
-@[aesop safe apply]
-lemma IsSymmetric.sub (h₁ : T₁.IsSymmetric) (h₂ : T₂.IsSymmetric) : (T₁ - T₂).IsSymmetric :=
-  sub_eq_add_neg T₁ T₂ ▸ h₁.add h₂.neg
-
-@[aesop safe apply]
-lemma IsSymmetric.smul (h : T.IsSymmetric) {c : ℂ} (hc : conj c = c) : (c • T).IsSymmetric :=
-  fun x y ↦ by simp only [smul_apply, inner_smul_left, inner_smul_right, hc, h x y]
-
-@[aesop safe apply]
-lemma IsSymmetric.real_smul (h : T.IsSymmetric) (r : ℝ) : (r • T).IsSymmetric :=
-  h.smul (conj_ofReal r)
-
-@[aesop safe apply]
-lemma IsSymmetric.sum (h : ∀ a, (S a).IsSymmetric) : (sum S).IsSymmetric := by
-  intro x y
-  simp [sum_apply, sum_inner, inner_sum, h _ ⟨x, sum_domain_le S _ x.2⟩ ⟨y, sum_domain_le S _ y.2⟩]
-
-lemma IsSymmetric.of_le (h₁ : T₁.IsSymmetric) (h_le : T₂ ≤ T₁) : T₂.IsSymmetric := by
-  intro x y
-  have hx : T₂ x = T₁ ⟨x, h_le.1 x.2⟩ := @h_le.2 x ⟨x, h_le.1 x.2⟩ rfl
-  have hy : T₂ y = T₁ ⟨y, h_le.1 y.2⟩ := @h_le.2 y ⟨y, h_le.1 y.2⟩ rfl
-  exact hx ▸ hy ▸ h₁ ⟨x, h_le.1 x.2⟩ ⟨y, h_le.1 y.2⟩
-
-/-- The closure of a symmetric densely-defined operator is symmetric: `T††` is a symmetric
-closed extension of `T`, so it extends `T.closure`, whose symmetry then descends. -/
-lemma IsSymmetric.closure [CompleteSpace H] (hsym : T.IsSymmetric) (hdense : T.HasDenseDomain) :
-    T.closure.IsSymmetric := by
-  have hle : T ≤ T† := (isSymmetric_def.mp hsym).le_adjoint hdense
-  have hadj_dense : T†.HasDenseDomain := hdense.mono hle.1
-  have hT_le : T ≤ T†† := (adjoint_isFormalAdjoint hdense).le_adjoint hadj_dense
-  have hc : (T††).IsClosed := adjoint_isClosed hadj_dense
-  have h1 : (T††).IsSymmetric :=
-    (isSymmetric_iff_le_adjoint (hdense.mono hT_le.1)).mpr
-      (adjoint_antitone (Or.inl (hdense.mono hT_le.1)) (adjoint_antitone (Or.inl hdense) hle))
-  exact h1.of_le (hc.closure_eq ▸ hc.isClosable.closure_mono hT_le)
-
-/-- A LinearPMap constructed from a symmetric LinearMap with dense domain
-  is an unbounded operator. -/
-lemma isUnbounded_of_dense_of_isSymmetric [CompleteSpace H] {E : Submodule ℂ H}
-    (hE : Dense (E : Set H)) {f : E →ₗ[ℂ] H} (h : ∀ x y : E, ⟪f x, ↑y⟫_ℂ = ⟪↑x, f y⟫_ℂ) :
-    (mk E f).IsUnbounded :=
-  ⟨hE, IsSymmetric.isClosable h hE⟩
-
-/-- Variant of `of_dense_of_isSymmetric` for an endomorphism satisfying `LinearMap.IsSymmetric`. -/
-lemma isUnbounded_of_dense_of_isSymmetric' [CompleteSpace H]
-    {E : Submodule ℂ H} (hE : Dense (E : Set H)) {f : E →ₗ[ℂ] E} (h : f.IsSymmetric) :
-    (mk E (E.subtype ∘ₗ f)).IsUnbounded :=
-  ⟨hE, IsSymmetric.isClosable h hE⟩
 
 end LinearPMap
