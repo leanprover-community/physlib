@@ -21,7 +21,10 @@ The coordinate operator `CoordinateMetric.riemann` computes the mixed components
 `R_{ρσμν} = ∑ λ, g_{ρλ} R^λ_{σμν}`, which satisfy last-pair antisymmetry. When the covariant
 components also satisfy pair-exchange symmetry and the first Bianchi identity, they form an
 algebraic `RiemannTensor`, and the algebraic contractions `ricci`, `ricciScalar`, and `einstein`
-of that tensor agree with the chart-level `CoordinateMetric` operators.
+of that tensor agree with the chart-level `CoordinateMetric` operators. Pair symmetry and Bianchi
+are hypotheses here: `CoordinateMetric` carries pointwise symmetry and an inverse but not the
+differentiability and metric-compatibility data needed to derive them. For a constant metric all
+curvature vanishes, so that case is unconditional.
 
 ## ii. Key results
 
@@ -32,6 +35,8 @@ of that tensor agree with the chart-level `CoordinateMetric` operators.
 - `CoordinateMetric.ricci_toRiemannTensor`, `CoordinateMetric.ricciScalar_toRiemannTensor`,
   `CoordinateMetric.einstein_toRiemannTensor` : agreement of the algebraic contractions with the
   coordinate Ricci tensor, scalar curvature, and Einstein tensor.
+- `CoordinateMetric.toRiemannTensorConst` : unconditional bridge for a constant metric, where all
+  curvature vanishes and the algebraic tensor is `RiemannTensor.flat`.
 
 ## iii. Table of contents
 
@@ -189,5 +194,46 @@ lemma CoordinateMetric.einstein_toRiemannTensor {n : ℕ} (C : CoordinateMetric 
     CoordinateMetric.metricTensor_g,
     CoordinateMetric.ricci_toRiemannTensor C x hx hpair hbianchi,
     CoordinateMetric.ricciScalar_toRiemannTensor C x hx hpair hbianchi]
+
+/-- The covariant Riemann components of a constant metric vanish. -/
+lemma CoordinateMetric.loweredRiemann_const {n : ℕ} (C : CoordinateMetric n) (G : Tensor2 n)
+    (hg : ∀ x, C.g x = G) (x : Fin n → ℝ) (ρ σ μ ν : Fin n) :
+    C.loweredRiemann x ρ σ μ ν = 0 := by
+  simp only [CoordinateMetric.loweredRiemann, CoordinateMetric.riemann_apply,
+    CoordinateCurvature.riemann_const C.g C.ginv G hg, mul_zero, Finset.sum_const_zero]
+
+/-- For a constant coordinate metric, the covariant components satisfy the algebraic symmetries
+unconditionally, so the bridge produces an algebraic `RiemannTensor`. -/
+noncomputable def CoordinateMetric.toRiemannTensorConst {n : ℕ} (C : CoordinateMetric n)
+    (G : Tensor2 n) (hg : ∀ x, C.g x = G) (x : Fin n → ℝ) : RiemannTensor n :=
+  C.toRiemannTensor x
+    (fun i j k l => by simp [CoordinateMetric.loweredRiemann_const C G hg])
+    (fun i j k l => by simp [CoordinateMetric.loweredRiemann_const C G hg])
+
+/-- The algebraic Riemann tensor of a constant coordinate metric is the flat tensor. -/
+lemma CoordinateMetric.toRiemannTensorConst_eq_flat {n : ℕ} (C : CoordinateMetric n)
+    (G : Tensor2 n) (hg : ∀ x, C.g x = G) (x : Fin n → ℝ) :
+    C.toRiemannTensorConst G hg x = RiemannTensor.flat n := by
+  ext i j k l
+  simp [CoordinateMetric.toRiemannTensorConst, CoordinateMetric.toRiemannTensor,
+    CoordinateMetric.loweredRiemann_const C G hg]
+
+/-- The algebraic Ricci tensor of a constant coordinate metric vanishes. -/
+lemma CoordinateMetric.ricci_toRiemannTensorConst {n : ℕ} (C : CoordinateMetric n)
+    (G : Tensor2 n) (hg : ∀ x, C.g x = G) (x : Fin n → ℝ) (hx : x ∈ C.domain) :
+    ricci (C.metricTensor x hx) (C.toRiemannTensorConst G hg x) = 0 := by
+  rw [CoordinateMetric.toRiemannTensorConst_eq_flat, ricci_flat]
+
+/-- The algebraic scalar curvature of a constant coordinate metric vanishes. -/
+lemma CoordinateMetric.ricciScalar_toRiemannTensorConst {n : ℕ} (C : CoordinateMetric n)
+    (G : Tensor2 n) (hg : ∀ x, C.g x = G) (x : Fin n → ℝ) (hx : x ∈ C.domain) :
+    GeneralRelativity.ricciScalar (C.metricTensor x hx) (C.toRiemannTensorConst G hg x) = 0 := by
+  rw [CoordinateMetric.toRiemannTensorConst_eq_flat, ricciScalar_flat]
+
+/-- The algebraic Einstein tensor of a constant coordinate metric vanishes. -/
+lemma CoordinateMetric.einstein_toRiemannTensorConst {n : ℕ} (C : CoordinateMetric n)
+    (G : Tensor2 n) (hg : ∀ x, C.g x = G) (x : Fin n → ℝ) (hx : x ∈ C.domain) :
+    einstein (C.metricTensor x hx) (C.toRiemannTensorConst G hg x) = 0 := by
+  rw [CoordinateMetric.toRiemannTensorConst_eq_flat, einstein_flat]
 
 end GeneralRelativity

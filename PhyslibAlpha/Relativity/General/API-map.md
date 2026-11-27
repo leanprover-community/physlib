@@ -27,6 +27,8 @@ the first Bianchi identity [6], and contract with the inverse metric to the symm
 derivatives bridged to `SpaceTime.deriv` [10], coordinate curvature operators compute the
 Levi-Civita Christoffel symbols from a coordinate metric field [11], construct the Riemann
 curvature tensor [12][13], Ricci tensor, Ricci scalar, and Einstein tensor, and establish that any
+covariant coordinate components lower to algebraic curvature contractions through the bridge
+in [79], and that any
 locally constant metric has identically vanishing connection and curvature [13]. From any metric
 and curvature tensor, the Einstein tensor G_{ij} = R_{ij} - ½ R g_{ij} is symmetric, has metric
 trace (1 - n / 2) R in n dimensions, and in n = 4 spacetime dimensions makes the vacuum Einstein
@@ -179,8 +181,9 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
 4. PhyslibAlpha/Relativity/Metrics/ConformalMetric.lean — `conformalRescaleMetric`,
    `conformalRescaleMetricInv`, `conformalMetric`
 5. PhyslibAlpha/Relativity/Metrics/NullVector.lean — `NullVector`, `nullVector_conformal_iff`
-6. PhyslibAlpha/Relativity/Tensors/RiemannTensor.lean — `RiemannTensor`, `skew_first`,
-   `zero_of_repeated_first`, `zero_of_repeated_last`, `swap_mixed`, `frameKretschmannScalar`, `flat`
+6. PhyslibAlpha/Relativity/Tensors/RiemannTensor.lean — `RiemannTensor`, `RiemannTensor.ext`,
+   `skew_first`, `zero_of_repeated_first`, `zero_of_repeated_last`, `swap_mixed`,
+   `frameKretschmannScalar`, `flat`
 7. PhyslibAlpha/Relativity/Tensors/RicciTensor.lean — `ricci`, `ricci_symm`, `ricci_of_diag`,
    `ricci_flat`
 8. PhyslibAlpha/Relativity/Metrics/MetricTrace.lean — `metricTrace`, `metricTrace_diag`,
@@ -478,6 +481,15 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `perihelionPrecessionFactor_nordstrom`, `perihelionPrecessionFactor_bransDicke`,
     `nordtvedtParameter_gr`, `nordtvedtParameter_bransDicke`, `nordtvedtParameter_fRMetric`,
     `cassini_deviation_bransDickePPN`
+79. PhyslibAlpha/Relativity/Metrics/CurvatureBridge.lean — `CoordinateMetric.loweredRiemann`,
+    `CoordinateMetric.riemann_skew_last`, `CoordinateMetric.loweredRiemann_skew_last`,
+    `CoordinateMetric.toRiemannTensor`, `ricci_lowered`,
+    `CoordinateMetric.ricci_toRiemannTensor`, `CoordinateMetric.ricciScalar_toRiemannTensor`,
+    `CoordinateMetric.einstein_toRiemannTensor`, `CoordinateMetric.toRiemannTensorConst`,
+    `CoordinateMetric.toRiemannTensorConst_eq_flat`,
+    `CoordinateMetric.ricci_toRiemannTensorConst`,
+    `CoordinateMetric.ricciScalar_toRiemannTensorConst`,
+    `CoordinateMetric.einstein_toRiemannTensorConst`
 
 ## References
 
