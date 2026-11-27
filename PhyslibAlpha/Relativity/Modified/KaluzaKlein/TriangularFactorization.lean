@@ -96,7 +96,7 @@ lemma kkMetric_eq_triangular_conj (g4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ
   ext i j
   fin_cases i <;> fin_cases j <;>
     simp [-mul_eq_mul_left_iff, -mul_eq_mul_right_iff,
-      Matrix.mul_apply, Matrix.transpose_apply, Fin.sum_univ_five,
+      Matrix.mul_apply, Matrix.transpose_apply, sum_fin5_split, Fin.sum_univ_four,
       kkMetric, metric4Ext, kkTriangular, kkBlockDiag, extendedPotential] <;>
     ring
 
