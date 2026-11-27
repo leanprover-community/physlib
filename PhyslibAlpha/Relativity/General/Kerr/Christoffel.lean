@@ -157,67 +157,33 @@ across all 64 components and yields the logarithmic divergence formula
 
 -/
 
-private lemma christoffel_0 (K : KerrSpacetime) (x : Fin 4 → ℝ)
-    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
-    (i j : Fin 4) :
-    CoordinateCurvature.christoffel K.metric K.metricInv x 0 i j = K.christoffel x 0 i j := by
-  have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  simp only [CoordinateCurvature.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel]
-  fin_cases i <;> fin_cases j <;>
-    simp only [metricInv, metricCoordDeriv, christoffel, Matrix.of_apply] <;> norm_num
-  all_goals
-    field_simp [hsig, hdel, hs]
-    simp -failIfUnchanged only [sigma, delta, axialFactor, hs2]
-    ring
-
-private lemma christoffel_1 (K : KerrSpacetime) (x : Fin 4 → ℝ)
-    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
-    (i j : Fin 4) :
-    CoordinateCurvature.christoffel K.metric K.metricInv x 1 i j = K.christoffel x 1 i j := by
-  have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  simp only [CoordinateCurvature.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel]
-  fin_cases i <;> fin_cases j <;>
-    simp only [metricInv, metricCoordDeriv, christoffel, Matrix.of_apply] <;> norm_num
-  all_goals field_simp [hsig, hdel, hs]
-  all_goals simp -failIfUnchanged only [sigma, delta, axialFactor, hs2]
-  all_goals ring
-
-private lemma christoffel_2 (K : KerrSpacetime) (x : Fin 4 → ℝ)
-    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
-    (i j : Fin 4) :
-    CoordinateCurvature.christoffel K.metric K.metricInv x 2 i j = K.christoffel x 2 i j := by
-  have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  simp only [CoordinateCurvature.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel]
-  fin_cases i <;> fin_cases j <;>
-    simp only [metricInv, metricCoordDeriv, christoffel, Matrix.of_apply] <;> norm_num
-  all_goals field_simp [hsig, hdel, hs]
-  all_goals simp -failIfUnchanged only [sigma, delta, axialFactor, hs2]
-  all_goals ring
-
-private lemma christoffel_3 (K : KerrSpacetime) (x : Fin 4 → ℝ)
-    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
-    (i j : Fin 4) :
-    CoordinateCurvature.christoffel K.metric K.metricInv x 3 i j = K.christoffel x 3 i j := by
-  have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  simp only [CoordinateCurvature.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel]
-  fin_cases i <;> fin_cases j <;>
-    simp only [metricInv, metricCoordDeriv, christoffel, Matrix.of_apply] <;> norm_num
-  all_goals
-    field_simp [hsig, hdel, hs]
-    simp -failIfUnchanged only [sigma, delta, axialFactor, hs2]
-    ring
-
+set_option maxHeartbeats 1000000 in
 /-- Every Christoffel symbol computed from the coordinate metric agrees with `K.christoffel` at
 every regular coordinate point (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`). -/
 private lemma christoffel_eq_raw (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (k i j : Fin 4) :
     CoordinateCurvature.christoffel K.metric K.metricInv x k i j = K.christoffel x k i j := by
-  fin_cases k
-  · exact christoffel_0 K x hsig hdel hs i j
-  · exact christoffel_1 K x hsig hdel hs i j
-  · exact christoffel_2 K x hsig hdel hs i j
-  · exact christoffel_3 K x hsig hdel hs i j
+  have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
+  fin_cases k <;> fin_cases i <;> fin_cases j <;>
+    simp only [CoordinateCurvature.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel,
+      metricInv, metricCoordDeriv, christoffel, Matrix.of_apply] <;> norm_num
+  all_goals field_simp [hsig, hdel, hs]
+  all_goals simp -failIfUnchanged only [sigma, delta, axialFactor, hs2]
+  all_goals ring
+
+/-- The regularity conditions `Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0` hold on a neighbourhood. -/
+private lemma eventually_regular (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
+    ∀ᶠ y in nhds x,
+      K.sigma (y 1) (y 2) ≠ 0 ∧ K.delta (y 1) ≠ 0 ∧ Real.sin (y 2) ≠ 0 := by
+  have hcSig : Continuous (fun y : Fin 4 → ℝ => K.sigma (y 1) (y 2)) := by
+    simp only [sigma]; fun_prop
+  have hcDel : Continuous (fun y : Fin 4 → ℝ => K.delta (y 1)) := by
+    simp only [delta]; fun_prop
+  have hcS : Continuous (fun y : Fin 4 → ℝ => Real.sin (y 2)) := by fun_prop
+  exact (hcSig.continuousAt.eventually_ne hsig).and
+    ((hcDel.continuousAt.eventually_ne hdel).and (hcS.continuousAt.eventually_ne hs))
 
 /-- Continuity-neighborhood equality between `CoordinateCurvature.christoffel` and
 `K.christoffel`. -/
@@ -226,14 +192,7 @@ lemma eventually_christoffel_eq (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (k i j : Fin 4) :
     (fun y => CoordinateCurvature.christoffel K.metric K.metricInv y k i j)
       =ᶠ[nhds x] fun y => K.christoffel y k i j := by
-  have hcSig : Continuous (fun y : Fin 4 → ℝ => K.sigma (y 1) (y 2)) := by
-    simp only [sigma]; fun_prop
-  have hcDel : Continuous (fun y : Fin 4 → ℝ => K.delta (y 1)) := by
-    simp only [delta]; fun_prop
-  have hcS : Continuous (fun y : Fin 4 → ℝ => Real.sin (y 2)) := by fun_prop
-  have hmem := (hcSig.continuousAt.eventually_ne hsig).and
-    ((hcDel.continuousAt.eventually_ne hdel).and (hcS.continuousAt.eventually_ne hs))
-  filter_upwards [hmem] with y ⟨hySig, hyDel, hyS⟩
+  filter_upwards [K.eventually_regular x hsig hdel hs] with y ⟨hySig, hyDel, hyS⟩
   exact K.christoffel_eq_raw y hySig hyDel hyS k i j
 
 /-- Contracted Boyer–Lindquist Kerr Christoffel trace `∑ ρ, Γ^ρ_{ρ μ} = ∂_μ ln(Σ sin θ)`. -/
