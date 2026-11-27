@@ -155,17 +155,17 @@ noncomputable def metricTensor (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (
   inv_left := S.metric_mul_inv x hr hf hsin
   inv_right := S.metricInv_mul x hr hf hsin
 
-/-- The metric at a bundled regular chart point. -/
+/-- The static spherically symmetric metric at a point of the regular chart. -/
 noncomputable def RegularPoint.metricTensor {S : StaticSphericalMetric} (p : S.RegularPoint) :
     MetricTensor 4 :=
   S.metricTensor p.x p.hr p.hf p.hsin
 
-/-- Right inverse identity at a bundled regular chart point. -/
+/-- `g * g⁻¹ = 1` at a point of the regular chart. -/
 lemma RegularPoint.metric_mul_inv {S : StaticSphericalMetric} (p : S.RegularPoint) :
     S.metric p.x * S.metricInv p.x = 1 :=
   S.metric_mul_inv p.x p.hr p.hf p.hsin
 
-/-- Left inverse identity at a bundled regular chart point. -/
+/-- `g⁻¹ * g = 1` at a point of the regular chart. -/
 lemma RegularPoint.metricInv_mul {S : StaticSphericalMetric} (p : S.RegularPoint) :
     S.metricInv p.x * S.metric p.x = 1 :=
   S.metricInv_mul p.x p.hr p.hf p.hsin

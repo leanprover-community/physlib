@@ -154,11 +154,11 @@ lemma toStaticSpherical_metricFn (S : ReissnerNordstromSpacetime) :
 @[simp] lemma toCoordinateMetric_ginv (S : ReissnerNordstromSpacetime) :
     S.toCoordinateMetric.ginv = S.metricInv := rfl
 
-/-- `S.metric` is definitionally `S.toStaticSpherical.metric`. -/
+/-- `S.metric` is the metric of `S.toStaticSpherical`. -/
 lemma metric_eq_staticSpherical (S : ReissnerNordstromSpacetime) :
     S.metric = S.toStaticSpherical.metric := rfl
 
-/-- `S.metricInv` is definitionally `S.toStaticSpherical.metricInv`. -/
+/-- `S.metricInv` is the inverse metric of `S.toStaticSpherical`. -/
 lemma metricInv_eq_staticSpherical (S : ReissnerNordstromSpacetime) :
     S.metricInv = S.toStaticSpherical.metricInv := rfl
 

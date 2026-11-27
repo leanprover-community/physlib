@@ -100,7 +100,8 @@ noncomputable def CoordinateMetric.christoffel {n : ℕ} (C : CoordinateMetric n
     (x : Fin n → ℝ) (k i j : Fin n) : ℝ :=
   CoordinateCurvature.christoffel C.g C.ginv x k i j
 
-/-- Unfolding lemma for `CoordinateMetric.christoffel`. -/
+/-- The Christoffel symbol of a coordinate metric is the Christoffel symbol of its metric field
+and its inverse. -/
 @[simp] lemma CoordinateMetric.christoffel_apply {n : ℕ} (C : CoordinateMetric n)
     (x : Fin n → ℝ) (k i j : Fin n) :
     C.christoffel x k i j = CoordinateCurvature.christoffel C.g C.ginv x k i j := rfl

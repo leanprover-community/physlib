@@ -19,7 +19,7 @@ derivatives.
 
 The coordinate Riemann tensor
 `R^ρ_{σμν} = ∂_μ Γ^ρ_{νσ} - ∂_ν Γ^ρ_{μσ} + Γ^ρ_{μλ} Γ^λ_{νσ} - Γ^ρ_{νλ} Γ^λ_{μσ}`
-is assembled from `christoffel` and `coordDeriv`. It agrees definitionally with
+is assembled from `christoffel` and `coordDeriv`. It agrees with
 `riemannFromData` when the latter is fed the metric's actual Christoffel derivatives, and the
 chart-level API is `CoordinateMetric.riemann`.
 
@@ -69,7 +69,7 @@ noncomputable def riemann {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
           - christoffel g ginv x ρ ν l * christoffel g ginv x l μ σ)
 
 /-- Feeding `riemannFromData` the metric's actual partial derivatives of `christoffel` reproduces
-`riemann` definitionally. -/
+`riemann`. -/
 lemma riemann_eq_riemannFromData {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     (x : Fin n → ℝ) (ρ σ μ ν : Fin n) :
     riemann g ginv x ρ σ μ ν =
@@ -118,7 +118,8 @@ noncomputable def CoordinateMetric.riemann {n : ℕ} (C : CoordinateMetric n)
     (x : Fin n → ℝ) (ρ σ μ ν : Fin n) : ℝ :=
   CoordinateCurvature.riemann C.g C.ginv x ρ σ μ ν
 
-/-- Unfolding lemma for `CoordinateMetric.riemann`. -/
+/-- The Riemann tensor of a coordinate metric is the Riemann tensor of its metric field and its
+inverse. -/
 @[simp] lemma CoordinateMetric.riemann_apply {n : ℕ} (C : CoordinateMetric n)
     (x : Fin n → ℝ) (ρ σ μ ν : Fin n) :
     C.riemann x ρ σ μ ν = CoordinateCurvature.riemann C.g C.ginv x ρ σ μ ν := rfl

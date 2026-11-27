@@ -83,9 +83,9 @@ lemma torsionTrace_modifiedTorsion (T : AffineConnection 4) (i : Fin 4) :
   simp only [torsionTrace, modifiedTorsion, Fin.sum_univ_four]
   fin_cases i <;> simp <;> ring
 
-/-- Algebraic inverse helper for `modifiedTorsion`: recovers torsion `T` from the Palatini source
-`S = κ Σ` in 4D via `T^k_{ij} = S^k_{ij} + ½ (δ^k_i S^m_{jm} - δ^k_j S^m_{im})`, needed to
-isolate the algebraic inversion of Cartan's spin-torsion field equation cleanly. -/
+/-- Recovers the torsion `T` from the Palatini spin source `S = κ Σ` in four dimensions, by
+`T^k_{ij} = S^k_{ij} + ½ (δ^k_i S^m_{jm} - δ^k_j S^m_{im})`; this inverts `modifiedTorsion`, that is,
+the algebraic spin-torsion field equation of Einstein–Cartan theory. -/
 noncomputable def invertModifiedTorsion (S : AffineConnection 4) : AffineConnection 4 :=
   fun k i j => S k i j
     + (1 / 2) * ((if k = i then torsionTrace S j else 0)
