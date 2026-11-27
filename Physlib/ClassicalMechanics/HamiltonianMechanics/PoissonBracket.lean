@@ -338,16 +338,6 @@ open scoped Manifold ContDiff Topology
 
 variable (S : HamiltonianSystem 𝓘(ℝ, X) ⟨X⟩)
 
-/-- At a state with known momentum and position, restriction evaluates the coordinate observable. -/
-@[simp]
-lemma restrictObservable_ofInnerProductSpace (f : X → X → ℝ) (p q : X)
-    (hz : PhaseSpace.ofInnerProductSpace p q ∈ S.domain) :
-    (Function.uncurry f ∘ PhaseSpace.hilbertCoords X ∘ Subtype.val)
-      (⟨PhaseSpace.ofInnerProductSpace p q, hz⟩ : S.domain) = f p q := by
-  change Function.uncurry f ((PhaseSpace.hilbertCoords X)
-    ((PhaseSpace.hilbertCoords X).symm (p, q))) = f p q
-  simp only [(PhaseSpace.hilbertCoords X).apply_symm_apply, Function.uncurry]
-
 /-- The canonical Poisson bracket of observables on the open phase-space domain of a system
 in real Hilbert space. The coordinate formula uses extensions by zero. Its value at an
 interior point depends only on the observables in a neighborhood of that point. -/
