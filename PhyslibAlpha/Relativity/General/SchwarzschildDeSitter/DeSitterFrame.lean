@@ -292,7 +292,7 @@ lemma frameRicciTensor_offdiag (S : SchwarzschildDeSitterSpacetime) (r : ℝ) {�
     (h : σ ≠ ν) :
     S.frameRicciTensor r σ ν = 0 := by
   rw [frameRicciTensor_eq]
-  fin_cases σ <;> fin_cases ν <;> simp_all
+  fin_cases σ <;> fin_cases ν <;> simp [minkowskiMetric4_apply] at h ⊢
 
 /-- Diagonal frame components of `G`: `G_{tt} = Λ`, `G_{rr} = G_{θθ} = G_{φφ} = -Λ`. -/
 lemma frameEinstein_diag (S : SchwarzschildDeSitterSpacetime) (r : ℝ) :

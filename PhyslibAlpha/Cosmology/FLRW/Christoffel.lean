@@ -160,12 +160,30 @@ private lemma metricDeriv_phi_eq_zero (S : FLRWSpacetime) (x : Fin 4 → ℝ) (c
     coordDeriv 3 (fun y => S.metric y c d) x = 0 :=
   coordDeriv_const_slice 3 (S.metric x c d) fun _ => by simp [metric]
 
+/-- Derivative of the squared scale factor at conformal time. -/
+private lemma hasDerivAt_a_sq (S : FLRWSpacetime) (x : Fin 4 → ℝ)
+    (ha_diff : DifferentiableAt ℝ S.a (x 0)) :
+    HasDerivAt (fun s : ℝ => S.a s ^ 2) (2 * S.a (x 0) * deriv S.a (x 0)) (x 0) := by
+  convert ha_diff.hasDerivAt.pow 2 using 1; ring
+
+/-- Derivative of `a * a'` at conformal time. -/
+private lemma hasDerivAt_a_mul_deriv_a (S : FLRWSpacetime) (x : Fin 4 → ℝ)
+    (ha1 : DifferentiableAt ℝ S.a (x 0)) (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
+    HasDerivAt (fun s : ℝ => S.a s * deriv S.a s)
+      ((deriv S.a (x 0)) ^ 2 + S.a (x 0) * deriv (deriv S.a) (x 0)) (x 0) := by
+  convert ha1.hasDerivAt.mul ha2.hasDerivAt using 1; ring
+
+/-- Derivative of the spatial curvature denominator `1 - k s²`. -/
+private lemma hasDerivAt_one_sub_k_sq (S : FLRWSpacetime) (x : Fin 4 → ℝ) :
+    HasDerivAt (fun s : ℝ => 1 - S.k * s ^ 2) (-2 * S.k * x 1) (x 1) := by
+  convert (hasDerivAt_const (x 1) 1).sub ((hasDerivAt_pow 2 (x 1)).const_mul S.k) using 1
+  ring
+
 private lemma pd_t_11 (S : FLRWSpacetime) (x : Fin 4 → ℝ)
     (ha_diff : DifferentiableAt ℝ S.a (x 0)) :
     coordDeriv 0 (fun y => S.metric y 1 1) x
       = 2 * S.a (x 0) * deriv S.a (x 0) / (1 - S.k * (x 1) ^ 2) := by
-  have haSq : HasDerivAt (fun s : ℝ => S.a s ^ 2) (2 * S.a (x 0) * deriv S.a (x 0)) (x 0) := by
-    convert ha_diff.hasDerivAt.pow 2 using 1; ring
+  have haSq := hasDerivAt_a_sq S x ha_diff
   have hfun : (fun s : ℝ => S.metric (Function.update x 0 s) 1 1)
       = fun s : ℝ => S.a s ^ 2 / (1 - S.k * (x 1) ^ 2) := by
     funext s; simp [metric]
@@ -174,8 +192,7 @@ private lemma pd_t_11 (S : FLRWSpacetime) (x : Fin 4 → ℝ)
 private lemma pd_t_22 (S : FLRWSpacetime) (x : Fin 4 → ℝ)
     (ha_diff : DifferentiableAt ℝ S.a (x 0)) :
     coordDeriv 0 (fun y => S.metric y 2 2) x = 2 * S.a (x 0) * deriv S.a (x 0) * (x 1) ^ 2 := by
-  have haSq : HasDerivAt (fun s : ℝ => S.a s ^ 2) (2 * S.a (x 0) * deriv S.a (x 0)) (x 0) := by
-    convert ha_diff.hasDerivAt.pow 2 using 1; ring
+  have haSq := hasDerivAt_a_sq S x ha_diff
   have hfun : (fun s : ℝ => S.metric (Function.update x 0 s) 2 2)
       = fun s : ℝ => S.a s ^ 2 * (x 1) ^ 2 := by
     funext s; simp [metric]
@@ -185,8 +202,7 @@ private lemma pd_t_33 (S : FLRWSpacetime) (x : Fin 4 → ℝ)
     (ha_diff : DifferentiableAt ℝ S.a (x 0)) :
     coordDeriv 0 (fun y => S.metric y 3 3) x
       = 2 * S.a (x 0) * deriv S.a (x 0) * (x 1) ^ 2 * Real.sin (x 2) ^ 2 := by
-  have haSq : HasDerivAt (fun s : ℝ => S.a s ^ 2) (2 * S.a (x 0) * deriv S.a (x 0)) (x 0) := by
-    convert ha_diff.hasDerivAt.pow 2 using 1; ring
+  have haSq := hasDerivAt_a_sq S x ha_diff
   have hfun : (fun s : ℝ => S.metric (Function.update x 0 s) 3 3)
       = fun s : ℝ => S.a s ^ 2 * ((x 1) ^ 2 * Real.sin (x 2) ^ 2) := by
     funext s; simp [metric, mul_assoc]
@@ -214,9 +230,7 @@ private lemma pd_r_11 (S : FLRWSpacetime) (x : Fin 4 → ℝ) (hkr : 1 - S.k * (
   have hfun : (fun s : ℝ => S.metric (Function.update x 1 s) 1 1)
       = fun s : ℝ => S.a (x 0) ^ 2 * (1 - S.k * s ^ 2)⁻¹ := by
     funext s; simp [metric, div_eq_mul_inv]
-  have hden : HasDerivAt (fun s : ℝ => 1 - S.k * s ^ 2) (-2 * S.k * x 1) (x 1) := by
-    convert (hasDerivAt_const (x 1) 1).sub ((hasDerivAt_pow 2 (x 1)).const_mul S.k) using 1
-    ring
+  have hden := hasDerivAt_one_sub_k_sq S x
   have hd : HasDerivAt (fun s : ℝ => S.a (x 0) ^ 2 * (1 - S.k * s ^ 2)⁻¹)
       (S.a (x 0) ^ 2 * (-(-2 * S.k * x 1) / (1 - S.k * (x 1) ^ 2) ^ 2)) (x 1) := by
     convert (hden.inv hkr).const_mul (S.a (x 0) ^ 2) using 1
@@ -338,9 +352,7 @@ private lemma pd_G_0_011 (S : FLRWSpacetime) (x : Fin 4 → ℝ)
   have hfun : (fun s : ℝ => S.christoffel (Function.update x 0 s) 0 1 1)
       = fun s : ℝ => (S.a s * deriv S.a s) / (1 - S.k * (x 1) ^ 2) := by
     funext s; simp [christoffel]
-  have haa' : HasDerivAt (fun s : ℝ => S.a s * deriv S.a s)
-      ((deriv S.a (x 0)) ^ 2 + S.a (x 0) * deriv (deriv S.a) (x 0)) (x 0) := by
-    convert ha1.hasDerivAt.mul ha2.hasDerivAt using 1; ring
+  have haa' := hasDerivAt_a_mul_deriv_a S x ha1 ha2
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ (haa'.div_const (1 - S.k * (x 1) ^ 2)))]
   simp [christoffelDeriv]
 
@@ -350,9 +362,7 @@ private lemma pd_G_0_022 (S : FLRWSpacetime) (x : Fin 4 → ℝ)
   have hfun : (fun s : ℝ => S.christoffel (Function.update x 0 s) 0 2 2)
       = fun s : ℝ => (S.a s * deriv S.a s) * (x 1) ^ 2 := by
     funext s; simp [christoffel]
-  have haa' : HasDerivAt (fun s : ℝ => S.a s * deriv S.a s)
-      ((deriv S.a (x 0)) ^ 2 + S.a (x 0) * deriv (deriv S.a) (x 0)) (x 0) := by
-    convert ha1.hasDerivAt.mul ha2.hasDerivAt using 1; ring
+  have haa' := hasDerivAt_a_mul_deriv_a S x ha1 ha2
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ (haa'.mul_const ((x 1) ^ 2)))]
   simp [christoffelDeriv]
 
@@ -362,9 +372,7 @@ private lemma pd_G_0_033 (S : FLRWSpacetime) (x : Fin 4 → ℝ)
   have hfun : (fun s : ℝ => S.christoffel (Function.update x 0 s) 0 3 3)
       = fun s : ℝ => (S.a s * deriv S.a s) * ((x 1) ^ 2 * Real.sin (x 2) ^ 2) := by
     funext s; simp [christoffel, mul_assoc]
-  have haa' : HasDerivAt (fun s : ℝ => S.a s * deriv S.a s)
-      ((deriv S.a (x 0)) ^ 2 + S.a (x 0) * deriv (deriv S.a) (x 0)) (x 0) := by
-    convert ha1.hasDerivAt.mul ha2.hasDerivAt using 1; ring
+  have haa' := hasDerivAt_a_mul_deriv_a S x ha1 ha2
   rw [coordDeriv_of_hasDerivAt _ (hfun ▸ (haa'.mul_const ((x 1) ^ 2 * Real.sin (x 2) ^ 2)))]
   have hval : S.christoffelDeriv 0 x 0 3 3 =
       ((deriv S.a (x 0)) ^ 2 + S.a (x 0) * deriv (deriv S.a) (x 0)) *
@@ -423,9 +431,7 @@ private lemma pd_G_1_011 (S : FLRWSpacetime) (x : Fin 4 → ℝ) (hkr : 1 - S.k 
   have hfun : (fun s => S.christoffel (Function.update x 1 s) 0 1 1)
       = fun s => (S.a (x 0) * deriv S.a (x 0)) * (1 - S.k * s ^ 2)⁻¹ := by
     funext s; simp [christoffel, div_eq_mul_inv]
-  have hden : HasDerivAt (fun s : ℝ => 1 - S.k * s ^ 2) (-2 * S.k * x 1) (x 1) := by
-    convert (hasDerivAt_const (x 1) 1).sub ((hasDerivAt_pow 2 (x 1)).const_mul S.k) using 1
-    ring
+  have hden := hasDerivAt_one_sub_k_sq S x
   have hd : HasDerivAt (fun s : ℝ => (S.a (x 0) * deriv S.a (x 0)) * (1 - S.k * s ^ 2)⁻¹)
       ((S.a (x 0) * deriv S.a (x 0)) * (-(-2 * S.k * x 1) / (1 - S.k * (x 1) ^ 2) ^ 2)) (x 1) := by
     convert (hden.inv hkr).const_mul (S.a (x 0) * deriv S.a (x 0)) using 1
@@ -458,9 +464,7 @@ private lemma pd_G_1_111 (S : FLRWSpacetime) (x : Fin 4 → ℝ) (hkr : 1 - S.k 
   have hfun : (fun s => S.christoffel (Function.update x 1 s) 1 1 1)
       = fun s => S.k * s / (1 - S.k * s ^ 2) := by
     funext s; simp [christoffel]
-  have hden : HasDerivAt (fun s : ℝ => 1 - S.k * s ^ 2) (-2 * S.k * x 1) (x 1) := by
-    convert (hasDerivAt_const (x 1) 1).sub ((hasDerivAt_pow 2 (x 1)).const_mul S.k) using 1
-    ring
+  have hden := hasDerivAt_one_sub_k_sq S x
   have hnum : HasDerivAt (fun s : ℝ => S.k * s) S.k (x 1) := by
     convert (hasDerivAt_id (x 1)).const_mul S.k using 2 <;> simp
   have hd : HasDerivAt (fun s : ℝ => S.k * s / (1 - S.k * s ^ 2))
@@ -476,9 +480,7 @@ private lemma pd_G_1_122 (S : FLRWSpacetime) (x : Fin 4 → ℝ) :
   have hfun : (fun s => S.christoffel (Function.update x 1 s) 1 2 2)
       = fun s => -(s * (1 - S.k * s ^ 2)) := by
     funext s; simp [christoffel]
-  have hden : HasDerivAt (fun s : ℝ => 1 - S.k * s ^ 2) (-2 * S.k * x 1) (x 1) := by
-    convert (hasDerivAt_const (x 1) 1).sub ((hasDerivAt_pow 2 (x 1)).const_mul S.k) using 1
-    ring
+  have hden := hasDerivAt_one_sub_k_sq S x
   have hd : HasDerivAt (fun s : ℝ => -(s * (1 - S.k * s ^ 2)))
       (-(1 * (1 - S.k * (x 1) ^ 2) + x 1 * (-2 * S.k * x 1))) (x 1) := by
     convert ((hasDerivAt_id (x 1)).mul hden).neg using 2 <;> simp
@@ -491,9 +493,7 @@ private lemma pd_G_1_133 (S : FLRWSpacetime) (x : Fin 4 → ℝ) :
   have hfun : (fun s => S.christoffel (Function.update x 1 s) 1 3 3)
       = fun s => -(s * (1 - S.k * s ^ 2)) * Real.sin (x 2) ^ 2 := by
     funext s; simp [christoffel]
-  have hden : HasDerivAt (fun s : ℝ => 1 - S.k * s ^ 2) (-2 * S.k * x 1) (x 1) := by
-    convert (hasDerivAt_const (x 1) 1).sub ((hasDerivAt_pow 2 (x 1)).const_mul S.k) using 1
-    ring
+  have hden := hasDerivAt_one_sub_k_sq S x
   have hd : HasDerivAt (fun s : ℝ => -(s * (1 - S.k * s ^ 2)) * Real.sin (x 2) ^ 2)
       ((-(1 * (1 - S.k * (x 1) ^ 2) + x 1 * (-2 * S.k * x 1))) * Real.sin (x 2) ^ 2) (x 1) := by
     convert ((hasDerivAt_id (x 1)).mul hden).neg.mul_const (Real.sin (x 2) ^ 2) using 2 <;> simp
