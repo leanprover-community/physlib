@@ -5,60 +5,39 @@ Authors: Alex Vergara Gil
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
+public import PhyslibAlpha.Relativity.Modified.EinsteinCartan.Basic
 public import PhyslibAlpha.Relativity.Metrics.MetricTrace
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
-
 /-!
 
-# Einstein–Cartan–Sciama–Kibble gravitation with torsion
+# Metric compatibility and contorsion
 
-Affine connections with torsion, metric compatibility, explicit contorsion tensor existence and
-uniqueness, Cartan's algebraic field equations in four dimensions, and recovery of General
-Relativity in spinless vacuum.
+Metric-compatible affine connections and the contorsion tensor.
 
 ## i. Overview
 
-Einstein–Cartan theory generalizes General Relativity to Riemann–Cartan spacetimes carrying a
-metric-compatible affine connection `Γ^k_{ij}` with non-vanishing torsion `T^k_{ij} = Γ^k_{ij} -
-Γ^k_{ji}`. This module formalizes torsion, metric compatibility, the Levi-Civita connection from
-metric derivatives, and the contorsion tensor `K^k_{ij}`, proving both existence and uniqueness of
-the metric-compatible connection for any prescribed antisymmetric torsion tensor (`Γ = Γ_LC + K`).
-It then defines the modified torsion tensor appearing in the Palatini variation and proves the exact
-4D algebraic inversion of Cartan's spin-torsion equation (`T = κ Ŝ + …`), together with the vacuum
-corollary `S = 0 → T = 0`.
+For a metric `g` with derivatives `dg`, every antisymmetric torsion tensor has a unique
+metric-compatible connection `Γ = Γ_LC + K`, where `Γ_LC` is the Levi-Civita connection and `K`
+is the contorsion tensor.
 
 ## ii. Key results
 
-- `AffineConnection`, `EinsteinCartanData`, `torsion`, `torsion_antisymm` : affine connections,
-  metric-compatible connection data with torsion, and torsion tensor.
-- `EinsteinCartanData.torsion`, `EinsteinCartanData.MetricCompatible`, `MetricCompatible`,
-  `leviCivitaOfDeriv`, `contorsion` : metric compatibility and contorsion `K`.
-- `contorsion_torsion`, `leviCivita_add_contorsion_compatible`,
-  `EinsteinCartanData.connection_unique` : existence and uniqueness `Γ = Γ_LC + K` for arbitrary
-  metric signature and dimension `n`.
-- `modifiedTorsion`, `cartan_algebraic_inversion`, `cartan_vacuum_torsion_zero` : 4D Cartan
-  algebraic spin-torsion equation inversion and spinless GR reduction.
+- `MetricCompatible`, `EinsteinCartanData.MetricCompatible` : metric compatibility.
+- `leviCivitaOfDeriv`, `leviCivitaOfDeriv_compatible` : Levi-Civita connection from `dg`.
+- `contorsion`, `contorsion_torsion`, `connection_unique` : contorsion existence and uniqueness.
 
 ## iii. Table of contents
 
-- A. Affine connections and torsion tensor
-- B. Metric compatibility and contorsion existence and uniqueness
-- C. Cartan algebraic spin-torsion inversion in four dimensions
+- A. Metric compatibility and contorsion existence and uniqueness
 
 ## iv. References
 
-* Élie Cartan, *Sur une généralisation de la notion de courbure de Riemann et les espaces à
-  torsion*, *Comptes Rendus de l'Académie des Sciences (Paris)* 174, pp. 593-595 (1922).
-  [ref: Cartan1922]
 * T. W. B. Kibble, *Lorentz Invariance and the Gravitational Field*, *Journal of Mathematical
   Physics* 2, pp. 212-221 (1961), Sec. 2-4. [ref: Kibble1961]
-* D. W. Sciama, *The Physical Structure of General Relativity*, *Reviews of Modern Physics* 36, pp.
-  463-469 (1964). [ref: Sciama1964]
 * Friedrich W. Hehl et al., *General Relativity with Spin and Torsion: Foundations and Prospects*,
-  *Reviews of Modern Physics* 48, pp. 393-416 (1976), Sec. II-III. [ref: Hehl1976]
+  *Reviews of Modern Physics* 48, pp. 393-416 (1976), Sec. II. [ref: Hehl1976]
 -/
 
 @[expose] public section
@@ -71,68 +50,7 @@ namespace EinsteinCartan
 
 /-!
 
-## A. Affine connections and torsion tensor
-
-Relaxing connection symmetry replaces zero torsion by the antisymmetric Cartan tensor
-`T^k_{ij} = Γ^k_{ij} - Γ^k_{ji}`, which vanishes identically for Levi-Civita connections.
-
--/
-
-/-- General `(1,2)` affine connection coefficients `Γ^k_{ij}` in `n` dimensions. -/
-abbrev AffineConnection (n : ℕ) : Type := Fin n → Fin n → Fin n → ℝ
-
-/-- Riemann–Cartan spacetime data in `n` dimensions pairing a nondegenerate metric with a
-(generally torsionful) affine connection. -/
-structure EinsteinCartanData (n : ℕ) where
-  /-- Nondegenerate spacetime metric tensor. -/
-  M : MetricTensor n
-  /-- General `(1,2)` affine connection coefficients `Γ^k_{ij}`. -/
-  conn : AffineConnection n
-
-/-- Cartan torsion tensor `T^k_{ij} = Γ^k_{ij} - Γ^k_{ji}`. -/
-def torsion {n : ℕ} (Γ : AffineConnection n) : AffineConnection n :=
-  fun k i j => Γ k i j - Γ k j i
-
-/-- Torsion tensor of the affine connection carried by an `EinsteinCartanData`. -/
-def EinsteinCartanData.torsion {n : ℕ} (D : EinsteinCartanData n) : AffineConnection n :=
-  EinsteinCartan.torsion D.conn
-
-/-- Antisymmetry of torsion in its lower two indices: `T^k_{ij} = -T^k_{ji}`. -/
-lemma torsion_antisymm {n : ℕ} (Γ : AffineConnection n) (k i j : Fin n) :
-    torsion Γ k i j = -torsion Γ k j i := by
-  simp only [torsion]
-  ring
-
-/-- Vanishing diagonal components of torsion: `T^k_{ii} = 0`. -/
-lemma torsion_diag {n : ℕ} (Γ : AffineConnection n) (k i : Fin n) : torsion Γ k i i = 0 := by
-  simp [torsion]
-
-/-- Antisymmetry of the torsion of an `EinsteinCartanData` in its lower two indices. -/
-lemma EinsteinCartanData.torsion_antisymm {n : ℕ} (D : EinsteinCartanData n) (k i j : Fin n) :
-    D.torsion k i j = -D.torsion k j i :=
-  GeneralRelativity.Modified.EinsteinCartan.torsion_antisymm D.conn k i j
-
-/-- Diagonal components of the torsion of an `EinsteinCartanData` vanish. -/
-lemma EinsteinCartanData.torsion_diag {n : ℕ} (D : EinsteinCartanData n) (k i : Fin n) :
-    D.torsion k i i = 0 :=
-  GeneralRelativity.Modified.EinsteinCartan.torsion_diag D.conn k i
-
-/-- Any symmetric connection (such as Levi-Civita) has zero torsion. -/
-lemma torsion_eq_zero_of_symm {n : ℕ} (Γ : AffineConnection n) (hs : ∀ k i j, Γ k i j = Γ k j i) :
-    torsion Γ = 0 := by
-  ext k i j
-  simp [torsion, hs k i j]
-
-/-- Adding a symmetric `(1,2)` tensor leaves torsion unchanged. -/
-lemma torsion_add_symm {n : ℕ} (Γ S : AffineConnection n) (hs : ∀ k i j, S k i j = S k j i) :
-    torsion (fun k i j => Γ k i j + S k i j) = torsion Γ := by
-  ext k i j
-  simp only [torsion, hs k i j]
-  ring
-
-/-!
-
-## B. Metric compatibility and contorsion existence and uniqueness
+## A. Metric compatibility and contorsion existence and uniqueness
 
 Every metric-compatible affine connection splits uniquely into the Levi-Civita connection plus the
 contorsion tensor built algebraically from its torsion.
@@ -355,88 +273,6 @@ lemma EinsteinCartanData.connection_unique {n : ℕ} (D : EinsteinCartanData n)
       leviCivitaOfDeriv D.M.ginv dg k i j + contorsion D.M D.torsion k i j :=
   EinsteinCartan.connection_unique D.M dg D.conn hmc
 
-/-!
-
-## C. Cartan algebraic spin-torsion inversion in four dimensions
-
-In four spacetime dimensions, Cartan's algebraic field equation `T̃^k_{ij} = κ spin^k_{ij}`
-inverts linearly, forcing torsion to vanish identically in spinless vacuum.
-
--/
-
-/-- Torsion vector trace `T_i = T^m_{im} = -T^m_{mi}` in four dimensions. -/
-def torsionTrace (T : AffineConnection 4) (i : Fin 4) : ℝ := ∑ m : Fin 4, T m i m
-
-/-- Modified torsion tensor entering the 4D Palatini variation of Einstein–Cartan theory:
-`T̃^k_{ij} = T^k_{ij} + δ^k_i T^m_{jm} - δ^k_j T^m_{im}`. -/
-def modifiedTorsion (T : AffineConnection 4) : AffineConnection 4 :=
-  fun k i j => T k i j
-    + (if k = i then torsionTrace T j else 0)
-    - (if k = j then torsionTrace T i else 0)
-
-/-- Antisymmetry of `modifiedTorsion` in its lower indices when `T` is antisymmetric. -/
-lemma modifiedTorsion_antisymm (T : AffineConnection 4)
-    (hT : ∀ k i j, T k i j = -T k j i) (k i j : Fin 4) :
-    modifiedTorsion T k i j = -modifiedTorsion T k j i := by
-  simp only [modifiedTorsion, hT k i j]
-  ring
-
-/-- In four dimensions, contracting the modified torsion gives `-2` times the torsion trace:
-`∑ k, T̃^k_{ik} = -2 T^m_{im}`. -/
-lemma torsionTrace_modifiedTorsion (T : AffineConnection 4) (i : Fin 4) :
-    torsionTrace (modifiedTorsion T) i = -2 * torsionTrace T i := by
-  simp only [torsionTrace, modifiedTorsion, Fin.sum_univ_four]
-  fin_cases i <;> simp <;> ring
-
-/-- Algebraic inverse helper for `modifiedTorsion`: recovers torsion `T` from the Palatini source
-`S = κ Σ` in 4D via `T^k_{ij} = S^k_{ij} + ½ (δ^k_i S^m_{jm} - δ^k_j S^m_{im})`, needed to
-isolate the algebraic inversion of Cartan's spin-torsion field equation cleanly. -/
-noncomputable def invertModifiedTorsion (S : AffineConnection 4) : AffineConnection 4 :=
-  fun k i j => S k i j
-    + (1 / 2) * ((if k = i then torsionTrace S j else 0)
-      - (if k = j then torsionTrace S i else 0))
-
-/-- Applying `invertModifiedTorsion` to `modifiedTorsion T` recovers `T` identically. -/
-lemma invertModifiedTorsion_modifiedTorsion (T : AffineConnection 4) :
-    invertModifiedTorsion (modifiedTorsion T) = T := by
-  ext k i j
-  simp only [invertModifiedTorsion, torsionTrace_modifiedTorsion, modifiedTorsion]
-  split_ifs <;> ring
-
-/-- Applying `modifiedTorsion` to `invertModifiedTorsion S` recovers `S` identically. -/
-lemma modifiedTorsion_invertModifiedTorsion (S : AffineConnection 4) :
-    modifiedTorsion (invertModifiedTorsion S) = S := by
-  have htr : ∀ j : Fin 4,
-      torsionTrace (invertModifiedTorsion S) j = -(1 / 2) * torsionTrace S j := by
-    intro j
-    simp only [torsionTrace, invertModifiedTorsion, Fin.sum_univ_four]
-    fin_cases j <;> simp <;> ring
-  ext k i j
-  simp only [modifiedTorsion, htr, invertModifiedTorsion]
-  split_ifs <;> ring
-
-/-- Cartan's algebraic spin-torsion field equation `T̃^k_{ij} = κ spin^k_{ij}` uniquely determines
-spacetime torsion linearly in the spin density. -/
-lemma cartan_algebraic_inversion (κ : ℝ) (T spin : AffineConnection 4)
-    (hcartan : ∀ k i j, modifiedTorsion T k i j = κ * spin k i j) (k i j : Fin 4) :
-    T k i j = κ * invertModifiedTorsion spin k i j := by
-  have htr : torsionTrace (modifiedTorsion T) = fun m => κ * torsionTrace spin m := by
-    ext m
-    simp only [torsionTrace, hcartan]
-    rw [Finset.mul_sum]
-  have hinv := congrFun (congrFun (congrFun (invertModifiedTorsion_modifiedTorsion T) k) i) j
-  rw [← hinv]
-  simp only [invertModifiedTorsion, hcartan, htr]
-  split_ifs <;> ring
-
-/-- In spinless vacuum (`spin = 0`), Cartan's field equation forces torsion to vanish identically,
-reducing Einstein–Cartan theory to torsion-free General Relativity. -/
-lemma cartan_vacuum_torsion_zero (κ : ℝ) (T spin : AffineConnection 4)
-    (hcartan : ∀ k i j, modifiedTorsion T k i j = κ * spin k i j)
-    (hvac : ∀ k i j, spin k i j = 0) : T = 0 := by
-  ext k i j
-  rw [cartan_algebraic_inversion κ T spin hcartan k i j]
-  simp [invertModifiedTorsion, torsionTrace, hvac]
 
 end EinsteinCartan
 

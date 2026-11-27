@@ -127,7 +127,7 @@ fifth forces for screened bodies via the thin-shell parameter Δ = |δφ| / (2 �
 Einstein-Cartan-Sciama-Kibble theory (`EinsteinCartanData`) relaxes the torsion-free constraint on
 the affine connection, proving that any metric-compatible connection decomposes uniquely into the
 Levi-Civita connection plus the contorsion tensor built from torsion, and inverting the algebraic
-4D Palatini spin-torsion equation [61]. In the Teleparallel Equivalent of General Relativity
+4D Palatini spin-torsion equation [61][86][87]. In the Teleparallel Equivalent of General Relativity
 (TEGR), gravity is carried by the curvature-free Weitzenböck connection of an orthonormal `Tetrad`
 and its torsion `superpotential` [62]; on flat FLRW cosmologies the general `torsionScalar` matches
 `flrwTorsionScalar = 6 H²` and the Levi-Civita scalar curvature satisfies R_LC = -T + B up to the
@@ -391,13 +391,9 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `ChameleonModel.range`, `ChameleonModel.range_shrinks`, `ChameleonModel.suppression`,
     `comptonRange`, `comptonRange_antitone`, `yukawaSuppression`, `yukawaSuppression_lt_half`,
     `thinShellParameter`, `screeningFactor`, `thin_shell_suppressed`
-61. PhyslibAlpha/Relativity/Modified/EinsteinCartan.lean — `AffineConnection`,
+61. PhyslibAlpha/Relativity/Modified/EinsteinCartan/Basic.lean — `AffineConnection`,
     `EinsteinCartanData`, `EinsteinCartanData.torsion`, `EinsteinCartanData.torsion_antisymm`,
-    `EinsteinCartanData.torsion_diag`, `EinsteinCartanData.MetricCompatible`,
-    `EinsteinCartanData.connection_unique`, `torsion`, `torsion_antisymm`, `MetricCompatible`,
-    `leviCivitaOfDeriv`, `leviCivitaOfDeriv_compatible`, `contorsion`,
-    `contorsion_antisymm_outer`, `contorsion_torsion`, `connection_unique`, `modifiedTorsion`,
-    `invertModifiedTorsion`
+    `EinsteinCartanData.torsion_diag`, `torsion`, `torsion_antisymm`
 62. PhyslibAlpha/Relativity/Modified/Teleparallel/Basic.lean — `Tetrad`,
     `Tetrad.weitzenbockConnection`, `Tetrad.mul_weitzenbockConnection`,
     `Tetrad.weitzenbockTorsion`, `Tetrad.weitzenbockTorsion_eq`,
@@ -503,6 +499,12 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
 84. PhyslibAlpha/Cosmology/FLRW/Curvature.lean — `FLRWSpacetime.ricciTensor`,
     `FLRWSpacetime.ricciScalar`, `FLRWSpacetime.einsteinTensor`
 85. PhyslibAlpha/Relativity/Metrics/CoordDeriv.lean — `coordDeriv_eq_spaceTime_deriv`
+86. PhyslibAlpha/Relativity/Modified/EinsteinCartan/Contorsion.lean —
+    `EinsteinCartanData.MetricCompatible`, `EinsteinCartanData.connection_unique`,
+    `MetricCompatible`, `leviCivitaOfDeriv`, `leviCivitaOfDeriv_compatible`, `contorsion`,
+    `contorsion_antisymm_outer`, `contorsion_torsion`, `connection_unique`
+87. PhyslibAlpha/Relativity/Modified/EinsteinCartan/ModifiedTorsion.lean — `modifiedTorsion`,
+    `invertModifiedTorsion`
 
 ## References
 

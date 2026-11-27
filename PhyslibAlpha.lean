@@ -877,7 +877,9 @@ public import PhyslibAlpha.Relativity.MinkowskiMatrix
 public import PhyslibAlpha.Relativity.Modified.BransDicke
 public import PhyslibAlpha.Relativity.Modified.ChameleonScreening
 public import PhyslibAlpha.Relativity.Modified.EinsteinAether
-public import PhyslibAlpha.Relativity.Modified.EinsteinCartan
+public import PhyslibAlpha.Relativity.Modified.EinsteinCartan.Basic
+public import PhyslibAlpha.Relativity.Modified.EinsteinCartan.Contorsion
+public import PhyslibAlpha.Relativity.Modified.EinsteinCartan.ModifiedTorsion
 public import PhyslibAlpha.Relativity.Modified.FRGravity
 public import PhyslibAlpha.Relativity.Modified.Galileon
 public import PhyslibAlpha.Relativity.Modified.KaluzaKlein.Basic

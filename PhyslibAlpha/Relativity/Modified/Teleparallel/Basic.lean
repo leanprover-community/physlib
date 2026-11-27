@@ -5,7 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
-public import PhyslibAlpha.Relativity.Modified.EinsteinCartan
+public import PhyslibAlpha.Relativity.Modified.EinsteinCartan.ModifiedTorsion
 import Mathlib.Tactic.Ring
 
 /-!
