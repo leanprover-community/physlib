@@ -115,6 +115,8 @@ lemma riemann_components_from_coordinateMetric (S : SchwarzschildSpacetime) (x :
   simp only [CoordinateMetric.riemann_apply, S.toCoordinateMetric_g, S.toCoordinateMetric_ginv]
   have hf0 : S.toDeSitter.metricFn (x 1) ≠ 0 := by simp [hf]
   obtain ⟨c1, c2, c3, c4, c5, c6⟩ := S.toDeSitter.riemann_components_from_metric x hr hf0 hsin
+  simp only [CoordinateMetric.riemann_apply, S.toDeSitter.toCoordinateMetric_g,
+    S.toDeSitter.toCoordinateMetric_ginv] at c1 c2 c3 c4 c5 c6
   rw [S.toDeSitter_metric, S.toDeSitter_metricInv] at c1 c2 c3 c4 c5 c6
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
   · simp only [toDeSitter_M, toDeSitter_Λ, toDeSitter_metricFn, zero_div, add_zero] at c1
@@ -134,6 +136,8 @@ lemma ricciTensor (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠
   simp only [CoordinateMetric.ricciTensor_apply, S.toCoordinateMetric_g, S.toCoordinateMetric_ginv]
   have hf0 : S.toDeSitter.metricFn (x 1) ≠ 0 := by simp [hf]
   have h := S.toDeSitter.ricciTensor x hr hf0 hsin σ ν
+  simp only [CoordinateMetric.ricciTensor_apply, S.toDeSitter.toCoordinateMetric_g,
+    S.toDeSitter.toCoordinateMetric_ginv] at h
   rw [S.toDeSitter_metric, S.toDeSitter_metricInv] at h
   simpa using h
 
@@ -144,6 +148,8 @@ lemma ricciScalar (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠
   simp only [CoordinateMetric.ricciScalar_apply, S.toCoordinateMetric_g, S.toCoordinateMetric_ginv]
   have hf0 : S.toDeSitter.metricFn (x 1) ≠ 0 := by simp [hf]
   have h := S.toDeSitter.ricciScalar x hr hf0 hsin
+  simp only [CoordinateMetric.ricciScalar_apply, S.toDeSitter.toCoordinateMetric_g,
+    S.toDeSitter.toCoordinateMetric_ginv] at h
   rw [S.toDeSitter_metric, S.toDeSitter_metricInv] at h
   simpa using h
 
@@ -155,6 +161,8 @@ lemma einsteinTensor (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) (hr : x 1 
   simp only [CoordinateMetric.einsteinTensor_apply, S.toCoordinateMetric_g, S.toCoordinateMetric_ginv]
   have hf0 : S.toDeSitter.metricFn (x 1) ≠ 0 := by simp [hf]
   have h := S.toDeSitter.einsteinTensor x hr hf0 hsin i j
+  simp only [CoordinateMetric.einsteinTensor_apply, S.toDeSitter.toCoordinateMetric_g,
+    S.toDeSitter.toCoordinateMetric_ginv] at h
   rw [S.toDeSitter_metric, S.toDeSitter_metricInv] at h
   simpa using h
 

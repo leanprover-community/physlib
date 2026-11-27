@@ -258,7 +258,7 @@ verifies the cosmological Einstein-space equations `Ric_{ij} = Λ g_{ij}` and `G
 /-- The coordinate Riemann tensor of `S.metric` equals
 `riemannFromData S.christoffel S.christoffelDeriv` at every 4-tuple `(ρ, σ, μ, ν)`, for general
 `Λ`. -/
-lemma riemann_eq_data (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+private lemma riemann_eq_data_raw (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (ρ σ μ ν : Fin 4) :
     CoordinateCurvature.riemann S.metric S.metricInv x ρ σ μ ν
       = riemannFromData S.christoffel S.christoffelDeriv x ρ σ μ ν := by
@@ -275,7 +275,7 @@ lemma riemann_eq_data (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (
 
 /-- All six independent Schwarzschild–de Sitter Riemann components computed directly from the
 coordinate metric, for general `Λ`. -/
-lemma riemann_components_from_metric (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ)
+private lemma riemann_components_from_metric_raw (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ)
     (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     (CoordinateCurvature.riemann S.metric S.metricInv x 0 1 0 1
         = (2 * S.M / (x 1) ^ 3 + S.Λ / 3) / S.metricFn (x 1))
@@ -292,30 +292,30 @@ lemma riemann_components_from_metric (S : SchwarzschildDeSitterSpacetime) (x : F
   have hd := S.deriv_metricFnHalfDeriv_div_metricFn (x 1) hr hf
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
   · have h := S.riemann_t_rtr (x 1) hr hf
-    simp [S.riemann_eq_data x hr hf hsin, riemannFromData, christoffel,
+    simp [S.riemann_eq_data_raw x hr hf hsin, riemannFromData, christoffel,
       christoffelDeriv, Fin.sum_univ_four, hd, add_assoc, sub_eq_add_neg, pow_two] at h ⊢
     linear_combination h
-  · simpa [S.riemann_eq_data x hr hf hsin, riemannFromData, christoffel,
+  · simpa [S.riemann_eq_data_raw x hr hf hsin, riemannFromData, christoffel,
       christoffelDeriv, Fin.sum_univ_four, add_assoc, sub_eq_add_neg, pow_two] using
       S.riemann_t_thetatheta (x 1) hr hf
-  · simpa [S.riemann_eq_data x hr hf hsin, riemannFromData, christoffel,
+  · simpa [S.riemann_eq_data_raw x hr hf hsin, riemannFromData, christoffel,
       christoffelDeriv, Fin.sum_univ_four, add_assoc, sub_eq_add_neg, pow_two] using
       S.riemann_t_phitphi (x 1) (x 2) hr hf
   · have h := S.riemann_r_thetar (x 1) hr hf
-    simp [S.riemann_eq_data x hr hf hsin, riemannFromData, christoffel,
+    simp [S.riemann_eq_data_raw x hr hf hsin, riemannFromData, christoffel,
       christoffelDeriv, Fin.sum_univ_four, add_assoc, sub_eq_add_neg, pow_two] at h ⊢
     linear_combination h
   · have h := S.riemann_r_phirphi (x 1) (x 2) hr hf
-    simp [S.riemann_eq_data x hr hf hsin, riemannFromData, christoffel,
+    simp [S.riemann_eq_data_raw x hr hf hsin, riemannFromData, christoffel,
       christoffelDeriv, Fin.sum_univ_four, add_assoc, sub_eq_add_neg, pow_two] at h ⊢
     linear_combination h
-  · simpa [S.riemann_eq_data x hr hf hsin, riemannFromData, christoffel,
+  · simpa [S.riemann_eq_data_raw x hr hf hsin, riemannFromData, christoffel,
       christoffelDeriv, Fin.sum_univ_four, add_assoc, sub_eq_add_neg, pow_two] using
       S.riemann_theta_phitheta (x 1) (x 2) hr hsin
 
 /-- Metric-level Ricci tensor for Schwarzschild–de Sitter: `Ric_{σν} = Λ g_{σν}`, computed directly
 from the coordinate metric. -/
-lemma ricciTensor (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+private lemma ricciTensor_raw (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
     CoordinateCurvature.ricciTensor S.metric S.metricInv x σ ν = S.Λ * S.metric x σ ν := by
   have hm : S.metric = S.toStaticSpherical.metric := rfl
@@ -335,7 +335,7 @@ lemma ricciTensor (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr :
   · field_simp [hr]; ring
 
 /-- Metric-level scalar curvature for Schwarzschild–de Sitter: `R = 4 Λ`. -/
-lemma ricciScalar (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+private lemma ricciScalar_raw (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     CoordinateCurvature.ricciScalar S.metric S.metricInv x = 4 * S.Λ := by
   have hm : S.metric = S.toStaticSpherical.metric := rfl
@@ -353,11 +353,11 @@ lemma ricciScalar (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr :
 
 /-- Metric-level Einstein tensor for Schwarzschild–de Sitter: `G_{ij} = -Λ g_{ij}`, so
 `G_{ij} + Λ g_{ij} = 0`. -/
-lemma einsteinTensor (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+private lemma einsteinTensor_raw (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
     CoordinateCurvature.einsteinTensor S.metric S.metricInv x i j = -(S.Λ * S.metric x i j) := by
-  simp only [CoordinateCurvature.einsteinTensor, S.ricciTensor x hr hf hsin,
-    S.ricciScalar x hr hf hsin]
+  simp only [CoordinateCurvature.einsteinTensor, S.ricciTensor_raw x hr hf hsin,
+    S.ricciScalar_raw x hr hf hsin]
   ring
 
 /-- The inverse diagonal scale `|g_{aa}|⁻¹` relating coordinate Ricci components of `S.metric`
@@ -374,13 +374,69 @@ lemma ricciTensor_frame (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
     S.frameScale x σ * CoordinateCurvature.ricciTensor S.metric S.metricInv x σ ν
       = S.Λ * minkowskiMetric4 σ ν := by
-  rw [S.ricciTensor x hr hf hsin]
+  rw [S.ricciTensor_raw x hr hf hsin]
   fin_cases σ <;> fin_cases ν <;>
     simp [frameScale, metric, toStaticSpherical, StaticSphericalMetric.metric]
   · field_simp [hf]
   · field_simp [hf]
   · field_simp [hr]
   · field_simp [hr, hsin]
+
+/-- The Schwarzschild–de Sitter coordinate Riemann tensor agrees with
+`riemannFromData S.christoffel S.christoffelDeriv`, stated with the chart-level operator. -/
+lemma riemann_eq_data (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (ρ σ μ ν : Fin 4) :
+    S.toCoordinateMetric.riemann x ρ σ μ ν
+      = riemannFromData S.christoffel S.christoffelDeriv x ρ σ μ ν := by
+  simp only [CoordinateMetric.riemann_apply, S.toCoordinateMetric_g,
+    S.toCoordinateMetric_ginv]
+  exact S.riemann_eq_data_raw x hr hf hsin ρ σ μ ν
+
+/-- All six independent Schwarzschild–de Sitter Riemann components, stated with the chart-level
+operator, for general `Λ`. -/
+lemma riemann_components_from_metric (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ)
+    (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
+    (S.toCoordinateMetric.riemann x 0 1 0 1
+        = (2 * S.M / (x 1) ^ 3 + S.Λ / 3) / S.metricFn (x 1))
+      ∧ (S.toCoordinateMetric.riemann x 0 2 0 2
+          = S.Λ * (x 1) ^ 2 / 3 - S.M / (x 1))
+      ∧ (S.toCoordinateMetric.riemann x 0 3 0 3
+          = (S.Λ * (x 1) ^ 2 / 3 - S.M / (x 1)) * Real.sin (x 2) ^ 2)
+      ∧ (S.toCoordinateMetric.riemann x 1 2 1 2
+          = S.Λ * (x 1) ^ 2 / 3 - S.M / (x 1))
+      ∧ (S.toCoordinateMetric.riemann x 1 3 1 3
+          = (S.Λ * (x 1) ^ 2 / 3 - S.M / (x 1)) * Real.sin (x 2) ^ 2)
+      ∧ (S.toCoordinateMetric.riemann x 2 3 2 3
+          = (2 * S.M / (x 1) + S.Λ * (x 1) ^ 2 / 3) * Real.sin (x 2) ^ 2) := by
+  simp only [CoordinateMetric.riemann_apply, S.toCoordinateMetric_g,
+    S.toCoordinateMetric_ginv]
+  exact S.riemann_components_from_metric_raw x hr hf hsin
+
+/-- Schwarzschild–de Sitter Ricci tensor `Ric_{σν} = Λ g_{σν}`, stated with the chart-level
+operator. -/
+lemma ricciTensor (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
+    S.toCoordinateMetric.ricciTensor x σ ν = S.Λ * S.metric x σ ν := by
+  simp only [CoordinateMetric.ricciTensor_apply, S.toCoordinateMetric_g,
+    S.toCoordinateMetric_ginv]
+  exact S.ricciTensor_raw x hr hf hsin σ ν
+
+/-- Schwarzschild–de Sitter scalar curvature `R = 4 Λ`, stated with the chart-level operator. -/
+lemma ricciScalar (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
+    S.toCoordinateMetric.ricciScalar x = 4 * S.Λ := by
+  simp only [CoordinateMetric.ricciScalar_apply, S.toCoordinateMetric_g,
+    S.toCoordinateMetric_ginv]
+  exact S.ricciScalar_raw x hr hf hsin
+
+/-- Schwarzschild–de Sitter Einstein tensor `G_{ij} = -Λ g_{ij}`, stated with the chart-level
+operator. -/
+lemma einsteinTensor (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
+    S.toCoordinateMetric.einsteinTensor x i j = -(S.Λ * S.metric x i j) := by
+  simp only [CoordinateMetric.einsteinTensor_apply, S.toCoordinateMetric_g,
+    S.toCoordinateMetric_ginv]
+  exact S.einsteinTensor_raw x hr hf hsin i j
 
 end SchwarzschildDeSitterSpacetime
 

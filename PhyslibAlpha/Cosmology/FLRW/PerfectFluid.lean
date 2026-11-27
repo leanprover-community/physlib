@@ -92,7 +92,7 @@ lemma einsteinTensor_00_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight) (Λ
     (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
-    (CoordinateCurvature.einsteinTensor S.metric S.metricInv x 0 0 + Λ * S.metric x 0 0
+    (S.toCoordinateMetric.einsteinTensor x 0 0 + Λ * S.metric x 0 0
         = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * perfectFluidStressEnergy c ρ p (S.metric x) 0 0)
       ↔ (deriv S.a (x 0) / S.a (x 0)) ^ 2
           = (8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * ρ - S.k / (S.a (x 0)) ^ 2 + Λ / 3 := by
@@ -119,7 +119,7 @@ lemma einsteinTensor_spatial_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0))
     (hf1 : (deriv S.a (x 0) / S.a (x 0)) ^ 2
       = (8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * ρ - S.k / (S.a (x 0)) ^ 2 + Λ / 3) :
-    (CoordinateCurvature.einsteinTensor S.metric S.metricInv x 1 1 + Λ * S.metric x 1 1
+    (S.toCoordinateMetric.einsteinTensor x 1 1 + Λ * S.metric x 1 1
         = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * perfectFluidStressEnergy c ρ p (S.metric x) 1 1)
       ↔ deriv (deriv S.a) (x 0) / S.a (x 0)
           = -(4 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * (ρ + 3 * p / (c : ℝ) ^ 2) + Λ / 3 := by
@@ -159,7 +159,7 @@ lemma einsteinTensor_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight) (Λ : 
     (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
-    (∀ i j, CoordinateCurvature.einsteinTensor S.metric S.metricInv x i j + Λ * S.metric x i j
+    (∀ i j, S.toCoordinateMetric.einsteinTensor x i j + Λ * S.metric x i j
         = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * perfectFluidStressEnergy c ρ p (S.metric x) i j)
       ↔ ((deriv S.a (x 0) / S.a (x 0)) ^ 2
             = (8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * ρ - S.k / (S.a (x 0)) ^ 2 + Λ / 3)

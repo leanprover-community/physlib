@@ -169,8 +169,7 @@ lemma einsteinTensor_ofCosmology_iff_friedmann (c : SpeedOfLight) (U : Cosmology
     (F : Cosmology.CosmicFluid) (Λ : ℝ) (G : GravitationalConstant) {t : Time} (ht : t ∈ U.I)
     (x : Fin 4 → ℝ) (hx0 : x 0 = (c : ℝ) * t.val) (hr : x 1 ≠ 0)
     (hkr : 1 - U.geometry.curvature * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
-    (∀ i j, CoordinateCurvature.einsteinTensor (FLRWSpacetime.ofCosmology c U).metric
-          (FLRWSpacetime.ofCosmology c U).metricInv x i j
+    (∀ i j, (FLRWSpacetime.ofCosmology c U).toCoordinateMetric.einsteinTensor x i j
           + Λ * (FLRWSpacetime.ofCosmology c U).metric x i j
         = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * perfectFluidStressEnergy c (F.ρ t) (F.p t)
             ((FLRWSpacetime.ofCosmology c U).metric x) i j)
@@ -239,8 +238,7 @@ lemma friedmannSolution_of_einsteinTensor (c : SpeedOfLight) (U : Cosmology.FLRW
     (hkr : 1 - U.geometry.curvature * r₀ ^ 2 ≠ 0) (hsin : Real.sin θ₀ ≠ 0)
     (heinst : ∀ t ∈ U.I, ∀ i j,
       let x : Fin 4 → ℝ := ![(c : ℝ) * t.val, r₀, θ₀, 0]
-      CoordinateCurvature.einsteinTensor (FLRWSpacetime.ofCosmology c U).metric
-          (FLRWSpacetime.ofCosmology c U).metricInv x i j
+      (FLRWSpacetime.ofCosmology c U).toCoordinateMetric.einsteinTensor x i j
           + Λ * (FLRWSpacetime.ofCosmology c U).metric x i j
         = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * perfectFluidStressEnergy c (F.ρ t) (F.p t)
             ((FLRWSpacetime.ofCosmology c U).metric x) i j) :

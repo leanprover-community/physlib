@@ -209,7 +209,7 @@ private lemma christoffel_3 (K : KerrSpacetime) (x : Fin 4 → ℝ)
 
 /-- Every Christoffel symbol computed from the coordinate metric agrees with `K.christoffel` at
 every regular coordinate point (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`). -/
-lemma christoffel_eq (K : KerrSpacetime) (x : Fin 4 → ℝ)
+private lemma christoffel_eq_raw (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (k i j : Fin 4) :
     CoordinateCurvature.christoffel K.metric K.metricInv x k i j = K.christoffel x k i j := by
@@ -234,7 +234,7 @@ lemma eventually_christoffel_eq (K : KerrSpacetime) (x : Fin 4 → ℝ)
   have hmem := (hcSig.continuousAt.eventually_ne hsig).and
     ((hcDel.continuousAt.eventually_ne hdel).and (hcS.continuousAt.eventually_ne hs))
   filter_upwards [hmem] with y ⟨hySig, hyDel, hyS⟩
-  exact K.christoffel_eq y hySig hyDel hyS k i j
+  exact K.christoffel_eq_raw y hySig hyDel hyS k i j
 
 /-- Contracted Boyer–Lindquist Kerr Christoffel trace `∑ ρ, Γ^ρ_{ρ μ} = ∂_μ ln(Σ sin θ)`. -/
 noncomputable def christoffelTrace (K : KerrSpacetime) (x : Fin 4 → ℝ) (μ : Fin 4) : ℝ :=
@@ -264,6 +264,16 @@ lemma sum_christoffel_trace (K : KerrSpacetime) (x : Fin 4 → ℝ)
     rw [hs2]
     ring
   · simp [Fin.sum_univ_four, christoffel, christoffelTrace]
+
+/-- Every Christoffel symbol computed from the coordinate metric agrees with `K.christoffel` at
+every regular coordinate point, stated with the chart-level operator. -/
+lemma christoffel_eq (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
+    (k i j : Fin 4) :
+    K.toCoordinateMetric.christoffel x k i j = K.christoffel x k i j := by
+  simp only [CoordinateMetric.christoffel_apply, K.toCoordinateMetric_g,
+    K.toCoordinateMetric_ginv]
+  exact K.christoffel_eq_raw x hsig hdel hs k i j
 
 end KerrSpacetime
 

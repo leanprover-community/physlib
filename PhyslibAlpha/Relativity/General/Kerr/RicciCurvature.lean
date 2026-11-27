@@ -692,7 +692,7 @@ private lemma ricciOf_offblock (K : KerrSpacetime) (x : Fin 4 → ℝ)
 
 /-- The Boyer–Lindquist Kerr metric has identically vanishing Ricci tensor at every regular
 coordinate point (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`) through `GeneralRelativity.CoordinateCurvature`. -/
-lemma ricciTensor_eq_zero (K : KerrSpacetime) (x : Fin 4 → ℝ)
+private lemma ricciTensor_eq_zero_raw (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (σ ν : Fin 4) :
     CoordinateCurvature.ricciTensor K.metric K.metricInv x σ ν = 0 := by
@@ -724,19 +724,45 @@ equations `G = 0`.
 -/
 
 /-- The Boyer–Lindquist Kerr metric has identically vanishing scalar curvature `R = 0`. -/
-lemma ricciScalar_eq_zero (K : KerrSpacetime) (x : Fin 4 → ℝ)
+private lemma ricciScalar_eq_zero_raw (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     CoordinateCurvature.ricciScalar K.metric K.metricInv x = 0 := by
-  simp [CoordinateCurvature.ricciScalar, K.ricciTensor_eq_zero x hsig hdel hs]
+  simp [CoordinateCurvature.ricciScalar, K.ricciTensor_eq_zero_raw x hsig hdel hs]
 
 /-- Vacuum Einstein equations for the Kerr black hole through
 `GeneralRelativity.CoordinateCurvature`: `G_{i j} = 0` for all `i, j : Fin 4`. -/
-lemma einsteinTensor_eq_zero (K : KerrSpacetime) (x : Fin 4 → ℝ)
+private lemma einsteinTensor_eq_zero_raw (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (i j : Fin 4) :
     CoordinateCurvature.einsteinTensor K.metric K.metricInv x i j = 0 := by
-  simp [CoordinateCurvature.einsteinTensor, K.ricciTensor_eq_zero x hsig hdel hs,
-    K.ricciScalar_eq_zero x hsig hdel hs]
+  simp [CoordinateCurvature.einsteinTensor, K.ricciTensor_eq_zero_raw x hsig hdel hs,
+    K.ricciScalar_eq_zero_raw x hsig hdel hs]
+
+/-- Kerr vacuum Ricci flatness, stated with the chart-level operator. -/
+lemma ricciTensor_eq_zero (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
+    (σ ν : Fin 4) :
+    K.toCoordinateMetric.ricciTensor x σ ν = 0 := by
+  simp only [CoordinateMetric.ricciTensor_apply, K.toCoordinateMetric_g,
+    K.toCoordinateMetric_ginv]
+  exact K.ricciTensor_eq_zero_raw x hsig hdel hs σ ν
+
+/-- Kerr vanishing scalar curvature, stated with the chart-level operator. -/
+lemma ricciScalar_eq_zero (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
+    K.toCoordinateMetric.ricciScalar x = 0 := by
+  simp only [CoordinateMetric.ricciScalar_apply, K.toCoordinateMetric_g,
+    K.toCoordinateMetric_ginv]
+  exact K.ricciScalar_eq_zero_raw x hsig hdel hs
+
+/-- Kerr vacuum Einstein equations, stated with the chart-level operator. -/
+lemma einsteinTensor_eq_zero (K : KerrSpacetime) (x : Fin 4 → ℝ)
+    (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
+    (i j : Fin 4) :
+    K.toCoordinateMetric.einsteinTensor x i j = 0 := by
+  simp only [CoordinateMetric.einsteinTensor_apply, K.toCoordinateMetric_g,
+    K.toCoordinateMetric_ginv]
+  exact K.einsteinTensor_eq_zero_raw x hsig hdel hs i j
 
 end KerrSpacetime
 
