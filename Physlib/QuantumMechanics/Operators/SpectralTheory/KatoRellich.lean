@@ -6,7 +6,6 @@ Authors: Daniel Leonforte
 module
 
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.EssentiallySelfAdjoint
-public import Mathlib.Analysis.Complex.Convex
 
 /-!
 
@@ -28,7 +27,8 @@ to the range of `A + B - μ i` satisfies `‖y‖² ≤ c ‖y‖²` and vanishe
 ## ii. Key results
 
 - `LinearPMap.IsEssentiallySelfAdjoint.defectNumber_add_eq_zero` : a relative bound
-  `‖B x‖ ≤ c ‖(A - μ i) x‖` with `c < 1` forces the defect number of `A + B` at `μ i` to vanish.
+  `‖B x‖ ≤ c ‖(A - z) x‖` with `c < 1` forces the defect number of `A + B` at a non-real `z` to
+  vanish.
 - `LinearPMap.IsEssentiallySelfAdjoint.add_of_relBound` : the Kato–Rellich theorem.
 
 ## iii. Table of contents
@@ -59,54 +59,37 @@ variable {A B : H →ₗ.[ℂ] H}
 
 -/
 
-/-- Key step of the Kato–Rellich theorem: a relative bound `‖B x‖ ≤ c ‖(A - μ i) x‖` with
-`c < 1` forces the defect number of `A + B` at `μ i` to vanish. -/
+/-- Key step of the Kato–Rellich theorem: a relative bound `‖B x‖ ≤ c ‖(A - z) x‖` with
+`c < 1` forces the defect number of `A + B` at a non-real `z` to vanish. -/
 lemma IsEssentiallySelfAdjoint.defectNumber_add_eq_zero (hA : A.IsEssentiallySelfAdjoint)
-    (hdom : A.domain ≤ B.domain) {μ : ℝ} (hμ : μ ≠ 0) {c : ℝ} (hc : c < 1)
-    (hbound : ∀ (x : H) (hx : x ∈ A.domain),
-      ‖B ⟨x, hdom hx⟩‖ ≤ c * ‖A ⟨x, hx⟩ - ((μ : ℂ) * I) • x‖) :
-    (A + B).defectNumber ((μ : ℂ) * I) = 0 := by
-  set z : ℂ := (μ : ℂ) * I with hz_def
-  have hz : z.im ≠ 0 := by simpa [hz_def] using hμ
+    (hdom : A.domain ≤ B.domain) {z : ℂ} (hz : z.im ≠ 0) {c : ℝ} (hc : c < 1)
+    (hbound : ∀ (x : H) (hx : x ∈ A.domain), ‖B ⟨x, hdom hx⟩‖ ≤ c * ‖A ⟨x, hx⟩ - z • x‖) :
+    (A + B).defectNumber z = 0 := by
   rw [defectNumber_eq]
   refine Submodule.rank_eq_zero.mpr ?_
   rw [deficiencySubspace_coe, eq_bot_iff]
   intro y hy
-  rw [Submodule.mem_bot]
-  -- `y` is orthogonal to `(A + B - z) x`, so `⟪(A - z) x, y⟫ = -⟪B x, y⟫`.
-  have hperp : ∀ (x : H) (hx : x ∈ A.domain),
-      ⟪A ⟨x, hx⟩ - z • x, y⟫_ℂ = -⟪B ⟨x, hdom hx⟩, y⟫_ℂ := by
-    intro x hx
-    have hmem : (A + B - z • 1).toFun ⟨x, ⟨⟨hx, hdom hx⟩, trivial⟩⟩ ∈
-        (A + B - z • 1).toFun.range := LinearMap.mem_range_self _ _
-    have h0 := (Submodule.mem_orthogonal _ _).mp hy _ hmem
-    have h0' : ⟪A ⟨x, hx⟩ + B ⟨x, hdom hx⟩ - z • x, y⟫_ℂ = 0 := h0
-    rw [inner_sub_left, inner_add_left] at h0'
-    rw [inner_sub_left]
-    linear_combination h0'
-  -- The range of `A - z` is dense.
-  have hKdense := hA.dense_range_sub_smul hz
-  -- The estimate `‖⟪u, y⟫‖ ≤ c ‖u‖ ‖y‖` holds on the range and hence everywhere.
-  have hS : ((A - z • 1).toFun.range : Set H) ⊆ {u | ‖⟪u, y⟫_ℂ‖ ≤ c * ‖u‖ * ‖y‖} := by
+  -- On the dense range of `A - z` we have `‖⟪u, y⟫‖ ≤ c ‖u‖ ‖y‖`, hence also for `u = y`.
+  have hy' : ‖⟪y, y⟫_ℂ‖ ≤ c * ‖y‖ * ‖y‖ := by
+    refine (hA.dense_range_sub_smul hz).induction (P := fun u => ‖⟪u, y⟫_ℂ‖ ≤ c * ‖u‖ * ‖y‖)
+      ?_ (isClosed_le (by fun_prop) (by fun_prop)) y
     rintro _ ⟨⟨x, hx⟩, rfl⟩
-    have hxA : x ∈ A.domain := hx.1
-    have hu : (A - z • 1).toFun ⟨x, hx⟩ = A ⟨x, hxA⟩ - z • x := rfl
-    change ‖⟪(A - z • 1).toFun ⟨x, hx⟩, y⟫_ℂ‖ ≤ c * ‖(A - z • 1).toFun ⟨x, hx⟩‖ * ‖y‖
-    rw [hu]
-    rw [hperp x hxA, norm_neg]
-    calc ‖⟪B ⟨x, hdom hxA⟩, y⟫_ℂ‖ ≤ ‖B ⟨x, hdom hxA⟩‖ * ‖y‖ := norm_inner_le_norm _ _
-      _ ≤ c * ‖A ⟨x, hxA⟩ - z • x‖ * ‖y‖ :=
-        mul_le_mul_of_nonneg_right (hbound x hxA) (norm_nonneg y)
-  have hclosed : _root_.IsClosed {u : H | ‖⟪u, y⟫_ℂ‖ ≤ c * ‖u‖ * ‖y‖} :=
-    isClosed_le (by fun_prop) (by fun_prop)
-  have hy' : y ∈ {u : H | ‖⟪u, y⟫_ℂ‖ ≤ c * ‖u‖ * ‖y‖} := by
-    have := closure_minimal hS hclosed
-    rw [hKdense.closure_eq] at this
-    exact this (Set.mem_univ y)
-  have h1 : ‖y‖ ^ 2 ≤ c * ‖y‖ * ‖y‖ := by
+    have h0 : ⟪A ⟨x, hx.1⟩ + B ⟨x, hdom hx.1⟩ - z • x, y⟫_ℂ = 0 :=
+      (Submodule.mem_orthogonal _ _).mp hy _
+        (LinearMap.mem_range_self (A + B - z • 1).toFun ⟨x, ⟨⟨hx.1, hdom hx.1⟩, trivial⟩⟩)
+    have h1 : ⟪A ⟨x, hx.1⟩ - z • x, y⟫_ℂ = -⟪B ⟨x, hdom hx.1⟩, y⟫_ℂ := by
+      rw [inner_sub_left, inner_add_left] at h0
+      rw [inner_sub_left]
+      linear_combination h0
+    change ‖⟪A ⟨x, hx.1⟩ - z • x, y⟫_ℂ‖ ≤ c * ‖A ⟨x, hx.1⟩ - z • x‖ * ‖y‖
+    rw [h1, norm_neg]
+    exact (norm_inner_le_norm _ _).trans
+      (mul_le_mul_of_nonneg_right (hbound x hx.1) (norm_nonneg y))
+  have h2 : ‖y‖ ^ 2 ≤ c * ‖y‖ * ‖y‖ := by
     rw [← @inner_self_eq_norm_sq ℂ]
     exact (Complex.re_le_norm _).trans hy'
-  have h2 : ‖y‖ ^ 2 ≤ 0 := by nlinarith [sq_nonneg ‖y‖]
+  have h3 : ‖y‖ ^ 2 ≤ 0 := by nlinarith [sq_nonneg ‖y‖]
+  rw [Submodule.mem_bot]
   exact norm_eq_zero.mp (by nlinarith [norm_nonneg y])
 
 /-!
@@ -123,60 +106,45 @@ lemma IsEssentiallySelfAdjoint.add_of_relBound (hA : A.IsEssentiallySelfAdjoint)
     (hbound : ∀ (x : H) (hx : x ∈ A.domain),
       ‖B ⟨x, hdom hx⟩‖ ≤ a * ‖A ⟨x, hx⟩‖ + b * ‖x‖) :
     (A + B).IsEssentiallySelfAdjoint := by
-  have hAsym := hA.isSymmetric
-  set a' := max a 0 with ha'_def
-  set b' := max b 0 with hb'_def
-  have ha' : a' < 1 := max_lt ha one_pos
-  have ha'0 : 0 ≤ a' := le_max_right _ _
-  have hb'0 : 0 ≤ b' := le_max_right _ _
+  -- Without loss of generality `0 ≤ a` and `0 ≤ b`.
+  obtain ⟨a', b', ha'0, hb'0, ha', hbound'⟩ : ∃ a' b' : ℝ, 0 ≤ a' ∧ 0 ≤ b' ∧ a' < 1 ∧
+      ∀ (x : H) (hx : x ∈ A.domain), ‖B ⟨x, hdom hx⟩‖ ≤ a' * ‖A ⟨x, hx⟩‖ + b' * ‖x‖ :=
+    ⟨max a 0, max b 0, le_max_right _ _, le_max_right _ _, max_lt ha one_pos,
+      fun x hx => (hbound x hx).trans (by gcongr <;> exact le_max_left _ _)⟩
   set μ : ℝ := b' / (1 - a') + 1 with hμ_def
-  have hμ : 0 < μ := by have : 0 ≤ b' / (1 - a') := div_nonneg hb'0 (by linarith); linarith
+  have hμ : 0 < μ := by linarith [div_nonneg hb'0 (sub_nonneg.mpr ha'.le)]
   set c : ℝ := a' + b' / μ with hc_def
   have hc : c < 1 := by
-    have h1a : 0 < 1 - a' := by linarith
-    have h2 : b' < μ * (1 - a') := (div_lt_iff₀ h1a).mp (by linarith)
-    have h3 : b' / μ < 1 - a' := by rw [div_lt_iff₀ hμ]; linarith
+    have h : b' < μ * (1 - a') := (div_lt_iff₀ (sub_pos.mpr ha')).mp (by linarith)
+    have h' : b' / μ < 1 - a' := by rw [div_lt_iff₀ hμ]; linarith
     linarith
-  -- the relative bound with respect to `A ∓ μ i`
-  have hrel : ∀ (s : ℝ), |s| = μ → ∀ (x : H) (hx : x ∈ A.domain),
+  -- The relative bound with respect to `A - s i` for `s = ± μ`.
+  have hrel (s : ℝ) (hs : s ^ 2 = μ ^ 2) (x : H) (hx : x ∈ A.domain) :
       ‖B ⟨x, hdom hx⟩‖ ≤ c * ‖A ⟨x, hx⟩ - ((s : ℂ) * I) • x‖ := by
-    intro s hs x hx
-    set N := ‖A ⟨x, hx⟩ - ((s : ℂ) * I) • x‖ with hN_def
-    have hN := hAsym.norm_sub_smul_I_sq s ⟨x, hx⟩
-    have hs2 : s ^ 2 = μ ^ 2 := by rw [← sq_abs, hs]
-    have hN0 : 0 ≤ N := norm_nonneg _
+    set N := ‖A ⟨x, hx⟩ - ((s : ℂ) * I) • x‖
+    have hN := hA.isSymmetric.norm_sub_smul_I_sq s ⟨x, hx⟩
     have hAN : ‖A ⟨x, hx⟩‖ ≤ N := by
-      nlinarith [norm_nonneg (A ⟨x, hx⟩), sq_nonneg (s * ‖x‖)]
+      nlinarith [norm_nonneg (A ⟨x, hx⟩), norm_nonneg (A ⟨x, hx⟩ - ((s : ℂ) * I) • x),
+        sq_nonneg (s * ‖x‖)]
     have hxN : μ * ‖x‖ ≤ N := by
-      nlinarith [norm_nonneg x, sq_nonneg ‖A ⟨x, hx⟩‖, hμ]
-    have hB1 : ‖B ⟨x, hdom hx⟩‖ ≤ a' * ‖A ⟨x, hx⟩‖ + b' * ‖x‖ :=
-      (hbound x hx).trans (add_le_add
-        (mul_le_mul_of_nonneg_right (le_max_left _ _) (norm_nonneg _))
-        (mul_le_mul_of_nonneg_right (le_max_left _ _) (norm_nonneg _)))
-    have hbx : b' * ‖x‖ ≤ b' / μ * N := by
-      rw [div_mul_eq_mul_div, le_div_iff₀ hμ]
-      nlinarith [norm_nonneg x]
-    calc ‖B ⟨x, hdom hx⟩‖ ≤ a' * ‖A ⟨x, hx⟩‖ + b' * ‖x‖ := hB1
-      _ ≤ a' * N + b' / μ * N := add_le_add (mul_le_mul_of_nonneg_left hAN ha'0) hbx
+      nlinarith [norm_nonneg x, norm_nonneg (A ⟨x, hx⟩ - ((s : ℂ) * I) • x),
+        sq_nonneg ‖A ⟨x, hx⟩‖]
+    calc ‖B ⟨x, hdom hx⟩‖ ≤ a' * ‖A ⟨x, hx⟩‖ + b' / μ * (μ * ‖x‖) := by
+          rw [← mul_assoc, div_mul_cancel₀ _ hμ.ne']
+          exact hbound' x hx
+      _ ≤ a' * N + b' / μ * N :=
+          add_le_add (mul_le_mul_of_nonneg_left hAN ha'0)
+            (mul_le_mul_of_nonneg_left hxN (div_nonneg hb'0 hμ.le))
       _ = c * N := by rw [hc_def]; ring
-  have hsum := hAsym.add hB
-  have hdense' : (A + B).HasDenseDomain := by
-    rw [LinearPMap.HasDenseDomain, add_domain, inf_eq_left.mpr hdom]
+  have hsum := hA.isSymmetric.add hB
+  have hdense : (A + B).HasDenseDomain := by
+    rw [HasDenseDomain, add_domain, inf_eq_left.mpr hdom]
     exact hA.hasDenseDomain
-  have hdp := hA.defectNumber_add_eq_zero hdom hμ.ne' hc (hrel μ (abs_of_pos hμ))
-  have hdm := hA.defectNumber_add_eq_zero hdom (neg_ne_zero.mpr hμ.ne') hc
-    (hrel (-μ) (by rw [abs_neg, abs_of_pos hμ]))
-  have hcl := hsum.isClosable hdense'
-  refine hsum.isEssentiallySelfAdjoint_of_defectNumber_eq_zero hdense' ?_ ?_
-  · have hsub := (convex_halfSpace_im_gt (0 : ℝ)).isPreconnected.subset_connectedComponentIn
-      (x := (μ : ℂ) * I) (by simpa using hμ)
-      (fun z hz => hsum.mem_regularityDomain_of_im_ne_zero (ne_of_gt hz))
-    rw [← hcl.defectNumber_const (hsub (show (0 : ℝ) < I.im by simp))]
-    exact hdp
-  · have hsub := (convex_halfSpace_im_lt (0 : ℝ)).isPreconnected.subset_connectedComponentIn
-      (x := ((-μ : ℝ) : ℂ) * I) (by simpa using hμ)
-      (fun z hz => hsum.mem_regularityDomain_of_im_ne_zero (ne_of_lt hz))
-    rw [← hcl.defectNumber_const (hsub (show (-I).im < (0 : ℝ) by simp))]
-    exact hdm
+  refine hsum.isEssentiallySelfAdjoint_of_defectNumber_eq_zero hdense ?_ ?_
+  · rw [hsum.defectNumber_eq_of_im_pos hdense (z₂ := (μ : ℂ) * I) (by simp) (by simpa using hμ)]
+    exact hA.defectNumber_add_eq_zero hdom (by simpa using hμ.ne') hc (hrel μ rfl)
+  · rw [hsum.defectNumber_eq_of_im_neg hdense (z₂ := ((-μ : ℝ) : ℂ) * I) (by simp)
+      (by simpa using hμ)]
+    exact hA.defectNumber_add_eq_zero hdom (by simpa using hμ.ne') hc (hrel (-μ) (by ring))
 
 end LinearPMap

@@ -23,6 +23,8 @@ of `T - z • 1` is dense.
 
 ## ii. Key results
 
+- `IsEssentiallySelfAdjoint.mem_regularityDomain_of_im_ne_zero` : every non-real `z` lies in the
+    regularity domain of an essentially self-adjoint operator.
 - `IsEssentiallySelfAdjoint.defectNumber_eq_zero` : the defect numbers of an essentially
     self-adjoint operator vanish at every non-real `z`.
 - `IsEssentiallySelfAdjoint.dense_range_sub_smul` : for an essentially self-adjoint operator the
@@ -54,10 +56,14 @@ include hT
 
 -/
 
+/-- Every non-real `z` lies in the regularity domain of an essentially self-adjoint operator. -/
+lemma mem_regularityDomain_of_im_ne_zero {z : ℂ} (hz : z.im ≠ 0) : z ∈ T.regularityDomain :=
+  hT.isSymmetric.mem_regularityDomain_of_im_ne_zero hz
+
 /-- The defect numbers of an essentially self-adjoint operator vanish at every non-real `z`:
 `T.closure - z • 1` is surjective, and `T` has the same defect number as its closure. -/
 lemma defectNumber_eq_zero {z : ℂ} (hz : z.im ≠ 0) : T.defectNumber z = 0 := by
-  have hreg := hT.isSymmetric.mem_regularityDomain_of_im_ne_zero hz
+  have hreg := hT.mem_regularityDomain_of_im_ne_zero hz
   rw [← defectNumber_closure hreg, hT.isClosable.closure_isClosed.defectNumber_eq_zero_iff
     (by rwa [regularityDomain_closure])]
   exact LinearMap.range_eq_top.mpr (IsSelfAdjoint.sub_smul_surjective hT hz)
