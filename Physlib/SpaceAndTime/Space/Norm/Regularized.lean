@@ -92,6 +92,7 @@ lemma normRegularizedPow_neg_two (d : ℕ) (ε : ℝ) :
   rw [show (-2 : ℝ) / 2 = -1 by norm_num, Real.rpow_neg_one]
 
 /-- For `ε ≠ 0` the function `(‖x‖ ^ 2 + ε ^ 2)⁻¹` has temperate growth. -/
+@[fun_prop]
 lemma inv_norm_sq_add_sq_hasTemperateGrowth {d : ℕ} {ε : ℝ} (hε : ε ≠ 0) :
     (fun x : Space d => (‖x‖ ^ 2 + ε ^ 2)⁻¹).HasTemperateGrowth := by
   have h := normRegularizedPow_hasTemperateGrowth d (Units.mk0 ε hε) (-2)

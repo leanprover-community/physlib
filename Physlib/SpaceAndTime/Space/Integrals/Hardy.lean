@@ -75,15 +75,14 @@ lemma add_conj_integral_mul_deriv (i : Fin d) {g : Space d → ℂ}
   have hdG : ∀ x, ∂[i] (fun x => g x * (starRingEnd ℂ) (ψ x)) x =
       ∂[i] g x * (starRingEnd ℂ) (ψ x) + g x * (starRingEnd ℂ) (∂[i] ψ x) := by
     intro x
-    have hc : DifferentiableAt ℝ (fun x => (starRingEnd ℂ) (ψ x)) x :=
-      (conjCLE : ℂ →L[ℝ] ℂ).differentiableAt.comp x ψ.differentiableAt
+    have hc : DifferentiableAt ℝ (fun x => (starRingEnd ℂ) (ψ x)) x := by fun_prop
     rw [show (fun x => g x * (starRingEnd ℂ) (ψ x)) = g • fun x => (starRingEnd ℂ) (ψ x) from rfl,
       deriv_smul (hg.1.differentiable (by simp) x) hc, deriv_conj ψ.differentiableAt,
       smul_eq_mul, smul_eq_mul]
     ring
-  have hdψ : (fun x => (starRingEnd ℂ) (∂[i] ψ x)).HasTemperateGrowth := by
-    rw [deriv_schwartzMap_eq]
-    exact (SchwartzMap.hasTemperateGrowth _).conj
+  have hdψ : (fun x => (starRingEnd ℂ) (∂[i] ψ x)).HasTemperateGrowth :=
+    (SchwartzMap.hasTemperateGrowth
+      (SchwartzMap.evalCLM ℝ (Space d) ℂ (basis i) (SchwartzMap.fderivCLM ℝ (Space d) ℂ ψ))).conj
   have hint1 : Integrable (fun x => ∂[i] g x * (starRingEnd ℂ) (ψ x) * ψ x) volume :=
     ((deriv_hasTemperateGrowth i hg).mul ψ.hasTemperateGrowth.conj).integrable_mul_schwartzMap ψ
   have hint2 : Integrable (fun x => g x * (starRingEnd ℂ) (∂[i] ψ x) * ψ x) volume :=
@@ -92,13 +91,11 @@ lemma add_conj_integral_mul_deriv (i : Fin d) {g : Space d → ℂ}
   rw [integral_add hint1 hint2, neg_add] at h1
   have e1 : ∫ x, ∂[i] g x * (starRingEnd ℂ) (ψ x) * ψ x =
       ∫ x, ∂[i] g x * ((‖ψ x‖ ^ 2 : ℝ) : ℂ) := by
-    refine integral_congr_ae (Filter.Eventually.of_forall fun x => ?_)
-    simp only [mul_assoc, conj_mul']
-    push_cast
-    ring
+    congr 1 with x
+    simp [mul_assoc, conj_mul']
   have e2 : ∫ x, g x * (starRingEnd ℂ) (∂[i] ψ x) * ψ x =
       ∫ x, (starRingEnd ℂ) (g x * (starRingEnd ℂ) (ψ x) * ∂[i] ψ x) := by
-    refine integral_congr_ae (Filter.Eventually.of_forall fun x => ?_)
+    congr 1 with x
     simp only [map_mul, hreal, conj_conj]
     ring
   rw [← integral_conj, h1, e1, e2]
@@ -109,10 +106,6 @@ lemma add_conj_integral_mul_deriv (i : Fin d) {g : Space d → ℂ}
 ## B. The regularized vector field
 
 -/
-
-lemma hasTemperateGrowth_hardyField {ε : ℝ} (hε : ε ≠ 0) (i : Fin d) :
-    (fun x : Space d => x i * (‖x‖ ^ 2 + ε ^ 2)⁻¹).HasTemperateGrowth :=
-  (eval_hasTemperateGrowth i).mul (inv_norm_sq_add_sq_hasTemperateGrowth hε)
 
 lemma deriv_hardyField {ε : ℝ} (hε : ε ≠ 0) (i : Fin d) (x : Space d) :
     ∂[i] (fun x : Space d => x i * (‖x‖ ^ 2 + ε ^ 2)⁻¹) x =
@@ -156,22 +149,17 @@ lemma hardy_component_le {ε : ℝ} (hε : ε ≠ 0) (i : Fin d) (ψ : 𝓢(Spac
     ∫ x, ∂[i] (fun x : Space d => x i * (‖x‖ ^ 2 + ε ^ 2)⁻¹) x * ‖ψ x‖ ^ 2 ≤
       t * (∫ x, (x i * (‖x‖ ^ 2 + ε ^ 2)⁻¹) ^ 2 * ‖ψ x‖ ^ 2) +
         t⁻¹ * ∫ x, ‖∂[i] ψ x‖ ^ 2 := by
+  have hgR : (fun x : Space d => x i * (‖x‖ ^ 2 + ε ^ 2)⁻¹).HasTemperateGrowth := by
+    fun_prop (disch := exact hε)
   set g : Space d → ℝ := fun x => x i * (‖x‖ ^ 2 + ε ^ 2)⁻¹ with hg_def
-  have hgR : g.HasTemperateGrowth := hasTemperateGrowth_hardyField hε i
-  have hgC : (fun x => ((g x : ℝ) : ℂ)).HasTemperateGrowth :=
-    (ofRealCLM : ℝ →L[ℝ] ℂ).hasTemperateGrowth.comp hgR
+  have hgC : (fun x => (g x : ℂ)).HasTemperateGrowth := by fun_prop
   have hid := add_conj_integral_mul_deriv i hgC (fun x => conj_ofReal _) ψ
   set z := ∫ x, ((g x : ℝ) : ℂ) * (starRingEnd ℂ) (ψ x) * ∂[i] ψ x with hz_def
   have hderiv : ∀ x, ∂[i] (fun x => ((g x : ℝ) : ℂ)) x = ((∂[i] g x : ℝ) : ℂ) :=
     fun x => deriv_ofReal (hgR.1.differentiable (by simp) x)
   have hint : ∫ x, ∂[i] (fun x => ((g x : ℝ) : ℂ)) x * ((‖ψ x‖ ^ 2 : ℝ) : ℂ) =
       ((∫ x, ∂[i] g x * ‖ψ x‖ ^ 2 : ℝ) : ℂ) := by
-    rw [← integral_complex_ofReal]
-    congr 1
-    funext x
-    rw [hderiv]
-    push_cast
-    ring
+    simp [← integral_complex_ofReal, hderiv]
   rw [hint, Complex.add_conj] at hid
   have hz : ∫ x, ∂[i] g x * ‖ψ x‖ ^ 2 = -(2 * z.re) := by
     have h2 : ((∫ x, ∂[i] g x * ‖ψ x‖ ^ 2 : ℝ) : ℂ) = ((-(2 * z.re) : ℝ) : ℂ) := by
@@ -186,15 +174,13 @@ lemma hardy_component_le {ε : ℝ} (hε : ε ≠ 0) (i : Fin d) (ψ : 𝓢(Spac
     rw [hF_def, SchwartzMap.smulLeftCLM_apply_apply hgC, norm_smul, Complex.norm_real,
       Real.norm_eq_abs, mul_pow, sq_abs]
   have hiA : Integrable (fun x => g x ^ 2 * ‖ψ x‖ ^ 2) volume := by
-    have := (F.memLp ((2 : ℕ) : ENNReal) volume).integrable_norm_pow two_ne_zero
-    simpa only [hFx] using this
-  have hiB : Integrable (fun x => ‖∂[i] ψ x‖ ^ 2) volume := by
-    rw [deriv_schwartzMap_eq]
-    exact (SchwartzMap.memLp _ ((2 : ℕ) : ENNReal) volume).integrable_norm_pow two_ne_zero
+    simpa only [hFx] using (F.memLp ((2 : ℕ) : ENNReal) volume).integrable_norm_pow two_ne_zero
+  have hiB : Integrable (fun x => ‖∂[i] ψ x‖ ^ 2) volume :=
+    (SchwartzMap.memLp (SchwartzMap.evalCLM ℝ (Space d) ℂ (basis i)
+      (SchwartzMap.fderivCLM ℝ (Space d) ℂ ψ)) ((2 : ℕ) : ENNReal) volume).integrable_norm_pow
+      two_ne_zero
   have hle : -(2 * z.re) ≤ ∫ x, (t * (g x ^ 2 * ‖ψ x‖ ^ 2) + t⁻¹ * ‖∂[i] ψ x‖ ^ 2) := by
-    calc -(2 * z.re) ≤ 2 * ‖z‖ := by
-          have := Complex.abs_re_le_norm z
-          linarith [neg_abs_le z.re]
+    calc -(2 * z.re) ≤ 2 * ‖z‖ := by linarith [neg_abs_le z.re, Complex.abs_re_le_norm z]
       _ ≤ 2 * ∫ x, ‖((g x : ℝ) : ℂ) * (starRingEnd ℂ) (ψ x) * ∂[i] ψ x‖ := by
           gcongr
           exact norm_integral_le_integral_norm _
@@ -210,14 +196,12 @@ lemma hardy_component_le {ε : ℝ} (hε : ε ≠ 0) (i : Fin d) (ψ : 𝓢(Spac
           linarith
   rw [integral_add (hiA.const_mul t) (hiB.const_mul t⁻¹), integral_const_mul,
     integral_const_mul] at hle
-  simp only [hg_def] at hle
-  exact hle
+  simpa only [hg_def] using hle
 
 
 lemma sum_sq_hardyField (ε : ℝ) (x : Space d) :
     ∑ i, (x i * (‖x‖ ^ 2 + ε ^ 2)⁻¹) ^ 2 = ‖x‖ ^ 2 * ((‖x‖ ^ 2 + ε ^ 2)⁻¹) ^ 2 := by
-  simp_rw [mul_pow]
-  rw [← Finset.sum_mul, ← norm_sq_eq]
+  simp [mul_pow, ← Finset.sum_mul, norm_sq_eq]
 
 /-- **Regularized Hardy inequality** for `d ≥ 3`. -/
 lemma hardy_inequality_regularized {ε : ℝ} (hε : ε ≠ 0) (hd : 3 ≤ d) (ψ : 𝓢(Space d, ℂ)) :
@@ -229,7 +213,8 @@ lemma hardy_inequality_regularized {ε : ℝ} (hε : ε ≠ 0) (hd : 3 ≤ d) (�
   set t : ℝ := ((d : ℝ) - 2) / 2 with ht_def
   have ht : 0 < t := by positivity
   -- integrability of the pieces
-  have hgR := fun i => hasTemperateGrowth_hardyField (d := d) hε i
+  have hgR : ∀ i : Fin d, (fun x : Space d => x i * (‖x‖ ^ 2 + ε ^ 2)⁻¹).HasTemperateGrowth :=
+    fun i => by fun_prop (disch := exact hε)
   have hI1 : ∀ i : Fin d, Integrable
       (fun x => ∂[i] (fun x : Space d => x i * (‖x‖ ^ 2 + ε ^ 2)⁻¹) x * ‖ψ x‖ ^ 2) volume :=
     fun i => (deriv_hasTemperateGrowth i (hgR i)).integrable_mul_norm_sq_schwartzMap ψ
@@ -285,14 +270,11 @@ lemma hardy_inequality (hd : 3 ≤ d) (ψ : 𝓢(Space d, ℂ)) :
       ∫ x, (‖x‖ ^ 2)⁻¹ * ‖ψ x‖ ^ 2 ≤
         4 / ((d : ℝ) - 2) ^ 2 * ∑ i, ∫ x, ‖∂[i] ψ x‖ ^ 2 := by
   set C := 4 / ((d : ℝ) - 2) ^ 2 * ∑ i, ∫ x, ‖∂[i] ψ x‖ ^ 2 with hC
-  have hC0 : 0 ≤ C := mul_nonneg (by positivity)
-    (Finset.sum_nonneg fun i _ => integral_nonneg fun x => by positivity)
+  have hC0 : 0 ≤ C := by positivity
   have hε : ∀ n : ℕ, (1 / ((n : ℝ) + 1)) ≠ 0 := fun n => by positivity
   set F : ℕ → Space d → ENNReal := fun n x =>
     ENNReal.ofReal ((‖x‖ ^ 2 + (1 / ((n : ℝ) + 1)) ^ 2)⁻¹ * ‖ψ x‖ ^ 2) with hF
-  have hψm : Measurable (fun x => ‖ψ x‖ ^ 2) := (ψ.continuous.measurable.norm).pow_const 2
-  have hFm : ∀ n, Measurable (F n) := fun n =>
-    ENNReal.measurable_ofReal.comp (((measurable_norm.pow_const 2).add_const _).inv.mul hψm)
+  have hFm : ∀ n, Measurable (F n) := fun n => by fun_prop
   have hFb : ∀ n, ∫⁻ x, F n x ≤ ENNReal.ofReal C := by
     intro n
     have hI : Integrable (fun x => (‖x‖ ^ 2 + (1 / ((n : ℝ) + 1)) ^ 2)⁻¹ * ‖ψ x‖ ^ 2) volume :=
@@ -318,8 +300,7 @@ lemma hardy_inequality (hd : 3 ≤ d) (ψ : 𝓢(Space d, ℂ)) :
     calc _ ≤ ∫⁻ x, liminf (fun n => F n x) atTop := lintegral_mono hpt
       _ ≤ liminf (fun n => ∫⁻ x, F n x) atTop := lintegral_liminf_le hFm
       _ ≤ ENNReal.ofReal C := liminf_le_of_frequently_le' (Frequently.of_forall hFb)
-  have hmeas : Measurable (fun x : Space d => (‖x‖ ^ 2)⁻¹ * ‖ψ x‖ ^ 2) :=
-    (measurable_norm.pow_const 2).inv.mul hψm
+  have hmeas : Measurable (fun x : Space d => (‖x‖ ^ 2)⁻¹ * ‖ψ x‖ ^ 2) := by fun_prop
   have hint : Integrable (fun x => (‖x‖ ^ 2)⁻¹ * ‖ψ x‖ ^ 2) volume :=
     ⟨hmeas.aestronglyMeasurable, (hasFiniteIntegral_iff_ofReal
       (ae_of_all _ fun x => by positivity)).mpr (hlin.trans_lt ENNReal.ofReal_lt_top)⟩

@@ -75,9 +75,6 @@ lemma integrable_mul_norm_sq_schwartzMap {E : Type*} [NormedAddCommGroup E] [Nor
     MeasureTheory.Integrable (fun x => g x * ‖ψ x‖ ^ 2) μ := by
   have h := ((((Complex.ofRealCLM : ℝ →L[ℝ] ℂ).hasTemperateGrowth.comp hg).mul
     ψ.hasTemperateGrowth.conj).integrable_mul_schwartzMap (μ := μ) ψ).re
-  refine h.congr (Filter.Eventually.of_forall fun x => ?_)
-  simp only [Function.comp_apply, Pi.mul_apply, Complex.ofRealCLM_apply]
-  rw [mul_assoc, Complex.conj_mul', ← Complex.ofReal_pow, ← Complex.ofReal_mul,
-    RCLike.re_to_complex, Complex.ofReal_re]
+  simp_all [RCLike.norm_sq_eq_def, mul_assoc]
 
 end Function.HasTemperateGrowth

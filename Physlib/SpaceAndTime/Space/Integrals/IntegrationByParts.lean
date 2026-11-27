@@ -49,15 +49,14 @@ open MeasureTheory
 temperate growth: `∫ g ∂ᵢψ = -∫ (∂ᵢ g) ψ`. -/
 lemma integral_mul_deriv_schwartzMap {d : ℕ} (i : Fin d) {g : Space d → ℂ}
     (hg : g.HasTemperateGrowth) (ψ : SchwartzMap (Space d) ℂ) :
-    ∫ x, g x * ∂[i] ψ x = -∫ x, ∂[i] g x * ψ x := by
-  have h := integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
-    (μ := volume) (B := ContinuousLinearMap.mul ℝ ℂ) (f := g) (f' := ∂[i] g) (g := ψ)
-    (g' := ∂[i] ψ) (v := basis i)
+    ∫ x, g x * ∂[i] ψ x = -∫ x, ∂[i] g x * ψ x :=
+  integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
+    (B := ContinuousLinearMap.mul ℝ ℂ)
     ((deriv_hasTemperateGrowth i hg).integrable_mul_schwartzMap ψ)
-    (by rw [deriv_schwartzMap_eq]; exact hg.integrable_mul_schwartzMap _)
+    (hg.integrable_mul_schwartzMap
+      (SchwartzMap.evalCLM ℝ (Space d) ℂ (basis i) (SchwartzMap.fderivCLM ℝ (Space d) ℂ ψ)))
     (hg.integrable_mul_schwartzMap ψ)
     (fun x _ => ((hg.1.differentiable (by simp)) x).hasFDerivAt.hasLineDerivAt (basis i))
     (fun x _ => ψ.differentiableAt.hasFDerivAt.hasLineDerivAt (basis i))
-  simpa using h
 
 end Space

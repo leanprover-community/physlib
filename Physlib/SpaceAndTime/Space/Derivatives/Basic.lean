@@ -448,17 +448,15 @@ lemma deriv_contDiff {d} {f : Space d → ℝ} (hf : ContDiff ℝ (n + 1) f) :
 lemma deriv_ofReal {d : ℕ} {u : Fin d} {f : Space d → ℝ} {x : Space d}
     (hf : DifferentiableAt ℝ f x) :
     ∂[u] (fun x => (f x : ℂ)) x = ((∂[u] f x : ℝ) : ℂ) := by
-  rw [deriv_eq, deriv_eq, show (fun x => (f x : ℂ)) = (Complex.ofRealCLM : ℝ →L[ℝ] ℂ) ∘ f from rfl,
-    ((Complex.ofRealCLM : ℝ →L[ℝ] ℂ).hasFDerivAt.comp x hf.hasFDerivAt).fderiv]
-  simp
+  simp [deriv_eq, ← Complex.ofRealCLM_apply, ← Function.comp_def,
+    (Complex.ofRealCLM.hasFDerivAt.comp x hf.hasFDerivAt).fderiv]
 
 /-- Space derivatives commute with complex conjugation. -/
 lemma deriv_conj {d : ℕ} {u : Fin d} {f : Space d → ℂ} {x : Space d}
     (hf : DifferentiableAt ℝ f x) :
     ∂[u] (fun x => (starRingEnd ℂ) (f x)) x = (starRingEnd ℂ) (∂[u] f x) := by
-  rw [deriv_eq, deriv_eq,
-    show (fun x => (starRingEnd ℂ) (f x)) = (Complex.conjCLE : ℂ →L[ℝ] ℂ) ∘ f from rfl,
-    ((Complex.conjCLE : ℂ →L[ℝ] ℂ).hasFDerivAt.comp x hf.hasFDerivAt).fderiv]
+  simp only [deriv_eq, ← Complex.conjCLE_apply, ← Function.comp_def,
+    (Complex.conjCLE.hasFDerivAt.comp x hf.hasFDerivAt).fderiv]
   simp
 
 /-!
@@ -468,17 +466,11 @@ lemma deriv_conj {d : ℕ} {u : Fin d} {f : Space d → ℂ} {x : Space d}
 -/
 
 /-- The space derivative of a function of temperate growth has temperate growth. -/
+@[fun_prop]
 lemma deriv_hasTemperateGrowth {M} [NormedAddCommGroup M] [NormedSpace ℝ M] {d : ℕ}
     {f : Space d → M} (u : Fin d) (hf : f.HasTemperateGrowth) :
     (∂[u] f).HasTemperateGrowth :=
   (ContinuousLinearMap.apply ℝ M (basis u)).hasTemperateGrowth.comp hf.fderiv
-
-/-- The space derivative of a Schwartz map, written as a Schwartz map. -/
-lemma deriv_schwartzMap_eq {M} [NormedAddCommGroup M] [NormedSpace ℝ M] {d : ℕ} (u : Fin d)
-    (ψ : SchwartzMap (Space d) M) :
-    ∂[u] ψ = ⇑(SchwartzMap.evalCLM ℝ (Space d) M (basis u)
-      (SchwartzMap.fderivCLM ℝ (Space d) M ψ)) :=
-  rfl
 
 /-!
 
