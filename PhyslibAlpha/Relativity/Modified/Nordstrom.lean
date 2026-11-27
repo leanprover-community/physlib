@@ -170,10 +170,15 @@ point where `N.φ x ≠ 0` and `N.φ` is differentiable. -/
 lemma NordstromSpacetime.christoffel_eq (N : NordstromSpacetime) (x : Fin 4 → ℝ)
     (hφ : N.φ x ≠ 0) (hd : DifferentiableAt ℝ N.φ x) (k i j : Fin 4) :
     N.toCoordinateMetric.christoffel x k i j = N.christoffel x k i j := by
+  have hdiag : ∀ l : Fin 4, l ≠ k → N.metricInv x k l = 0 := by
+    intro l hl
+    fin_cases k <;> fin_cases l <;> simp_all [NordstromSpacetime.metricInv,
+      conformalRescaleMetricInv, minkowskiMetric4]
   rw [show N.toCoordinateMetric.christoffel x k i j =
       CoordinateCurvature.christoffel N.metric N.metricInv x k i j from rfl]
-  simp only [CoordinateCurvature.christoffel, pd_conformal_eta N x hd, NordstromSpacetime.metricInv,
-    conformalRescaleMetricInv, NordstromSpacetime.christoffel, Fin.sum_univ_four]
+  rw [christoffel_diag N.metric N.metricInv x k i j hdiag]
+  simp only [pd_conformal_eta N x hd, NordstromSpacetime.metricInv, conformalRescaleMetricInv,
+    NordstromSpacetime.christoffel]
   fin_cases k <;> fin_cases i <;> fin_cases j <;>
     simp only [minkowskiMetric4_apply] <;> norm_num <;> field_simp [hφ]
 

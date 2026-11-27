@@ -206,9 +206,14 @@ lemma christoffel_eq (S : Metric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     ∀ k i j, S.toCoordinateMetric.christoffel x k i j =
       S.christoffel x k i j := by
   intro k i j
+  have hdiag : ∀ l : Fin 4, l ≠ k → S.metricInv x k l = 0 := by
+    intro l hl
+    fin_cases k <;> fin_cases l <;> simp_all [metricInv]
+  rw [show S.toCoordinateMetric.christoffel x k i j =
+      CoordinateCurvature.christoffel S.metric S.metricInv x k i j from rfl]
+  rw [christoffel_diag S.metric S.metricInv x k i j hdiag]
   fin_cases k <;> fin_cases i <;> fin_cases j <;>
-    simp [CoordinateMetric.christoffel, CoordinateCurvature.christoffel, christoffel, metricInv,
-      metricDeriv_theta, metricDeriv_r S x hf_diff hf] <;>
+    simp [christoffel, metricInv, metricDeriv_theta, metricDeriv_r S x hf_diff hf] <;>
     field_simp [hr, hf, hsin]
 
 /-- Neighbourhood equality between `CoordinateMetric.christoffel` and the closed-form static
