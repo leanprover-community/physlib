@@ -16,6 +16,11 @@ public import Physlib.QuantumMechanics.Operators.Basic
 
 ## iii. Table of contents
 
+- A. Definition of symmetric operator
+- B. Criteria for symmetric operators
+- C. Properties
+- D. Unbounded operator from symmetric endomorphism
+
 ## iv. References
 
 -/
@@ -29,10 +34,18 @@ open scoped ComplexConjugate InnerProductSpace
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] {T T₂ : H →ₗ.[ℂ] H}
 
+/-!
+## A. Definition of symmetric operator
+-/
+
 /-- A LinearPMap `T` is symmetric iff `⟪T x, y⟫_ℂ = ⟪x, T y⟫_ℂ` for all `x y : T.domain`. -/
 def IsSymmetric (T : H →ₗ.[ℂ] H) : Prop := T.IsFormalAdjoint T
 
 lemma isSymmetric_def : T.IsSymmetric ↔ T.IsFormalAdjoint T := Iff.rfl
+
+/-!
+## B. Criteria for symmetric operators
+-/
 
 -- The analogue of `LinearMap.isSymmetric_iff_inner_map_self_real` for LinearPMap.
 lemma isSymmetric_iff_inner_map_self_real :
@@ -57,6 +70,10 @@ lemma add_adjoint_isSymmetric [CompleteSpace H] (h : T.HasDenseDomain) :
   simp only [inner_conj_symm] at h₂
   simp only [add_apply, inner_add_left, inner_add_right, h₁, h₂]
   exact add_comm _ _
+
+/-!
+## C. Properties
+-/
 
 namespace IsSymmetric
 
@@ -136,6 +153,10 @@ lemma closure [CompleteSpace H] (h' : T.HasDenseDomain) : T.closure.IsSymmetric 
   exact h1.of_le (hc.closure_eq ▸ hc.isClosable.closure_mono hT_le)
 
 end IsSymmetric
+
+/-!
+## D. Unbounded operator from symmetric endomorphism
+-/
 
 /-- A LinearPMap constructed from a symmetric LinearMap with dense domain
   is an unbounded operator. -/
