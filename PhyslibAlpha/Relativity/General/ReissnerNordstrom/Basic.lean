@@ -139,6 +139,14 @@ noncomputable def metric (S : ReissnerNordstromSpacetime) : (Fin 4 → ℝ) → 
 noncomputable def metricInv (S : ReissnerNordstromSpacetime) : (Fin 4 → ℝ) → Tensor2 4 :=
   S.toStaticSpherical.metricInv
 
+/-- The covariant field of `S.toCoordinateMetric` is `S.metric`. -/
+@[simp] lemma toCoordinateMetric_g (S : ReissnerNordstromSpacetime) :
+    S.toCoordinateMetric.g = S.metric := rfl
+
+/-- The inverse field of `S.toCoordinateMetric` is `S.metricInv`. -/
+@[simp] lemma toCoordinateMetric_ginv (S : ReissnerNordstromSpacetime) :
+    S.toCoordinateMetric.ginv = S.metricInv := rfl
+
 /-- `S.metric` is definitionally `S.toStaticSpherical.metric`. -/
 lemma metric_eq_staticSpherical (S : ReissnerNordstromSpacetime) :
     S.metric = S.toStaticSpherical.metric := rfl
@@ -290,9 +298,10 @@ lemma maxwellStressEnergy_trace_zero (S : ReissnerNordstromSpacetime) (x : Fin 4
     metricTrace (S.toStaticSpherical.metricTensor x hr hf hsin)
       (maxwellStressEnergy (S.toStaticSpherical.metricTensor x hr hf hsin)
         (S.coulombFieldStrength (x 1))) = 0 := by
-  have hsmul := metricTrace_smul (S.toStaticSpherical.metricTensor x hr hf hsin)
+  have hf' : S.toStaticSpherical.metricFn (x 1) ≠ 0 := hf
+  have hsmul := metricTrace_smul (S.toStaticSpherical.metricTensor x hr hf' hsin)
     (1 / (4 * Real.pi))
-    (GeneralRelativity.maxwellStressEnergy (S.toStaticSpherical.metricTensor x hr hf hsin)
+    (GeneralRelativity.maxwellStressEnergy (S.toStaticSpherical.metricTensor x hr hf' hsin)
       (S.coulombFieldStrength (x 1)))
   unfold maxwellStressEnergy
   rw [hsmul, GeneralRelativity.maxwellStressEnergy_trace_zero, mul_zero]

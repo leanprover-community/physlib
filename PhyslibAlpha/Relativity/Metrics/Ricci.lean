@@ -69,9 +69,18 @@ noncomputable def CoordinateMetric.ricciTensor {n : ℕ} (C : CoordinateMetric n
     (x : Fin n → ℝ) (σ ν : Fin n) : ℝ :=
   CoordinateCurvature.ricciTensor C.g C.ginv x σ ν
 
+/-- Unfolding lemma for `CoordinateMetric.ricciTensor`. -/
+@[simp] lemma CoordinateMetric.ricciTensor_apply {n : ℕ} (C : CoordinateMetric n)
+    (x : Fin n → ℝ) (σ ν : Fin n) :
+    C.ricciTensor x σ ν = CoordinateCurvature.ricciTensor C.g C.ginv x σ ν := rfl
+
 /-- Scalar curvature of a `CoordinateMetric`. -/
 noncomputable def CoordinateMetric.ricciScalar {n : ℕ} (C : CoordinateMetric n)
     (x : Fin n → ℝ) : ℝ :=
   CoordinateCurvature.ricciScalar C.g C.ginv x
+
+/-- Unfolding lemma for `CoordinateMetric.ricciScalar`. -/
+@[simp] lemma CoordinateMetric.ricciScalar_apply {n : ℕ} (C : CoordinateMetric n)
+    (x : Fin n → ℝ) : C.ricciScalar x = CoordinateCurvature.ricciScalar C.g C.ginv x := rfl
 
 end GeneralRelativity

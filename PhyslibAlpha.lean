@@ -855,6 +855,7 @@ public import PhyslibAlpha.Relativity.Metrics.Christoffel
 public import PhyslibAlpha.Relativity.Metrics.ConformalMetric
 public import PhyslibAlpha.Relativity.Metrics.CoordDeriv
 public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
+public import PhyslibAlpha.Relativity.Metrics.CurvatureBridge
 public import PhyslibAlpha.Relativity.Metrics.CurvatureDerivatives
 public import PhyslibAlpha.Relativity.Metrics.Einstein
 public import PhyslibAlpha.Relativity.Metrics.MetricTrace

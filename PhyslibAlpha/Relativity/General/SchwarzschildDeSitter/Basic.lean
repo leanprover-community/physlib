@@ -132,6 +132,14 @@ noncomputable def metric (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ
 noncomputable def metricInv (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
   S.toStaticSpherical.metricInv x
 
+/-- The covariant field of `S.toCoordinateMetric` is `S.metric`. -/
+@[simp] lemma toCoordinateMetric_g (S : SchwarzschildDeSitterSpacetime) :
+    S.toCoordinateMetric.g = S.metric := rfl
+
+/-- The inverse field of `S.toCoordinateMetric` is `S.metricInv`. -/
+@[simp] lemma toCoordinateMetric_ginv (S : SchwarzschildDeSitterSpacetime) :
+    S.toCoordinateMetric.ginv = S.metricInv := rfl
+
 /-- At `Λ = 0`, the Kottler radial metric function reduces to the Schwarzschild metric
 function. -/
 lemma metricFn_zero_lambda (M r : ℝ) :

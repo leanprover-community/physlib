@@ -139,4 +139,9 @@ noncomputable def CoordinateMetric.einsteinTensor {n : ℕ} (C : CoordinateMetri
     (x : Fin n → ℝ) (i j : Fin n) : ℝ :=
   CoordinateCurvature.einsteinTensor C.g C.ginv x i j
 
+/-- Unfolding lemma for `CoordinateMetric.einsteinTensor`. -/
+@[simp] lemma CoordinateMetric.einsteinTensor_apply {n : ℕ} (C : CoordinateMetric n)
+    (x : Fin n → ℝ) (i j : Fin n) :
+    C.einsteinTensor x i j = CoordinateCurvature.einsteinTensor C.g C.ginv x i j := rfl
+
 end GeneralRelativity

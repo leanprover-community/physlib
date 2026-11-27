@@ -73,17 +73,24 @@ lemma riemann_eq_data (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 
       = riemannFromData S.christoffel S.christoffelDeriv x ρ σ μ ν := by
   rw [riemann_eq_riemannFromData]
   have hf1 : DifferentiableAt ℝ S.metricFn (x 1) := hf_diff.self_of_nhds
+  have hconv : ∀ y k i j, CoordinateCurvature.christoffel S.metric S.metricInv y k i j
+      = S.toCoordinateMetric.christoffel y k i j := fun _ _ _ _ => rfl
   have h1 : coordDeriv μ (fun y =>
       CoordinateCurvature.christoffel S.metric S.metricInv y ρ ν σ) x
-      = S.christoffelDeriv μ x ρ ν σ :=
-    (S.pd_christoffel_eq x hr hf hsin hf_diff μ ρ ν σ).trans
+      = S.christoffelDeriv μ x ρ ν σ := by
+    simp only [hconv]
+    exact (S.pd_christoffel_eq x hr hf hsin hf_diff μ ρ ν σ).trans
       (S.pd_christoffel_eq_deriv x hr hf hsin hf1 hf2 μ ρ ν σ)
   have h2 : coordDeriv ν (fun y =>
       CoordinateCurvature.christoffel S.metric S.metricInv y ρ μ σ) x
-      = S.christoffelDeriv ν x ρ μ σ :=
-    (S.pd_christoffel_eq x hr hf hsin hf_diff ν ρ μ σ).trans
+      = S.christoffelDeriv ν x ρ μ σ := by
+    simp only [hconv]
+    exact (S.pd_christoffel_eq x hr hf hsin hf_diff ν ρ μ σ).trans
       (S.pd_christoffel_eq_deriv x hr hf hsin hf1 hf2 ν ρ μ σ)
-  simp only [riemannFromData, h1, h2, S.christoffel_eq x hr hf hsin hf1]
+  have hquad : ∀ k i j, CoordinateCurvature.christoffel S.metric S.metricInv x k i j
+      = S.christoffel x k i j :=
+    fun k i j => (hconv x k i j).trans (S.christoffel_eq x hr hf hsin hf1 k i j)
+  simp only [riemannFromData, h1, h2, hquad]
 
 private lemma ricciComponent_tt (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)

@@ -136,6 +136,14 @@ noncomputable def metric (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) : Tens
 noncomputable def metricInv (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
   S.toStaticSpherical.metricInv x
 
+/-- The covariant field of `S.toCoordinateMetric` is `S.metric`. -/
+@[simp] lemma toCoordinateMetric_g (S : SchwarzschildSpacetime) :
+    S.toCoordinateMetric.g = S.metric := rfl
+
+/-- The inverse field of `S.toCoordinateMetric` is `S.metricInv`. -/
+@[simp] lemma toCoordinateMetric_ginv (S : SchwarzschildSpacetime) :
+    S.toCoordinateMetric.ginv = S.metricInv := rfl
+
 /-- The `tt` component of the Schwarzschild metric is `-(1 - 2M/r)`. -/
 lemma metric_tt (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) :
     S.metric x 0 0 = -(1 - 2 * S.M / x 1) := by

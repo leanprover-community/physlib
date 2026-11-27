@@ -157,4 +157,12 @@ def CoordinateMetric.metricTensor {n : ℕ} (C : CoordinateMetric n) (x : Fin n 
   inv_left := C.inv_left x hx
   inv_right := C.inv_right x hx
 
+/-- The covariant field of the pointwise metric is `C.g x`. -/
+@[simp] lemma CoordinateMetric.metricTensor_g {n : ℕ} (C : CoordinateMetric n)
+    (x : Fin n → ℝ) (hx : x ∈ C.domain) : (C.metricTensor x hx).g = C.g x := rfl
+
+/-- The inverse field of the pointwise metric is `C.ginv x`. -/
+@[simp] lemma CoordinateMetric.metricTensor_ginv {n : ℕ} (C : CoordinateMetric n)
+    (x : Fin n → ℝ) (hx : x ∈ C.domain) : (C.metricTensor x hx).ginv = C.ginv x := rfl
+
 end GeneralRelativity

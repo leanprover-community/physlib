@@ -119,6 +119,14 @@ noncomputable def NordstromSpacetime.toCoordinateMetric (N : NordstromSpacetime)
   inv_left x hx := (N.metricTensor x hx).inv_left
   inv_right x hx := (N.metricTensor x hx).inv_right
 
+/-- The covariant field of `N.toCoordinateMetric` is `N.metric`. -/
+@[simp] lemma NordstromSpacetime.toCoordinateMetric_g (N : NordstromSpacetime) :
+    N.toCoordinateMetric.g = N.metric := rfl
+
+/-- The inverse field of `N.toCoordinateMetric` is `N.metricInv`. -/
+@[simp] lemma NordstromSpacetime.toCoordinateMetric_ginv (N : NordstromSpacetime) :
+    N.toCoordinateMetric.ginv = N.metricInv := rfl
+
 /-- Zero light deflection in Nordström gravity: null tangent vectors of `φ² η` coincide with
 unbent Minkowski null rays. -/
 lemma NordstromSpacetime.light_deflection_zero (N : NordstromSpacetime) (x : Fin 4 → ℝ)
@@ -161,7 +169,9 @@ private lemma pd_conformal_eta (N : NordstromSpacetime) (x : Fin 4 → ℝ)
 point where `N.φ x ≠ 0` and `N.φ` is differentiable. -/
 lemma NordstromSpacetime.christoffel_eq (N : NordstromSpacetime) (x : Fin 4 → ℝ)
     (hφ : N.φ x ≠ 0) (hd : DifferentiableAt ℝ N.φ x) (k i j : Fin 4) :
-    CoordinateCurvature.christoffel N.metric N.metricInv x k i j = N.christoffel x k i j := by
+    N.toCoordinateMetric.christoffel x k i j = N.christoffel x k i j := by
+  rw [show N.toCoordinateMetric.christoffel x k i j =
+      CoordinateCurvature.christoffel N.metric N.metricInv x k i j from rfl]
   simp only [CoordinateCurvature.christoffel, pd_conformal_eta N x hd, NordstromSpacetime.metricInv,
     conformalRescaleMetricInv, NordstromSpacetime.christoffel, Fin.sum_univ_four]
   fin_cases k <;> fin_cases i <;> fin_cases j <;>
@@ -254,15 +264,22 @@ private lemma ricciTensor_nordstrom_diag (N : NordstromSpacetime) (x : Fin 4 →
           (coordDeriv ρ (coordDeriv ρ N.φ) x * N.φ x + coordDeriv ρ N.φ x ^ 2)) / N.φ x ^ 2) := by
   have nh : ∀ᶠ y in nhds x, ContDiffAt ℝ 2 N.φ y := hc2.eventually (by simp)
   have hne : ∀ᶠ y in nhds x, N.φ y ≠ 0 := hc2.continuousAt.eventually_ne hφ
+  have hconv : ∀ (y : Fin 4 → ℝ) (k i j : Fin 4),
+      N.toCoordinateMetric.christoffel y k i j =
+        CoordinateCurvature.christoffel N.metric N.metricInv y k i j :=
+    fun _ _ _ _ => rfl
   have hev : ∀ k i j,
       (fun y => CoordinateCurvature.christoffel N.metric N.metricInv y k i j)
         =ᶠ[nhds x] fun y => N.christoffel y k i j := by
     intro k i j
     filter_upwards [nh, hne] with y hy hyne
+    rw [← hconv y k i j]
     exact N.christoffel_eq y hyne (hy.differentiableAt (by norm_num)) k i j
   have hpt : ∀ k i j,
       CoordinateCurvature.christoffel N.metric N.metricInv x k i j = N.christoffel x k i j :=
-    fun k i j => N.christoffel_eq x hφ (hc2.differentiableAt (by norm_num)) k i j
+    fun k i j => by
+      rw [← hconv x k i j]
+      exact N.christoffel_eq x hφ (hc2.differentiableAt (by norm_num)) k i j
   have hpd : ∀ μ k i j,
       coordDeriv μ (fun y => CoordinateCurvature.christoffel N.metric N.metricInv y k i j) x
         = coordDeriv μ (fun y => N.christoffel y k i j) x :=
@@ -279,8 +296,10 @@ private lemma ricciTensor_nordstrom_diag (N : NordstromSpacetime) (x : Fin 4 →
 obtained from the coordinate metric `N.metric`. -/
 lemma NordstromSpacetime.ricciScalar (N : NordstromSpacetime) (x : Fin 4 → ℝ) (hφ : N.φ x ≠ 0)
     (hc2 : ContDiffAt ℝ 2 N.φ x) :
-    CoordinateCurvature.ricciScalar N.metric N.metricInv x
+    N.toCoordinateMetric.ricciScalar x
       = -6 * minkowskiDalembertian N.φ x / N.φ x ^ 3 := by
+  rw [show N.toCoordinateMetric.ricciScalar x =
+      CoordinateCurvature.ricciScalar N.metric N.metricInv x from rfl]
   simp only [CoordinateCurvature.ricciScalar, Fin.sum_univ_four, NordstromSpacetime.metricInv,
     conformalRescaleMetricInv, minkowskiMetric4_apply]
   norm_num
@@ -294,7 +313,7 @@ lemma NordstromSpacetime.ricciScalar (N : NordstromSpacetime) (x : Fin 4 → ℝ
 scalar wave equation `□φ = -4 π φ³ T`. -/
 lemma NordstromSpacetime.einsteinFokker_iff (N : NordstromSpacetime) (x : Fin 4 → ℝ)
     (hφ : N.φ x ≠ 0) (hc2 : ContDiffAt ℝ 2 N.φ x) (T : ℝ) :
-    CoordinateCurvature.ricciScalar N.metric N.metricInv x = 24 * Real.pi * T
+    N.toCoordinateMetric.ricciScalar x = 24 * Real.pi * T
       ↔ minkowskiDalembertian N.φ x = -4 * Real.pi * N.φ x ^ 3 * T := by
   rw [N.ricciScalar x hφ hc2]
   have h3 : N.φ x ^ 3 ≠ 0 := pow_ne_zero 3 hφ

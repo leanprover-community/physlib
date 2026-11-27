@@ -98,4 +98,9 @@ noncomputable def CoordinateMetric.riemann {n : ℕ} (C : CoordinateMetric n)
     (x : Fin n → ℝ) (ρ σ μ ν : Fin n) : ℝ :=
   CoordinateCurvature.riemann C.g C.ginv x ρ σ μ ν
 
+/-- Unfolding lemma for `CoordinateMetric.riemann`. -/
+@[simp] lemma CoordinateMetric.riemann_apply {n : ℕ} (C : CoordinateMetric n)
+    (x : Fin n → ℝ) (ρ σ μ ν : Fin n) :
+    C.riemann x ρ σ μ ν = CoordinateCurvature.riemann C.g C.ginv x ρ σ μ ν := rfl
+
 end GeneralRelativity

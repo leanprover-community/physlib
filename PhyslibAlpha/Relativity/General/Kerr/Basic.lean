@@ -207,6 +207,14 @@ noncomputable def toCoordinateMetric (K : KerrSpacetime) : CoordinateMetric 4 wh
   inv_left x hx := K.metric_mul_metricInv x hx.1 hx.2.1 hx.2.2
   inv_right x hx := K.metricInv_mul_metric x hx.1 hx.2.1 hx.2.2
 
+/-- The covariant field of `K.toCoordinateMetric` is `K.metric`. -/
+@[simp] lemma toCoordinateMetric_g (K : KerrSpacetime) :
+    K.toCoordinateMetric.g = K.metric := rfl
+
+/-- The inverse field of `K.toCoordinateMetric` is `K.metricInv`. -/
+@[simp] lemma toCoordinateMetric_ginv (K : KerrSpacetime) :
+    K.toCoordinateMetric.ginv = K.metricInv := rfl
+
 /-!
 
 ## B. Event horizons, ergosphere, and frame dragging

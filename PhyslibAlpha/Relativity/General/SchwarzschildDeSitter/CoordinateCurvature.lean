@@ -200,9 +200,11 @@ lemma christoffel_eq (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (h
   intro k i j
   have hm : S.metric = S.toStaticSpherical.metric := rfl
   have hmi : S.metricInv = S.toStaticSpherical.metricInv := rfl
-  rw [hm, hmi, S.toStaticSpherical.christoffel_eq x hr hf hsin
-      (S.hasDerivAt_metricFn (x 1) hr).differentiableAt k i j,
-    S.christoffel_eq_staticSpherical x hr k i j]
+  have h := S.toStaticSpherical.christoffel_eq x hr hf hsin
+    (S.hasDerivAt_metricFn (x 1) hr).differentiableAt k i j
+  simp only [CoordinateMetric.christoffel_apply, StaticSphericalMetric.toCoordinateMetric_g,
+    StaticSphericalMetric.toCoordinateMetric_ginv] at h
+  rw [hm, hmi, h, S.christoffel_eq_staticSpherical x hr k i j]
 
 /-- Away from the central singularity (`r ≠ 0`), event and cosmological horizons (`f ≠ 0`), and
 polar axis (`sin θ ≠ 0`), every spacetime point has a regular neighborhood where the coordinate
@@ -214,8 +216,11 @@ lemma pd_christoffel_eq (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ)
       = coordDeriv μ (fun y => S.christoffel y a b c) x := by
   have hm : S.metric = S.toStaticSpherical.metric := rfl
   have hmi : S.metricInv = S.toStaticSpherical.metricInv := rfl
-  rw [hm, hmi, S.toStaticSpherical.pd_christoffel_eq x hr hf hsin
-      (S.eventually_differentiableAt_metricFn (x 1) hr) μ a b c]
+  have h := S.toStaticSpherical.pd_christoffel_eq x hr hf hsin
+    (S.eventually_differentiableAt_metricFn (x 1) hr) μ a b c
+  simp only [CoordinateMetric.christoffel_apply, StaticSphericalMetric.toCoordinateMetric_g,
+    StaticSphericalMetric.toCoordinateMetric_ginv] at h
+  rw [hm, hmi, h]
   have hr_nhds : ∀ᶠ y in nhds x, y 1 ≠ 0 :=
     (continuous_apply (1 : Fin 4)).continuousAt.eventually_ne hr
   have heq : (fun y => S.toStaticSpherical.christoffel y a b c) =ᶠ[nhds x]
