@@ -222,7 +222,7 @@ lemma derivOfTempDist_inl_timeSliceOfTempDist_symm {M d} [NormedAddCommGroup M] 
   rw [timeSliceOfTempDist_derivOfTempDist_inl]
   simp
 
-lemma timeSliceOfDist_symm_timeDerivOfDist_eq {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma timeSliceOfTempDist_symm_timeDerivOfTempDist_eq {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     {c : SpeedOfLight}
     (f : (Time × Space d) →d[ℝ] M) :
     (timeSliceOfTempDist c).symm (Space.distTimeDeriv f) =
@@ -230,7 +230,7 @@ lemma timeSliceOfDist_symm_timeDerivOfDist_eq {M d} [NormedAddCommGroup M] [Norm
   rw [derivOfTempDist_inl_timeSliceOfTempDist_symm]
   simp
 
-lemma timeSliceOfDist_derivOfDist_inr {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma timeSliceOfTempDist_derivOfTempDist_inr {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     {c : SpeedOfLight}
     (i : Fin d) (f : (SpaceTime d) →d[ℝ] M) :
     timeSliceOfTempDist c (derivOfTempDist (Sum.inr i) f) =
@@ -260,7 +260,7 @@ lemma derivOfDist_inr_timeSliceOfDist_symm {M d} [NormedAddCommGroup M] [NormedS
   simp only [ContinuousLinearEquiv.symm_apply_apply]
   apply (timeSliceOfTempDist c).injective
   simp only [ContinuousLinearEquiv.apply_symm_apply]
-  rw [timeSliceOfDist_derivOfDist_inr]
+  rw [timeSliceOfTempDist_derivOfTempDist_inr]
 
 end SpaceTime
 
