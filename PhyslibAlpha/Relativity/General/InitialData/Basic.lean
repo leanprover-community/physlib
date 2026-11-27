@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import PhyslibAlpha.Relativity.Metrics.Basic
+public import PhyslibAlpha.Relativity.Metrics.CovariantDerivTensor2
 public import PhyslibAlpha.Relativity.Metrics.RicciScalar
 import Mathlib.Tactic.Linarith
 
@@ -86,19 +87,6 @@ structure InitialData where
   Ksymm : IsSymm K
 
 namespace InitialData
-
-/-- Three-dimensional Levi-Civita covariant derivative of a rank-2 tensor `K`:
-`∇_μ K_{ij} = ∂_μ K_{ij} - Γ^l_{μi} K_{lj} - Γ^l_{μj} K_{il}`. -/
-def covariantDerivTensor2 (Γ : Fin 3 → Fin 3 → Fin 3 → ℝ) (dK : Fin 3 → Tensor2 3)
-    (K : Tensor2 3) : Fin 3 → Tensor2 3 :=
-  fun μ i j => dK μ i j - (∑ l, Γ l μ i * K l j) - (∑ l, Γ l μ j * K i l)
-
-/-- In locally flat / normal coordinates where the 3D Christoffel symbols vanish (`Γ = 0`),
-the covariant derivative `covariantDerivTensor2` reduces to the partial derivative table `dK`. -/
-lemma covariantDerivTensor2_eq_of_zero (dK : Fin 3 → Tensor2 3) (K : Tensor2 3) :
-    covariantDerivTensor2 0 dK K = dK := by
-  ext μ i j
-  simp [covariantDerivTensor2]
 
 /-- The momentum constraint `M_i = g^{jk} (∇_j K_{ik} - ∇_i K_{jk})` on a spatial slice. The
 table `dK μ i j = ∂_μ K_{ij}` holds coordinate partial derivatives of the extrinsic curvature, and

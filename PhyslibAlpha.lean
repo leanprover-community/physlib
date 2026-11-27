@@ -266,6 +266,7 @@ public import PhyslibAlpha.CondensedMatter.TightBindingChain.VelocityBand.Basic
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.VelocityBand.Width
 public import PhyslibAlpha.Cosmology.FLRW.Basic
 public import PhyslibAlpha.Cosmology.FLRW.Christoffel
+public import PhyslibAlpha.Cosmology.FLRW.Curvature
 public import PhyslibAlpha.Cosmology.FLRW.FriedmannBridge
 public import PhyslibAlpha.Cosmology.FLRW.PerfectFluid
 public import PhyslibAlpha.Electromagnetism.BoxChargeConservation
@@ -813,6 +814,7 @@ public import PhyslibAlpha.Relativity.Fermions.Weyl.Metric
 public import PhyslibAlpha.Relativity.Fermions.Weyl.MetricPairing
 public import PhyslibAlpha.Relativity.Fermions.Weyl.Tensorial
 public import PhyslibAlpha.Relativity.Fermions.Weyl.Unit
+public import PhyslibAlpha.Relativity.General.FrameKretschmann
 public import PhyslibAlpha.Relativity.General.GeodesicSystem
 public import PhyslibAlpha.Relativity.General.GravitationalConstant
 public import PhyslibAlpha.Relativity.General.InitialData.AnisotropicSlice
@@ -855,6 +857,7 @@ public import PhyslibAlpha.Relativity.Metrics.Christoffel
 public import PhyslibAlpha.Relativity.Metrics.ConformalMetric
 public import PhyslibAlpha.Relativity.Metrics.CoordDeriv
 public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
+public import PhyslibAlpha.Relativity.Metrics.CovariantDerivTensor2
 public import PhyslibAlpha.Relativity.Metrics.CurvatureBridge
 public import PhyslibAlpha.Relativity.Metrics.CurvatureDerivatives
 public import PhyslibAlpha.Relativity.Metrics.Einstein

@@ -22,7 +22,7 @@ nondegenerate metric carrying its explicit two-sided inverse [2], with the four-
 Minkowski metric η = diag(-1, 1, 1, 1) as the flat reference background [3]. Conformal
 rescalings g ↦ Ω g preserve metric invertibility [4] and leave null tangent cones invariant [5].
 Algebraic (0, 4) Riemann curvature tensors satisfy pair antisymmetry, pair-exchange symmetry, and
-the first Bianchi identity [6], and contract with the inverse metric to the symmetric Ricci tensor
+the first Bianchi identity [6][82], and contract with the inverse metric to the symmetric Ricci tensor
 [7] and scalar curvature defined as its metric trace [8][9]. Using coordinate-axis partial
 derivatives bridged to `SpaceTime.deriv` [10], coordinate curvature operators compute the
 Levi-Civita Christoffel symbols from a coordinate metric field [11], construct the Riemann
@@ -47,7 +47,7 @@ solutions by the Picard-Lindelöf theorem, reducing to straight lines when the c
 [18]. In the Arnowitt-Deser-Misner 3+1 initial-value formulation, spatial slices carry a
 Riemannian 3-metric and symmetric extrinsic curvature tensor K_{ij} subject to the Hamiltonian and
 momentum constraint equations (using the 3D Levi-Civita covariant derivative `∇K`), which simplify
-on time-symmetric (K_{ij} = 0) and maximal (tr K = 0) slices [19], distinguish flat Minkowski
+on time-symmetric (K_{ij} = 0) and maximal (tr K = 0) slices [19][83], distinguish flat Minkowski
 vacuum data [20] from non-vacuum initial data with anisotropic extrinsic curvature [21]. Around the
 Minkowski background g = η + h, first-order perturbation theory packages symmetric metric
 perturbations `MetricPerturbation` [22], defines the Minkowski trace `perturbationTrace` and
@@ -90,7 +90,7 @@ partial derivatives [48], all 64 Levi-Civita Christoffel symbols and contracted 
 full verification that the Ricci tensor, Ricci scalar, and Einstein tensor vanish identically in
 vacuum [50]. Homogeneous and isotropic cosmology is formalized on `FLRWSpacetime` with scale
 factor a(t) and spatial curvature k [51], evaluating all FLRW Christoffel symbols, Ricci
-components, scalar curvature, and Einstein tensor from the coordinate metric [52], proving
+components, scalar curvature, and Einstein tensor from the coordinate metric [52][84], proving
 equivalence with the Friedmann equations for a comoving perfect fluid with arbitrary speed of
 light c and gravitational constant G [53][81], and bridging directly to Physlib's `Cosmology.FLRW`
 [54].
@@ -183,8 +183,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
    `conformalRescaleMetricInv`, `conformalMetric`
 5. PhyslibAlpha/Relativity/Metrics/NullVector.lean — `NullVector`, `nullVector_conformal_iff`
 6. PhyslibAlpha/Relativity/Tensors/RiemannTensor.lean — `RiemannTensor`, `RiemannTensor.ext`,
-   `skew_first`, `zero_of_repeated_first`, `zero_of_repeated_last`, `swap_mixed`,
-   `frameKretschmannScalar`, `flat`
+   `skew_first`, `zero_of_repeated_first`, `zero_of_repeated_last`, `swap_mixed`, `flat`
 7. PhyslibAlpha/Relativity/Tensors/RicciTensor.lean — `ricci`, `ricci_symm`, `ricci_of_diag`,
    `ricci_flat`
 8. PhyslibAlpha/Relativity/Metrics/MetricTrace.lean — `metricTrace`, `metricTrace_diag`,
@@ -219,7 +218,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `geodesic_ivp_exists`, `geodesic_ivp_exists_curve`, `geodesic_ivp_unique`,
     `GeodesicSystem.flat`, `geodesicField_zero`, `flat_geodesic`
 19. PhyslibAlpha/Relativity/General/InitialData/Basic.lean — `InitialData`,
-    `InitialData.covariantDerivTensor2`, `InitialData.momentumConstraint`,
+    `InitialData.momentumConstraint`,
     `InitialData.hamiltonianConstraint`, `InitialData.IsVacuumData`,
     `InitialData.hamiltonianConstraint_eq_ricciScalar_of_K_zero`,
     `InitialData.hamiltonianConstraint_eq_of_trace_zero`
@@ -354,8 +353,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
 52. PhyslibAlpha/Cosmology/FLRW/Christoffel.lean — `FLRWSpacetime.christoffel`,
     `FLRWSpacetime.christoffelDeriv`, `FLRWSpacetime.christoffel_eq`,
     `FLRWSpacetime.eventually_christoffel_eq`, `FLRWSpacetime.pd_christoffel_eq_deriv`,
-    `FLRWSpacetime.riemann_eq_data`, `FLRWSpacetime.ricciTensor`,
-    `FLRWSpacetime.ricciScalar`, `FLRWSpacetime.einsteinTensor`
+    `FLRWSpacetime.riemann_eq_data`
 53. PhyslibAlpha/Cosmology/FLRW/PerfectFluid.lean —
     `FLRWSpacetime.einsteinTensor_00_iff_friedmann`,
     `FLRWSpacetime.einsteinTensor_spatial_iff_friedmann`,
@@ -498,6 +496,12 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `MassiveGravityTheory.massSq`, `MassiveGravityTheory.propagatorCoupling`,
     `MassiveGravityTheory.generalRelativity`, `MassiveGravityTheory.fierzPauli`
 81. PhyslibAlpha/Relativity/Tensors/PerfectFluidStressEnergy.lean — `perfectFluidStressEnergy`
+82. PhyslibAlpha/Relativity/General/FrameKretschmann.lean —
+    `RiemannTensor.frameKretschmannScalar`
+83. PhyslibAlpha/Relativity/Metrics/CovariantDerivTensor2.lean —
+    `InitialData.covariantDerivTensor2`
+84. PhyslibAlpha/Cosmology/FLRW/Curvature.lean — `FLRWSpacetime.ricciTensor`,
+    `FLRWSpacetime.ricciScalar`, `FLRWSpacetime.einsteinTensor`
 
 ## References
 

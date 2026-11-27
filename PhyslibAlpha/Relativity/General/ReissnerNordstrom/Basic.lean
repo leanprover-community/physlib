@@ -111,6 +111,12 @@ noncomputable def maxwellStressEnergyGaussian (M : MetricTensor 4) (F : Tensor2 
     Tensor2 4 :=
   fun i j => (1 / (4 * Real.pi)) * GeneralRelativity.maxwellStressEnergy M F i j
 
+/-- The Gaussian-unit Maxwell stress-energy is the Heaviside–Lorentz tensor scaled by
+`1 / (4π)`. -/
+lemma maxwellStressEnergyGaussian_eq_smul (M : MetricTensor 4) (F : Tensor2 4) :
+    maxwellStressEnergyGaussian M F =
+      (1 / (4 * Real.pi)) • GeneralRelativity.maxwellStressEnergy M F := rfl
+
 namespace ReissnerNordstromSpacetime
 
 /-- The Reissner–Nordström radial metric function `f(r) = 1 - 2 M / r + Q² / r²`. -/
@@ -300,12 +306,16 @@ lemma maxwellStressEnergy_trace_zero (S : ReissnerNordstromSpacetime) (x : Fin 4
       (maxwellStressEnergyGaussian (S.toStaticSpherical.metricTensor x hr hf hsin)
         (S.coulombFieldStrength (x 1))) = 0 := by
   have hf' : S.toStaticSpherical.metricFn (x 1) ≠ 0 := hf
-  have hsmul := metricTrace_smul (S.toStaticSpherical.metricTensor x hr hf' hsin)
-    (1 / (4 * Real.pi))
-    (GeneralRelativity.maxwellStressEnergy (S.toStaticSpherical.metricTensor x hr hf' hsin)
-      (S.coulombFieldStrength (x 1)))
-  unfold maxwellStressEnergyGaussian
-  rw [hsmul, GeneralRelativity.maxwellStressEnergy_trace_zero, mul_zero]
+  have hmain : metricTrace (S.toStaticSpherical.metricTensor x hr hf' hsin)
+      ((1 / (4 * Real.pi)) • GeneralRelativity.maxwellStressEnergy
+        (S.toStaticSpherical.metricTensor x hr hf' hsin)
+          (S.coulombFieldStrength (x 1))) = 0 := by
+    change metricTrace (S.toStaticSpherical.metricTensor x hr hf' hsin)
+      (fun i j => (1 / (4 * Real.pi)) *
+        GeneralRelativity.maxwellStressEnergy (S.toStaticSpherical.metricTensor x hr hf' hsin)
+          (S.coulombFieldStrength (x 1)) i j) = 0
+    rw [metricTrace_smul, GeneralRelativity.maxwellStressEnergy_trace_zero, mul_zero]
+  simpa [maxwellStressEnergyGaussian_eq_smul] using hmain
 
 /-- Field equations of the electrovacuum Reissner–Nordström solution, obtained from the coordinate
 curvature of `S.metric`: `G_{ij} = 8 π T^{EM}_{ij}` at every coordinate index `(i, j)`. -/

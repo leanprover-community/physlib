@@ -6,7 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import Physlib.Relativity.SpeedOfLight
-public import PhyslibAlpha.Cosmology.FLRW.Christoffel
+public import PhyslibAlpha.Cosmology.FLRW.Curvature
 public import PhyslibAlpha.Relativity.General.GravitationalConstant
 public import PhyslibAlpha.Relativity.Tensors.PerfectFluidStressEnergy
 import Mathlib.Tactic.FieldSimp

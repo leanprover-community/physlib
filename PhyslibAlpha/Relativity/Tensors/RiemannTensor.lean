@@ -30,8 +30,6 @@ is derived from the other two rather than assumed.
   antisymmetry in the last pair.
 - `RiemannTensor.zero_of_repeated_first`, `RiemannTensor.zero_of_repeated_last`,
   `RiemannTensor.swap_mixed` : vanishing and mixed-swap identities.
-- `RiemannTensor.frameKretschmannScalar` : sum of squared orthonormal-frame curvature components
-  (matching the Lorentzian Kretschmann scalar when odd-time-index components vanish).
 - `RiemannTensor.flat`, `RiemannTensor.flat_comp` : flat curvature tensor.
 
 ## iii. Table of contents
@@ -60,7 +58,7 @@ namespace GeneralRelativity
 ## A. The Riemann curvature tensor
 
 An algebraic `RiemannTensor n` carries last-pair antisymmetry, pair-exchange symmetry, and the
-first Bianchi identity, inducing the full symmetry relations and Kretschmann scalar.
+first Bianchi identity, inducing the full component symmetry relations.
 
 -/
 
@@ -121,14 +119,6 @@ lemma zero_of_repeated_last (i j k : Fin n) : R.comp i j k k = 0 := by
 lemma swap_mixed (i j k l : Fin n) : R.comp i j k l = R.comp j i l k := by
   rw [R.skew_first i j k l, R.skew_last j i k l]
   ring
-
-/-- Sum of squared orthonormal-frame curvature components `∑_{a,b,c,d} R_{abcd}²`. In a Lorentzian
-orthonormal frame of signature `(-, +, +, +)`, `R_{abcd} R^{abcd}` weights components with an odd
-number of temporal indices by `-1`, so this expression coincides with the Lorentzian Kretschmann
-scalar whenever odd-time-index (gravitomagnetic) components vanish (such as purely electric static
-curvature), as well as in any Riemannian orthonormal frame. -/
-noncomputable def frameKretschmannScalar (R : RiemannTensor 4) : ℝ :=
-  ∑ i, ∑ j, ∑ l, ∑ m, R.comp i j l m * R.comp i j l m
 
 /-!
 

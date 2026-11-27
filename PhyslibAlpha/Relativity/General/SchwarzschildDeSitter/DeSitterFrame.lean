@@ -5,6 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
+public import PhyslibAlpha.Relativity.General.FrameKretschmann
 public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.Basic
 public import PhyslibAlpha.Relativity.Metrics.CurvatureDerivatives
 import Mathlib.Tactic.FieldSimp
