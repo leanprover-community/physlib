@@ -5,9 +5,10 @@ Authors: Daniel Leonforte
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.Tactic.Variable
+public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
+public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Physlib.Meta.TODO.Basic
+public import Physlib.ProbabilisticTheory.CStarAlgebra.CompletelyPositive
 /-!
 
 # The Hilbert space of a quantum system
@@ -32,14 +33,22 @@ Accepting it records the expanded form, which Lean then checks if the instances 
 A concrete system is given by its type, for example `Qubit`, on which these instances are found
 directly.
 
+The bounded operators `𝓑(H)` on a Hilbert space `H` form a C⋆-algebra. Its self-adjoint elements
+are the bounded observables of the system. A quantum channel between two systems is a completely
+positive channel between their bounded operators.
+
 ## ii. Key results
 
 - `QuantumHilbertSpace` : the instances making a type a complex Hilbert space, the space of
   states of a quantum system.
+- `𝓑(H)` : the bounded operators on a Hilbert space.
+- `ProbabilisticTheory.quantum` : the probabilistic theory of the bounded observables.
+- `QuantumMechanics.QuantumChannel` : the quantum channels between two quantum systems.
 
 ## iii. Table of contents
 
 - A. The variable alias `QuantumHilbertSpace`
+- B. The quantum theory of bounded observables
 
 ## iv. References
 
@@ -48,6 +57,8 @@ directly.
 -/
 
 @[expose] public section
+
+open ProbabilisticTheory
 
 namespace QuantumMechanics
 
@@ -66,10 +77,28 @@ structure QuantumHilbertSpace (HS : Type*) [NormedAddCommGroup HS] [InnerProduct
 TODO "Define kets and bras of a Hilbert space of states in a namespace `QuantumHilbertSpace`,
   e.g. `QuantumHilbertSpace.Ket` and `QuantumHilbertSpace.Bra`, with bra-ket notation."
 
-TODO "Associate to a Hilbert space of states the `ProbabilisticTheory` of its bounded operators,
-  giving states, effects and channels."
-
 TODO "Restate `QuantumSystem` as a Hilbert space of states, given via `QuantumHilbertSpace`,
   together with a choice of Hamiltonian."
+
+/-!
+
+## B. The quantum theory of bounded observables
+
+-/
+
+/-- The bounded operators `𝓑(H)` on a Hilbert space `H`. -/
+scoped notation "𝓑(" H ")" => H →L[ℂ] H
+
+variable? (H K : Type*) [QuantumHilbertSpace H] [QuantumHilbertSpace K] =>
+  (H K : Type*) [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+  [NormedAddCommGroup K] [InnerProductSpace ℂ K] [CompleteSpace K]
+
+/-- The quantum theory whose observables are the self-adjoint bounded operators on the Hilbert
+space `H`. -/
+noncomputable abbrev _root_.ProbabilisticTheory.quantum : ProbabilisticTheory :=
+  ofCStarAlgebra 𝓑(H)
+
+/-- A quantum channel is a completely positive channel from `quantum H` to `quantum K`. -/
+abbrev QuantumChannel := {Φ : Channel (quantum H) (quantum K) // Φ.IsCompletelyPositive}
 
 end QuantumMechanics
