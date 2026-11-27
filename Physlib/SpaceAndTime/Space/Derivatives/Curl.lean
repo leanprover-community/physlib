@@ -10,6 +10,7 @@ public import Mathlib.MeasureTheory.Integral.CurveIntegral.Poincare
 public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Physlib.SpaceAndTime.Space.CrossProduct
 public import Physlib.Mathematics.LeviCivita.Basic
+public import Physlib.Mathematics.Calculus.ParametricIntegration
 public import Mathlib.Tactic.Cases
 
 /-!
@@ -28,6 +29,11 @@ We also prove some basic vector-identities involving of the curl operator.
 - `curl` : The curl operator on functions from `Space 3` to `EuclideanSpace ℝ (Fin 3)`.
 - `distCurl` : The curl operator on distributions from `Space 3` to `EuclideanSpace ℝ (Fin 3)`.
 - `div_of_curl_eq_zero` : The divergence of the curl of a function is zero.
+- `exists_curl_of_div_zero` : A divergence-free `C¹` vector field admits a differentiable
+  vector potential whose curl equals the field.
+- `exists_curl_of_div_zero_time_dependent` : For any finite or infinite differentiability order
+  `n ≥ 1`, a jointly `Cⁿ` time-dependent vector field that is divergence-free at each time admits
+  a vector potential that is jointly `Cⁿ` in time and space.
 - `distCurl_distGrad_eq_zero` : The curl of the gradient of a distribution is zero.
 - `curl_eq_sum_leviCivitaSymbol` : The components of the curl as a contraction with the
   Levi-Civita symbol.
@@ -268,10 +274,14 @@ then we construct
 ```
 ∫ t in 0..1, (t • x) ⨯ f (t • x)
 ```
-and show that the curl of this is equal to `f`.
+and show that the negative curl of this is equal to `f`.
 
 We call the integrand of this function the `homotopyOperatorIntegrand`.
 We build API around this to help in our proof.
+
+We extend this result to time-dependent vector fields, preserving joint
+continuous differentiability in time and space for any finite or infinite
+differentiability order `n ≥ 1`.
 
 -/
 open Matrix MeasureTheory
@@ -543,8 +553,35 @@ lemma exists_curl_of_div_zero (f : Space → EuclideanSpace ℝ (Fin 3)) (hf : C
   exact ⟨eq_neg_curl_of_div_zero f hf hdiv,
     fun x => (hasFDerivAt_intervalIntegral_homotopyOperatorIntegrand hf x).differentiableAt⟩
 
-TODO "Generalize the statement that a div-free field is a curl
-  to time-dependent fields."
+/-- For any finite or infinite differentiability order `n ≥ 1`, a time-dependent
+vector field that is jointly `Cⁿ` in time and space and divergence-free at each
+time admits a jointly `Cⁿ` vector potential whose spatial curl equals the field
+at each time. -/
+lemma exists_curl_of_div_zero_time_dependent {n : ENat} (hn : 1 ≤ n)
+    (f : Time → Space → EuclideanSpace ℝ (Fin 3))
+    (hf : ContDiff ℝ n ↿f)
+    (hdiv : ∀ t : Time, ∇ ⬝ (f t) = 0) :
+    ∃ g : Time → Space → EuclideanSpace ℝ (Fin 3),
+      (∀ t : Time, f t = curl (g t)) ∧ ContDiff ℝ n ↿g := by
+  have hf₁ : ContDiff ℝ 1 ↿f :=
+    hf.of_le (by exact_mod_cast hn)
+  let A : Time → Space → EuclideanSpace ℝ (Fin 3) :=
+    fun t x => ∫ (s : ℝ) in 0..1,
+      homotopyOperatorIntegrand (f t) x s ∂volume
+  have hA : ContDiff ℝ n ↿A := by
+    apply contDiff_iff_forall_nat_le.mpr
+    intro k hk
+    have hfk := contDiff_iff_forall_nat_le.mp hf k hk
+    dsimp only [A]
+    apply contDiff_parametric_intervalIntegral_of_contDiff
+    unfold homotopyOperatorIntegrand
+    fun_prop
+  have hA₁ : ContDiff ℝ 1 ↿A :=
+    hA.of_le (by exact_mod_cast hn)
+  refine ⟨-A, fun t => ?_, hA.neg⟩
+  change f t = curl (-(A t))
+  rw [curl_neg (A t) (by fun_prop)]
+  exact eq_neg_curl_of_div_zero (f t) (by fun_prop) (hdiv t)
 
 /-!
 
