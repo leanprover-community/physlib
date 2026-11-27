@@ -147,6 +147,7 @@ public import Physlib.FluidDynamics.ThermodynamicCauchyFlow.Isentropic
 public import Physlib.LatticeQFT.Basic
 public import Physlib.Mathematics.Calculus.AdjFDeriv
 public import Physlib.Mathematics.Calculus.Divergence
+public import Physlib.Mathematics.Calculus.Exponential
 public import Physlib.Mathematics.Calculus.Gradient
 public import Physlib.Mathematics.Calculus.ParametricIntegration
 public import Physlib.Mathematics.Calculus.PartialDerivatives
@@ -310,7 +311,9 @@ public import Physlib.ProbabilisticTheory.Basic
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Basic
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Channel
 public import Physlib.ProbabilisticTheory.CStarAlgebra.CompletelyPositive
+public import Physlib.ProbabilisticTheory.CStarAlgebra.Moment
 public import Physlib.ProbabilisticTheory.CStarAlgebra.State
+public import Physlib.ProbabilisticTheory.CStarAlgebra.Statistics
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Traciality
 public import Physlib.ProbabilisticTheory.Channel.Basic
 public import Physlib.ProbabilisticTheory.Channel.Convex
