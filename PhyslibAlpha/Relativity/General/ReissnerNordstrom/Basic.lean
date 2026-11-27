@@ -51,8 +51,9 @@ this module proves:
   `ReissnerNordstromSpacetime.toCoordinateMetric`, `ReissnerNordstromSpacetime.metric`,
   `ReissnerNordstromSpacetime.metricInv` : Reissner–Nordström spacetime structure, metric function,
   and coordinate metric.
-- `ReissnerNordstromSpacetime.coulombFieldStrength`, `maxwellStressEnergyGaussian` : radial electric
-  field strength and Gaussian-unit Maxwell stress-energy.
+- `ReissnerNordstromSpacetime.coulombFieldStrength` : radial electric field strength, which feeds
+  the Gaussian-unit Maxwell stress-energy `maxwellStressEnergyGaussian` of
+  `Tensors/MaxwellStressEnergy.lean`.
 - `ReissnerNordstromSpacetime.ricciTensor`, `ReissnerNordstromSpacetime.ricciScalar`,
   `ReissnerNordstromSpacetime.maxwellStressEnergy_trace_zero`,
   `ReissnerNordstromSpacetime.einsteinTensor_eq_maxwell` : coordinate-metric verification of the
@@ -104,18 +105,6 @@ structure ReissnerNordstromSpacetime where
   M : ℝ
   /-- Electric charge parameter `Q`. -/
   Q : ℝ
-
-/-- Electromagnetic stress-energy tensor `T^{EM}_{ij} = (1 / (4π)) (F_{ik} F_j{}^k - (1/4) g_{ij}
-F_{ab} F^{ab})` in Gaussian-cgs/geometrized units (`G = c = 1`). -/
-noncomputable def maxwellStressEnergyGaussian (M : MetricTensor 4) (F : Tensor2 4) :
-    Tensor2 4 :=
-  fun i j => (1 / (4 * Real.pi)) * GeneralRelativity.maxwellStressEnergy M F i j
-
-/-- The Gaussian-unit Maxwell stress-energy is the Heaviside–Lorentz tensor scaled by
-`1 / (4π)`. -/
-lemma maxwellStressEnergyGaussian_eq_smul (M : MetricTensor 4) (F : Tensor2 4) :
-    maxwellStressEnergyGaussian M F =
-      (1 / (4 * Real.pi)) • GeneralRelativity.maxwellStressEnergy M F := rfl
 
 namespace ReissnerNordstromSpacetime
 
