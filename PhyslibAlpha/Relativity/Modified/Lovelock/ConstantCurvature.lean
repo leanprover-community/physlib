@@ -121,57 +121,60 @@ lemma ricciSq_constantCurvature {n : ℕ} (κ : ℝ) :
   simp_rw [hinner]
   simp [Finset.sum_const, Fintype.card_fin]
 
+/-- Inner curvature contraction of a constant-curvature model:
+`∑ c d, R^{cd}{}_{ab} R_{ab}{}^{cd}` equals `0` when `a = b` and `2 κ²` otherwise. -/
+private lemma rUp_inner_constantCurvature {n : ℕ} (κ : ℝ) (a b : Fin n) :
+    (∑ c : Fin n, ∑ d : Fin n,
+      (constantCurvature n κ).rUp c d a b * (constantCurvature n κ).rUp a b c d)
+    = if a = b then 0 else 2 * κ ^ 2 := by
+  by_cases hab : a = b
+  · subst b
+    rw [ite_eq_left rfl]
+    apply Finset.sum_eq_zero; intro c _
+    apply Finset.sum_eq_zero; intro d _
+    simp only [constantCurvature, ite_true]
+    ring
+  · rw [ite_eq_right hab]
+    rw [← Finset.add_sum_erase _ _ (Finset.mem_univ a)]
+    have ha : (∑ d : Fin n,
+        (constantCurvature n κ).rUp a d a b * (constantCurvature n κ).rUp a b a d) = κ ^ 2 := by
+      rw [Finset.sum_eq_single b]
+      · simp only [constantCurvature, ite_true, ite_eq_right hab, ite_eq_right (Ne.symm hab)]
+        ring
+      · intro d _ hd
+        simp only [constantCurvature, ite_true, ite_eq_right hab, ite_eq_right (Ne.symm hab),
+          ite_eq_right hd]
+        ring
+      · intro hb; exact (hb (Finset.mem_univ b)).elim
+    have hb : (∑ c ∈ Finset.univ.erase a,
+        ∑ d : Fin n, (constantCurvature n κ).rUp c d a b * (constantCurvature n κ).rUp a b c d)
+        = κ ^ 2 := by
+      rw [Finset.sum_eq_single b]
+      · rw [Finset.sum_eq_single a]
+        · simp only [constantCurvature, ite_true, ite_eq_right hab, ite_eq_right (Ne.symm hab)]
+          ring
+        · intro d _ hd
+          simp only [constantCurvature, ite_true, ite_eq_right hab, ite_eq_right (Ne.symm hab),
+            ite_eq_right hd, ite_eq_right (Ne.symm hd)]
+          ring
+        · intro ha; exact (ha (Finset.mem_univ a)).elim
+      · intro c hc_mem hc
+        have hca : c ≠ a := Finset.ne_of_mem_erase hc_mem
+        apply Finset.sum_eq_zero; intro d _
+        simp only [constantCurvature, ite_true, ite_eq_right hab, ite_eq_right (Ne.symm hab),
+          ite_eq_right hc, ite_eq_right (Ne.symm hc), ite_eq_right hca, ite_eq_right (Ne.symm hca)]
+        ring
+      · intro hb
+        exfalso
+        exact hb (Finset.mem_erase.mpr ⟨Ne.symm hab, Finset.mem_univ b⟩)
+    rw [ha, hb]
+    ring
+
 /-- Riemann-square of a constant-curvature model: `R_{abcd} R^{abcd} = 2 n (n - 1) κ²`. -/
 lemma riemannSq_constantCurvature {n : ℕ} (κ : ℝ) :
     (constantCurvature n κ).riemannSq = 2 * (n : ℝ) * ((n : ℝ) - 1) * κ ^ 2 := by
   simp only [AlgebraicCurvature.riemannSq]
-  have hinner : ∀ a b : Fin n,
-      (∑ c : Fin n, ∑ d : Fin n,
-        (constantCurvature n κ).rUp c d a b * (constantCurvature n κ).rUp a b c d)
-      = if a = b then 0 else 2 * κ ^ 2 := by
-    intro a b
-    by_cases hab : a = b
-    · subst b
-      rw [ite_eq_left rfl]
-      apply Finset.sum_eq_zero; intro c _
-      apply Finset.sum_eq_zero; intro d _
-      simp only [constantCurvature, ite_true]
-      ring
-    · rw [ite_eq_right hab]
-      rw [← Finset.add_sum_erase _ _ (Finset.mem_univ a)]
-      have ha : (∑ d : Fin n,
-          (constantCurvature n κ).rUp a d a b * (constantCurvature n κ).rUp a b a d) = κ ^ 2 := by
-        rw [Finset.sum_eq_single b]
-        · simp only [constantCurvature, ite_true, ite_eq_right hab, ite_eq_right (Ne.symm hab)]
-          ring
-        · intro d _ hd
-          simp only [constantCurvature, ite_true, ite_eq_right hab, ite_eq_right (Ne.symm hab), ite_eq_right hd]
-          ring
-        · intro hb; exact (hb (Finset.mem_univ b)).elim
-      have hb : (∑ c ∈ Finset.univ.erase a,
-          ∑ d : Fin n, (constantCurvature n κ).rUp c d a b * (constantCurvature n κ).rUp a b c d)
-          = κ ^ 2 := by
-        rw [Finset.sum_eq_single b]
-        · rw [Finset.sum_eq_single a]
-          · simp only [constantCurvature, ite_true, ite_eq_right hab, ite_eq_right (Ne.symm hab)]
-            ring
-          · intro d _ hd
-            simp only [constantCurvature, ite_true, ite_eq_right hab, ite_eq_right (Ne.symm hab), ite_eq_right hd,
-              ite_eq_right (Ne.symm hd)]
-            ring
-          · intro ha; exact (ha (Finset.mem_univ a)).elim
-        · intro c hc_mem hc
-          have hca : c ≠ a := Finset.ne_of_mem_erase hc_mem
-          apply Finset.sum_eq_zero; intro d _
-          simp only [constantCurvature, ite_true, ite_eq_right hab, ite_eq_right (Ne.symm hab), ite_eq_right hc,
-            ite_eq_right (Ne.symm hc), ite_eq_right hca, ite_eq_right (Ne.symm hca)]
-          ring
-        · intro hb
-          exfalso
-          exact hb (Finset.mem_erase.mpr ⟨Ne.symm hab, Finset.mem_univ b⟩)
-      rw [ha, hb]
-      ring
-  simp_rw [hinner]
+  simp_rw [rUp_inner_constantCurvature κ]
   have htwo : ∀ a : Fin n, (∑ b : Fin n, (if a = b then 0 else 2 * κ ^ 2))
       = ((n : ℝ) - 1) * (2 * κ ^ 2) := by
     intro a

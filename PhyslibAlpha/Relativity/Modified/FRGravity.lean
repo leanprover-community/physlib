@@ -156,7 +156,7 @@ lemma trace_algebraicFieldEqn (T : FRTheory) {n : ℕ} (M : MetricTensor n) (R :
     (fun i j => T.df (ricciScalar M R) * ricci M R i j)
     (fun i j => (1 / 2) * T.f (ricciScalar M R) * M.g i j)
   have h3 := metricTrace_sub_fun M (fun i j => M.g i j * box) d2
-  have h4 := metricTrace_smul M (T.df (ricciScalar M R)) (ricci M R)
+  have h4 := metricTrace_smul_fun M (T.df (ricciScalar M R)) (ricci M R)
   have h5 := metricTrace_mul_g M box
   have h6 := metricTrace_mul_g M ((1 / 2) * T.f (ricciScalar M R))
   rw [h1, h2, h3, hcomm, h5, h6, h4, ← ricciScalar_eq_metricTrace, hbox]

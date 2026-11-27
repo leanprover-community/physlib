@@ -115,9 +115,13 @@ noncomputable def metricInv (S : Metric) (x : Fin 4 → ℝ) : Tensor2 4 :=
       else ((x 1) ^ 2 * Real.sin (x 2) ^ 2)⁻¹
     else 0
 
+/-- Off-diagonal entries of the static spherically symmetric inverse metric vanish. -/
+@[simp] lemma metricInv_offdiag (S : Metric) (x : Fin 4 → ℝ) {i j : Fin 4} (hij : i ≠ j) :
+    S.metricInv x i j = 0 := by
+  simp [metricInv, hij]
+
 /-- Symmetry of the static spherically symmetric metric tensor. -/
-lemma metric_symm (S : Metric) (x : Fin 4 → ℝ) :
-    IsSymm (S.metric x) := by
+lemma metric_symm (S : Metric) (x : Fin 4 → ℝ) : IsSymm (S.metric x) := by
   ext i j
   fin_cases i <;> fin_cases j <;> simp [Matrix.transpose_apply, metric]
 

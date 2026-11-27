@@ -303,9 +303,8 @@ lemma christoffel_eq (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠
     ∀ m i j, CoordinateCurvature.christoffel S.metric S.metricInv x m i j =
       S.christoffel x m i j := by
   intro m i j
-  have hdiag : ∀ l : Fin 4, l ≠ m → S.metricInv x m l = 0 := by
-    intro l hl
-    fin_cases m <;> fin_cases l <;> simp_all [metricInv]
+  have hdiag : ∀ l : Fin 4, l ≠ m → S.metricInv x m l = 0 :=
+    fun l hl => S.metricInv_offdiag x (Ne.symm hl)
   rw [christoffel_diag S.metric S.metricInv x m i j hdiag]
   fin_cases m <;> fin_cases i <;> fin_cases j <;>
     simp [christoffel, metricInv, pd_t S x ha_diff, pd_r S x hkr, pd_theta S x] <;>

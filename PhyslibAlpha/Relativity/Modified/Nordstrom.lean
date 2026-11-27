@@ -174,8 +174,8 @@ lemma NordstromSpacetime.christoffel_eq (N : NordstromSpacetime) (x : Fin 4 → 
     intro l hl
     fin_cases k <;> fin_cases l <;> simp_all [NordstromSpacetime.metricInv,
       conformalRescaleMetricInv, minkowskiMetric4]
-  rw [show N.toCoordinateMetric.christoffel x k i j =
-      CoordinateCurvature.christoffel N.metric N.metricInv x k i j from rfl]
+  simp only [CoordinateMetric.christoffel_apply, NordstromSpacetime.toCoordinateMetric_g,
+    NordstromSpacetime.toCoordinateMetric_ginv]
   rw [christoffel_diag N.metric N.metricInv x k i j hdiag]
   simp only [pd_conformal_eta N x hd, NordstromSpacetime.metricInv, conformalRescaleMetricInv,
     NordstromSpacetime.christoffel]

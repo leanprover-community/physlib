@@ -165,6 +165,36 @@ lemma hasDerivAt_deriv_flrwScaleFactorOfReal (c : SpeedOfLight) (U : Cosmology.F
       ring
   exact hcomp.congr_of_eventuallyEq heq
 
+/-- Rescaling `τ = c t` between the coordinate-time and physical-time first-order Friedmann
+equations. -/
+private lemma coordinateTime_firstOrder_iff (c : SpeedOfLight) (Λ g ρ k adot a : ℝ)
+    (hc : (c : ℝ) ≠ 0) (ha : a ≠ 0) :
+    (adot / (c : ℝ) / a) ^ 2
+        = 8 * Real.pi * g / (3 * (c : ℝ) ^ 2) * ρ - k / a ^ 2 + Λ / 3 ↔
+      (adot / a) ^ 2 = 8 * Real.pi * g / 3 * ρ - k * (c : ℝ) ^ 2 / a ^ 2 + Λ * (c : ℝ) ^ 2 / 3 := by
+  constructor <;> intro h
+  · have := congrArg (· * (c : ℝ) ^ 2) h
+    field_simp [hc, ha] at this ⊢
+    linarith
+  · have := congrArg (· / (c : ℝ) ^ 2) h
+    field_simp [hc, ha] at this ⊢
+    linarith
+
+/-- Rescaling `τ = c t` between the coordinate-time and physical-time second-order Friedmann
+equations. -/
+private lemma coordinateTime_secondOrder_iff (c : SpeedOfLight) (Λ g ρ p addot a : ℝ)
+    (hc : (c : ℝ) ≠ 0) (ha : a ≠ 0) :
+    addot / (c : ℝ) ^ 2 / a
+        = -(4 * Real.pi * g / (3 * (c : ℝ) ^ 2)) * (ρ + 3 * p / (c : ℝ) ^ 2) + Λ / 3 ↔
+      addot / a = -(4 * Real.pi * g / 3) * (ρ + 3 * p / (c : ℝ) ^ 2) + Λ * (c : ℝ) ^ 2 / 3 := by
+  constructor <;> intro h
+  · have := congrArg (· * (c : ℝ) ^ 2) h
+    field_simp [hc, ha] at this ⊢
+    linarith
+  · have := congrArg (· / (c : ℝ) ^ 2) h
+    field_simp [hc, ha] at this ⊢
+    linarith
+
 /-- The FLRW Einstein field equations for a comoving cosmic fluid with speed of light `c` and
 gravitational constant `G` are equivalent to the first- and second-order Friedmann equations of
 `Physlib.Cosmology.FLRW`. -/
@@ -206,32 +236,11 @@ lemma einsteinTensor_ofCosmology_iff_friedmann (c : SpeedOfLight) (U : Cosmology
     Cosmology.FLRW.FriedmannEquation.SecondOrderFriedmann, FLRWSpacetime.ofCosmology,
     ha0_eq, hd1_eq, hd2_eq]
   have hau : U.a t ≠ 0 := U.a_ne_zero ht
-  have h1 : (Time.deriv U.a t / (c : ℝ) / U.a t) ^ 2
-        = 8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2) * F.ρ t
-          - U.geometry.curvature / U.a t ^ 2 + Λ / 3
-      ↔ (Time.deriv U.a t / U.a t) ^ 2
-        = 8 * Real.pi * G.val / 3 * F.ρ t
-          - U.geometry.curvature * (c : ℝ) ^ 2 / U.a t ^ 2 + Λ * (c : ℝ) ^ 2 / 3 := by
-    constructor <;> intro h
-    · have := congrArg (· * (c : ℝ) ^ 2) h
-      field_simp [hc, hau] at this ⊢
-      linarith
-    · have := congrArg (· / (c : ℝ) ^ 2) h
-      field_simp [hc, hau] at this ⊢
-      linarith
-  have h2 : Time.deriv (Time.deriv U.a) t / (c : ℝ) ^ 2 / U.a t
-        = -(4 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * (F.ρ t + 3 * F.p t / (c : ℝ) ^ 2) + Λ / 3
-      ↔ Time.deriv (Time.deriv U.a) t / U.a t
-        = -(4 * Real.pi * G.val / 3) * (F.ρ t + 3 * F.p t / (c : ℝ) ^ 2)
-          + Λ * (c : ℝ) ^ 2 / 3 := by
-    constructor <;> intro h
-    · have := congrArg (· * (c : ℝ) ^ 2) h
-      field_simp [hc, hau] at this ⊢
-      linarith
-    · have := congrArg (· / (c : ℝ) ^ 2) h
-      field_simp [hc, hau] at this ⊢
-      linarith
-  exact and_congr h1 h2
+  exact and_congr
+    (coordinateTime_firstOrder_iff c Λ G.val (F.ρ t) U.geometry.curvature (Time.deriv U.a t)
+      (U.a t) hc hau)
+    (coordinateTime_secondOrder_iff c Λ G.val (F.ρ t) (F.p t) (Time.deriv (Time.deriv U.a) t)
+      (U.a t) hc hau)
 
 /-- If the FLRW Einstein equations hold across the model's open time interval at a regular spatial
 chart point, then the model and cosmic fluid form a `Cosmology.FLRW.FriedmannSolution` (and hence

@@ -107,6 +107,26 @@ lemma einsteinTensor_00_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight) (Λ
   rw [hdiv]
   constructor <;> intro h <;> linarith
 
+/-- Algebraic core of the spatial Friedmann equation: given the first-order equation
+`(ȧ/a)² = 8πG ρ / (3 c²) - k/a² + Λ/3`, the spatial Einstein equation
+`-(2 ä/a + (ȧ/a)² + k/a²) + Λ = 8πG p / c⁴` is equivalent to the acceleration equation
+`ä/a = -4πG (ρ + 3p/c²) / (3 c²) + Λ/3`. -/
+private lemma spatial_coef_eq (c : SpeedOfLight) (Λ G ρ p a adot addot k : ℝ)
+    (hc : (c : ℝ) ≠ 0)
+    (hf1 : (adot / a) ^ 2 = 8 * Real.pi * G / (3 * (c : ℝ) ^ 2) * ρ - k / a ^ 2 + Λ / 3) :
+    -(2 * (addot / a) + (adot / a) ^ 2 + k / a ^ 2) + Λ = 8 * Real.pi * G / (c : ℝ) ^ 4 * p ↔
+      addot / a = -(4 * Real.pi * G / (3 * (c : ℝ) ^ 2)) * (ρ + 3 * p / (c : ℝ) ^ 2) + Λ / 3 := by
+  have hrhs : -(4 * Real.pi * G / (3 * (c : ℝ) ^ 2)) * (ρ + 3 * p / (c : ℝ) ^ 2)
+      = -(4 * Real.pi * G / (3 * (c : ℝ) ^ 2) * ρ) - 4 * Real.pi * G / (c : ℝ) ^ 4 * p := by
+    field_simp [hc]
+    ring
+  have h8 : 8 * Real.pi * G / (3 * (c : ℝ) ^ 2) * ρ
+      = 2 * (4 * Real.pi * G / (3 * (c : ℝ) ^ 2) * ρ) := by ring
+  have h8p : 8 * Real.pi * G / (c : ℝ) ^ 4 * p
+      = 2 * (4 * Real.pi * G / (c : ℝ) ^ 4 * p) := by ring
+  rw [hrhs]
+  constructor <;> intro h <;> linarith
+
 /-- Given the first-order Friedmann equation, the spatial diagonal Einstein equation `(1, 1)` is
 equivalent to the second-order Friedmann acceleration equation in coordinate time `τ = c t`. -/
 lemma einsteinTensor_spatial_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight) (Λ : ℝ)
@@ -136,17 +156,8 @@ lemma einsteinTensor_spatial_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight
     · exact mul_right_cancel₀ hg11 (by linear_combination h)
     · linear_combination (S.a (x 0) ^ 2 / (1 - S.k * x 1 ^ 2)) * h
   rw [hfac]
-  have hrhs : -(4 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * (ρ + 3 * p / (c : ℝ) ^ 2)
-      = -(4 * Real.pi * G.val / (3 * (c : ℝ) ^ 2) * ρ)
-        - 4 * Real.pi * G.val / (c : ℝ) ^ 4 * p := by
-    field_simp [hc]
-    ring
-  have h8 : 8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2) * ρ
-      = 2 * (4 * Real.pi * G.val / (3 * (c : ℝ) ^ 2) * ρ) := by ring
-  have h8p : 8 * Real.pi * G.val / (c : ℝ) ^ 4 * p
-      = 2 * (4 * Real.pi * G.val / (c : ℝ) ^ 4 * p) := by ring
-  rw [hrhs]
-  constructor <;> intro h <;> linarith
+  exact spatial_coef_eq c Λ G.val ρ p (S.a (x 0)) (deriv S.a (x 0))
+    (deriv (deriv S.a) (x 0)) S.k hc hf1
 
 /-- Einstein's equation `G_{ij} + Λ g_{ij} = (8 π G / c⁴) T_{ij}` for an FLRW spacetime and a
 comoving perfect fluid is equivalent to the first- and second-order Friedmann equations in
@@ -175,18 +186,9 @@ lemma einsteinTensor_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight) (Λ : 
     rw [S.einsteinTensor x ha hr hkr hsin ha_diff ha2 i j]
     have hcoef : -(2 * (deriv (deriv S.a) (x 0) / S.a (x 0))
         + (deriv S.a (x 0) / S.a (x 0)) ^ 2 + S.k / (S.a (x 0)) ^ 2) + Λ
-        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * p := by
-      have hrhs : -(4 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * (ρ + 3 * p / (c : ℝ) ^ 2)
-          = -(4 * Real.pi * G.val / (3 * (c : ℝ) ^ 2) * ρ)
-            - 4 * Real.pi * G.val / (c : ℝ) ^ 4 * p := by
-        field_simp [hc]
-        ring
-      have h8 : 8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2) * ρ
-          = 2 * (4 * Real.pi * G.val / (3 * (c : ℝ) ^ 2) * ρ) := by ring
-      have h8p : 8 * Real.pi * G.val / (c : ℝ) ^ 4 * p
-          = 2 * (4 * Real.pi * G.val / (c : ℝ) ^ 4 * p) := by ring
-      rw [hrhs] at hf2
-      linarith
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * p :=
+      (spatial_coef_eq c Λ G.val ρ p (S.a (x 0)) (deriv S.a (x 0)) (deriv (deriv S.a) (x 0))
+        S.k hc hf1).mpr hf2
     fin_cases i <;> fin_cases j <;> simp [metric, GeneralRelativity.perfectFluidStressEnergy]
     · have hrhs0 : 8 * Real.pi * G.val / (c : ℝ) ^ 4 * (ρ * (c : ℝ) ^ 2)
           = 3 * (8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2) * ρ) := by

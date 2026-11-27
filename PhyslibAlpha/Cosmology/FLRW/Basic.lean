@@ -117,6 +117,11 @@ noncomputable def metricInv (S : FLRWSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 
       else ((S.a (x 0)) ^ 2 * (x 1) ^ 2 * Real.sin (x 2) ^ 2)⁻¹
     else 0
 
+/-- Off-diagonal entries of the FLRW inverse metric vanish. -/
+@[simp] lemma metricInv_offdiag (S : FLRWSpacetime) (x : Fin 4 → ℝ) {i j : Fin 4}
+    (hij : i ≠ j) : S.metricInv x i j = 0 := by
+  simp [metricInv, hij]
+
 /-- Symmetry of `FLRWSpacetime.metric`. -/
 lemma metric_symm (S : FLRWSpacetime) (x : Fin 4 → ℝ) : IsSymm (S.metric x) := by
   ext i j

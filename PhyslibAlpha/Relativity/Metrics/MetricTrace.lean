@@ -87,13 +87,23 @@ lemma metricTrace_sub_fun {n : ℕ} (M : MetricTensor n) (A B : Tensor2 n) :
   rw [Finset.sum_congr rfl (fun i _ => h i), Finset.sum_sub_distrib]
 
 /-- `metricTrace` pulls out a scalar factor. -/
-lemma metricTrace_smul {n : ℕ} (M : MetricTensor n) (c : ℝ) (A : Tensor2 n) :
+lemma metricTrace_smul_fun {n : ℕ} (M : MetricTensor n) (c : ℝ) (A : Tensor2 n) :
     metricTrace M (fun i j => c * A i j) = c * metricTrace M A := by
   simp only [metricTrace]
   have h : ∀ i, (∑ j, M.ginv i j * (c * A i j)) = c * (∑ j, M.ginv i j * A i j) := by
     intro i
     rw [Finset.mul_sum]
     exact Finset.sum_congr rfl (fun j _ => by ring)
+  rw [Finset.sum_congr rfl (fun i _ => h i), ← Finset.mul_sum]
+
+/-- Scalar-multiple form of `metricTrace_smul_fun`. -/
+lemma metricTrace_smul {n : ℕ} (M : MetricTensor n) (c : ℝ) (A : Tensor2 n) :
+    metricTrace M (c • A) = c * metricTrace M A := by
+  simp only [metricTrace]
+  have h : ∀ i, (∑ j, M.ginv i j * (c • A) i j) = c * (∑ j, M.ginv i j * A i j) := by
+    intro i
+    rw [Finset.mul_sum]
+    exact Finset.sum_congr rfl fun j _ => by simp [smul_eq_mul]; ring
   rw [Finset.sum_congr rfl (fun i _ => h i), ← Finset.mul_sum]
 
 /-- `∑ i j, g^{ij} g_{ij} = n`, i.e. the trace of `g^{-1} g` is the dimension. -/
@@ -111,7 +121,7 @@ lemma sum_ginv_mul_g (M : MetricTensor n) :
 /-- Tracing a scalar multiple of the metric against itself yields `c * n`. -/
 lemma metricTrace_mul_g {n : ℕ} (M : MetricTensor n) (c : ℝ) :
     metricTrace M (fun i j => c * M.g i j) = c * (n : ℝ) := by
-  rw [metricTrace_smul]
+  rw [metricTrace_smul_fun]
   simp only [metricTrace]
   rw [sum_ginv_mul_g]
 
