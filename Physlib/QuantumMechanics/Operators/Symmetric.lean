@@ -186,7 +186,8 @@ lemma isUnbounded_of_dense_of_isSymmetric [CompleteSpace H] {E : Submodule ℂ H
     (mk E f).IsUnbounded :=
   ⟨hE, IsSymmetric.isClosable h hE⟩
 
-/-- Variant of `of_dense_of_isSymmetric` for an endomorphism satisfying `LinearMap.IsSymmetric`. -/
+/-- Variant of `isUnbounded_of_dense_of_isSymmetric` for an endomorphism
+satisfying `LinearMap.IsSymmetric`. -/
 lemma isUnbounded_of_dense_of_isSymmetric' [CompleteSpace H]
     {E : Submodule ℂ H} (hE : Dense (E : Set H)) {f : E →ₗ[ℂ] E} (h : f.IsSymmetric) :
     (mk E (E.subtype ∘ₗ f)).IsUnbounded :=
