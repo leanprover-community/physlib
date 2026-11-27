@@ -13,9 +13,9 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.Tactic.Ring
 
 /-!
-# Work and kinetic energy of a Newtonian system
+# Power in a Newtonian system
 
-The change in total kinetic energy equals the work done by the forces on the particles.
+The total power delivered to the particles is the time derivative of the system's kinetic energy.
 
 ## i. Overview
 
@@ -32,7 +32,7 @@ is interval integrable, its integral gives the change in total kinetic energy.
 
 ## iii. Table of contents
 
-- A. Total power and work
+- A. Total power and kinetic energy
 
 ## iv. References
 
@@ -50,7 +50,7 @@ open ReferenceFrame MeasureTheory
 variable {d : ℕ} (system : NewtonianSystem d)
 
 /-!
-## A. Total power and work
+## A. Total power and kinetic energy
 -/
 
 /-- The total power delivered by the internal and external forces at time `t`. -/

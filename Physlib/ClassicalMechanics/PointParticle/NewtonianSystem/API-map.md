@@ -70,7 +70,7 @@ satisfies the inverse-square equation r″(t) = −G M r(t) / ‖r(t)‖³ {1}. 
    `centerOfMass_eq_of_two_particles`
 10. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/BinaryStar.lean —
     `hasDerivAt_deriv_relativePosition_of_gravity`
-11. Physlib/ClassicalMechanics/PointParticle/NewtonianSystem/WorkEnergy.lean —
+11. Physlib/ClassicalMechanics/PointParticle/NewtonianSystem/Power.lean —
     `totalPower`, `hasDerivAt_kineticEnergy`, `kineticEnergy_sub_eq_integral_totalPower`
 
 ## References
