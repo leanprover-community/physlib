@@ -13,7 +13,8 @@ public import Physlib.Particles.StandardModel.GaugeGroup.Basic
 The Georgi-Glashow model is a grand unified theory that unifies the Standard Model gauge group into
 `SU(5)`.
 
-This file currently contains informal-results about the Georgi-Glashow group.
+This file defines the Georgi-Glashow gauge group `SU(5)`. The embedding of the Standard Model
+gauge group into it, and the kernel of that embedding, are currently informal results.
 
 ## References
 
@@ -26,9 +27,7 @@ This file currently contains informal-results about the Georgi-Glashow group.
 namespace GeorgiGlashow
 
 /-- The gauge group of the Georgi-Glashow model, i.e., `SU(5)`. -/
-informal_definition GaugeGroupI where
-  deps := []
-  tag := "6V2WM"
+abbrev GaugeGroupI : Type := Matrix.specialUnitaryGroup (Fin 5) ℂ
 
 /-- The homomorphism of the Standard Model gauge group into the Georgi-Glashow gauge group, i.e.,
 the group homomorphism `SU(3) × SU(2) × U(1) → SU(5)` taking `(h, g, α)` to

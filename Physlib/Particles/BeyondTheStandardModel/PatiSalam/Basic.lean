@@ -13,7 +13,9 @@ public import Physlib.Particles.StandardModel.GaugeGroup.Basic
 The Pati-Salam model is a petite unified theory that unifies the Standard Model gauge group into
 `SU(4) x SU(2) x SU(2)`.
 
-This file currently contains informal-results about the Pati-Salam group.
+This file defines the Pati-Salam gauge group `SU(4) × SU(2) × SU(2)`. The embedding of the
+Standard Model gauge group into it, its kernel, and the ℤ₂ quotient are currently informal
+results.
 
 ## References
 
@@ -32,9 +34,9 @@ namespace PatiSalam
 -/
 
 /-- The gauge group of the Pati-Salam model (unquotiented by ℤ₂), i.e., `SU(4) × SU(2) × SU(2)`. -/
-informal_definition GaugeGroupI where
-  deps := []
-  tag := "6V2Q2"
+abbrev GaugeGroupI : Type :=
+  Matrix.specialUnitaryGroup (Fin 4) ℂ × Matrix.specialUnitaryGroup (Fin 2) ℂ ×
+    Matrix.specialUnitaryGroup (Fin 2) ℂ
 
 /-- The homomorphism of the Standard Model gauge group into the Pati-Salam gauge group, i.e., the
 group homomorphism `SU(3) × SU(2) × U(1) → SU(4) × SU(2) × SU(2)` taking `(h, g, α)` to
