@@ -33,7 +33,7 @@ computed in `Operators/SpectralTheory/Multiplication.lean`.
 
 - `mulOperator μ f` (notation `𝓜 μ f`) : The operator defined by `ψ ↦ f • ψ`
     with maximal domain `{ψ : SpaceDHilbertSpace d μ | MemHS (f • ψ) μ}`.
-- `mulOperator_apply_schwartzIncl` : For a symbol of temperate growth, the operator acts on
+- `mulOperator_apply_schwartzIncl` : When `μ` and `f` have temperate growth, `𝓜 μ f` acts on
     embedded Schwartz maps by pointwise multiplication.
 - `mulOperator_adjoint_eq_conj` : The adjoint of `𝓜 μ f` is the multiplication operator
     defined by the conjugate of `f`.
@@ -242,8 +242,8 @@ lemma mulOperator_domain_ge_of_hasTemperateGrowth {f : Space d → ℂ} (hf : f.
   simpa [schwartzIncl, w, Pi.smul_apply, smulLeftCLM_apply_apply hf, hg] using hw
 
 open SchwartzMap in
-/-- On the Schwartz submodule, multiplication by a symbol of temperate growth is the
-  pointwise multiplication of Schwartz maps. -/
+/-- On the Schwartz submodule, the multiplication operator `𝓜 μ f` acts by pointwise
+  multiplication by the function `f` of temperate growth. -/
 lemma mulOperator_apply_schwartzIncl {f : Space d → ℂ} (hf : f.HasTemperateGrowth)
     (μ : Measure (Space d)) [μ.HasTemperateGrowth] (g : 𝓢(Space d, ℂ)) :
     𝓜 μ f ⟨schwartzIncl μ g, mulOperator_domain_ge_of_hasTemperateGrowth hf μ ⟨g, rfl⟩⟩ =

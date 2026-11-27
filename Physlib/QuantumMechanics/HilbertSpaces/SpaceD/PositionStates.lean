@@ -20,8 +20,8 @@ of the dual of `𝓢(Space d, ℂ)` defined by evaluation at `x`.
 ## ii. Key results
 
 - `positionState` : the position state as a member of the strong dual of the Schwartz space.
-- `positionState_comp_smulLeftCLM` : the position state at `x` is a generalized eigenvector of
-  multiplication by a symbol of temperate growth `f`, with eigenvalue `f x`.
+- `positionState_comp_smulLeftCLM` : for the Schwartz-space action of the multiplication
+  operator `𝓜 μ f`, the position state at `x` is a generalized eigenvector with eigenvalue `f x`.
 - `positionState_comp_positionCLM` : the position state `positionState x` is a generalized
   eigenvector of `𝐱 i` with eigenvalue `xᵢ`.
 
@@ -73,8 +73,10 @@ lemma eq_of_eq_positionState {f g : 𝓢(Space d, ℂ)}
 
 -/
 
-/-- The position state `positionState x` is a generalized eigenvector of multiplication by `f`
-  with eigenvalue `f x`, in the bra form on Schwartz space. -/
+/-- The position state `positionState x` is a generalized eigenvector with eigenvalue `f x`
+  for multiplication by `f` on Schwartz space, in bra form. For a measure `μ` of temperate growth,
+  `mulOperator_apply_schwartzIncl` identifies this action with that of the multiplication operator
+  `𝓜 μ f` on embedded Schwartz maps. -/
 lemma positionState_comp_smulLeftCLM (x : Space d) {f : Space d → ℂ} (hf : f.HasTemperateGrowth) :
     positionState x ∘L SchwartzMap.smulLeftCLM ℂ f = f x • positionState x := by
   ext ψ

@@ -35,9 +35,10 @@ derivative operators. [TODO] The angular momentum and angular momentum-squared o
 on the Hilbert space [TODO], as does the reflection through a general hyperplane. [TODO]
 The general theory of these operators lives in the operator algebra {2}.
 
-A symbol of temperate growth acts on Schwartz maps by pointwise multiplication. [9] The position
-state at a point is a generalized eigenvector in the bra form, with eigenvalue given by the value
-of the symbol at that point. [10]
+For a function and a measure of temperate growth, the multiplication operator acts on the
+Schwartz subspace by pointwise multiplication. [9] In the Schwartz dual, the position state at a
+point is a generalized eigenvector of this action with eigenvalue given by the function's value
+at that point. [10]
 
 ## Lean References
 
