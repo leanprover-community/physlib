@@ -37,6 +37,10 @@ antisymmetry and vanishing properties.
   [ref: Cartan1922]
 * T. W. B. Kibble, *Lorentz Invariance and the Gravitational Field*, *Journal of Mathematical
   Physics* 2, pp. 212-221 (1961), Sec. 2-4. [ref: Kibble1961]
+* D. W. Sciama, *The Physical Structure of General Relativity*, *Reviews of Modern Physics* 36,
+  pp. 463-469 (1964). [ref: Sciama1964]
+* I. L. Shapiro, *Physical Aspects of the Space-Time Torsion*, *Physics Reports* 357, pp. 113-213
+  (2002), Sec. 2 (https://arxiv.org/pdf/hep-th/0103093#page=4). [ref: Shapiro2002torsion]
 -/
 
 @[expose] public section

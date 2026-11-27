@@ -29,6 +29,8 @@ Kretschmann scalar when odd-time-index components vanish or in a Riemannian fram
 ## iv. References
 
 * R. M. Wald, *General Relativity* (1984), Ch. 3 (Sec. 3.2). [ref: wald_1984_general_relativity]
+* S. M. Carroll, *Lecture Notes on General Relativity* (1997), Ch. 3 (Sec. 3.6)
+  (https://arxiv.org/pdf/gr-qc/9712019#page=79). [ref: Carroll1997]
 -/
 
 @[expose] public section

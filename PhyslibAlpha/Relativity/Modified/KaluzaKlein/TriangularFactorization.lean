@@ -42,6 +42,8 @@ unit-determinant shearing transformation `det (kkTriangular A) = 1`.
   37, pp. 895-906 (1926), Sec. 1-2. [ref: Klein1926]
 * Oskar Klein, *The Atomicity of Electricity as a Quantum Theory Law*, *Nature* 118, p. 516 (1926).
   [ref: Klein1926Nature]
+* J. M. Overduin and P. S. Wesson, *Kaluza-Klein Gravity*, *Physics Reports* 283, pp. 303-380
+  (1997), Sec. 2.3 (https://arxiv.org/pdf/gr-qc/9805018#page=11). [ref: OverduinWesson1997]
 -/
 
 @[expose] public section

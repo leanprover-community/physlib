@@ -31,6 +31,8 @@ derivative is `∇_μ K_{ij} = ∂_μ K_{ij} - Γ^l_{μi} K_{lj} - Γ^l_{μj} K_
 ## iv. References
 
 * R. M. Wald, *General Relativity* (1984), Ch. 3 (Sec. 3.1). [ref: wald_1984_general_relativity]
+* S. M. Carroll, *Lecture Notes on General Relativity* (1997), Ch. 3 (Sec. 3.3)
+  (https://arxiv.org/pdf/gr-qc/9712019#page=65). [ref: Carroll1997]
 -/
 
 @[expose] public section

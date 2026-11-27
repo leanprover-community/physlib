@@ -56,7 +56,7 @@ asymptotically at large radius when `μ > 0`.
   Cosmology*, *International Journal of Modern Physics D* 16, pp. 2075-2097 (2007), Sec. 2
   (https://arxiv.org/pdf/gr-qc/0608074#page=2). [ref: Moffat2007MOG]
 * Sreekanth Harikumar, *Moffat MOdified Gravity (MOG)*, *Universe* 8(5), 259 (2022), Sec. 2-3
-  (https://www.mdpi.com/2218-1997/8/5/259). [ref: Harikumar2022MOG]
+  (https://www.mdpi.com/2218-1997/8/5/259/pdf#page=2). [ref: Harikumar2022MOG]
 -/
 
 @[expose] public section

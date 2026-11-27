@@ -44,6 +44,8 @@ quotient rule, neighborhood congruence, `C²` differentiability, and Schwarz sym
 * R. M. Wald, *General Relativity* (1984), Ch. 3 (Sec. 3.1). [ref: wald_1984_general_relativity]
 * C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973), Ch. 8 & Ch. 13.
   [ref: mtw_1973_gravitation]
+* S. M. Carroll, *Lecture Notes on General Relativity* (1997), Ch. 3 (Sec. 3.1)
+  (https://arxiv.org/pdf/gr-qc/9712019#page=57). [ref: Carroll1997]
 -/
 
 @[expose] public section

@@ -48,6 +48,8 @@ curvature vanishes, so that case is unconditional.
 * R. M. Wald, *General Relativity* (1984), Ch. 3 (Sec. 3.2). [ref: wald_1984_general_relativity]
 * C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973), Ch. 13.
   [ref: mtw_1973_gravitation]
+* S. M. Carroll, *Lecture Notes on General Relativity* (1997), Ch. 3 (Sec. 3.6)
+  (https://arxiv.org/pdf/gr-qc/9712019#page=77). [ref: Carroll1997]
 -/
 
 @[expose] public section

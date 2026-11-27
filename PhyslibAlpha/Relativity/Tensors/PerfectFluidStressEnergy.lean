@@ -30,6 +30,8 @@ For a comoving observer `u = (-1, 0, 0, 0)`, mass density `ρ`, pressure `p`, an
 ## iv. References
 
 * R. M. Wald, *General Relativity* (1984), Ch. 4 (Sec. 4.3). [ref: wald_1984_general_relativity]
+* S. M. Carroll, *Lecture Notes on General Relativity* (1997), Ch. 4 (Sec. 4.3)
+  (https://arxiv.org/pdf/gr-qc/9712019#page=112). [ref: Carroll1997]
 -/
 
 @[expose] public section

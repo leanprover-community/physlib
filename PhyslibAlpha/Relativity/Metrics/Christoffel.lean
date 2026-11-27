@@ -43,6 +43,8 @@ takes the metric and inverse as bare functions and is used by coordinate-chart p
   [ref: mtw_1973_gravitation]
 * B. O'Neill, *Semi-Riemannian Geometry With Applications to Relativity* (1983), Ch. 3.
   [ref: oneill_1983_semi_riemannian]
+* S. M. Carroll, *Lecture Notes on General Relativity* (1997), Ch. 3 (Sec. 3.3)
+  (https://arxiv.org/pdf/gr-qc/9712019#page=63). [ref: Carroll1997]
 -/
 
 @[expose] public section

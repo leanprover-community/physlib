@@ -39,7 +39,7 @@ Einstein–Hilbert Friedmann left-hand side `3 H²` by
 
 * Rafael Ferraro and Franco Fiorini, *Modified Teleparallel Gravity: Inflation without Inflaton*,
   *Physical Review D* 75, 084031 (2007), Sec. II
-  (https://arxiv.org/abs/gr-qc/0610067). [ref: FerraroFiorini2007]
+  (https://arxiv.org/pdf/gr-qc/0610067#page=2). [ref: FerraroFiorini2007]
 * Gabriel R. Bengochea and Rafael Ferraro, *Dark Torsion as the Cosmic Speed-Up*, *Physical Review
   D* (2009), Sec. II (https://arxiv.org/pdf/0812.1205#page=2). [ref: BengocheaFerraro2009]
 * Eric V. Linder, *Einstein's Other Gravity and the Acceleration of the Universe*, *Physical Review

@@ -38,6 +38,8 @@ is the contorsion tensor.
   Physics* 2, pp. 212-221 (1961), Sec. 2-4. [ref: Kibble1961]
 * Friedrich W. Hehl et al., *General Relativity with Spin and Torsion: Foundations and Prospects*,
   *Reviews of Modern Physics* 48, pp. 393-416 (1976), Sec. II. [ref: Hehl1976]
+* I. L. Shapiro, *Physical Aspects of the Space-Time Torsion*, *Physics Reports* 357, pp. 113-213
+  (2002), Sec. 2 (https://arxiv.org/pdf/hep-th/0103093#page=4). [ref: Shapiro2002torsion]
 -/
 
 @[expose] public section

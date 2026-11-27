@@ -37,6 +37,9 @@ contraction `L^i_j`. The contraction vanishes whenever `n < 5`, so `H^i_j = 0` i
   *Annals of Mathematics* 39, pp. 842-850 (1938). [ref: Lanczos1938]
 * David Lovelock, *The Einstein Tensor and Its Generalizations*, *Journal of Mathematical Physics*
   12, pp. 498-501 (1971), Sec. 2-3. [ref: Lovelock1971]
+* T. Padmanabhan and D. Kothawala, *Lanczos-Lovelock Models of Gravity*, *Physics Reports* 531,
+  pp. 115-171 (2013), Sec. 2 (https://arxiv.org/pdf/1302.2151#page=4).
+  [ref: PadmanabhanKothawala2013]
 -/
 
 @[expose] public section
