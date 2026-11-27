@@ -24,11 +24,11 @@ the constant-curvature model live in `Lovelock/Contract5.lean` and `Lovelock/Con
 
 ## ii. Key results
 
-- `AlgebraicCurvature`, `AlgebraicCurvature.gaussBonnetScalar`,
-  `AlgebraicCurvature.lanczosTensor` : algebraic `(2,2)` curvature structure, quadratic
-  Gauss–Bonnet invariant, and Lanczos tensor `H^i_j`.
-- `AlgebraicCurvature.ricciMixed`, `AlgebraicCurvature.gaussBonnetScalar`,
-  `AlgebraicCurvature.lanczosTensor` : Ricci, Gauss–Bonnet, and Lanczos invariants.
+- `AlgebraicCurvature` : algebraic `(2,2)` curvature structure.
+- `AlgebraicCurvature.ricciMixed`, `AlgebraicCurvature.ricciScalar`, `AlgebraicCurvature.ricciSq`,
+  `AlgebraicCurvature.riemannSq` : mixed Ricci, Ricci scalar, and squared curvature invariants.
+- `AlgebraicCurvature.gaussBonnetScalar`, `AlgebraicCurvature.lanczosTensor` : quadratic
+  Gauss–Bonnet invariant and Lanczos tensor `H^i_j`.
 
 ## iii. Table of contents
 

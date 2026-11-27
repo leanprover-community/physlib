@@ -26,10 +26,8 @@ spatial curvature `k`, carrying the diagonal line element:
 
 `g = diag(-1, a(t)² / (1 - k r²), a(t)² r², a(t)² r² sin²θ)`.
 
-This module treats the homogeneous, isotropic Friedmann–Lemaître–Robertson–Walker (FLRW) spacetimes
-`FLRWSpacetime` of scale factor `a(t)`, spatial curvature `k`, and coordinate metric `metric`,
-establishes the symmetry and two-sided invertibility of the inverse `metricInv` on the regular chart
-domain, and constructs the resulting `MetricTensor 4` and `CoordinateMetric 4`.
+This module establishes the symmetry and two-sided invertibility of the inverse `metricInv` on the
+regular chart domain, and constructs the resulting `MetricTensor 4` and `CoordinateMetric 4`.
 
 ## ii. Key results
 

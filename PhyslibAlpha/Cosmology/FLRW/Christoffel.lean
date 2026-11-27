@@ -35,7 +35,7 @@ connection directly from the metric components:
 1. Defines closed-form tables `FLRWSpacetime.christoffel` and `FLRWSpacetime.christoffelDeriv`.
 2. Proves all 64 Christoffel symbols and all 256 partial derivatives match the general coordinate
    expressions (`christoffel_eq`, `eventually_christoffel_eq`, `pd_christoffel_eq_deriv`).
-3. Identifies the coordinate Riemann tensor with `riemannFromData` (`riemann_eq_data`); the
+3. Identifies the coordinate Riemann tensor with `riemannFromData` (`riemann_eq_data_raw`); the
    Ricci, scalar, and Einstein tensors are in `FLRW/Curvature.lean`.
 
 ## ii. Key results
@@ -44,7 +44,7 @@ connection directly from the metric components:
   partial-derivative tables.
 - `FLRWSpacetime.christoffel_eq`, `FLRWSpacetime.eventually_christoffel_eq`,
   `FLRWSpacetime.pd_christoffel_eq_deriv` : coordinate-metric connection identities.
-- `FLRWSpacetime.riemann_eq_data` : coordinate Riemann tensor from the Christoffel data.
+- `FLRWSpacetime.riemann_eq_data_raw` : coordinate Riemann tensor from the Christoffel data.
 
 ## iii. Table of contents
 
@@ -160,13 +160,13 @@ private lemma metricDeriv_phi_eq_zero (S : FLRWSpacetime) (x : Fin 4 → ℝ) (c
     coordDeriv 3 (fun y => S.metric y c d) x = 0 :=
   coordDeriv_const_slice 3 (S.metric x c d) fun _ => by simp [metric]
 
-/-- Derivative of the squared scale factor at conformal time. -/
+/-- Derivative of the squared scale factor with respect to comoving coordinate time. -/
 private lemma hasDerivAt_a_sq (S : FLRWSpacetime) (x : Fin 4 → ℝ)
     (ha_diff : DifferentiableAt ℝ S.a (x 0)) :
     HasDerivAt (fun s : ℝ => S.a s ^ 2) (2 * S.a (x 0) * deriv S.a (x 0)) (x 0) := by
   convert ha_diff.hasDerivAt.pow 2 using 1; ring
 
-/-- Derivative of `a * a'` at conformal time. -/
+/-- Derivative of `a * a'` with respect to comoving coordinate time. -/
 private lemma hasDerivAt_a_mul_deriv_a (S : FLRWSpacetime) (x : Fin 4 → ℝ)
     (ha1 : DifferentiableAt ℝ S.a (x 0)) (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
     HasDerivAt (fun s : ℝ => S.a s * deriv S.a s)

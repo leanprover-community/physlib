@@ -192,17 +192,17 @@ private lemma kkMetricInv_apply_four_lt (ginv4 : Tensor2 4) (A : Fin 4 → ℝ) 
     kkMetricInv ginv4 A φ 4 j = -contravariantPotential ginv4 A ⟨j.val, hj⟩ := by
   simp [kkMetricInv, hj]
 
+/-- Split a sum over `Fin 5` into its first four terms and the last term. -/
+lemma sum_fin5_split (f : Fin 5 → ℝ) :
+    (∑ k : Fin 5, f k) = (∑ k : Fin 4, f ⟨k.val, by omega⟩) + f 4 := by
+  rw [Fin.sum_univ_castSucc]
+  rfl
+
 @[simp]
 private lemma kkMetricInv_apply_four_four (ginv4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ) :
     kkMetricInv ginv4 A φ 4 4 =
       1 / φ ^ 2 + ∑ k : Fin 4, A k * contravariantPotential ginv4 A k := by
   simp [kkMetricInv]
-
-/-- Split a sum over `Fin 5` into its first four terms and the last term. -/
-lemma sum_fin5_split (f : Fin 5 → ℝ) :
-    (∑ k : Fin 5, f k) = (∑ k : Fin 4, f ⟨k.val, by omega⟩) + f 4 := by
-  simp only [Fin.sum_univ_five, Fin.sum_univ_four]
-  rfl
 
 private lemma contravariantPotential_mul_g (M : MetricTensor 4) (A : Fin 4 → ℝ) (b : Fin 4) :
     (∑ k : Fin 4, contravariantPotential M.ginv A k * M.g k b) = A b :=

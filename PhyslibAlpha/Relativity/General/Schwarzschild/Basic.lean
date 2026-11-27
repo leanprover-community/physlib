@@ -30,9 +30,8 @@ matching to the exterior of `IncompressibleSphere`.
 Starting from the line element `g = diag(-f, f⁻¹, r², r² sin²θ)` with radial metric function
 `f = 1 - 2M/r`, where `M` is the mass of `S : SchwarzschildSpacetime`, this module views the metric
 as a `Metric`, computes radial derivatives of the metric and its static Newtonian
-potential `Φ = -M/r`, evaluates the radial Christoffel symbols
-(`Γ^t_{tr}`, `Γ^r_{rr}`, `Γ^r_{θθ}`, `Γ^r_{φφ}`), and computes all six independent Riemann
-components directly from the metric components.
+potential `Φ = -M/r`, and evaluates the radial Christoffel symbols `Γ^t_{tr}` and `Γ^r_{rr}`
+from the metric components.
 
 Note that this module uses the `(-, +, +, +)` signature (`g_tt = -f`), whereas
 `IncompressibleSphere.gttOut` stores the positive factor `f = 1 - r_s / r` directly.
@@ -49,10 +48,8 @@ Note that this module uses the `(-, +, +, +)` signature (`g_tt = -f`), whereas
   `SchwarzschildSpacetime.metric_rr_ofIncompressibleSphere` : exterior matching with
   `IncompressibleSphere`.
 - `SchwarzschildSpacetime.christoffelTtr_from_metric`,
-  `SchwarzschildSpacetime.christoffelRrr_from_metric`,
-  `SchwarzschildSpacetime.christoffelRThetaTheta_from_metric`,
-  `SchwarzschildSpacetime.christoffelRPhiPhi_from_metric` : radial Christoffel symbols derived
-  from the metric.
+  `SchwarzschildSpacetime.christoffelRrr_from_metric` : radial Christoffel symbols derived from
+  the metric.
 
 The coordinate Riemann, Ricci, scalar, and Einstein tensors are proved in
 `Schwarzschild/CoordinateCurvature.lean` from `SchwarzschildSpacetime.toCoordinateMetric`.

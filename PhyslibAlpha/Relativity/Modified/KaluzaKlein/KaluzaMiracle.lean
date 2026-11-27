@@ -28,15 +28,15 @@ Einstein equation with the 4D Einstein–Maxwell equations sourced by `maxwellSt
 
 The reduction is carried out algebraically: the horizontal and fifth-dimensional Ricci components
 `D.ricci5DHorizontal` and `D.ricci44` are defined directly by the stated component formulas rather
-than derived from the 5D metric `D.M` and the coordinate curvature operators, so
+than derived from the 5D metric `D.metric` and the coordinate curvature operators, so
 `KaluzaKleinData.kaluza_miracle` certifies the agreement of the postulated components with the 4D
 Einstein–Maxwell scalar.
 
 ## ii. Key results
 
 - `GeneralRelativity.maxwellFieldInvariant`, `GeneralRelativity.maxwellStressEnergy`,
-  `GeneralRelativity.maxwellStressEnergy_trace_zero` : 4D Maxwell invariant, stress-energy tensor,
-  and tracelessness.
+  `GeneralRelativity.maxwellStressEnergy_trace_zero` (all in `Tensors/MaxwellStressEnergy.lean`) :
+  4D Maxwell invariant, stress-energy tensor, and tracelessness.
 - `KaluzaKleinData.ricci44`, `KaluzaKleinData.ricci5DHorizontal`, `KaluzaKleinData.scalar5D`,
   `KaluzaKleinData.kaluza_miracle` : Kaluza miracle scalar reduction on `KaluzaKleinData`.
 - `KaluzaKleinData.einstein4D_eq_zero_iff` : equivalence of 5D vacuum and 4D Einstein–Maxwell

@@ -139,7 +139,7 @@ permutation-sum coset splits [65], defines `AlgebraicCurvature`, the quadratic G
 `lovelockContract5 = -8 H^i_j` that H^i_j vanishes identically in dimension n ≤ 4 (the 4D
 Bach-Lanczos theorem) [88], and contrasts the 4D topological invariant with non-zero 5D dynamics on
 `constantCurvature` spaces [89]. Five-dimensional Kaluza-Klein theory (`KaluzaKleinData`) unifies
-4D General Relativity and Maxwell electromagnetism inside a 5D metric G_{AB} built from M,
+4D General Relativity and Maxwell electromagnetism inside a 5D metric G_{AB} built from g_{μν},
 four-potential A_μ, and dilaton φ, establishing the exact 5D inverse metric and `MetricTensor 5`
 [67], unit-determinant upper-unitriangular vielbein factorization [68], diffeomorphism-to-U(1)
 gauge equivalence under compact-circle shifts [69], and 4D Maxwell stress-energy tracelessness
@@ -155,7 +155,7 @@ longitudinal derivative mode and enforces vacuum tracelessness h = 0 [72], deriv
 Dam-Veltman-Zakharov (vDVZ) 4 / 3 static coupling ratio and 3 / 4 light-deflection discontinuity
 between `massivePropagatorCoupling` and `grPropagatorCoupling`, both built on the shared
 `MassiveGravityTheory` core [73][80], and construct the ghost-free
-dRGT potential on `DRGTTheory` from `Matrix.trace` elementary symmetric polynomials [74]. Galactic
+dRGT potential on `DRGTTheory` from elementary symmetric polynomials of trace powers [74]. Galactic
 rotation-curve alternatives without non-baryonic dark matter are represented by Milgrom's Modified
 Newtonian Dynamics (`MONDTheory`), which interpolates between the Newtonian regime a ≫ a₀ and the
 deep-MOND regime a = √(a_N a₀) to produce asymptotically flat circular velocities v⁴ = G M a₀ and
