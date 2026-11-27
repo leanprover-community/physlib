@@ -12,7 +12,22 @@ public import Physlib.QuantumMechanics.Operators.Basic
 
 ## i. Overview
 
+A symmetric operator `T` on an inner product space is one for which `⟪T x, y⟫ = ⟪x, T y⟫`
+for all `x` and `y` in its domain. When `H` is complete (a Hilbert space) this is a weaker notio
+than `T` being self-adjoint: it amounts to `T ≤ T†` rather than `T = T†`.
+
+This module is dedicated to defining the `IsSymmetric` property and collecting its basic properties.
+For aspects of the spectral theory of symmetric operators
+see `Physlib.QuantumMechanics.Operators.SpectralTheory.Symmetric`.
+
 ## ii. Key results
+
+- `IsSymmetric` : An operator `T` is symmetric if `⟪T x, y⟫ = ⟪x, T y⟫` for all `x` and `y` in its
+  domain.
+- `isSymmetric_iff_inner_map_self_real` : An operator `T` is symmetric *if and only if* `⟪T x, x⟫`
+  is real for all `x` in its domain.
+- `isSymmetric_iff_le_adjoint` : An operator `T` is symmetric *if and only if* `T ≤ T†`.
+- `add_adjoint_isSymmetric` : For *any* densely-defined operator `T`, `T + T†` is symmetric.
 
 ## iii. Table of contents
 
@@ -65,8 +80,7 @@ lemma isSymmetric_iff_le_adjoint [CompleteSpace H] (h : T.HasDenseDomain) :
   exact h_eq ▸ adjoint_isFormalAdjoint h _ _
 
 /-- For a densely-defined operator `T` on a Hilbert space, `T + T†` is symmetric. -/
-lemma add_adjoint_isSymmetric [CompleteSpace H] (h : T.HasDenseDomain) :
-    (T + T.adjoint).IsSymmetric := by
+lemma add_adjoint_isSymmetric [CompleteSpace H] (h : T.HasDenseDomain) : (T + T†).IsSymmetric := by
   intro x y
   have h₁ := adjoint_isFormalAdjoint h ⟨x, x.2.2⟩ ⟨y, y.2.1⟩
   have h₂ := congrArg conj (adjoint_isFormalAdjoint h ⟨y, y.2.2⟩ ⟨x, x.2.1⟩)
