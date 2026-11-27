@@ -122,50 +122,50 @@ lemma gradKineticTerm_eq_fieldStrength {d} {𝓕 : FreeSpace} (A : TempDistElect
 lemma gradKineticTerm_sum_inl_eq {d} {𝓕 : FreeSpace}
     (A : TempDistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
     A.gradKineticTerm 𝓕 ε (Sum.inl 0) =  (1/(𝓕.μ₀ * 𝓕.c) *
-   (tempDistTimeSlice 𝓕.c).symm (Space.distSpaceDiv (A.electricField 𝓕.c)) ε) := by
-  rw [gradKineticTerm_eq_fieldStrength A ε, Lorentz.Vector.apply_sum, tempDistTimeSlice_symm_apply,
+   (timeSliceOfTempDist 𝓕.c).symm (Space.distSpaceDiv (A.electricField 𝓕.c)) ε) := by
+  rw [gradKineticTerm_eq_fieldStrength A ε, Lorentz.Vector.apply_sum, timeSliceOfTempDist_symm_apply,
     Space.distSpaceDiv_apply_eq_sum_distSpaceDeriv, Finset.mul_sum]
   simp [Fintype.sum_sum_type, Finset.mul_sum]
   apply Finset.sum_congr rfl (fun ν _ => ?_)
-  rw [← tempDistTimeSlice_symm_apply]
+  rw [← timeSliceOfTempDist_symm_apply]
   conv_rhs =>
     enter [2]
-    rw [tempDistTimeSlice_symm_apply, Space.distSpaceDeriv_apply']
+    rw [timeSliceOfTempDist_symm_apply, Space.distSpaceDeriv_apply']
     simp only [PiLp.neg_apply]
-    rw [electricField_eq_fieldStrength, tempDistTimeSlice_apply]
+    rw [electricField_eq_fieldStrength, timeSliceOfTempDist_apply]
     simp only [Fin.isValue, neg_mul, neg_neg]
     rw [fieldStrength_antisymmetric_basis]
-    rw [← tempDistTimeSlice_apply, Space.apply_fderiv_eq_distSpaceDeriv,
-      ← tempDistTimeSlice_symm_apply, ← distTimeSlice_distDeriv_inr]
+    rw [← timeSliceOfTempDist_apply, Space.apply_fderiv_eq_distSpaceDeriv,
+      ← timeSliceOfTempDist_symm_apply, ← timeSliceOfDist_derivOfDist_inr]
     simp
   field_simp
 
 lemma gradKineticTerm_sum_inr_eq {d} {𝓕 : FreeSpace}
     (A : TempDistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) (i : Fin d) :
     A.gradKineticTerm 𝓕 ε (Sum.inr i) =
-    (𝓕.μ₀⁻¹ * (1 / 𝓕.c ^ 2 * (tempDistTimeSlice 𝓕.c).symm
+    (𝓕.μ₀⁻¹ * (1 / 𝓕.c ^ 2 * (timeSliceOfTempDist 𝓕.c).symm
       (Space.distTimeDeriv (A.electricField 𝓕.c)) ε i -
       ∑ j, ((PiLp.basisFun 2 ℝ (Fin d)).tensorProduct (PiLp.basisFun 2 ℝ (Fin d))).repr
-        ((tempDistTimeSlice 𝓕.c).symm (Space.distSpaceDeriv j
+        ((timeSliceOfTempDist 𝓕.c).symm (Space.distSpaceDeriv j
           (A.magneticFieldMatrix 𝓕.c)) ε) (j, i))) := by
   simp [gradKineticTerm_eq_fieldStrength A ε, Lorentz.Vector.apply_sum,
     Fintype.sum_sum_type, mul_add, sub_eq_add_neg]
   congr
   · conv_rhs =>
       enter [2, 2]
-      rw [tempDistTimeSlice_symm_apply, Space.distTimeDeriv_apply']
+      rw [timeSliceOfTempDist_symm_apply, Space.distTimeDeriv_apply']
       simp only [PiLp.neg_apply]
       rw [electricField_eq_fieldStrength, Space.apply_fderiv_eq_distTimeDeriv,
-        ← tempDistTimeSlice_symm_apply]
-      simp [distTimeSlice_symm_distTimeDeriv_eq]
+        ← timeSliceOfTempDist_symm_apply]
+      simp [timeSliceOfDist_symm_timeDerivOfDist_eq]
     field_simp
   · ext k
     conv_rhs =>
-      rw [tempDistTimeSlice_symm_apply, Space.distSpaceDeriv_apply']
+      rw [timeSliceOfTempDist_symm_apply, Space.distSpaceDeriv_apply']
       simp only [map_neg, Finsupp.coe_neg, Pi.neg_apply]
       rw [magneticFieldMatrix_basis_repr_eq_fieldStrength, Space.apply_fderiv_eq_distSpaceDeriv,
-        ← tempDistTimeSlice_symm_apply]
-    simp [← distTimeSlice_distDeriv_inr]
+        ← timeSliceOfTempDist_symm_apply]
+    simp [← timeSliceOfDist_derivOfDist_inr]
 
 /-!
 

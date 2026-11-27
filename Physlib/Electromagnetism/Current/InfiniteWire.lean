@@ -64,7 +64,7 @@ $$J(t, x, y, z) = (0, I δ((y, z)), 0, 0).$$
   along the `x`-axis. -/
 noncomputable def wireCurrentDensity (c : SpeedOfLight) :
     ℝ →ₗ[ℝ] TempDistLorentzCurrentDensity 3 where
-  toFun I := (tempDistTimeSlice c).symm <|
+  toFun I := (timeSliceOfTempDist c).symm <|
     constantTime <|
     constantSliceDist 0
     (I • diracDelta' ℝ 0 (Lorentz.Vector.basis (Sum.inr 0)))
@@ -114,7 +114,7 @@ $$A(t, x, y, z) = \left(0, -\frac{μ_0 I}{2\pi} \log (\sqrt{y^2 + z^2}), 0, 0\ri
 /-- The electromagnetic potential of an infinite wire along the x-axis carrying a current `I`. -/
 noncomputable def infiniteWire (𝓕 : FreeSpace) (I : ℝ) :
     TempDistElectromagneticPotential 3 :=
-  (tempDistTimeSlice 𝓕.c).symm <|
+  (timeSliceOfTempDist 𝓕.c).symm <|
   constantTime <|
   constantSliceDist 0
   ((- I * 𝓕.μ₀ / (2 * Real.pi)) • distOfFunction (fun (x : Space 2) =>

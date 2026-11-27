@@ -59,11 +59,11 @@ namespace TempDistElectromagneticPotential
 /-- The current density of a point particle stationary at the origin
   of 1d space. -/
 noncomputable def oneDimPointParticleCurrentDensity (c : SpeedOfLight) (q : ℝ) (r₀ : Space 1) :
-    TempDistLorentzCurrentDensity 1 := (tempDistTimeSlice c).symm <|
+    TempDistLorentzCurrentDensity 1 := (timeSliceOfTempDist c).symm <|
   constantTime ((c * q) • diracDelta' ℝ r₀ (Lorentz.Vector.basis (Sum.inl 0)))
 
 lemma oneDimPointParticleCurrentDensity_eq_distTranslate (c : SpeedOfLight) (q : ℝ) (r₀ : Space 1) :
-    oneDimPointParticleCurrentDensity c q r₀ = ((tempDistTimeSlice c).symm <|
+    oneDimPointParticleCurrentDensity c q r₀ = ((timeSliceOfTempDist c).symm <|
     constantTime <|
     distTranslate (basis.repr r₀) <|
     ((c * q) • diracDelta' ℝ 0 (Lorentz.Vector.basis (Sum.inl 0)))) := by
@@ -107,13 +107,13 @@ lemma oneDimPointParticleCurrentDensity_chargeDensity (c : SpeedOfLight) (q : �
 /-- The electromagnetic potential of a point particle stationary at `r₀`
   of 1d space. -/
 noncomputable def oneDimPointParticle (𝓕 : FreeSpace) (q : ℝ) (r₀ : Space 1) :
-    TempDistElectromagneticPotential 1 := (tempDistTimeSlice 𝓕.c).symm <| Space.constantTime
+    TempDistElectromagneticPotential 1 := (timeSliceOfTempDist 𝓕.c).symm <| Space.constantTime
   <| distOfFunction (fun x => ((- (q * 𝓕.μ₀ * 𝓕.c)/ 2) * ‖x - r₀‖) • Lorentz.Vector.basis
   (Sum.inl 0))
   (by fun_prop)
 
 lemma oneDimPointParticle_eq_distTranslate (𝓕 : FreeSpace) (q : ℝ) (r₀ : Space 1) :
-    oneDimPointParticle 𝓕 q r₀ = ((tempDistTimeSlice 𝓕.c).symm <|
+    oneDimPointParticle 𝓕 q r₀ = ((timeSliceOfTempDist 𝓕.c).symm <|
     constantTime <|
     distTranslate (basis.repr r₀) <|
     distOfFunction (fun x => ((- (q * 𝓕.μ₀ * 𝓕.c)/ 2) * ‖x‖) • Lorentz.Vector.basis (Sum.inl 0))
