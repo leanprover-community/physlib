@@ -42,7 +42,7 @@ positive channel between their bounded operators.
 - `QuantumHilbertSpace` : the instances making a type a complex Hilbert space, the space of
   states of a quantum system.
 - `𝓑(H)` : the bounded operators on a Hilbert space.
-- `QuantumMechanics.quantum` : the probabilistic theory of the bounded observables.
+- `ProbabilisticTheory.quantum` : the probabilistic theory of the bounded observables.
 - `QuantumMechanics.QuantumChannel` : the quantum channels between two quantum systems.
 
 ## iii. Table of contents
@@ -57,6 +57,8 @@ positive channel between their bounded operators.
 -/
 
 @[expose] public section
+
+open ProbabilisticTheory
 
 namespace QuantumMechanics
 
@@ -93,8 +95,8 @@ variable? (H K : Type*) [QuantumHilbertSpace H] [QuantumHilbertSpace K] =>
 
 /-- The quantum theory whose observables are the self-adjoint bounded operators on the Hilbert
 space `H`. -/
-noncomputable abbrev quantum : ProbabilisticTheory :=
-  ProbabilisticTheory.ofCStarAlgebra 𝓑(H)
+noncomputable abbrev _root_.ProbabilisticTheory.quantum : ProbabilisticTheory :=
+  ofCStarAlgebra 𝓑(H)
 
 /-- A quantum channel is a completely positive channel from `quantum H` to `quantum K`. -/
 abbrev QuantumChannel := {Φ : Channel (quantum H) (quantum K) // Φ.IsCompletelyPositive}
