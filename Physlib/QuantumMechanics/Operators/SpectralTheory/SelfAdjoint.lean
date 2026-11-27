@@ -5,6 +5,7 @@ Authors: Adam Bornemann, Gregory J. Loges
 -/
 module
 
+public import Physlib.QuantumMechanics.Operators.SelfAdjoint
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.Symmetric
 /-!
 
@@ -63,7 +64,7 @@ lemma resolventSet_eq_regularityDomain : ρ T = T.regularityDomain := by
     · exact (mem_regularityDomain_iff.mp <| (isSymmetric hT).mem_regularityDomain_of_im_ne_zero
         (by simp_all [Complex.conj_eq_iff_im])).1
   have h_orthog := (isUnbounded hT).orthogonal_adjoint_sub_ker hz
-  rw [isSelfAdjoint_def.mp hT, (isClosed hT).closure_eq, h_ker'] at h_orthog
+  rw [isSelfAdjoint_def.mp hT, hT.isClosed.closure_eq, h_ker'] at h_orthog
   simp [← h_orthog]
 
 /-- Every non-real `z` lies in the resolvent set of a self-adjoint operator. -/
@@ -80,10 +81,10 @@ lemma sub_smul_surjective {z : ℂ} (hz : z.im ≠ 0) : Function.Surjective (T -
   (and it is a necessary condition by definition of `ρ`). -/
 lemma mem_resolventSet_of_range_eq_top {z : ℂ} (h : (T - z • 1).toFun.range = ⊤) : z ∈ ρ T := by
   by_cases hz_im : z.im = 0
-  · rw [(isClosed hT).resolventSet_eq]
+  · rw [hT.isClosed.resolventSet_eq]
     refine ⟨?_, h⟩
     have h_orthog := (isUnbounded hT).orthogonal_closure_sub_range z
-    rwa [isSelfAdjoint_def.mp hT, (isClosed hT).closure_eq, conj_eq_iff_im.mpr hz_im, h,
+    rwa [isSelfAdjoint_def.mp hT, hT.isClosed.closure_eq, conj_eq_iff_im.mpr hz_im, h,
       Submodule.top_orthogonal_eq_bot, Eq.comm, ← LinearMap.le_ker_iff_map, Submodule.ker_subtype,
       le_bot_iff] at h_orthog
   · exact mem_resolventSet_of_im_ne_zero hT hz_im
