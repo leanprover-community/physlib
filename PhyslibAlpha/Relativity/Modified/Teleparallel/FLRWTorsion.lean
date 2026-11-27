@@ -146,6 +146,14 @@ noncomputable def flrwTorsionScalar (a : ℝ → ℝ) (t : ℝ) : ℝ :=
 noncomputable def flrwBoundaryTerm (a : ℝ → ℝ) (t : ℝ) : ℝ :=
   6 * (deriv (deriv a) t / a t + 2 * (deriv a t / a t) ^ 2)
 
+/-- The inverse diagonal of the Cartesian flat FLRW metric is a left inverse when `a(t) ≠ 0`. -/
+lemma flrwCartesianMetricInv_mul (a : ℝ → ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0) :
+    Matrix.diagonal ![-1, (a (x 0) ^ 2)⁻¹, (a (x 0) ^ 2)⁻¹, (a (x 0) ^ 2)⁻¹] *
+      Matrix.diagonal ![-1, a (x 0) ^ 2, a (x 0) ^ 2, a (x 0) ^ 2] = 1 := by
+  ext i j
+  rw [Matrix.mul_apply, Matrix.one_apply]
+  fin_cases i <;> fin_cases j <;> simp [Fin.sum_univ_four, ha]
+
 /-- Cartesian flat FLRW metric `diag(-1, a², a², a²)` induced by the comoving tetrad `flrwTetrad`
 when `a(t) ≠ 0`. -/
 noncomputable def flrwCartesianMetricTensor (a : ℝ → ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0) :
@@ -153,14 +161,9 @@ noncomputable def flrwCartesianMetricTensor (a : ℝ → ℝ) (x : Fin 4 → ℝ
   g := Matrix.diagonal ![-1, a (x 0) ^ 2, a (x 0) ^ 2, a (x 0) ^ 2]
   ginv := Matrix.diagonal ![-1, (a (x 0) ^ 2)⁻¹, (a (x 0) ^ 2)⁻¹, (a (x 0) ^ 2)⁻¹]
   symm := Matrix.isSymm_diagonal _
-  inv_left := by
-    ext i j
-    rw [Matrix.mul_apply, Matrix.one_apply]
-    fin_cases i <;> fin_cases j <;> simp [Fin.sum_univ_four, ha]
-  inv_right := by
-    ext i j
-    rw [Matrix.mul_apply, Matrix.one_apply]
-    fin_cases i <;> fin_cases j <;> simp [Fin.sum_univ_four, ha]
+  inv_left := mul_eq_one_of_isSymm_of_mul_eq_one (Matrix.isSymm_diagonal _)
+    (flrwCartesianMetricInv_mul a x ha)
+  inv_right := flrwCartesianMetricInv_mul a x ha
 
 private lemma flrwTetrad_coordDeriv_eq (a : ℝ → ℝ) (x : Fin 4 → ℝ) (u A j : Fin 4) :
     flrwTetradDeriv a x u A j =

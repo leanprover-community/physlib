@@ -50,8 +50,8 @@ In an orthonormal frame where `g = η = diag(-1, 1, 1, 1)` and `U = ∂_t`, this
   Paradigm*, *Physical Review D* (2004), Sec. II-III
   (https://arxiv.org/pdf/astro-ph/0403694#page=2). [ref: Bekenstein2004]
 * Benoit Famaey and Stacy S. McGaugh, *Modified Newtonian Dynamics (MOND): Observational
-  Phenomenology and Relativistic Extensions*, *Living Reviews in Relativity* (2012), Sec. 7.
-  [ref: FamaeyMcGaugh2012]
+  Phenomenology and Relativistic Extensions*, *Living Reviews in Relativity* (2012), Sec. 7
+  (https://arxiv.org/pdf/1112.3960#page=25). [ref: FamaeyMcGaugh2012]
 -/
 
 @[expose] public section
@@ -122,19 +122,16 @@ lemma TeVeSMetric.spatial (T : TeVeSMetric) :
       T.metric 3 3 = Real.exp (-2 * T.φ) := by
   refine ⟨?_, ?_, ?_⟩ <;> simp [TeVeSMetric.metric]
 
-/-- `T.metric * T.metricInv = 1`. -/
-lemma TeVeSMetric.mul_inv (T : TeVeSMetric) : T.metric * T.metricInv = 1 := by
-  ext i j
-  fin_cases i <;> fin_cases j <;>
-    simp [TeVeSMetric.metric, TeVeSMetric.metricInv, Matrix.mul_apply, Fin.sum_univ_four,
-      ← Real.exp_add]
-
 /-- `T.metricInv * T.metric = 1`. -/
 lemma TeVeSMetric.inv_mul (T : TeVeSMetric) : T.metricInv * T.metric = 1 := by
   ext i j
   fin_cases i <;> fin_cases j <;>
     simp [TeVeSMetric.metric, TeVeSMetric.metricInv, Matrix.mul_apply, Fin.sum_univ_four,
       ← Real.exp_add]
+
+/-- `T.metric * T.metricInv = 1`. -/
+lemma TeVeSMetric.mul_inv (T : TeVeSMetric) : T.metric * T.metricInv = 1 :=
+  mul_eq_one_of_isSymm_of_mul_eq_one T.symm T.inv_mul
 
 /-- The TeVeS physical metric of the data `T` as a `MetricTensor 4` with its certified inverse. -/
 noncomputable def TeVeSMetric.metricTensor (T : TeVeSMetric) : MetricTensor 4 where

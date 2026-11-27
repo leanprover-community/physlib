@@ -121,19 +121,6 @@ lemma metric_symm (S : Metric) (x : Fin 4 → ℝ) :
   ext i j
   fin_cases i <;> fin_cases j <;> simp [Matrix.transpose_apply, metric]
 
-/-- Right inverse identity `g * g⁻¹ = 1` on the regular chart `r ≠ 0`, `f(r) ≠ 0`,
-`sin θ ≠ 0`. -/
-lemma metric_mul_inv (S : Metric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
-    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
-    S.metric x * S.metricInv x = 1 := by
-  ext i j
-  fin_cases i <;> fin_cases j <;>
-    simp [metric, metricInv, Matrix.mul_apply]
-  · field_simp [hf]
-  · field_simp [hf]
-  · field_simp [hr]
-  · field_simp [hr, hsin]
-
 /-- Left inverse identity `g⁻¹ * g = 1` on the regular chart `r ≠ 0`, `f(r) ≠ 0`,
 `sin θ ≠ 0`. -/
 lemma metricInv_mul (S : Metric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
@@ -146,6 +133,13 @@ lemma metricInv_mul (S : Metric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
   · field_simp [hf]
   · field_simp [hr]
   · field_simp [hr, hsin]
+
+/-- Right inverse identity `g * g⁻¹ = 1` on the regular chart `r ≠ 0`, `f(r) ≠ 0`,
+`sin θ ≠ 0`. -/
+lemma metric_mul_inv (S : Metric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
+    S.metric x * S.metricInv x = 1 :=
+  mul_eq_one_of_isSymm_of_mul_eq_one (metric_symm S x) (metricInv_mul S x hr hf hsin)
 
 /-- The metric as a `MetricTensor 4` at a point away from coordinate and horizon
 singularities. -/

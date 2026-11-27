@@ -172,19 +172,9 @@ lemma metricInv_mul_metric (K : KerrSpacetime) (x : Fin 4 → ℝ)
 lemma metric_mul_metricInv (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0)
     (hs : Real.sin (x 2) ≠ 0) :
-    K.metric x * K.metricInv x = 1 := by
-  ext i j
-  have hid := K.tphi_det_id (x 1) (x 2)
-  rw [Matrix.mul_apply]
-  fin_cases i <;> fin_cases j <;>
-    simp only [Matrix.one_apply, Fin.sum_univ_four, metric, metricInv, Matrix.of_apply] <;>
-    norm_num
-  · field_simp [hsig, hdel]; linear_combination hid
-  · field_simp [hsig, hdel, hs]; ring
-  · field_simp [hsig, hdel]
-  · field_simp [hsig]
-  · field_simp [hsig, hdel, hs]; ring
-  · field_simp [hsig, hdel, hs]; linear_combination hid
+    K.metric x * K.metricInv x = 1 :=
+  mul_eq_one_of_isSymm_of_mul_eq_one (K.metric_symm x)
+    (K.metricInv_mul_metric x hsig hdel hs)
 
 /-- Package the Boyer–Lindquist Kerr metric at a regular point (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`) as a
 `MetricTensor 4`. -/

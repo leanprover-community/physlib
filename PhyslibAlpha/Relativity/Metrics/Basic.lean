@@ -62,6 +62,20 @@ index-contraction lemmas used throughout curvature calculations.
 
 -/
 
+/-- A left inverse of a symmetric square matrix is also a right inverse. -/
+lemma mul_eq_one_of_isSymm_of_mul_eq_one {n : ℕ} {g ginv : Tensor2 n}
+    (hsymm : IsSymm g) (h : ginv * g = 1) : g * ginv = 1 := by
+  have htrans : g * Matrix.transpose ginv = 1 := by
+    have := congrArg Matrix.transpose h
+    rwa [Matrix.transpose_mul, Matrix.transpose_one, hsymm.eq] at this
+  have hginv : ginv = Matrix.transpose ginv := by
+    calc ginv = ginv * 1 := (Matrix.mul_one ginv).symm
+      _ = ginv * (g * Matrix.transpose ginv) := by rw [htrans]
+      _ = (ginv * g) * Matrix.transpose ginv := by rw [Matrix.mul_assoc]
+      _ = 1 * Matrix.transpose ginv := by rw [h]
+      _ = Matrix.transpose ginv := Matrix.one_mul _
+  rwa [← hginv] at htrans
+
 /-- A nondegenerate metric in components, carried together with an explicit two-sided
 inverse. -/
 structure MetricTensor (n : ℕ) where

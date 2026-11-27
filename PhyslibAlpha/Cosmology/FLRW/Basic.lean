@@ -122,17 +122,6 @@ lemma metric_symm (S : FLRWSpacetime) (x : Fin 4 → ℝ) : IsSymm (S.metric x) 
   ext i j
   fin_cases i <;> fin_cases j <;> simp [Matrix.transpose_apply, metric]
 
-/-- `S.metric x * S.metricInv x = 1` on the regular coordinate domain. -/
-lemma metric_mul_inv (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
-    (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
-    S.metric x * S.metricInv x = 1 := by
-  ext i j
-  fin_cases i <;> fin_cases j <;>
-    simp [metric, metricInv, Matrix.mul_apply]
-  · field_simp [ha, hkr]
-  · field_simp [ha, hr]
-  · field_simp [ha, hr, hsin]
-
 /-- `S.metricInv x * S.metric x = 1` on the regular coordinate domain. -/
 lemma metricInv_mul (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
@@ -143,6 +132,12 @@ lemma metricInv_mul (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 
   · field_simp [ha, hkr]
   · field_simp [ha, hr]
   · field_simp [ha, hr, hsin]
+
+/-- `S.metric x * S.metricInv x = 1` on the regular coordinate domain. -/
+lemma metric_mul_inv (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
+    (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
+    S.metric x * S.metricInv x = 1 :=
+  mul_eq_one_of_isSymm_of_mul_eq_one (metric_symm S x) (metricInv_mul S x ha hr hkr hsin)
 
 /-- The FLRW metric as a `MetricTensor 4` at a point where the scale factor, `r`, `1 - k r²`, and
 `sin θ` are nonzero. -/
