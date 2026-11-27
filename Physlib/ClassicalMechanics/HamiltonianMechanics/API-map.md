@@ -138,7 +138,7 @@ the momentum p = m v. [TODO]
 16. Physlib/ClassicalMechanics/PhaseSpace/Basic.lean — `PhaseSpace`, `PhaseSpace.position`,
     `PhaseSpace.momentum`, `PhaseSpace.contMDiff_position`, `PhaseSpace.contMDiff_zeroMomentum`
 17. Physlib/ClassicalMechanics/PhaseSpace/Basic.lean — `PhaseSpace.normedSpaceDiffeomorph`,
-    `PhaseSpace.innerProductSpaceDiffeomorph`
+    `PhaseSpace.hilbertCoords`
 18. Physlib/ClassicalMechanics/HamiltonianMechanics/Basic.lean — `HamiltonianSystem`,
     `HamiltonianSystem.ofNormedSpace`, `HamiltonianSystem.ofInnerProductSpace`
 19. PhyslibAlpha/ClassicalMechanics/CentralForce/Basic.lean — `CentralForce.toHamiltonianSystem`
@@ -148,7 +148,7 @@ the momentum p = m v. [TODO]
     `poissonBracket_position_momentum`, `poissonBracket_position_position`,
     `poissonBracket_momentum_momentum`
 22. Physlib/ClassicalMechanics/HamiltonianMechanics/PoissonBracket.lean —
-    `HamiltonianSystem.restrictObservable`, `HamiltonianSystem.poissonBracket`,
+    `HamiltonianSystem.poissonBracket`,
     `HamiltonianSystem.poissonBracket_restrictObservable`
 23. Physlib/ClassicalMechanics/HamiltonianMechanics/PoissonBracket.lean —
     `poissonBracket_jacobi`, `HamiltonianSystem.poissonBracket_jacobi`,

@@ -132,24 +132,24 @@ variable (U : Set (E × E)) (hU : IsOpen U) (H : Time × E × E → ℝ)
 /-- The Hamiltonian system on a real Hilbert space given by `H(t, p, q)` on an open domain `U`,
 with momentum represented by a vector using the Riesz map. -/
 def ofInnerProductSpace : HamiltonianSystem 𝓘(ℝ, E) ⟨E⟩ :=
-  ofCoordinates (PhaseSpace.innerProductSpaceDiffeomorph E) U hU H hH
+  ofCoordinates (PhaseSpace.hilbertCoords E) U hU H hH
 
 /-- The vector-coordinate constructor preserves membership in the Hamiltonian's domain. -/
 @[simp]
 lemma mem_domain_ofInnerProductSpace (p q : E) :
     PhaseSpace.ofInnerProductSpace p q ∈ (ofInnerProductSpace U hU H hH).domain ↔ (p, q) ∈ U := by
-  change PhaseSpace.innerProductSpaceDiffeomorph E
-    ((PhaseSpace.innerProductSpaceDiffeomorph E).symm (p, q)) ∈ U ↔ _
-  rw [(PhaseSpace.innerProductSpaceDiffeomorph E).apply_symm_apply]
+  change PhaseSpace.hilbertCoords E
+    ((PhaseSpace.hilbertCoords E).symm (p, q)) ∈ U ↔ _
+  rw [(PhaseSpace.hilbertCoords E).apply_symm_apply]
 
 /-- The vector-coordinate constructor preserves the value of the Hamiltonian. -/
 @[simp]
 lemma hamiltonian_ofInnerProductSpace (t : Time) (p q : E) :
     (ofInnerProductSpace U hU H hH).hamiltonian (t, PhaseSpace.ofInnerProductSpace p q) =
       H (t, p, q) := by
-  change H (t, PhaseSpace.innerProductSpaceDiffeomorph E
-    ((PhaseSpace.innerProductSpaceDiffeomorph E).symm (p, q))) = _
-  rw [(PhaseSpace.innerProductSpaceDiffeomorph E).apply_symm_apply]
+  change H (t, PhaseSpace.hilbertCoords E
+    ((PhaseSpace.hilbertCoords E).symm (p, q))) = _
+  rw [(PhaseSpace.hilbertCoords E).apply_symm_apply]
 
 end InnerProductSpace
 

@@ -32,7 +32,7 @@ states directly from these momentum-position coordinates.
 - `PhaseSpace.contMDiff_position` : the configuration projection is smooth.
 - `PhaseSpace.contMDiff_zeroMomentum` : the zero-momentum section is smooth.
 - `PhaseSpace.normedSpaceDiffeomorph` : global covector-position coordinates.
-- `PhaseSpace.innerProductSpaceDiffeomorph` : global momentum-vector-position coordinates.
+- `PhaseSpace.hilbertCoords` : global momentum-vector-position coordinates.
 
 ## iii. Table of contents
 
@@ -183,7 +183,7 @@ section InnerProductSpace
 variable (E : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
 
 /-- Global momentum-vector-position coordinates, using the real Hilbert-space Riesz map. -/
-noncomputable def innerProductSpaceDiffeomorph :
+noncomputable def hilbertCoords :
     PhaseSpace 𝓘(ℝ, E) ⟨E⟩ ≃ₘ^∞ ⟮(𝓘(ℝ, E)).prod 𝓘(ℝ, E →L[ℝ] ℝ),
       𝓘(ℝ, E × E)⟯ E × E :=
   (normedSpaceDiffeomorph E).trans
@@ -192,8 +192,8 @@ noncomputable def innerProductSpaceDiffeomorph :
 
 /-- A coordinate momentum vector acts on velocities by the real inner product. -/
 @[simp]
-lemma innerProductSpaceDiffeomorph_symm_apply (p q : E) :
-    (innerProductSpaceDiffeomorph E).symm (p, q) =
+lemma hilbertCoords_symm_apply (p q : E) :
+    (hilbertCoords E).symm (p, q) =
       mk q ((InnerProductSpace.toDual ℝ E p).comp
         (NormedSpace.fromTangentSpace q).toContinuousLinearMap) := rfl
 
@@ -203,7 +203,7 @@ variable {E}
 The Riesz map turns `p` into a momentum covector, with the same argument order as Hamilton's
 equations. -/
 def ofInnerProductSpace (p q : E) : PhaseSpace 𝓘(ℝ, E) ⟨E⟩ :=
-  (innerProductSpaceDiffeomorph E).symm (p, q)
+  (hilbertCoords E).symm (p, q)
 
 @[simp]
 lemma position_ofInnerProductSpace (p q : E) :

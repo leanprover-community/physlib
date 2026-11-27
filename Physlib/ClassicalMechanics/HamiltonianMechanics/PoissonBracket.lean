@@ -338,20 +338,15 @@ open scoped Manifold ContDiff Topology
 
 variable (S : HamiltonianSystem 𝓘(ℝ, X) ⟨X⟩)
 
-/-- Restrict an observable in momentum-position coordinates to the phase-space domain of the
-system. -/
-noncomputable def restrictObservable (f : X → X → ℝ) (x : S.domain) : ℝ :=
-  let pq := PhaseSpace.innerProductSpaceDiffeomorph X x.1
-  f pq.1 pq.2
-
 /-- At a state with known momentum and position, restriction evaluates the coordinate observable. -/
 @[simp]
 lemma restrictObservable_ofInnerProductSpace (f : X → X → ℝ) (p q : X)
     (hz : PhaseSpace.ofInnerProductSpace p q ∈ S.domain) :
-    S.restrictObservable f ⟨PhaseSpace.ofInnerProductSpace p q, hz⟩ = f p q := by
-  let e := PhaseSpace.innerProductSpaceDiffeomorph X
-  change f (e (e.symm (p, q))).1 (e (e.symm (p, q))).2 = f p q
-  rw [e.apply_symm_apply]
+    (Function.uncurry f ∘ PhaseSpace.hilbertCoords X ∘ Subtype.val)
+      (⟨PhaseSpace.ofInnerProductSpace p q, hz⟩ : S.domain) = f p q := by
+  change Function.uncurry f ((PhaseSpace.hilbertCoords X)
+    ((PhaseSpace.hilbertCoords X).symm (p, q))) = f p q
+  simp only [(PhaseSpace.hilbertCoords X).apply_symm_apply, Function.uncurry]
 
 /-- The canonical Poisson bracket of observables on the open phase-space domain of a system
 in real Hilbert space. The coordinate formula uses extensions by zero. Its value at an
@@ -359,25 +354,29 @@ interior point depends only on the observables in a neighborhood of that point. 
 noncomputable def poissonBracket (f g : S.domain → ℝ) : S.domain → ℝ :=
   let coord (a : S.domain → ℝ) (p q : X) :=
     Function.extend Subtype.val a (fun _ => 0) (PhaseSpace.ofInnerProductSpace p q)
-  S.restrictObservable (ClassicalMechanics.poissonBracket (coord f) (coord g))
+  Function.uncurry (ClassicalMechanics.poissonBracket (coord f) (coord g)) ∘
+    PhaseSpace.hilbertCoords X ∘ Subtype.val
 
 /-- Restricting the coordinate bracket to the system domain gives the bracket of the restricted
 observables. -/
 @[simp]
 lemma poissonBracket_restrictObservable (f g : X → X → ℝ) :
-    S.poissonBracket (S.restrictObservable f) (S.restrictObservable g) =
-      S.restrictObservable (ClassicalMechanics.poissonBracket f g) := by
+    S.poissonBracket (Function.uncurry f ∘ PhaseSpace.hilbertCoords X ∘ Subtype.val)
+        (Function.uncurry g ∘ PhaseSpace.hilbertCoords X ∘ Subtype.val) =
+      Function.uncurry (ClassicalMechanics.poissonBracket f g) ∘
+        PhaseSpace.hilbertCoords X ∘ Subtype.val := by
   funext x
-  let e := PhaseSpace.innerProductSpaceDiffeomorph X
+  let e := PhaseSpace.hilbertCoords X
   let z := e x.val
+  let restrict (a : X → X → ℝ) : S.domain → ℝ := Function.uncurry a ∘ e ∘ Subtype.val
   let lift (a : X → X → ℝ) (pq : X × X) :=
-    Function.extend Subtype.val (S.restrictObservable a) (fun _ => 0) (e.symm pq)
+    Function.extend Subtype.val (restrict a) (fun _ => 0) (e.symm pq)
   have hx : e.symm z ∈ S.domain := by simp [z]
   have heq (a : X → X → ℝ) : lift a =ᶠ[𝓝 z] Function.uncurry a := by
     filter_upwards [(S.isOpen_domain.preimage e.symm.contMDiff.continuous).mem_nhds hx] with y hy
-    change Function.extend Subtype.val (S.restrictObservable a) _ (e.symm y) = a y.1 y.2
-    rw [Subtype.val_injective.extend_apply (S.restrictObservable a) _ ⟨e.symm y, hy⟩]
-    simp [restrictObservable, e]
+    change Function.extend Subtype.val (restrict a) _ (e.symm y) = a y.1 y.2
+    rw [Subtype.val_injective.extend_apply (restrict a) _ ⟨e.symm y, hy⟩]
+    simp [restrict, Function.uncurry]
   have hfst (a : X → X → ℝ) :
       (fun p' => lift a (p', z.2)) =ᶠ[𝓝 z.1] (fun p' => a p' z.2) :=
     (heq a).comp_tendsto (continuous_id.prodMk continuous_const).continuousAt
@@ -392,14 +391,14 @@ lemma poissonBracket_restrictObservable (f g : X → X → ℝ) :
 /-- Interchanging the two domain observables reverses the bracket at each state. -/
 lemma poissonBracket_antisymm (f g : S.domain → ℝ) (x : S.domain) :
     S.poissonBracket f g x = -S.poissonBracket g f x := by
-  unfold poissonBracket restrictObservable
+  simp only [poissonBracket, Function.comp_apply, Function.uncurry]
   apply ClassicalMechanics.poissonBracket_antisymm
 
 /-- A zero observable has zero bracket with every observable on the system domain. -/
 @[simp]
 lemma poissonBracket_zero_right (f : S.domain → ℝ) : S.poissonBracket f 0 = 0 := by
   funext x
-  simp [poissonBracket, restrictObservable, Function.extend, ClassicalMechanics.poissonBracket]
+  simp [poissonBracket, Function.uncurry, Function.extend, ClassicalMechanics.poissonBracket]
 
 end HamiltonianSystem
 
@@ -521,12 +520,13 @@ observables to the open domain of a Hamiltonian system. -/
 lemma poissonBracket_jacobi (f g h : X → X → ℝ)
     (hf : ContDiff ℝ 2 (Function.uncurry f)) (hg : ContDiff ℝ 2 (Function.uncurry g))
     (hh : ContDiff ℝ 2 (Function.uncurry h)) (x : S.domain) :
-    S.poissonBracket (S.restrictObservable f)
-        (S.poissonBracket (S.restrictObservable g) (S.restrictObservable h)) x +
-      S.poissonBracket (S.restrictObservable g)
-        (S.poissonBracket (S.restrictObservable h) (S.restrictObservable f)) x +
-      S.poissonBracket (S.restrictObservable h)
-        (S.poissonBracket (S.restrictObservable f) (S.restrictObservable g)) x = 0 := by
+    let F : S.domain → ℝ := Function.uncurry f ∘ PhaseSpace.hilbertCoords X ∘ Subtype.val
+    let K : S.domain → ℝ := Function.uncurry g ∘ PhaseSpace.hilbertCoords X ∘ Subtype.val
+    let L : S.domain → ℝ := Function.uncurry h ∘ PhaseSpace.hilbertCoords X ∘ Subtype.val
+    S.poissonBracket F (S.poissonBracket K L) x +
+      S.poissonBracket K (S.poissonBracket L F) x +
+      S.poissonBracket L (S.poissonBracket F K) x = 0 := by
+  dsimp only
   simp only [poissonBracket_restrictObservable]
   exact ClassicalMechanics.poissonBracket_jacobi f g h _ _ hf hg hh
 
@@ -534,28 +534,33 @@ lemma poissonBracket_jacobi (f g h : X → X → ℝ)
 differentiable observables commuting with the Hamiltonian also commutes with it. -/
 lemma poissonBracket_firstIntegrals (hdom : S.domain = Set.univ) (t : Time) (f g : X → X → ℝ)
     (hf : ContDiff ℝ 2 (Function.uncurry f)) (hg : ContDiff ℝ 2 (Function.uncurry g)) :
+    let F : S.domain → ℝ := Function.uncurry f ∘ PhaseSpace.hilbertCoords X ∘ Subtype.val
+    let K : S.domain → ℝ := Function.uncurry g ∘ PhaseSpace.hilbertCoords X ∘ Subtype.val
     let H := fun x : S.domain => S.hamiltonian (t, x.1)
-    S.poissonBracket (S.restrictObservable f) H = 0 →
-    S.poissonBracket (S.restrictObservable g) H = 0 →
-    S.poissonBracket (S.poissonBracket (S.restrictObservable f) (S.restrictObservable g))
-      H = 0 := by
-  intro H hfH hgH
-  let K := fun p q : X => S.hamiltonian (t, PhaseSpace.ofInnerProductSpace p q)
-  have hK : S.restrictObservable K = H := by
+    S.poissonBracket F H = 0 → S.poissonBracket K H = 0 →
+    S.poissonBracket (S.poissonBracket F K) H = 0 := by
+  intro F K H hfH hgH
+  let coordinateHamiltonian := fun p q : X => S.hamiltonian (t, PhaseSpace.ofInnerProductSpace p q)
+  have hK :
+      Function.uncurry coordinateHamiltonian ∘ PhaseSpace.hilbertCoords X ∘ Subtype.val = H := by
     funext x
     exact congrArg (fun z => S.hamiltonian (t, z))
-      ((PhaseSpace.innerProductSpaceDiffeomorph X).symm_apply_apply x.val)
+      ((PhaseSpace.hilbertCoords X).symm_apply_apply x.val)
   have hs := S.contMDiffOn_hamiltonian
   rw [hdom, Set.univ_prod_univ, contMDiffOn_univ] at hs
-  have hreg : ContDiff ℝ 2 (Function.uncurry K) :=
+  have hreg : ContDiff ℝ 2 (Function.uncurry coordinateHamiltonian) :=
     (hs.comp (contMDiff_const.prodMk
-      (PhaseSpace.innerProductSpaceDiffeomorph X).symm.contMDiff)).contDiff.of_le (by simp)
-  have hHf : S.poissonBracket H (S.restrictObservable f) = 0 := by
+      (PhaseSpace.hilbertCoords X).symm.contMDiff)).contDiff.of_le (by simp)
+  have hHf : S.poissonBracket H F = 0 := by
     funext x
     rw [S.poissonBracket_antisymm H, hfH]
     exact neg_zero
   funext x
-  have h := S.poissonBracket_jacobi f g K hf hg hreg x
+  have h := S.poissonBracket_jacobi f g coordinateHamiltonian hf hg hreg x
+  dsimp only at h
+  change S.poissonBracket F (S.poissonBracket K _) x +
+      S.poissonBracket K (S.poissonBracket _ F) x +
+      S.poissonBracket _ (S.poissonBracket F K) x = 0 at h
   rw [hK, hgH, hHf, S.poissonBracket_antisymm H] at h
   simpa only [poissonBracket_zero_right, Pi.zero_apply, zero_add, neg_eq_zero] using h
 
