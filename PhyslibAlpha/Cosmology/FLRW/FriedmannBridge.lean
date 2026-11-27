@@ -9,37 +9,41 @@ public import Physlib.Cosmology.FLRW.Basic
 public import Physlib.Cosmology.FLRW.MatterContent
 public import PhyslibAlpha.Cosmology.FLRW.PerfectFluid
 public import PhyslibAlpha.Relativity.General.GravitationalConstant
+import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Ring
 
 /-!
 
-# Bridge between FLRW metric pipeline and `Physlib.Cosmology.FLRW`
+# Deriving the Friedmann equations from Einstein's field equations
 
-Constructs `FLRWSpacetime.ofCosmology` from `U : Cosmology.FLRW` and deduces
-`Cosmology.FLRW.FriedmannSolution` directly from the coordinate-pipeline Einstein equation.
+Derivation of `Physlib.Cosmology.FLRW`'s first- and second-order Friedmann equations for an
+arbitrary speed of light and Newton's gravitational constant from the FLRW Einstein field equations.
 
 ## i. Overview
 
-Whereas `Physlib.Cosmology.FLRW` postulates the two Friedmann equations as ODEs for
-`U : Cosmology.FLRW`, this module bridges `U` into `FLRWSpacetime.ofCosmology U` with scale factor
-`flrwScaleFactorOfReal U := fun τ => U.a ⟨τ⟩` and proves that the coordinate-pipeline Einstein
-equation for a comoving `Cosmology.CosmicFluid` is equivalent to `FirstOrderFriedmann` and
-`SecondOrderFriedmann` in geometric units `c = 1`, directly constructing
-`U.FriedmannSolution F Λ G.val 1`.
+Whereas `Physlib.Cosmology.FLRW` postulates the two Friedmann equations as ordinary differential
+equations for a cosmological model with scale factor `a(t)`, this module derives them directly from
+Einstein's field equations `G_{ij} + Λ g_{ij} = (8 π G / c⁴) T_{ij}` for a homogeneous, isotropic
+metric filled with a comoving perfect fluid. Reparametrizing cosmic time `t` by the
+length-dimensioned coordinate `τ = c t` gives `flrwScaleFactorOfReal` and
+`FLRWSpacetime.ofCosmology` and yields `Cosmology.FLRW.FriedmannSolution` directly from the
+Einstein equations.
 
 ## ii. Key results
 
-- `flrwScaleFactorOfReal`, `FLRWSpacetime.ofCosmology` : real-coordinate scale factor and FLRW
-  spacetime from `Cosmology.FLRW`.
-- `eventually_differentiableAt_flrwScaleFactorOfReal`, `deriv_flrwScaleFactorOfReal_eq`,
-  `hasDerivAt_deriv_flrwScaleFactorOfReal` : differentiation bridge between `Time.deriv` and real
-  `deriv`.
+- `flrwScaleFactorOfReal`, `FLRWSpacetime.ofCosmology` : scale factor in coordinate time `τ = c t`
+  and corresponding FLRW spacetime geometry.
+- `hasDerivAt_flrwScaleFactorOfReal`, `eventually_differentiableAt_flrwScaleFactorOfReal`,
+  `deriv_flrwScaleFactorOfReal_eq`, `hasDerivAt_deriv_flrwScaleFactorOfReal` : first- and
+  second-derivative relations between cosmic-time derivatives and `τ = c t` derivatives.
 - `einsteinTensorOf_ofCosmology_iff_friedmann`, `friedmannSolution_of_einsteinTensorOf` :
-  equivalence with `Physlib.Cosmology.FLRW` Friedmann equations and `FriedmannSolution`
-  constructor taking `GravitationalConstant`.
+  equivalence between the FLRW Einstein field equations and `FirstOrderFriedmann` /
+  `SecondOrderFriedmann`, constructing a `Cosmology.FLRW.FriedmannSolution`.
 
 ## iii. Table of contents
 
-- A. Real-coordinate scale factor and `Cosmology.FLRW` bridge
+- A. Real-coordinate scale factor and Friedmann derivation
 
 ## iv. References
 
@@ -60,107 +64,191 @@ open GeneralRelativity.Pipeline
 
 /-!
 
-## A. Real-coordinate scale factor and `Cosmology.FLRW` bridge
+## A. Real-coordinate scale factor and Friedmann derivation
 
-Lifting `U.a : Time → ℝ` to `flrwScaleFactorOfReal U : ℝ → ℝ` lets `FLRWSpacetime.ofCosmology U`
-connect the metric pipeline to `Cosmology.FLRW.FriedmannEquation` and
-`Cosmology.FLRW.FriedmannSolution`.
+Rewriting a cosmological model's scale factor `a(t)` as a function of the length-dimensioned time
+coordinate `τ = c t` relates the FLRW Einstein tensor directly to the first- and second-order
+Friedmann equations in `Physlib.Cosmology.FLRW`.
 
 -/
 
-/-- The real-coordinate scale factor `τ ↦ U.a ⟨τ⟩` extracted from `U : Cosmology.FLRW`. -/
-noncomputable def flrwScaleFactorOfReal (U : Cosmology.FLRW) : ℝ → ℝ := fun τ => U.a ⟨τ⟩
+/-- The scale factor `τ ↦ a(τ / c)` of a cosmological model as a function of coordinate time
+`τ = c t`. -/
+noncomputable def flrwScaleFactorOfReal (c : SpeedOfLight) (U : Cosmology.FLRW) : ℝ → ℝ :=
+  fun τ => U.a ⟨τ / (c : ℝ)⟩
 
-/-- Construct an `FLRWSpacetime` directly from `U : Cosmology.FLRW`. -/
-noncomputable def FLRWSpacetime.ofCosmology (U : Cosmology.FLRW) : FLRWSpacetime where
-  a := flrwScaleFactorOfReal U
+/-- Construct an FLRW spacetime metric from a `Cosmology.FLRW` model and speed of light `c`. -/
+noncomputable def FLRWSpacetime.ofCosmology (c : SpeedOfLight) (U : Cosmology.FLRW) :
+    FLRWSpacetime where
+  a := flrwScaleFactorOfReal c U
   k := U.geometry.curvature
 
-/-- Neighbourhood differentiability of `flrwScaleFactorOfReal U` at any time `t ∈ U.I`. -/
-lemma eventually_differentiableAt_flrwScaleFactorOfReal (U : Cosmology.FLRW) {t : Time}
+/-- Evaluating `flrwScaleFactorOfReal` at `τ = c t` recovers the scale factor at cosmic time
+`t`. -/
+lemma flrwScaleFactorOfReal_mul (c : SpeedOfLight) (U : Cosmology.FLRW) (t : Time) :
+    flrwScaleFactorOfReal c U ((c : ℝ) * t.val) = U.a t := by
+  have heq : (⟨(c : ℝ) * t.val / (c : ℝ)⟩ : Time) = t := by
+    ext
+    exact mul_div_cancel_left₀ t.val c.val_ne_zero
+  simp only [flrwScaleFactorOfReal, heq]
+
+/-- Neighbourhood membership of the rescaled cosmic time `τ / c` in the model's open time
+interval. -/
+private lemma eventually_div_mem_I (c : SpeedOfLight) (U : Cosmology.FLRW) {t : Time}
     (ht : t ∈ U.I) :
-    ∀ᶠ τ in nhds t.val, DifferentiableAt ℝ (flrwScaleFactorOfReal U) τ := by
-  have hmem : ∀ᶠ τ in nhds t.val, (⟨τ⟩ : Time) ∈ U.I :=
-    (Time.toRealCLE.symm.continuous.tendsto t.val).eventually (U.isOpen_I.mem_nhds ht)
-  filter_upwards [hmem] with τ hτ
-  exact (Time.hasDerivAt_mk_of_differentiableAt (U.differentiableAt_a hτ)).differentiableAt
+    ∀ᶠ τ in nhds ((c : ℝ) * t.val), (⟨τ / (c : ℝ)⟩ : Time) ∈ U.I := by
+  have hcont : Continuous (fun τ : ℝ => (⟨τ / (c : ℝ)⟩ : Time)) :=
+    Time.toRealCLE.symm.continuous.comp (continuous_id.div_const (c : ℝ))
+  have heq : (⟨(c : ℝ) * t.val / (c : ℝ)⟩ : Time) = t := by
+    ext
+    exact mul_div_cancel_left₀ t.val c.val_ne_zero
+  exact (hcont.tendsto ((c : ℝ) * t.val)).eventually (heq.symm ▸ U.isOpen_I.mem_nhds ht)
 
-/-- First derivative of `flrwScaleFactorOfReal U` equals `Time.deriv U.a`. -/
-lemma deriv_flrwScaleFactorOfReal_eq (U : Cosmology.FLRW) {t : Time} (ht : t ∈ U.I) :
-    deriv (flrwScaleFactorOfReal U) t.val = Time.deriv U.a t :=
-  (Time.hasDerivAt_mk_of_differentiableAt (U.differentiableAt_a ht)).deriv
+/-- Pointwise derivative of the rescaled scale factor `τ ↦ a(τ / c)` in coordinate time `τ`. -/
+lemma hasDerivAt_flrwScaleFactorOfReal (c : SpeedOfLight) (U : Cosmology.FLRW) {τ : ℝ}
+    (hτ : (⟨τ / (c : ℝ)⟩ : Time) ∈ U.I) :
+    HasDerivAt (flrwScaleFactorOfReal c U) (Time.deriv U.a ⟨τ / (c : ℝ)⟩ / (c : ℝ)) τ := by
+  have h1 : HasDerivAt (fun s : ℝ => U.a ⟨s⟩) (Time.deriv U.a ⟨τ / (c : ℝ)⟩) (τ / (c : ℝ)) :=
+    Time.hasDerivAt_mk_of_differentiableAt (U.differentiableAt_a hτ)
+  have h2 : HasDerivAt (fun s : ℝ => s / (c : ℝ)) (1 / (c : ℝ)) τ :=
+    (hasDerivAt_id τ).div_const (c : ℝ)
+  have hcomp := h1.scomp τ h2
+  convert hcomp using 1
+  · rfl
+  · simp [smul_eq_mul]
+    ring
 
-/-- `flrwScaleFactorOfReal U` is twice differentiable at `t.val` with second derivative
-`Time.deriv (Time.deriv U.a) t`. -/
-lemma hasDerivAt_deriv_flrwScaleFactorOfReal (U : Cosmology.FLRW) {t : Time} (ht : t ∈ U.I) :
-    HasDerivAt (deriv (flrwScaleFactorOfReal U)) (Time.deriv (Time.deriv U.a) t) t.val := by
-  have hmem : ∀ᶠ τ in nhds t.val, (⟨τ⟩ : Time) ∈ U.I :=
-    (Time.toRealCLE.symm.continuous.tendsto t.val).eventually (U.isOpen_I.mem_nhds ht)
-  have heq : deriv (flrwScaleFactorOfReal U) =ᶠ[nhds t.val] fun τ => Time.deriv U.a ⟨τ⟩ := by
-    filter_upwards [hmem] with τ hτ
-    exact (Time.hasDerivAt_mk_of_differentiableAt (U.differentiableAt_a hτ)).deriv
-  have hderiv := Time.hasDerivAt_mk_of_differentiableAt (U.differentiableAt_deriv_a ht)
-  exact hderiv.congr_of_eventuallyEq heq
+/-- Neighbourhood differentiability of the rescaled scale factor around coordinate time
+`τ = c t`. -/
+lemma eventually_differentiableAt_flrwScaleFactorOfReal (c : SpeedOfLight) (U : Cosmology.FLRW)
+    {t : Time} (ht : t ∈ U.I) :
+    ∀ᶠ τ in nhds ((c : ℝ) * t.val), DifferentiableAt ℝ (flrwScaleFactorOfReal c U) τ := by
+  filter_upwards [eventually_div_mem_I c U ht] with τ hτ
+  exact (hasDerivAt_flrwScaleFactorOfReal c U hτ).differentiableAt
 
-/-- Bridge to `Physlib.Cosmology.FLRW`: the coordinate-pipeline Einstein equation for
-`FLRWSpacetime.ofCosmology U` is equivalent to `FirstOrderFriedmann` and `SecondOrderFriedmann`
-(`c = 1`) at `t ∈ U.I`. -/
-lemma einsteinTensorOf_ofCosmology_iff_friedmann (U : Cosmology.FLRW) (F : Cosmology.CosmicFluid)
-    (Λ : ℝ) (G : GravitationalConstant) {t : Time} (ht : t ∈ U.I) (x : Fin 4 → ℝ)
-    (hx0 : x 0 = t.val) (hr : x 1 ≠ 0)
+/-- First derivative of the rescaled scale factor at `τ = c t`: `da/dτ = (1 / c) ∂ₜ a`. -/
+lemma deriv_flrwScaleFactorOfReal_eq (c : SpeedOfLight) (U : Cosmology.FLRW) {t : Time}
+    (ht : t ∈ U.I) :
+    deriv (flrwScaleFactorOfReal c U) ((c : ℝ) * t.val) = Time.deriv U.a t / (c : ℝ) := by
+  have heq : (⟨(c : ℝ) * t.val / (c : ℝ)⟩ : Time) = t := by
+    ext
+    exact mul_div_cancel_left₀ t.val c.val_ne_zero
+  have hτ : (⟨(c : ℝ) * t.val / (c : ℝ)⟩ : Time) ∈ U.I := heq.symm ▸ ht
+  simpa [heq] using (hasDerivAt_flrwScaleFactorOfReal c U hτ).deriv
+
+/-- Second derivative of the rescaled scale factor at `τ = c t`: `d²a/dτ² = (1 / c²) ∂ₜ² a`. -/
+lemma hasDerivAt_deriv_flrwScaleFactorOfReal (c : SpeedOfLight) (U : Cosmology.FLRW) {t : Time}
+    (ht : t ∈ U.I) :
+    HasDerivAt (deriv (flrwScaleFactorOfReal c U))
+      (Time.deriv (Time.deriv U.a) t / (c : ℝ) ^ 2) ((c : ℝ) * t.val) := by
+  have heq : deriv (flrwScaleFactorOfReal c U) =ᶠ[nhds ((c : ℝ) * t.val)]
+      fun τ => Time.deriv U.a ⟨τ / (c : ℝ)⟩ / (c : ℝ) := by
+    filter_upwards [eventually_div_mem_I c U ht] with τ hτ
+    exact (hasDerivAt_flrwScaleFactorOfReal c U hτ).deriv
+  have h1 : HasDerivAt (fun s : ℝ => Time.deriv U.a ⟨s⟩)
+      (Time.deriv (Time.deriv U.a) t) ((c : ℝ) * t.val / (c : ℝ)) := by
+    have ht' : (c : ℝ) * t.val / (c : ℝ) = t.val := mul_div_cancel_left₀ t.val c.val_ne_zero
+    rw [ht']
+    exact Time.hasDerivAt_mk_of_differentiableAt (U.differentiableAt_deriv_a ht)
+  have h2 : HasDerivAt (fun s : ℝ => s / (c : ℝ)) (1 / (c : ℝ)) ((c : ℝ) * t.val) :=
+    (hasDerivAt_id ((c : ℝ) * t.val)).div_const (c : ℝ)
+  have hcomp1 := (h1.scomp ((c : ℝ) * t.val) h2).const_smul (1 / (c : ℝ))
+  have hcomp : HasDerivAt (fun τ : ℝ => Time.deriv U.a ⟨τ / (c : ℝ)⟩ / (c : ℝ))
+      (Time.deriv (Time.deriv U.a) t / (c : ℝ) ^ 2) ((c : ℝ) * t.val) := by
+    convert hcomp1 using 1
+    · ext τ
+      simp [Pi.smul_apply, Function.comp_def, smul_eq_mul, div_eq_inv_mul]
+    · simp [smul_eq_mul]
+      ring
+  exact hcomp.congr_of_eventuallyEq heq
+
+/-- The FLRW Einstein field equations for a comoving cosmic fluid with speed of light `c` and
+gravitational constant `G` are equivalent to the first- and second-order Friedmann equations of
+`Physlib.Cosmology.FLRW`. -/
+lemma einsteinTensorOf_ofCosmology_iff_friedmann (c : SpeedOfLight) (U : Cosmology.FLRW)
+    (F : Cosmology.CosmicFluid) (Λ : ℝ) (G : GravitationalConstant) {t : Time} (ht : t ∈ U.I)
+    (x : Fin 4 → ℝ) (hx0 : x 0 = (c : ℝ) * t.val) (hr : x 1 ≠ 0)
     (hkr : 1 - U.geometry.curvature * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
-    (∀ i j, Pipeline.einsteinTensorOf (FLRWSpacetime.ofCosmology U).metric
-          (FLRWSpacetime.ofCosmology U).metricInv x i j
-          + Λ * (FLRWSpacetime.ofCosmology U).metric x i j
-        = 8 * Real.pi * G.val * perfectFluidStressEnergy (F.ρ t) (F.p t)
-            ((FLRWSpacetime.ofCosmology U).metric x) i j)
+    (∀ i j, Pipeline.einsteinTensorOf (FLRWSpacetime.ofCosmology c U).metric
+          (FLRWSpacetime.ofCosmology c U).metricInv x i j
+          + Λ * (FLRWSpacetime.ofCosmology c U).metric x i j
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * perfectFluidStressEnergy c (F.ρ t) (F.p t)
+            ((FLRWSpacetime.ofCosmology c U).metric x) i j)
       ↔ Cosmology.FLRW.FriedmannEquation.FirstOrderFriedmann U.a F.ρ U.geometry.curvature Λ
-            G.val 1 t
-          ∧ Cosmology.FLRW.FriedmannEquation.SecondOrderFriedmann U.a F.ρ F.p Λ G.val 1 t := by
-  have ha : (FLRWSpacetime.ofCosmology U).a (x 0) ≠ 0 := by
+            G.val c t
+          ∧ Cosmology.FLRW.FriedmannEquation.SecondOrderFriedmann U.a F.ρ F.p Λ G.val c t := by
+  have hc : (c : ℝ) ≠ 0 := c.val_ne_zero
+  have ha0_eq : flrwScaleFactorOfReal c U (x 0) = U.a t := by
     rw [hx0]
+    exact flrwScaleFactorOfReal_mul c U t
+  have ha : (FLRWSpacetime.ofCosmology c U).a (x 0) ≠ 0 := by
+    simp only [FLRWSpacetime.ofCosmology, ha0_eq]
     exact U.a_ne_zero ht
-  have ha_diff : ∀ᶠ τ in nhds (x 0), DifferentiableAt ℝ (FLRWSpacetime.ofCosmology U).a τ := by
+  have ha_diff : ∀ᶠ τ in nhds (x 0), DifferentiableAt ℝ (FLRWSpacetime.ofCosmology c U).a τ := by
     rw [hx0]
-    exact eventually_differentiableAt_flrwScaleFactorOfReal U ht
-  have hd2 := hasDerivAt_deriv_flrwScaleFactorOfReal U ht
-  have ha2 : DifferentiableAt ℝ (deriv (FLRWSpacetime.ofCosmology U).a) (x 0) := by
+    exact eventually_differentiableAt_flrwScaleFactorOfReal c U ht
+  have hd2 := hasDerivAt_deriv_flrwScaleFactorOfReal c U ht
+  have ha2 : DifferentiableAt ℝ (deriv (FLRWSpacetime.ofCosmology c U).a) (x 0) := by
     rw [hx0]
     exact hd2.differentiableAt
-  have hd1_eq : deriv (flrwScaleFactorOfReal U) (x 0) = Time.deriv U.a t := by
+  have hd1_eq : deriv (flrwScaleFactorOfReal c U) (x 0) = Time.deriv U.a t / (c : ℝ) := by
     rw [hx0]
-    exact deriv_flrwScaleFactorOfReal_eq U ht
-  have hd2_eq :
-      deriv (deriv (flrwScaleFactorOfReal U)) (x 0) = Time.deriv (Time.deriv U.a) t := by
+    exact deriv_flrwScaleFactorOfReal_eq c U ht
+  have hd2_eq : deriv (deriv (flrwScaleFactorOfReal c U)) (x 0)
+      = Time.deriv (Time.deriv U.a) t / (c : ℝ) ^ 2 := by
     rw [hx0]
     exact hd2.deriv
-  have ha0_eq : flrwScaleFactorOfReal U (x 0) = U.a t := by
-    rw [hx0]
-    rfl
-  rw [(FLRWSpacetime.ofCosmology U).einsteinTensorOf_iff_friedmann Λ G.val (F.ρ t) (F.p t) x
+  rw [(FLRWSpacetime.ofCosmology c U).einsteinTensorOf_iff_friedmann c Λ G (F.ρ t) (F.p t) x
     ha hr hkr hsin ha_diff ha2]
   simp only [Cosmology.FLRW.FriedmannEquation.FirstOrderFriedmann,
-    Cosmology.FLRW.FriedmannEquation.SecondOrderFriedmann, SpeedOfLight.val_one, one_pow,
-    mul_one, div_one, FLRWSpacetime.ofCosmology, ha0_eq, hd1_eq, hd2_eq]
+    Cosmology.FLRW.FriedmannEquation.SecondOrderFriedmann, FLRWSpacetime.ofCosmology,
+    ha0_eq, hd1_eq, hd2_eq]
+  have hau : U.a t ≠ 0 := U.a_ne_zero ht
+  have h1 : (Time.deriv U.a t / (c : ℝ) / U.a t) ^ 2
+        = 8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2) * F.ρ t
+          - U.geometry.curvature / U.a t ^ 2 + Λ / 3
+      ↔ (Time.deriv U.a t / U.a t) ^ 2
+        = 8 * Real.pi * G.val / 3 * F.ρ t
+          - U.geometry.curvature * (c : ℝ) ^ 2 / U.a t ^ 2 + Λ * (c : ℝ) ^ 2 / 3 := by
+    constructor <;> intro h
+    · have := congrArg (· * (c : ℝ) ^ 2) h
+      field_simp [hc, hau] at this ⊢
+      linarith
+    · have := congrArg (· / (c : ℝ) ^ 2) h
+      field_simp [hc, hau] at this ⊢
+      linarith
+  have h2 : Time.deriv (Time.deriv U.a) t / (c : ℝ) ^ 2 / U.a t
+        = -(4 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * (F.ρ t + 3 * F.p t / (c : ℝ) ^ 2) + Λ / 3
+      ↔ Time.deriv (Time.deriv U.a) t / U.a t
+        = -(4 * Real.pi * G.val / 3) * (F.ρ t + 3 * F.p t / (c : ℝ) ^ 2)
+          + Λ * (c : ℝ) ^ 2 / 3 := by
+    constructor <;> intro h
+    · have := congrArg (· * (c : ℝ) ^ 2) h
+      field_simp [hc, hau] at this ⊢
+      linarith
+    · have := congrArg (· / (c : ℝ) ^ 2) h
+      field_simp [hc, hau] at this ⊢
+      linarith
+  exact and_congr h1 h2
 
-/-- If the FLRW Einstein equation holds across `U.I` at a spatial chart point `r₀, θ₀`,
-then `U` and `F` form a `Cosmology.FLRW.FriedmannSolution F Λ G.val 1` (and hence automatically
-satisfy the fluid continuity equation by `Cosmology.FLRW.FriedmannSolution.continuityEquation`). -/
-lemma friedmannSolution_of_einsteinTensorOf (U : Cosmology.FLRW) (F : Cosmology.CosmicFluid)
-    (Λ : ℝ) (G : GravitationalConstant) (r₀ θ₀ : ℝ) (hr : r₀ ≠ 0)
+/-- If the FLRW Einstein equations hold across the model's open time interval at a regular spatial
+chart point, then the model and cosmic fluid form a `Cosmology.FLRW.FriedmannSolution` (and hence
+automatically satisfy the fluid continuity equation). -/
+lemma friedmannSolution_of_einsteinTensorOf (c : SpeedOfLight) (U : Cosmology.FLRW)
+    (F : Cosmology.CosmicFluid) (Λ : ℝ) (G : GravitationalConstant) (r₀ θ₀ : ℝ) (hr : r₀ ≠ 0)
     (hkr : 1 - U.geometry.curvature * r₀ ^ 2 ≠ 0) (hsin : Real.sin θ₀ ≠ 0)
     (heinst : ∀ t ∈ U.I, ∀ i j,
-      let x : Fin 4 → ℝ := ![t.val, r₀, θ₀, 0]
-      Pipeline.einsteinTensorOf (FLRWSpacetime.ofCosmology U).metric
-          (FLRWSpacetime.ofCosmology U).metricInv x i j
-          + Λ * (FLRWSpacetime.ofCosmology U).metric x i j
-        = 8 * Real.pi * G.val * perfectFluidStressEnergy (F.ρ t) (F.p t)
-            ((FLRWSpacetime.ofCosmology U).metric x) i j) :
-    U.FriedmannSolution F Λ G.val 1 := by
+      let x : Fin 4 → ℝ := ![(c : ℝ) * t.val, r₀, θ₀, 0]
+      Pipeline.einsteinTensorOf (FLRWSpacetime.ofCosmology c U).metric
+          (FLRWSpacetime.ofCosmology c U).metricInv x i j
+          + Λ * (FLRWSpacetime.ofCosmology c U).metric x i j
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * perfectFluidStressEnergy c (F.ρ t) (F.p t)
+            ((FLRWSpacetime.ofCosmology c U).metric x) i j) :
+    U.FriedmannSolution F Λ G.val c := by
   refine ⟨fun t ht => ?_, fun t ht => ?_⟩
-  · exact ((einsteinTensorOf_ofCosmology_iff_friedmann U F Λ G ht ![t.val, r₀, θ₀, 0]
+  · exact ((einsteinTensorOf_ofCosmology_iff_friedmann c U F Λ G ht ![(c : ℝ) * t.val, r₀, θ₀, 0]
       rfl hr hkr hsin).mp (heinst t ht)).1
-  · exact ((einsteinTensorOf_ofCosmology_iff_friedmann U F Λ G ht ![t.val, r₀, θ₀, 0]
+  · exact ((einsteinTensorOf_ofCosmology_iff_friedmann c U F Λ G ht ![(c : ℝ) * t.val, r₀, θ₀, 0]
       rfl hr hkr hsin).mp (heinst t ht)).2
 
 end FLRW

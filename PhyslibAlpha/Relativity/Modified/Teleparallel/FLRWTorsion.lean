@@ -225,9 +225,7 @@ private lemma flrw_superpotential_eq (a : ℝ → ℝ) (x : Fin 4 → ℝ) (ha :
   fin_cases k <;> fin_cases i <;> fin_cases j <;> simp <;> ring
 
 /-- Exact agreement between the general teleparallel torsion scalar `torsionScalar` applied to the
-flat FLRW comoving tetrad `flrwTetradFrame` and the closed-form scalar `flrwTorsionScalar` (the
-discrepancy between `torsionScalar` and `flrwTorsionScalar` motivating this reconciliation was
-identified by `thunder-detector`). -/
+flat FLRW comoving tetrad `flrwTetradFrame` and the closed-form scalar `flrwTorsionScalar`. -/
 lemma torsionScalar_flrw_eq_flrwTorsionScalar (a : ℝ → ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0) :
     torsionScalar (flrwCartesianMetricTensor a x ha)
         ((flrwTetradFrame a x ha).weitzenbockTorsion (flrwTetradDeriv a x)) =
@@ -261,13 +259,14 @@ lemma ricciScalarOf_flrw_flat_eq_neg_torsion_add_boundary (a : ℝ → ℝ) (x :
   ring
 
 /-- For a Physlib `Cosmology.FLRW` universe, `flrwTorsionScalar` reproduces `6 H²` in terms of
-`Cosmology.FLRW.FriedmannEquation.hubbleConstant`. -/
+`Cosmology.FLRW.FriedmannEquation.hubbleConstant` (in units `c = 1`). -/
 lemma flrwTorsionScalar_ofCosmology (U : Cosmology.FLRW) {t : Time} (ht : t ∈ U.I) :
-    flrwTorsionScalar (flrwScaleFactorOfReal U) t.val =
+    flrwTorsionScalar (flrwScaleFactorOfReal 1 U) t.val =
       6 * (Cosmology.FLRW.FriedmannEquation.hubbleConstant U.a t) ^ 2 := by
-  simp only [flrwTorsionScalar, deriv_flrwScaleFactorOfReal_eq U ht,
-    Cosmology.FLRW.FriedmannEquation.hubbleConstant]
-  rfl
+  have hd := deriv_flrwScaleFactorOfReal_eq 1 U ht
+  have ha := flrwScaleFactorOfReal_mul 1 U t
+  simp only [SpeedOfLight.val_one, one_mul, div_one] at hd ha
+  simp only [flrwTorsionScalar, hd, ha, Cosmology.FLRW.FriedmannEquation.hubbleConstant]
 
 end Teleparallel
 

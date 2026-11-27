@@ -88,9 +88,10 @@ Boyer-Lindquist coordinates (t, r, θ, φ) with spin a, polynomial functions Σ 
 pipeline verification that the Ricci tensor, Ricci scalar, and Einstein tensor vanish identically in
 vacuum [50]. Homogeneous and isotropic cosmology is formalized on `FLRWSpacetime` with scale
 factor a(t) and spatial curvature k [51], evaluating all FLRW Christoffel symbols, Ricci
-components, scalar curvature, and Einstein tensor through the coordinate pipeline [52], proving
-equivalence with the Friedmann equations for a comoving perfect fluid [53], and bridging directly
-to Physlib's `Cosmology.FLRW` [54].
+components, scalar curvature, and Einstein tensor from the coordinate metric [52], proving
+equivalence with the Friedmann equations for a comoving perfect fluid with arbitrary speed of
+light c and gravitational constant G [53], and bridging directly to Physlib's `Cosmology.FLRW`
+[54].
 
 ### Scalar-tensor, higher-curvature, and screening gravity theories
 
