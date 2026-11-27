@@ -25,10 +25,10 @@ arbitrary speed of light and Newton's gravitational constant from the FLRW Einst
 Whereas `Physlib.Cosmology.FLRW` postulates the two Friedmann equations as ordinary differential
 equations for a cosmological model with scale factor `a(t)`, this module derives them directly from
 Einstein's field equations `G_{ij} + Λ g_{ij} = (8 π G / c⁴) T_{ij}` for a homogeneous, isotropic
-metric filled with a comoving perfect fluid. Reparametrizing cosmic time `t` by the
-length-dimensioned coordinate `τ = c t` gives `flrwScaleFactorOfReal` and
-`FLRWSpacetime.ofCosmology` and yields `Cosmology.FLRW.FriedmannSolution` directly from the
-Einstein equations.
+metric filled with a comoving perfect fluid, with `G` the gravitational constant and `c` the speed
+of light. Reparametrizing cosmic time `t` by the length-dimensioned coordinate `τ = c t` gives
+`flrwScaleFactorOfReal` and `FLRWSpacetime.ofCosmology` and yields
+`Cosmology.FLRW.FriedmannSolution` directly from the Einstein equations.
 
 ## ii. Key results
 

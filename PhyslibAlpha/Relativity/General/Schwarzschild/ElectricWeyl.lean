@@ -27,9 +27,13 @@ tensor determined by `E = diag(0, -2k, k, k)` with `k = M / r³`:
 
 This module builds that tensor as a `RiemannTensor 4`, proves its Ricci flatness against
 `minkowski` (via the general Ricci contraction), computes its sum of squares `48 k²` (yielding
-the Kretschmann scalar `48 M² / r⁶` for any `SchwarzschildSpacetime`), proves it is purely
-electric, and verifies that the static Newtonian potential `Φ = -M / r` has Hessian eigenvalues
-`electricPart (M / r³)` matching those extracted directly from `SchwarzschildSpacetime.metric`.
+the Kretschmann scalar `48 M² / r⁶` for any `SchwarzschildSpacetime`), and proves it is purely
+electric. The final Section C works the opposite way round: rather than deriving the tidal
+eigenvalues from the curvature tensor, it postulates the coordinate-frame entries
+`∓g_{tt} (2M/r³)` and `g^{rr} (M/r³)` and shows that frame rescaling of `SchwarzschildSpacetime`
+metric components reproduces the eigenvalues of the Hessian of `Φ = -M / r`, thereby certifying
+that the postulated eigenvalues agree with the metric. (Here `tidalPart (-2M/r³) (M/r³)` is the
+Hessian of `Φ`, not the frame Riemann tensor.)
 
 ## ii. Key results
 
@@ -177,7 +181,9 @@ lemma kretschmann_scalar (S : SchwarzschildSpacetime) (r : ℝ) (hr : r ≠ 0) :
   have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
   field_simp
 
-/-- With `Φ = -M / r`, the Newtonian tidal tensor of `S` equals `electricPart (S.M / r³)`. -/
+/-- Newtonian tidal tensor of `Φ = -M / r`, whose Hessian has eigenvalues `(-2M/r³, M/r³, M/r³)`,
+equals `electricPart (S.M / r³)`. This is a statement about the Newtonian potential, not about the
+frame Riemann tensor `S.frameRiemann r`. -/
 lemma tidalPart_eq_electricPart (S : SchwarzschildSpacetime) (r : ℝ) :
     tidalPart (-2 * S.M / r ^ 3) (S.M / r ^ 3) = electricPart (S.M / r ^ 3) := by
   funext i j
@@ -240,7 +246,7 @@ lemma electric_phiphi_from_metric (S : SchwarzschildSpacetime) (r th : ℝ) (hr 
   exact S.framePhiPhi r th hr hf hsin
 
 /-- The entire frame electric part of the Weyl tensor (`diag(0, -2M/r³, M/r³, M/r³)` plus all
-seven vanishing entries) assembled from the Schwarzschild metric. -/
+seven vanishing entries) reproduced by rescaling frame components of the Schwarzschild metric. -/
 lemma electricPart_from_metric (S : SchwarzschildSpacetime) (r th : ℝ) (hr : r ≠ 0)
     (hf : S.metricFn r ≠ 0) (hsin : Real.sin th ≠ 0) :
     (-(S.metricFn r) * (2 * S.M / (r ^ 3 * S.metricFn r))

@@ -16,7 +16,7 @@ Local existence and uniqueness for the geodesic equation via Picard–Lindelöf.
 ## i. Overview
 
 On a local coordinate chart `E` modeling spacetime positions and tangent velocities, a geodesic
-connection `Γ` governs the free-fall equation of motion `γ'' = -Γ(γ)(γ', γ')`, bundled in
+connection `Γ` governs the free-fall equation of motion `γ'' = -Γ(γ)(γ', γ')`, encoded in
 `GeodesicSystem E`. Rewriting this second-order trajectory law as a first-order autonomous flow
 `G.field z = (z.2, G.accel z.1 z.2)` on `(position, velocity)` phase space shows that smooth (`C¹`)
 Christoffel symbols generate unique local particle trajectories from any initial position and
@@ -26,7 +26,7 @@ velocity `(x₀, v₀)` via the Picard–Lindelöf theorem, reducing to unaccele
 ## ii. Key results
 
 - `Christoffel`, `GeodesicSystem`, `GeodesicSystem.accel`, `GeodesicSystem.field`, `IsGeodesic` :
-  coordinate connection field, geodesic system bundle, phase-space flow, and free-fall predicate.
+  coordinate connection field, geodesic system, phase-space flow, and free-fall predicate.
 - `contDiffAt_geodesicField`, `geodesic_ivp_exists` : local existence of a trajectory on some
   proper-time interval `(-ε, ε)` for smooth (`C¹`) Christoffel symbols.
 - `geodesic_ivp_exists_curve` : `IsGeodesic` position-and-velocity form of local existence.

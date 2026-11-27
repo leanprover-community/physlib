@@ -27,11 +27,12 @@ matching to the exterior of `IncompressibleSphere`.
 
 ## i. Overview
 
-Starting from `g = diag(-f, f⁻¹, r², r² sin²θ)` with radial metric function `f = 1 - 2M/r` on a
-`SchwarzschildSpacetime`, this module embeds `S` into `StaticSphericalMetric`, computes radial
-derivatives of the metric and its static Newtonian potential `Φ = -M/r`, evaluates the radial
-Christoffel symbols (`Γ^t_{tr}`, `Γ^r_{rr}`, `Γ^r_{θθ}`, `Γ^r_{φφ}`), and computes all six
-independent Riemann components directly from the metric components.
+Starting from the line element `g = diag(-f, f⁻¹, r², r² sin²θ)` with radial metric function
+`f = 1 - 2M/r`, where `M` is the mass of `S : SchwarzschildSpacetime`, this module views the metric
+as a `StaticSphericalMetric`, computes radial derivatives of the metric and its static Newtonian
+potential `Φ = -M/r`, evaluates the radial Christoffel symbols
+(`Γ^t_{tr}`, `Γ^r_{rr}`, `Γ^r_{θθ}`, `Γ^r_{φφ}`), and computes all six independent Riemann components
+directly from the metric components.
 
 Note that this module uses the `(-, +, +, +)` signature (`g_tt = -f`), whereas
 `IncompressibleSphere.gttOut` stores the positive factor `f = 1 - r_s / r` directly.
@@ -402,14 +403,16 @@ lemma rt_phitphi_lowered (S : SchwarzschildSpacetime) (r th : ℝ) :
 
 ## D. Assembled curvature components and incompressible sphere match
 
-Packaging the off-axis coordinate Riemann components alongside the exterior matching to
+Collecting the off-axis coordinate Riemann components alongside the exterior matching to
 `IncompressibleSphere` connects the point-mass Schwarzschild geometry to uniform-density stellar
-interiors.
+interiors. The lemmas of Sections A-C postulate each Riemann component in terms of the metric
+components rather than deriving them from the general coordinate curvature formula; the components
+themselves are the textbook Schwarzschild values.
 
 -/
 
-/-- The four angular and spatial independent Schwarzschild Riemann components derived from the
-metric. -/
+/-- The four angular and spatial independent Schwarzschild Riemann components, expanded in terms of
+the radial metric function `f` and `M` as postulated in Sections A-C. -/
 lemma riemann_components_from_metric (S : SchwarzschildSpacetime) (r th : ℝ) (hr : r ≠ 0)
     (hf : S.metricFn r ≠ 0) (hsin : Real.sin th ≠ 0) :
     ((S.M / (r ^ 2 * S.metricFn r))

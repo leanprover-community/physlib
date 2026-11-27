@@ -21,13 +21,14 @@ on `KerrSpacetime`.
 
 ## i. Overview
 
-This module defines the Boyer–Lindquist Kerr metric `KerrSpacetime.metric` and its analytical
-inverse `KerrSpacetime.metricInv`, and certifies them as a `MetricTensor 4` at each point and as a
-`CoordinateMetric 4` on the chart away from the ring singularity `Σ = 0`, horizons `Δ = 0`, and polar axis
-`sin θ = 0`, and establishes the basic causal and rotational properties of the Kerr geometry:
-outer/inner event horizons `r±`, extremal coalescence `a² = M²`, stationary-limit surface
-(ergosphere) `g₀₀ = 0`, zero-angular-momentum observer (ZAMO) frame-dragging angular velocity
-`ω = -g_{tφ}/g_{φφ}`, and reduction to Schwarzschild at `a = 0`.
+This module defines the Boyer–Lindquist Kerr metric `KerrSpacetime.metric` of a spin-`a` mass-`M`
+black hole together with its analytical inverse `KerrSpacetime.metricInv`, and certifies them as a
+`MetricTensor 4` at each point and as a `CoordinateMetric 4` on the chart away from the ring
+singularity `Σ = 0`, horizons `Δ = 0`, and polar axis `sin θ = 0`, and establishes the basic causal
+and rotational properties of the Kerr geometry: outer/inner event horizons `r±`, extremal
+coalescence `a² = M²`, stationary-limit surface (ergosphere) `g₀₀ = 0`, zero-angular-momentum
+observer (ZAMO) frame-dragging angular velocity `ω = -g_{tφ}/g_{φφ}`, and reduction to Schwarzschild
+at `a = 0`.
 
 ## ii. Key results
 

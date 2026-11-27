@@ -26,6 +26,12 @@ fifth-dimensional Ricci component combine to reduce the 5D scalar curvature `D.s
 Einstein–Maxwell Lagrangian `R^{(4)} - ¼ F_{ab} F^{ab}`, and identify the horizontal 5D vacuum
 Einstein equation with the 4D Einstein–Maxwell equations sourced by `maxwellStressEnergy`.
 
+The reduction is carried out algebraically: the horizontal and fifth-dimensional Ricci components
+`D.ricci4D` and `D.ricci44` are defined directly by the stated component formulas rather than
+derived from the 5D metric `D.M` and the coordinate curvature operators, so
+`KaluzaKleinData.kaluza_miracle` certifies the agreement of the postulated components with the 4D
+Einstein–Maxwell scalar.
+
 ## ii. Key results
 
 - `maxwellF2`, `maxwellStressEnergy`, `maxwellStressEnergy_trace_zero` : 4D Maxwell invariant,

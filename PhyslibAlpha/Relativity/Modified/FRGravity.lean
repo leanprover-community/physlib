@@ -113,8 +113,8 @@ noncomputable def FRTheory.algebraicFieldEqn (T : FRTheory) {n : ℕ} (M : Metri
     (R : RiemannTensor n) : Tensor2 n :=
   fun i j => T.df (ricciScalar M R) * ricci M R i j - (1 / 2) * T.f (ricciScalar M R) * M.g i j
 
-/-- `f(R) = R - 2 Λ` reduces exactly to general relativity with cosmological constant `Λ`,
-`G + Λ g`. -/
+/-- `f(R) = R - 2 Λ` reduces exactly to general relativity with cosmological constant `Λ`, whose
+equations read `G + Λ g = 0`. -/
 lemma linear_is_einstein {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) (Λ : ℝ) :
     (FRTheory.generalRelativity Λ).algebraicFieldEqn M R
       = fun i j => einstein M R i j + Λ * M.g i j := by

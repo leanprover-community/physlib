@@ -136,7 +136,7 @@ lemma TeVeSMetric.inv_mul (T : TeVeSMetric) : T.metricInv * T.metric = 1 := by
     simp [TeVeSMetric.metric, TeVeSMetric.metricInv, Matrix.mul_apply, Fin.sum_univ_four,
       ← Real.exp_add]
 
-/-- The TeVeS physical metric of `T` as a `MetricTensor 4` with its certified inverse. -/
+/-- The TeVeS physical metric of the data `T` as a `MetricTensor 4` with its certified inverse. -/
 noncomputable def TeVeSMetric.metricTensor (T : TeVeSMetric) : MetricTensor 4 where
   g := T.metric
   ginv := T.metricInv

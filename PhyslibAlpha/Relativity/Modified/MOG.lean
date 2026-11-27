@@ -24,11 +24,11 @@ Yukawa correction whose net effect is a radius-dependent enhancement of Newton's
 
 `Φ(r) = -(G M / r) (1 + α (1 - e^{-μ r}))`.
 
-This module packages `MOGTheory`, formalises `MOGTheory.yukawaEnhancementFactor` and
-`MOGTheory.potential` (taking `G : GravitationalConstant`), and proves that the enhancement equals
-`1` at `r = 0`, reduces to Newtonian gravity at `α = 0` or `μ = 0`, is strictly bounded in
-`[1, 1 + α)` for `α > 0` and `μ r ≥ 0`, and approaches `1 + α` asymptotically at large radius
-when `μ > 0`.
+This module defines `MOGTheory` (coupling strength `T.α`, inverse range `T.μ`) together with
+`MOGTheory.yukawaEnhancementFactor` and `MOGTheory.potential` (taking `G : GravitationalConstant`),
+and proves that the enhancement equals `1` at `r = 0`, reduces to Newtonian gravity at `α = 0` or
+`μ = 0`, is strictly bounded in `[1, 1 + α)` for `α > 0` and `μ r ≥ 0`, and approaches `1 + α`
+asymptotically at large radius when `μ > 0`.
 
 ## ii. Key results
 

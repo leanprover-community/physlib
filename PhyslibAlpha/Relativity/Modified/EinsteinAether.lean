@@ -186,7 +186,11 @@ lemma AetherCouplings.lagrangian_on_shell (C : AetherCouplings) {n : ℕ} (M : M
 ## C. Radiative mode propagation speeds and GW170817 constraints
 
 The squared speeds of spin-2, spin-1, and spin-0 excitations and the renormalized Newtonian
-gravitational constant depend rationally on `C : AetherCouplings`.
+gravitational constant depend rationally on the aether couplings `C : AetherCouplings`. These
+propagation speeds and the renormalized coupling are taken over from the standard linearized
+Einstein–Aether analysis and stated as definitions; they are not derived here from `C.lagrangian`.
+What is proved is the algebraic content of the resulting conditions: luminal gravitons force
+`c₁₃ = c₁ + c₃ = 0`, and `G_N` equals the bare action constant only when `c₁₄ = c₁ + c₄ = 0`.
 
 -/
 

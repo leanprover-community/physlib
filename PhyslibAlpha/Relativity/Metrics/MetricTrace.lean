@@ -17,9 +17,9 @@ Full contraction `g^{ij} T_{ij}` of a rank-2 tensor against a nondegenerate inve
 
 ## i. Overview
 
-Given a nondegenerate metric `M : MetricTensor n`, the metric trace `metricTrace M T` contracts
-`M.ginv` with `T`. This module establishes its linearity under pointwise sums, differences, and
-scalar multiples, as well as the dimension identity `g^{ij} g_{ij} = n`.
+Given a nondegenerate metric `M : MetricTensor n`, the metric trace `metricTrace M T` contracts the
+inverse metric `M.ginv` with the tensor `T`. This module establishes its linearity under pointwise
+sums, differences, and scalar multiples, as well as the dimension identity `g^{ij} g_{ij} = n`.
 
 ## ii. Key results
 
@@ -51,8 +51,8 @@ variable {n : ℕ}
 
 ## A. Metric trace and linearity
 
-Contracting rank-2 tensors against `M.ginv` defines `metricTrace`, which is linear in the tensor
-argument and evaluates to spacetime dimension `n` on `M.g`.
+Contracting a rank-2 tensor `T` against the inverse metric `M.ginv` defines `metricTrace`, which is
+linear in the tensor argument and evaluates to the spacetime dimension `n` on the metric itself.
 
 -/
 

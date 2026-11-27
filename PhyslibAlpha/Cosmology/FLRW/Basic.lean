@@ -15,8 +15,8 @@ import Mathlib.Tactic.Ring
 
 # FLRW spacetime metric and inverse
 
-Comoving spherical FLRW spacetime structure `FLRWSpacetime`, its diagonal metric, inverse metric,
-symmetry, two-sided invertibility, `MetricTensor 4`, and `CoordinateMetric 4`.
+Comoving spherical FLRW spacetimes `FLRWSpacetime` with diagonal metric and inverse, their
+symmetry and two-sided invertibility, and the induced `MetricTensor 4` and `CoordinateMetric 4`.
 
 ## i. Overview
 
@@ -26,10 +26,10 @@ spatial curvature `k`, carrying the diagonal line element:
 
 `g = diag(-1, a(t)² / (1 - k r²), a(t)² r², a(t)² r² sin²θ)`.
 
-This module defines the family of FLRW spacetimes `FLRWSpacetime` carrying a scale factor `a` and
-spatial curvature `k`, and establishes its coordinate metric `metric`, inverse `metricInv`,
-symmetry, two-sided invertibility on the regular chart domain, and the resulting `MetricTensor 4`
-and `CoordinateMetric 4`.
+This module treats the homogeneous, isotropic Friedmann–Lemaître–Robertson–Walker (FLRW) spacetimes
+`FLRWSpacetime` of scale factor `a(t)`, spatial curvature `k`, and coordinate metric `metric`,
+establishes the symmetry and two-sided invertibility of the inverse `metricInv` on the regular chart
+domain, and constructs the resulting `MetricTensor 4` and `CoordinateMetric 4`.
 
 ## ii. Key results
 

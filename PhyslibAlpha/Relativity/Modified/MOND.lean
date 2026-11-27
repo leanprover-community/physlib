@@ -30,10 +30,10 @@ Milgrom's MOND relates the true acceleration `a` to the Newtonian gravitational 
 `μ` is an interpolating function satisfying `μ(x) → 1` for `x ≫ 1` and `μ(x) ~ x` for `x ≪ 1`.
 
 This module formalises `MONDTheory`, the Newtonian limit (`μ = 1`), the deep-MOND regime
-(`a = √(a₀ g_N)` yielding flat rotation curves `v⁴ = G M a₀`), the contrast with Keplerian
-Newtonian velocities (`G M / r₁ ≠ G M / r₂`), bounds and asymptotics for the standard simple
-(`x / (1 + x)`) and standard (`x / √(1 + x²)`) interpolating functions, and the norm bridge to
-Physlib's classical Newtonian acceleration.
+(`a = √(a₀ g_N)` yielding flat rotation curves with constant `v⁴ = G M a₀`), the contrast with
+Keplerian Newtonian velocities (circular speeds differ between radii `r₁ ≠ r₂`), the bounds and
+asymptotics of the standard simple (`x / (1 + x)`) and standard (`x / √(1 + x²)`) interpolating
+functions, and the bridge to Physlib's classical Newtonian acceleration.
 
 ## ii. Key results
 
@@ -41,10 +41,10 @@ Physlib's classical Newtonian acceleration.
   `MONDTheory.Relation` : MOND theory parameterized by `a₀`, Newtonian point-mass acceleration,
   deep-MOND acceleration, and the MOND interpolating relation.
 - `MONDTheory.newtonian_limit`, `MONDTheory.flat_rotation`, `newtonian_velocity_ne` :
-  Newtonian recovery, flat rotation curves `v⁴ = G M a₀`, and Keplerian decline contrast.
+  Newtonian recovery, flat rotation curves `v⁴ = G M a₀`, and Keplerian decline.
 - `simpleMu`, `standardMu` : standard interpolating functions with bounds and high-acceleration
   Newtonian limits.
-- `norm_pairGravityAcceleration_eq_newtonianAcceleration` : bridge to Physlib's classical
+- `norm_pairGravityAcceleration_eq_newtonianAcceleration` : agreement with Physlib's classical
   `pairGravityAcceleration`.
 
 ## iii. Table of contents

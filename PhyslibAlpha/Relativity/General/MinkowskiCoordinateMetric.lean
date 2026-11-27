@@ -116,19 +116,20 @@ lemma minkowskiCoordinateMetric_riemannFromData (x : Fin 4 → ℝ) (ρ σ μ ν
 
 ## B. Algebraic vacuum Einstein equations on Minkowski spacetime
 
-In the algebraic tensor formulation, the flat Riemann curvature tensor on Minkowski spacetime
-immediately satisfies the vacuum Einstein equations.
+In the algebraic tensor formulation, the vanishing Riemann tensor `RiemannTensor.flat 4` on
+Minkowski spacetime immediately gives `Ric = 0`, `R = 0`, and the vacuum Einstein equations.
 
 -/
 
-/-- The flat Riemann curvature tensor of four-dimensional Minkowski spacetime. -/
+/-- The flat Riemann curvature tensor of four-dimensional Minkowski spacetime: all curvature
+vanishes because `RiemannTensor.flat 4` is the zero (0, 4) tensor. -/
 def minkowskiFlatRiemann : RiemannTensor 4 := RiemannTensor.flat 4
 
 /-- The flat curvature tensor on Minkowski spacetime is Ricci flat. -/
 lemma minkowski_ricci_eq_zero : ricci minkowski (RiemannTensor.flat 4) = 0 :=
   ricci_flat 4 minkowski
 
-/-- The flat curvature tensor on Minkowski spacetime has zero scalar curvature. -/
+/-- The flat curvature tensor on Minkowski spacetime has zero scalar curvature `R = 0`. -/
 lemma minkowski_ricciScalar_eq_zero : ricciScalar minkowski (RiemannTensor.flat 4) = 0 :=
   ricciScalar_flat minkowski
 
@@ -136,7 +137,8 @@ lemma minkowski_ricciScalar_eq_zero : ricciScalar minkowski (RiemannTensor.flat 
 lemma minkowski_einstein_eq_zero : einstein minkowski (RiemannTensor.flat 4) = 0 :=
   einstein_flat minkowski
 
-/-- `G = 0` and `Ric = 0` agree on Minkowski spacetime. -/
+/-- `G = 0` and `Ric = 0` are equivalent on Minkowski spacetime, as `vacuum_iff_ricci_flat` states
+for any four-dimensional metric. -/
 lemma minkowski_vacuum_iff_ricci_flat :
     einstein minkowski (RiemannTensor.flat 4) = 0 ↔
       ricci minkowski (RiemannTensor.flat 4) = 0 :=
