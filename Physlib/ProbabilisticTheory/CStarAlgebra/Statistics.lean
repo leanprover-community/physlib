@@ -30,8 +30,9 @@ which is positive semidefinite. The variance of an observable is its second cent
 
 ## iii. Table of contents
 
-- A. Covariance matrices
-- B. Variance
+- A. Covariance and variance
+- B. Symmetry and positivity of covariance
+- C. Properties of variance
 
 ## iv. References
 
@@ -47,13 +48,33 @@ namespace ProbabilisticTheory.State
 
 variable {𝒜 : Type*} [CStarAlgebra 𝒜] [PartialOrder 𝒜] [StarOrderedRing 𝒜]
 
-/-! ## A. Covariance matrices -/
+/-! ## A. Covariance and variance -/
+
+/-- The covariance of two observables in the state `ω`. -/
+noncomputable def covariance (ω : (ofCStarAlgebra 𝒜).State) (a b : selfAdjoint 𝒜) : ℝ :=
+  (ω.extend ((ω.centered a : 𝒜) * ω.centered b)).re
+
+/-- The covariance matrix of a family of observables. -/
+noncomputable def covarianceMatrix (ω : (ofCStarAlgebra 𝒜).State) {ι : Type*}
+    (a : ι → selfAdjoint 𝒜) : Matrix ι ι ℝ :=
+  Matrix.of fun i j ↦ ω.covariance (a i) (a j)
+
+/-- The variance of an observable, its second central moment. -/
+noncomputable def variance (ω : (ofCStarAlgebra 𝒜).State) (a : selfAdjoint 𝒜) : ℝ :=
+  ω.centralMoment a 2
+
+/-! ## B. Symmetry and positivity of covariance -/
 
 /-- Swapping two centered observables conjugates the value of `ω` on their product. -/
 lemma extend_centered_mul_swap (ω : (ofCStarAlgebra 𝒜).State) (a b : selfAdjoint 𝒜) :
     ω.extend ((ω.centered b : 𝒜) * ω.centered a) =
       star (ω.extend ((ω.centered a : 𝒜) * ω.centered b)) := by
   rw [← map_star, star_mul, (ω.centered a).2.star_eq, (ω.centered b).2.star_eq]
+
+/-- The covariance is symmetric. -/
+lemma covariance_comm (ω : (ofCStarAlgebra 𝒜).State) (a b : selfAdjoint 𝒜) :
+    ω.covariance a b = ω.covariance b a := by
+  rw [covariance, covariance, extend_centered_mul_swap, Complex.star_def, Complex.conj_re]
 
 /-- In a state, the matrix of expectations of products of centered observables is positive
 semidefinite. -/
@@ -70,20 +91,6 @@ lemma posSemidef_extend_centered_mul (ω : (ofCStarAlgebra 𝒜).State) {ι : Ty
     mul_comm, mul_left_comm, (ω.centered _).2.star_eq]
   exact Finset.sum_comm
 
-/-- The covariance of two observables in the state `ω`. -/
-noncomputable def covariance (ω : (ofCStarAlgebra 𝒜).State) (a b : selfAdjoint 𝒜) : ℝ :=
-  (ω.extend ((ω.centered a : 𝒜) * ω.centered b)).re
-
-/-- The covariance is symmetric. -/
-lemma covariance_comm (ω : (ofCStarAlgebra 𝒜).State) (a b : selfAdjoint 𝒜) :
-    ω.covariance a b = ω.covariance b a := by
-  rw [covariance, covariance, extend_centered_mul_swap, Complex.star_def, Complex.conj_re]
-
-/-- The covariance matrix of a family of observables. -/
-noncomputable def covarianceMatrix (ω : (ofCStarAlgebra 𝒜).State) {ι : Type*}
-    (a : ι → selfAdjoint 𝒜) : Matrix ι ι ℝ :=
-  Matrix.of fun i j ↦ ω.covariance (a i) (a j)
-
 /-- The covariance matrix of a family of observables is positive semidefinite. -/
 lemma posSemidef_covarianceMatrix (ω : (ofCStarAlgebra 𝒜).State) {ι : Type*}
     (a : ι → selfAdjoint 𝒜) : (ω.covarianceMatrix a).PosSemidef := by
@@ -95,11 +102,7 @@ lemma posSemidef_covarianceMatrix (ω : (ofCStarAlgebra 𝒜).State) {ι : Type*
   simpa [Finsupp.sum, Finsupp.support_mapRange_of_injective _ x Complex.ofReal_injective,
     Complex.re_sum, covarianceMatrix, covariance] using (Complex.nonneg_iff.mp h).1
 
-/-! ## B. Variance -/
-
-/-- The variance of an observable, its second central moment. -/
-noncomputable def variance (ω : (ofCStarAlgebra 𝒜).State) (a : selfAdjoint 𝒜) : ℝ :=
-  ω.centralMoment a 2
+/-! ## C. Properties of variance -/
 
 /-- The variance is the value of `ω` on the square of the centered observable. -/
 lemma coe_variance (ω : (ofCStarAlgebra 𝒜).State) (a : selfAdjoint 𝒜) :
