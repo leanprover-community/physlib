@@ -108,10 +108,10 @@ noncomputable def metricFn (S : SchwarzschildDeSitterSpacetime) (r : ℝ) : ℝ 
 noncomputable def metricFnHalfDeriv (S : SchwarzschildDeSitterSpacetime) (r : ℝ) : ℝ :=
   S.M / r ^ 2 - S.Λ * r / 3
 
-/-- View a Schwarzschild–de Sitter spacetime as a `Metric` with profile
+/-- View a Schwarzschild–de Sitter spacetime as a `StaticSpherical.StaticSphericalMetric` with profile
 `S.metricFn`. -/
 noncomputable def toStaticSpherical (S : SchwarzschildDeSitterSpacetime) :
-    StaticSpherical.Metric :=
+    StaticSpherical.StaticSphericalMetric :=
   ⟨S.metricFn⟩
 
 /-- The underlying radial metric function of `S.toStaticSpherical` is `S.metricFn`. -/

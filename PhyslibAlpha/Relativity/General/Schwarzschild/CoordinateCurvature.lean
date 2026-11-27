@@ -88,14 +88,14 @@ lemma toDeSitter_metricFn (S : SchwarzschildSpacetime) (r : ℝ) :
 lemma toDeSitter_metric (S : SchwarzschildSpacetime) : S.toDeSitter.metric = S.metric := by
   ext x i j
   simp [SchwarzschildDeSitterSpacetime.metric, SchwarzschildDeSitterSpacetime.toStaticSpherical,
-    StaticSpherical.Metric.metric, metric, toStaticSpherical]
+    StaticSpherical.StaticSphericalMetric.metric, metric, toStaticSpherical]
 
 /-- At `Λ = 0`, `S.toDeSitter.metricInv` reduces to `S.metricInv`. -/
 lemma toDeSitter_metricInv (S : SchwarzschildSpacetime) :
     S.toDeSitter.metricInv = S.metricInv := by
   ext x i j
   simp [SchwarzschildDeSitterSpacetime.metricInv, SchwarzschildDeSitterSpacetime.toStaticSpherical,
-    StaticSpherical.Metric.metricInv, metricInv, toStaticSpherical]
+    StaticSpherical.StaticSphericalMetric.metricInv, metricInv, toStaticSpherical]
 
 /-- All six independent Schwarzschild Riemann components computed from the coordinate metric,
 specialized from `SchwarzschildDeSitterSpacetime.riemann_components_from_metric` at `Λ = 0`. -/

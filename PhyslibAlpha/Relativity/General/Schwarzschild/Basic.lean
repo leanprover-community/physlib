@@ -29,7 +29,7 @@ matching to the exterior of `IncompressibleSphere`.
 
 Starting from the line element `g = diag(-f, f⁻¹, r², r² sin²θ)` with radial metric function
 `f = 1 - 2M/r`, where `M` is the mass of `S : SchwarzschildSpacetime`, this module views the metric
-as a `Metric`, computes radial derivatives of the metric and its static Newtonian
+as a `StaticSpherical.StaticSphericalMetric`, computes radial derivatives of the metric and its static Newtonian
 potential `Φ = -M/r`, and evaluates the radial Christoffel symbols `Γ^t_{tr}` and `Γ^r_{rr}`
 from the metric components.
 
@@ -94,9 +94,9 @@ namespace SchwarzschildSpacetime
 /-- The Schwarzschild radial metric function `f(r) = 1 - 2M / r`. -/
 noncomputable def metricFn (S : SchwarzschildSpacetime) (r : ℝ) : ℝ := 1 - 2 * S.M / r
 
-/-- View a Schwarzschild spacetime as a `Metric` with profile `S.metricFn`. -/
+/-- View a Schwarzschild spacetime as a `StaticSpherical.StaticSphericalMetric` with profile `S.metricFn`. -/
 noncomputable def toStaticSpherical (S : SchwarzschildSpacetime) :
-    StaticSpherical.Metric :=
+    StaticSpherical.StaticSphericalMetric :=
   ⟨S.metricFn⟩
 
 /-- The underlying radial metric function of `S.toStaticSpherical` is `S.metricFn`. -/
@@ -137,7 +137,7 @@ lemma r_mul_metricFn (S : SchwarzschildSpacetime) (r : ℝ) (hr : r ≠ 0) :
 /-- The `tt` component of the Schwarzschild metric is `-(1 - 2M/r)`. -/
 lemma metric_tt (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) :
     S.metric x 0 0 = -(1 - 2 * S.M / x 1) := by
-  simp [metric, toStaticSpherical, StaticSpherical.Metric.metric, metricFn]
+  simp [metric, toStaticSpherical, StaticSpherical.StaticSphericalMetric.metric, metricFn]
 
 /-- The static Newtonian potential is `Φ = -M / r`: `g_tt = -(1 + 2Φ)`. -/
 lemma metric_tt_potential (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) :
@@ -176,7 +176,7 @@ lemma potential_second_hasDerivAt (S : SchwarzschildSpacetime) (r : ℝ) (hr : r
 /-- The `rr` component of the Schwarzschild metric is `f⁻¹`. -/
 lemma metric_rr (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) :
     S.metric x 1 1 = (S.metricFn (x 1))⁻¹ := by
-  simp [metric, toStaticSpherical, StaticSpherical.Metric.metric, metricFn]
+  simp [metric, toStaticSpherical, StaticSpherical.StaticSphericalMetric.metric, metricFn]
 
 /-- `f ≠ 0` forces `r - 2M ≠ 0` away from `r = 0`. -/
 lemma sub_ne_zero_of_ne (S : SchwarzschildSpacetime) (r : ℝ) (hr : r ≠ 0) (hf : S.metricFn r ≠ 0) :

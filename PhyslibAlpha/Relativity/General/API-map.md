@@ -268,17 +268,17 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `minkowskiCoordinateMetric_einsteinTensor`, `minkowskiCoordinateMetric_riemannFromData`,
     `minkowski_ricci_eq_zero`, `minkowski_ricciScalar_eq_zero`,
     `minkowski_einstein_eq_zero`, `minkowski_vacuum_iff_ricci_flat`
-36. PhyslibAlpha/Relativity/Metrics/StaticSphericalMetric/Basic.lean — `Metric`,
-    `Metric.metric`, `Metric.metricInv`,
-    `Metric.metric_symm`, `Metric.metric_mul_inv`,
-    `Metric.metricTensor`, `Metric.toCoordinateMetric`
+36. PhyslibAlpha/Relativity/Metrics/StaticSphericalMetric/Basic.lean — `StaticSphericalMetric`,
+    `StaticSphericalMetric.metric`, `StaticSphericalMetric.metricInv`,
+    `StaticSphericalMetric.metric_symm`, `StaticSphericalMetric.metric_mul_inv`,
+    `StaticSphericalMetric.metricTensor`, `StaticSphericalMetric.toCoordinateMetric`
 37. PhyslibAlpha/Relativity/Metrics/StaticSphericalMetric/Christoffel.lean —
-    `Metric.christoffel`, `Metric.christoffel_eq`,
-    `Metric.eventually_christoffel_eq`, `Metric.christoffelDeriv`,
-    `Metric.pd_christoffel_eq_deriv`
+    `StaticSphericalMetric.christoffel`, `StaticSphericalMetric.christoffel_eq`,
+    `StaticSphericalMetric.eventually_christoffel_eq`, `StaticSphericalMetric.christoffelDeriv`,
+    `StaticSphericalMetric.pd_christoffel_eq_deriv`
 38. PhyslibAlpha/Relativity/Metrics/StaticSphericalMetric/RicciCurvature.lean —
-    `Metric.riemann_eq_data`, `Metric.ricciTensor`,
-    `Metric.ricciScalar`, `Metric.einsteinTensor`
+    `StaticSphericalMetric.riemann_eq_data`, `StaticSphericalMetric.ricciTensor`,
+    `StaticSphericalMetric.ricciScalar`, `StaticSphericalMetric.einsteinTensor`
 39. PhyslibAlpha/Relativity/General/Schwarzschild/ElectricWeyl.lean — `electricPart`,
     `electricPart_symm`, `electricPart_trace`, `electricWeylRiemann`, `ricci_eq_zero`,
     `electricWeyl_frameKretschmannScalar_eq`, `kretschmann_scalar`, `weyl_purely_electric`,
