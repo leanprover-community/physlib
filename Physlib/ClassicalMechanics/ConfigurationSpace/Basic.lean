@@ -6,7 +6,7 @@ Authors: Michal Mogielnicki
 module
 
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
-public import Physlib.Meta.TODO.Basic
+public import Physlib.SpaceAndTime.Space.Basic
 
 /-!
 # Configuration spaces
@@ -20,6 +20,8 @@ The configuration space of a mechanical system is the manifold of its configurat
 ## ii. Key results
 
 - `ConfigurationSpace` : a smooth manifold without boundary.
+- `ConfigurationSpace.pointParticle` : The configuration space of an unconstrained point
+  particle, with positions in `Space d`.
 
 ## iii. Table of contents
 
@@ -34,7 +36,7 @@ The configuration space of a mechanical system is the manifold of its configurat
 
 namespace ClassicalMechanics
 
-open scoped ContDiff
+open scoped Manifold ContDiff
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
 
@@ -58,6 +60,10 @@ instance : CoeSort (ConfigurationSpace I) (Type _) := ⟨ConfigurationSpace.carr
 attribute [instance] ConfigurationSpace.topologicalSpace ConfigurationSpace.chartedSpace
   ConfigurationSpace.isManifold ConfigurationSpace.boundarylessManifold
 
-TODO "Add a constructor for ConfigurationSpace for a point particle in `d`-dimensions."
+/-- The configuration space of an unconstrained point particle in
+`d`-dimensional Euclidean space. -/
+noncomputable def ConfigurationSpace.pointParticle (d : ℕ) :
+    ConfigurationSpace (𝓡 d) where
+    carrier := Space d
 
 end ClassicalMechanics
