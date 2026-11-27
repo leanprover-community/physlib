@@ -6,7 +6,7 @@ Authors: Philippe Kevorkian, Gregory J. Loges
 module
 
 public import Physlib.QuantumMechanics.Operators.StateObservables.IsEigenvector
-public import Physlib.QuantumMechanics.Operators.Unbounded
+public import Physlib.QuantumMechanics.Operators.Basic
 /-!
 
 # Spectral theory for closed operators

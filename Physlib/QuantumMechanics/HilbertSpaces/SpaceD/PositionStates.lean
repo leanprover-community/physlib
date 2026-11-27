@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.QuantumMechanics.Operators.Position
+public import Physlib.QuantumMechanics.Operators.SpaceD.Position
 /-!
 
 # Position states

@@ -6,7 +6,7 @@ Authors: Philippe Kevorkian
 module
 
 public import Mathlib.MeasureTheory.Measure.Support
-public import Physlib.QuantumMechanics.Operators.Multiplication
+public import Physlib.QuantumMechanics.Operators.SpaceD.Multiplication
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.Basic
 /-!
 

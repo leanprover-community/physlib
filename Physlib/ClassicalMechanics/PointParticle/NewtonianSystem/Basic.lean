@@ -99,9 +99,6 @@ def acceleration : system.Vector := particle.1.acceleration t
 /-- The particle's momentum at `t`. -/
 def momentum : system.Vector := particle.mass • particle.velocity t
 
-/-- The particle's kinetic energy at `t`. -/
-def kineticEnergy : ℝ := particle.mass * ‖particle.velocity t‖ ^ 2 / 2
-
 end Particle
 
 /-!
@@ -226,9 +223,5 @@ def momentum : system.Vector :=
 /-- Net external force at `t`. -/
 def netExternalForce : system.Vector :=
   ∑ force : system.Force with force.External, force t
-
-/-- Total kinetic energy at `t`. -/
-def kineticEnergy : ℝ :=
-  ∑ particle : system.Particle, particle.kineticEnergy t
 
 end ClassicalMechanics.PointParticle.NewtonianSystem

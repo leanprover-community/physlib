@@ -45,8 +45,8 @@ The general theory of these operators lives in the operator algebra {2}.
 5. Physlib/QuantumMechanics/HilbertSpaces/SpaceD/Basic.lean — `SpaceDHilbertSpaceOn`,
    `subspaceIncl`, `subspaceProjection`
 6. Physlib/QuantumMechanics/HilbertSpaces/SpaceD/DirichletSubmodule.lean — `DirichletSubmoduleOn`
-7. Physlib/QuantumMechanics/Operators/Multiplication.lean — `mulOperator`
-8. Physlib/QuantumMechanics/Operators/Position.lean — `positionOperator`
+7. Physlib/QuantumMechanics/Operators/SpaceD/Multiplication.lean — `mulOperator`
+8. Physlib/QuantumMechanics/Operators/SpaceD/Position.lean — `positionOperator`
 
 ## References
 

@@ -784,6 +784,7 @@ public import PhyslibAlpha.QuantumMechanics.HarmonicOscillator.Vacuum
 public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.Operators
 public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.Product
 public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.ProductState
+public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.SpaceD.DirichletDensity
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.BoundStatesAdjoint
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.BoundStatesL2
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.Degeneracy

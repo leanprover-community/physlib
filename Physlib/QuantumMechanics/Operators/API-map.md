@@ -115,45 +115,46 @@ Hall {1}. The uncertainty bounds go back to Robertson {9} and Schrödinger {10}.
 
 ## Lean References
 
-1. Physlib/QuantumMechanics/Operators/Unbounded.lean — `HasDenseDomain`, `IsUnbounded`,
+1. Physlib/QuantumMechanics/Operators/Basic.lean — `HasDenseDomain`, `IsUnbounded`,
    `isClosable_of_continuous`, `IsClosed.continuous_of_isClosed_domain`
-2. Physlib/QuantumMechanics/Operators/Unbounded.lean — `IsSymmetric`,
+2. Physlib/QuantumMechanics/Operators/Basic.lean — `IsSymmetric`,
    `isSymmetric_iff_inner_map_self_real`
-3. Physlib/QuantumMechanics/Operators/Unbounded.lean — `IsSymmetric.isClosable`,
+3. Physlib/QuantumMechanics/Operators/Basic.lean — `IsSymmetric.isClosable`,
    `IsSymmetric.closure`, `IsSymmetric.add`, `IsSymmetric.pow`, `IsSelfAdjoint.isSymmetric`,
    `IsSelfAdjoint.isClosed`
-4. Physlib/QuantumMechanics/Operators/Unbounded.lean — `IsEssentiallySelfAdjoint`,
+4. Physlib/QuantumMechanics/Operators/EssentiallySelfAdjoint.lean — `IsEssentiallySelfAdjoint`,
    `IsEssentiallySelfAdjoint.isUnbounded`,
-   `IsEssentiallySelfAdjoint.unique_self_adjoint_extension`
-5. Physlib/QuantumMechanics/Operators/Unbounded.lean — `adjoint_smul`, `adjoint_neg`,
+   `IsEssentiallySelfAdjoint.unique_self_adjoint_extension`,
+   `IsSymmetric.isEssentiallySelfAdjoint_iff`
+5. Physlib/QuantumMechanics/Operators/Basic.lean — `adjoint_smul`, `adjoint_neg`,
    `adjoint_antitone`, `adjoint_add_le_add_adjoint`,
    `adjoint_compRestricted_le_compRestricted_adjoint`, `IsUnbounded.adjoint`,
    `IsUnbounded.adjoint_closure_eq_adjoint`, `IsUnbounded.adjoint_adjoint_eq_closure`
-6. Physlib/QuantumMechanics/Operators/Unbounded.lean — `IsSymmetric.isSelfAdjoint_of_range_eq_top`,
-   `IsSymmetric.isSelfAdjoint_iff`, `IsSymmetric.isEssentiallySelfAdjoint_iff`
-7. Physlib/QuantumMechanics/Operators/Unbounded.lean — `unitaryConj`,
+6. Physlib/QuantumMechanics/Operators/Basic.lean — `IsSymmetric.isSelfAdjoint_of_range_eq_top`,
+   `IsSymmetric.isSelfAdjoint_iff`
+7. Physlib/QuantumMechanics/Operators/Basic.lean — `unitaryConj`,
    `mem_unitaryConj_domain_iff`, `unitaryConj_apply`, `IsFormalAdjoint.unitaryConj`,
    `HasDenseDomain.unitaryConj_dense_domain`, `unitaryConj_sub_smul_surjective`
-8. Physlib/QuantumMechanics/Operators/Multiplication.lean — `mulOperator`, `notation 𝓜`,
+8. Physlib/QuantumMechanics/Operators/SpaceD/Multiplication.lean — `mulOperator`, `notation 𝓜`,
    `mem_mulOperator_domain_iff`, `mulOperator_apply_ae`, `mulOperator_hasDenseDomain`
-9. Physlib/QuantumMechanics/Operators/Multiplication.lean — `mulOperator_domain_eq_top`,
+9. Physlib/QuantumMechanics/Operators/SpaceD/Multiplication.lean — `mulOperator_domain_eq_top`,
    `mulOperator_domain_antitone`, `mulOperator_conj_domain`,
    `mulOperator_domain_ge_of_hasTemperateGrowth`
-10. Physlib/QuantumMechanics/Operators/Multiplication.lean — `mulOperator_adjoint_eq_conj`,
+10. Physlib/QuantumMechanics/Operators/SpaceD/Multiplication.lean — `mulOperator_adjoint_eq_conj`,
    `mulOperator_isSelfAdjoint_ofReal`, `mulOperator_isClosable`, `mulOperator_isUnbounded`,
    `mulOperator_isClosed`
-11. Physlib/QuantumMechanics/Operators/Multiplication.lean — `mulOperator_const_smul_eq`,
+11. Physlib/QuantumMechanics/Operators/SpaceD/Multiplication.lean — `mulOperator_const_smul_eq`,
    `mulOperator_add_ge`, `mulOperator_add_eq`, `mulOperator_sub_ge`, `mulOperator_smul_ge`
-12. Physlib/QuantumMechanics/Operators/Position.lean — `positionCLM`, `notation 𝐱`,
+12. Physlib/QuantumMechanics/Operators/SpaceD/Position.lean — `positionCLM`, `notation 𝐱`,
    `positionCLM_apply`, `positionSqCLM_eq`, `positionOperator`, `notation 𝓧`,
    `positionOperator_hasDenseDomain`, `positionOperator_isSelfAdjoint`,
    `positionOperator_isUnbounded`
-13. Physlib/QuantumMechanics/Operators/Position.lean — `radiusRegPowCLM`, `notation 𝐫₀`,
+13. Physlib/QuantumMechanics/Operators/SpaceD/Position.lean — `radiusRegPowCLM`, `notation 𝐫₀`,
    `radiusRegPowCLM_comp_eq`, `radiusPowLM`, `notation 𝐫`, `radiusPowLM_apply_memHS`,
    `radiusRegPow_tendsto_radiusPow`, `radiusRegPowOperator`,
    `radiusRegPowOperator_isSelfAdjoint`, `radiusPowOperator`, `radiusPowOperator_isSelfAdjoint`,
    `radiusPowOperator_domain_ge`
-14. Physlib/QuantumMechanics/Operators/Momentum.lean — `momentumCLM`, `notation 𝐩`,
+14. Physlib/QuantumMechanics/Operators/SpaceD/Momentum.lean — `momentumCLM`, `notation 𝐩`,
    `momentumCLM_apply`, `momentumOperator`, `notation 𝓟`, `momentumOperator_apply`,
    `momentumOperator_hasDenseDomain`, `momentumOperator_isSymmetric`,
    `momentumOperator_isUnbounded`, `momentumSqOperator`, `momentumSqOperator_domain_eq`
@@ -167,33 +168,33 @@ Hall {1}. The uncertainty bounds go back to Robertson {9} and Schrödinger {10}.
 17. Physlib/QuantumMechanics/Operators/Commutation.lean — `position_commutation_radiusRegPow`,
    `radiusRegPow_commutation_radiusRegPow`, `radiusRegPow_commutation_momentum`,
    `momentum_comp_radiusRegPow_eq`, `radiusRegPow_commutation_momentumSqr`
-18. Physlib/QuantumMechanics/Operators/AngularMomentum.lean — `angularMomentumCLM`,
+18. Physlib/QuantumMechanics/Operators/SpaceD/AngularMomentum.lean — `angularMomentumCLM`,
    `notation 𝐋`, `angularMomentumCLM_apply`, `angularMomentumCLM_antisymm`,
    `angularMomentumCLM_eq_zero`, `angularMomentumOperatorSqr`, `notation 𝐋²`,
    `angularMomentumOperatorSqr_apply`, `angularMomentumOperator1D_trivial`,
    `angularMomentumOperator2D`, `angularMomentumOperator3D`
-19. Physlib/QuantumMechanics/Operators/AngularMomentum.lean — `angularMomentum_commutation_position`,
+19. Physlib/QuantumMechanics/Operators/SpaceD/AngularMomentum.lean — `angularMomentum_commutation_position`,
    `angularMomentum_commutation_momentum`, `angularMomentum_commutation_angularMomentum`
-20. Physlib/QuantumMechanics/Operators/AngularMomentum.lean — `angularMomentumSqr_commutation_angularMomentum`,
+20. Physlib/QuantumMechanics/Operators/SpaceD/AngularMomentum.lean — `angularMomentumSqr_commutation_angularMomentum`,
    `angularMomentumSqr_commutation_momentumSqr`, `angularMomentumSqr_commutation_radiusRegPow`,
    `angularMomentum_commutation_momentumSqr`, `angularMomentum_commutation_radiusRegPow`
-21. Physlib/QuantumMechanics/Operators/AngularMomentum.lean — `angularMomentumOperator`,
+21. Physlib/QuantumMechanics/Operators/SpaceD/AngularMomentum.lean — `angularMomentumOperator`,
    `angularMomentumOperator_domain_eq`, `angularMomentumOperator_apply`,
    `angularMomentumOperator_apply_ae`, `angularMomentumOperator_range`,
    `angularMomentumOperator_hasDenseDomain`, `angularMomentumCLM_eq_momentum_position`,
    `angularMomentumOperator_isSymmetric`, `angularMomentumOperator_isUnbounded`
-22. Physlib/QuantumMechanics/Operators/AngularMomentum.lean — `angularMomentumSqOperator`,
+22. Physlib/QuantumMechanics/Operators/SpaceD/AngularMomentum.lean — `angularMomentumSqOperator`,
    `angularMomentumSqOperator_apply`, `angularMomentumSqOperator_apply_ae`,
    `angularMomentumSqOperator_range`, `angularMomentumSqOperator_apply_eq_sum`,
    `angularMomentumSqOperator_hasDenseDomain`, `angularMomentumSqr_inner`,
    `angularMomentumSqOperator_isSymmetric`, `angularMomentumSqOperator_isUnbounded`
-23. Physlib/QuantumMechanics/Operators/AngularMomentum/DimThree.lean — `angularMomentumDimThreeOperator`,
+23. Physlib/QuantumMechanics/Operators/SpaceD/AngularMomentum/DimThree.lean — `angularMomentumDimThreeOperator`,
    `angularMomentumDimThreeOperator_isSymmetric`, `angularMomentumOperatorSqr_eq_sum_dimThree`,
    `angularMomentumSqOperator_apply_eq_sum_dimThree`, `angularMomentumDimThree_commutation`,
    `angularMomentumDimThree_commutation_xy`, `angularMomentumDimThree_commutation_yz`,
    `angularMomentumDimThree_commutation_zx`, `angularMomentumDimThreeOperator_commutation`,
    `angularMomentumSqOperator_commutation_dimThree`
-24. Physlib/QuantumMechanics/Operators/AngularMomentum/DimThree.lean — `angularMomentumRaisingCLM`,
+24. Physlib/QuantumMechanics/Operators/SpaceD/AngularMomentum/DimThree.lean — `angularMomentumRaisingCLM`,
    `angularMomentumLoweringCLM`, `angularMomentumRaisingOperator`,
    `angularMomentumLoweringOperator`, `angularMomentumZ_commutation_raising`,
    `angularMomentumZ_commutation_lowering`, `angularMomentumSqr_commutation_raising`,

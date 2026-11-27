@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Qianli Ma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Qianli Ma
+Authors: Raunak Chhatwal, Qianli Ma
 -/
 module
 
@@ -14,17 +14,20 @@ The total kinetic energy splits into motion of the center of mass and motion rel
 
 ## i. Overview
 
+The total kinetic energy is the sum of the particles' kinetic energies.
 The velocity of the center of mass is the mass-weighted average of the particle velocities.
 When each particle velocity is written as the sum of this velocity and its relative velocity,
 the cross terms in the total kinetic energy cancel.
 
 ## ii. Key results
 
+- `Particle.kineticEnergy` and `kineticEnergy` give the particle and system kinetic energies.
 - `kineticEnergy_eq_centerOfMass_add_relative` gives the kinetic-energy decomposition.
 
 ## iii. Table of contents
 
-- A. Kinetic energy decomposition
+- A. Particle and system kinetic energy
+- B. Kinetic energy decomposition
 
 ## iv. References
 
@@ -37,13 +40,27 @@ open scoped BigOperators Classical InnerProductSpace
 
 namespace ClassicalMechanics.PointParticle.NewtonianSystem
 
+variable {d : ℕ}
+
 /-!
-## A. Kinetic energy decomposition
+## A. Particle and system kinetic energy
+-/
+
+/-- The kinetic energy of a particle at time `t`. -/
+def Particle.kineticEnergy {system : NewtonianSystem d} (particle : system.Particle) (t : ℝ) : ℝ :=
+  particle.mass * ‖particle.velocity t‖ ^ 2 / 2
+
+/-- The total kinetic energy of a Newtonian system at time `t`. -/
+def kineticEnergy (system : NewtonianSystem d) (t : ℝ) : ℝ :=
+  ∑ particle : system.Particle, particle.kineticEnergy t
+
+/-!
+## B. Kinetic energy decomposition
 -/
 
 /-- The total kinetic energy is the sum of the translational kinetic energy of the center
 of mass and the kinetic energy of the particles relative to it. -/
-lemma kineticEnergy_eq_centerOfMass_add_relative {d : ℕ} (S : NewtonianSystem d) (t : ℝ) :
+lemma kineticEnergy_eq_centerOfMass_add_relative (S : NewtonianSystem d) (t : ℝ) :
     let v := deriv S.centerOfMass t
     S.kineticEnergy t = S.mass * ‖v‖ ^ 2 / 2 +
       ∑ p : S.Particle, p.mass.val * ‖p.velocity t - v‖ ^ 2 / 2 := by
