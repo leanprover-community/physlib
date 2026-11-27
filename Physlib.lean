@@ -198,6 +198,7 @@ public import Physlib.Mathematics.InnerProductSpace.Submodule
 public import Physlib.Mathematics.KroneckerDelta.Basic
 public import Physlib.Mathematics.KroneckerDelta.Contraction
 public import Physlib.Mathematics.LeviCivita.Basic
+public import Physlib.Mathematics.Matrix.PosSemidef
 public import Physlib.Mathematics.Modules.ConjModule
 public import Physlib.Mathematics.Modules.CrossProduct
 public import Physlib.Mathematics.Modules.CrossProductMatrix
@@ -315,6 +316,7 @@ public import Physlib.ProbabilisticTheory.CStarAlgebra.Moment
 public import Physlib.ProbabilisticTheory.CStarAlgebra.State
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Statistics
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Traciality
+public import Physlib.ProbabilisticTheory.CStarAlgebra.Uncertainty
 public import Physlib.ProbabilisticTheory.Channel.Basic
 public import Physlib.ProbabilisticTheory.Channel.Convex
 public import Physlib.ProbabilisticTheory.Channel.Covariant
