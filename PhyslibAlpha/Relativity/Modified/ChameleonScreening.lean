@@ -159,15 +159,9 @@ lemma thinShellParameter_nonneg {dphi β Mpl Phi : ℝ} (h : 0 ≤ 2 * β * Mpl 
     0 ≤ thinShellParameter dphi β Mpl Phi :=
   div_nonneg (abs_nonneg dphi) h
 
-/-- The screening factor never exceeds `Δ`. -/
-lemma screeningFactor_le (Δ : ℝ) : screeningFactor Δ ≤ Δ := min_le_left _ _
-
-/-- The screening factor never exceeds `1`. -/
-lemma screeningFactor_le_one (Δ : ℝ) : screeningFactor Δ ≤ 1 := min_le_right _ _
-
 /-- Thin-shell suppression: `Δ ≤ ε` implies `screeningFactor Δ ≤ ε`. -/
 lemma thin_shell_suppressed {Δ ε : ℝ} (h : Δ ≤ ε) : screeningFactor Δ ≤ ε :=
-  (screeningFactor_le Δ).trans h
+  (min_le_left Δ 1).trans h
 
 /-- The external fifth-force screening factor saturates at `1` if and only if `1 ≤ Δ`. -/
 lemma screeningFactor_eq_one_iff (Δ : ℝ) : screeningFactor Δ = 1 ↔ 1 ≤ Δ :=

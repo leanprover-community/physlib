@@ -31,7 +31,7 @@ and Minkowski spacetime solves the vacuum Einstein equations `G_{ij} = 0`.
   `minkowskiCoordinateMetric_ricciTensor`, `minkowskiCoordinateMetric_ricciScalar`,
   `minkowskiCoordinateMetric_einsteinTensor`, `minkowskiCoordinateMetric_riemannFromData` :
   vanishing coordinate connection and curvature tensors of Minkowski spacetime.
-- `minkowskiFlatRiemann`, `minkowski_ricci_eq_zero`, `minkowski_ricciScalar_eq_zero`,
+- `minkowski_ricci_eq_zero`, `minkowski_ricciScalar_eq_zero`,
   `minkowski_einstein_eq_zero`, `minkowski_vacuum_iff_ricci_flat` : algebraic vacuum properties.
 
 ## iii. Table of contents
@@ -121,10 +121,6 @@ In the algebraic tensor formulation, the vanishing Riemann tensor `RiemannTensor
 Minkowski spacetime immediately gives `Ric = 0`, `R = 0`, and the vacuum Einstein equations.
 
 -/
-
-/-- The flat Riemann curvature tensor of four-dimensional Minkowski spacetime: all curvature
-vanishes because `RiemannTensor.flat 4` is the zero (0, 4) tensor. -/
-def minkowskiFlatRiemann : RiemannTensor 4 := RiemannTensor.flat 4
 
 /-- The flat curvature tensor on Minkowski spacetime is Ricci flat. -/
 lemma minkowski_ricci_eq_zero : ricci minkowski (RiemannTensor.flat 4) = 0 :=

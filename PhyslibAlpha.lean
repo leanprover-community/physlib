@@ -913,6 +913,7 @@ public import PhyslibAlpha.Relativity.Tensors.EinsteinTensor
 public import PhyslibAlpha.Relativity.Tensors.EMFieldStrength
 public import PhyslibAlpha.Relativity.Tensors.Equivariant
 public import PhyslibAlpha.Relativity.Tensors.MaxwellStressEnergy
+public import PhyslibAlpha.Relativity.Tensors.PerfectFluidStressEnergy
 public import PhyslibAlpha.Relativity.Tensors.RealTensor.CoVector.Representation
 public import PhyslibAlpha.Relativity.Tensors.RicciTensor
 public import PhyslibAlpha.Relativity.Tensors.RiemannTensor

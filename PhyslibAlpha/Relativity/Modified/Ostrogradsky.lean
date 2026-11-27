@@ -44,13 +44,9 @@ kinetic term.
   `HigherDerivativeOscillator.ostrogradsky_unbounded_below` : linearity in `p₁` and
   unboundedness below
   whenever `v ≠ 0`.
-- `kinetic_nonneg`, `kinetic_zero_iff` : positivity and non-degeneracy of a standard first-order
-  quadratic kinetic term.
-
 ## iii. Table of contents
 
 - A. Degenerate kinetic matrix and Ostrogradsky ghost
-- B. Contrast with standard quadratic kinetic terms
 
 ## iv. References
 
@@ -125,30 +121,6 @@ lemma HigherDerivativeOscillator.ostrogradsky_unbounded_below (H : HigherDerivat
   refine ⟨(B - 1 - (p₂ * a - a ^ 2 / 2 + H.m ^ 2 * q ^ 2 / 2)) / v, ?_⟩
   simp only [HigherDerivativeOscillator.hamiltonian]
   linarith
-
-/-!
-
-## B. Contrast with standard quadratic kinetic terms
-
-Unlike the linear `p₁ v` ghost term above, a standard first-order quadratic kinetic energy `½ m x²`
-with positive `m` is strictly non-negative and vanishes only at rest.
-
--/
-
-/-- A standard first-order quadratic kinetic term `(1/2) m x²` is non-negative for `m > 0`. -/
-lemma kinetic_nonneg (m x : ℝ) (hm : 0 < m) : 0 ≤ m * x ^ 2 / 2 := by
-  positivity
-
-/-- A standard quadratic kinetic term vanishes if and only if the velocity is zero. -/
-lemma kinetic_zero_iff (m x : ℝ) (hm : 0 < m) : m * x ^ 2 / 2 = 0 ↔ x = 0 := by
-  constructor
-  · intro h
-    have h2 : m * x ^ 2 = 0 := by linarith
-    rcases mul_eq_zero.mp h2 with h3 | h3
-    · linarith
-    · exact (pow_eq_zero_iff (n := 2) (by norm_num)).mp h3
-  · rintro rfl
-    ring
 
 end Ostrogradsky
 

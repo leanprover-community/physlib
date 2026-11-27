@@ -35,7 +35,7 @@ coordinate Christoffel symbols with the closed-form table `S.christoffel` and id
 
 ## ii. Key results
 
-- `christoffelThetaPhiPhi_from_metric`, `christoffelPhiPhiTheta_from_metric` : angular
+- `christoffelPhiPhiTheta_from_metric` : angular
   Levi-Civita connection coefficients of 2-spheres of radius `r`.
 - `StaticSphericalMetric.christoffel`, `StaticSphericalMetric.christoffelDeriv` : closed-form
   Christoffel and partial-derivative tables.
@@ -73,13 +73,6 @@ Because a static spherically symmetric metric is invariant under time translatio
 only radial (`∂_r`) and polar (`∂_θ`) derivatives contribute to the Levi-Civita connection.
 
 -/
-
-/-- Angular Christoffel symbol on a 2-sphere of radius `r`:
-`Γ^θ_{φφ} = (1/2) g^{θθ} (-∂_θ g_{φφ}) = -sin θ cos θ`. -/
-lemma christoffelThetaPhiPhi_from_metric (r th : ℝ) (hr : r ≠ 0) :
-    (1 / 2 : ℝ) * (r ^ 2)⁻¹ * (-(2 * r ^ 2 * Real.sin th * Real.cos th))
-      = -(Real.sin th * Real.cos th) := by
-  field_simp
 
 /-- Angular Christoffel symbol on a 2-sphere of radius `r`:
 `Γ^φ_{θφ} = (1/2) g^{φφ} ∂_θ g_{φφ} = cos θ / sin θ`. -/

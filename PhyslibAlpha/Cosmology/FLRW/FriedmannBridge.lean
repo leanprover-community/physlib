@@ -9,6 +9,7 @@ public import Physlib.Cosmology.FLRW.Basic
 public import Physlib.Cosmology.FLRW.MatterContent
 public import PhyslibAlpha.Cosmology.FLRW.PerfectFluid
 public import PhyslibAlpha.Relativity.General.GravitationalConstant
+public import PhyslibAlpha.Relativity.Tensors.PerfectFluidStressEnergy
 import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
@@ -171,7 +172,7 @@ lemma einsteinTensor_ofCosmology_iff_friedmann (c : SpeedOfLight) (U : Cosmology
     (hkr : 1 - U.geometry.curvature * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     (∀ i j, (FLRWSpacetime.ofCosmology c U).toCoordinateMetric.einsteinTensor x i j
           + Λ * (FLRWSpacetime.ofCosmology c U).metric x i j
-        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * perfectFluidStressEnergy c (F.ρ t) (F.p t)
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * GeneralRelativity.perfectFluidStressEnergy c (F.ρ t) (F.p t)
             ((FLRWSpacetime.ofCosmology c U).metric x) i j)
       ↔ Cosmology.FLRW.FriedmannEquation.FirstOrderFriedmann U.a F.ρ U.geometry.curvature Λ
             G.val c t
@@ -240,7 +241,7 @@ lemma friedmannSolution_of_einsteinTensor (c : SpeedOfLight) (U : Cosmology.FLRW
       let x : Fin 4 → ℝ := ![(c : ℝ) * t.val, r₀, θ₀, 0]
       (FLRWSpacetime.ofCosmology c U).toCoordinateMetric.einsteinTensor x i j
           + Λ * (FLRWSpacetime.ofCosmology c U).metric x i j
-        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * perfectFluidStressEnergy c (F.ρ t) (F.p t)
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * GeneralRelativity.perfectFluidStressEnergy c (F.ρ t) (F.p t)
             ((FLRWSpacetime.ofCosmology c U).metric x) i j) :
     U.FriedmannSolution F Λ G.val c := by
   refine ⟨fun t ht => ?_, fun t ht => ?_⟩

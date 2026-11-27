@@ -30,7 +30,6 @@ This module packages `CubicGalileon` and formalises the one-dimensional core of 
 - `C.density v a t = C.c3 * (φ')² φ''` is the total derivative `d/dt (C.c3 * (φ')³ / 3)`
   (`CubicGalileon.density_hasDerivAt`);
 - shifting `φ' ↦ φ' + c` changes `(φ')² φ''` by a total derivative (`shift_total_derivative`);
-- an invariant potential under `φ ↦ φ + c` must be constant (`shift_forbids_potential`).
 
 ## ii. Key results
 
@@ -38,7 +37,6 @@ This module packages `CubicGalileon` and formalises the one-dimensional core of 
 - `cubic_total_derivative`, `CubicGalileon.density_hasDerivAt` : `(v t)² a t = d/dt (v³ / 3)`
   whenever `v' = a`.
 - `shift_total_derivative` : shifting velocity by `c` preserves total-derivative structure.
-- `shift_forbids_potential` : shift-symmetric potentials are constant.
 
 ## iii. Table of contents
 
@@ -106,15 +104,6 @@ Galileon density. -/
 lemma shift_total_derivative (v a : ℝ → ℝ) (t c : ℝ) (hv : HasDerivAt v (a t) t) :
     HasDerivAt (fun s => (v s + c) ^ 3 / 3) ((v t + c) ^ 2 * a t) t :=
   cubic_total_derivative (fun s => v s + c) a t (hv.add_const c)
-
-/-- A potential invariant under constant shifts `φ ↦ φ + c` must be constant everywhere,
-protecting the Galileon scalar from a mass term. -/
-lemma shift_forbids_potential (V : ℝ → ℝ) (h : ∀ φ c, V (φ + c) = V φ)
-    (φ₁ φ₂ : ℝ) : V φ₁ = V φ₂ := by
-  have h' := h φ₁ (φ₂ - φ₁)
-  have hsub : φ₁ + (φ₂ - φ₁) = φ₂ := by ring
-  rw [hsub] at h'
-  exact h'.symm
 
 end Galileon
 

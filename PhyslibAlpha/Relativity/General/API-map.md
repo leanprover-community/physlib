@@ -92,7 +92,7 @@ vacuum [50]. Homogeneous and isotropic cosmology is formalized on `FLRWSpacetime
 factor a(t) and spatial curvature k [51], evaluating all FLRW Christoffel symbols, Ricci
 components, scalar curvature, and Einstein tensor from the coordinate metric [52], proving
 equivalence with the Friedmann equations for a comoving perfect fluid with arbitrary speed of
-light c and gravitational constant G [53], and bridging directly to Physlib's `Cosmology.FLRW`
+light c and gravitational constant G [53][81], and bridging directly to Physlib's `Cosmology.FLRW`
 [54].
 
 ### Scalar-tensor, higher-curvature, and screening gravity theories
@@ -267,7 +267,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
 35. PhyslibAlpha/Relativity/General/MinkowskiCoordinateMetric.lean — `minkowskiCoordinateMetric`,
     `minkowskiCoordinateMetric_christoffel`, `minkowskiCoordinateMetric_riemann`,
     `minkowskiCoordinateMetric_einsteinTensor`, `minkowskiCoordinateMetric_riemannFromData`,
-    `minkowskiFlatRiemann`, `minkowski_ricci_eq_zero`, `minkowski_ricciScalar_eq_zero`,
+    `minkowski_ricci_eq_zero`, `minkowski_ricciScalar_eq_zero`,
     `minkowski_einstein_eq_zero`, `minkowski_vacuum_iff_ricci_flat`
 36. PhyslibAlpha/Relativity/Metrics/StaticSphericalMetric/Basic.lean — `StaticSphericalMetric`,
     `StaticSphericalMetric.metric`, `StaticSphericalMetric.metricInv`,
@@ -356,7 +356,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `FLRWSpacetime.eventually_christoffel_eq`, `FLRWSpacetime.pd_christoffel_eq_deriv`,
     `FLRWSpacetime.riemann_eq_data`, `FLRWSpacetime.ricciTensor`,
     `FLRWSpacetime.ricciScalar`, `FLRWSpacetime.einsteinTensor`
-53. PhyslibAlpha/Cosmology/FLRW/PerfectFluid.lean — `perfectFluidStressEnergy`,
+53. PhyslibAlpha/Cosmology/FLRW/PerfectFluid.lean —
     `FLRWSpacetime.einsteinTensor_00_iff_friedmann`,
     `FLRWSpacetime.einsteinTensor_spatial_iff_friedmann`,
     `FLRWSpacetime.einsteinTensor_iff_friedmann`
@@ -383,11 +383,11 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
 58. PhyslibAlpha/Relativity/Modified/Ostrogradsky.lean — `HigherDerivativeOscillator`,
     `oscillatorKineticHessian`, `oscillatorKineticHessian_degenerate`,
     `HigherDerivativeOscillator.hamiltonian`,
-    `HigherDerivativeOscillator.hamiltonian_add`, `HigherDerivativeOscillator.ostrogradsky_unbounded_below`,
-    `kinetic_nonneg`, `kinetic_zero_iff`
+    `HigherDerivativeOscillator.hamiltonian_add`,
+    `HigherDerivativeOscillator.ostrogradsky_unbounded_below`
 59. PhyslibAlpha/Relativity/Modified/Galileon.lean — `CubicGalileon`,
     `CubicGalileon.density`, `cubic_total_derivative`, `CubicGalileon.density_hasDerivAt`,
-    `shift_total_derivative`, `shift_forbids_potential`
+    `shift_total_derivative`
 60. PhyslibAlpha/Relativity/Modified/ChameleonScreening.lean — `ChameleonModel`,
     `ChameleonModel.massSq`, `ChameleonModel.mass`, `ChameleonModel.mass_mono`,
     `ChameleonModel.range`, `ChameleonModel.range_shrinks`, `ChameleonModel.suppression`,
@@ -497,6 +497,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
 80. PhyslibAlpha/Relativity/Modified/MassiveGravity/Basic.lean — `MassiveGravityTheory`,
     `MassiveGravityTheory.massSq`, `MassiveGravityTheory.propagatorCoupling`,
     `MassiveGravityTheory.generalRelativity`, `MassiveGravityTheory.fierzPauli`
+81. PhyslibAlpha/Relativity/Tensors/PerfectFluidStressEnergy.lean — `perfectFluidStressEnergy`
 
 ## References
 

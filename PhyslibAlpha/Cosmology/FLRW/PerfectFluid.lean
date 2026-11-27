@@ -8,6 +8,7 @@ module
 public import Physlib.Relativity.SpeedOfLight
 public import PhyslibAlpha.Cosmology.FLRW.Christoffel
 public import PhyslibAlpha.Relativity.General.GravitationalConstant
+public import PhyslibAlpha.Relativity.Tensors.PerfectFluidStressEnergy
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
@@ -37,7 +38,7 @@ to the standard cosmic-time Friedmann equations bridged in `FriedmannBridge.lean
 
 ## ii. Key results
 
-- `perfectFluidStressEnergy` : comoving perfect-fluid stress-energy tensor.
+- `GeneralRelativity.perfectFluidStressEnergy` : comoving perfect-fluid stress-energy tensor.
 - `FLRWSpacetime.einsteinTensor_00_iff_friedmann` : `(0, 0)` Einstein equation ↔ first Friedmann
   equation.
 - `FLRWSpacetime.einsteinTensor_spatial_iff_friedmann` : `(1, 1)` Einstein equation ↔ second
@@ -76,12 +77,6 @@ gravitational constant.
 
 -/
 
-/-- Comoving perfect-fluid stress-energy tensor `T_{ij} = (ρ c² + p) u_i u_j + p g_{ij}` for a
-comoving observer `u = (-1, 0, 0, 0)` with speed of light `c`, mass density `ρ`, and pressure
-`p`. -/
-def perfectFluidStressEnergy (c : SpeedOfLight) (ρ p : ℝ) (g : Tensor2 4) : Tensor2 4 :=
-  Matrix.of fun i j => (ρ * (c : ℝ) ^ 2 + p) * (if i = 0 ∧ j = 0 then 1 else 0) + p * g i j
-
 namespace FLRWSpacetime
 
 /-- The `(0, 0)` Einstein equation `G_{00} + Λ g_{00} = (8 π G / c⁴) T_{00}` for an FLRW spacetime
@@ -93,12 +88,12 @@ lemma einsteinTensor_00_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight) (Λ
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
     (S.toCoordinateMetric.einsteinTensor x 0 0 + Λ * S.metric x 0 0
-        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * perfectFluidStressEnergy c ρ p (S.metric x) 0 0)
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * GeneralRelativity.perfectFluidStressEnergy c ρ p (S.metric x) 0 0)
       ↔ (deriv S.a (x 0) / S.a (x 0)) ^ 2
           = (8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * ρ - S.k / (S.a (x 0)) ^ 2 + Λ / 3 := by
   have hc : (c : ℝ) ≠ 0 := c.val_ne_zero
   rw [S.einsteinTensor x ha hr hkr hsin ha_diff ha2 0 0]
-  simp only [metric, perfectFluidStressEnergy, Matrix.of_apply, ↓reduceIte, and_self, mul_one]
+  simp only [metric, GeneralRelativity.perfectFluidStressEnergy, Matrix.of_apply, ↓reduceIte, and_self, mul_one]
   have hrhs : 8 * Real.pi * G.val / (c : ℝ) ^ 4 * (ρ * (c : ℝ) ^ 2 + p + p * -1)
       = 8 * Real.pi * G.val / (c : ℝ) ^ 2 * ρ := by
     field_simp [hc]
@@ -120,14 +115,14 @@ lemma einsteinTensor_spatial_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight
     (hf1 : (deriv S.a (x 0) / S.a (x 0)) ^ 2
       = (8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * ρ - S.k / (S.a (x 0)) ^ 2 + Λ / 3) :
     (S.toCoordinateMetric.einsteinTensor x 1 1 + Λ * S.metric x 1 1
-        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * perfectFluidStressEnergy c ρ p (S.metric x) 1 1)
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * GeneralRelativity.perfectFluidStressEnergy c ρ p (S.metric x) 1 1)
       ↔ deriv (deriv S.a) (x 0) / S.a (x 0)
           = -(4 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * (ρ + 3 * p / (c : ℝ) ^ 2) + Λ / 3 := by
   have hc : (c : ℝ) ≠ 0 := c.val_ne_zero
   have hg11 : S.a (x 0) ^ 2 / (1 - S.k * x 1 ^ 2) ≠ 0 :=
     div_ne_zero (pow_ne_zero 2 ha) hkr
   rw [S.einsteinTensor x ha hr hkr hsin ha_diff ha2 1 1]
-  simp only [metric, perfectFluidStressEnergy, Matrix.of_apply, Fin.isValue, one_ne_zero,
+  simp only [metric, GeneralRelativity.perfectFluidStressEnergy, Matrix.of_apply, Fin.isValue, one_ne_zero,
     false_and, ↓reduceIte, mul_zero, zero_add]
   have hfac : -(2 * (deriv (deriv S.a) (x 0) / S.a (x 0)) + (deriv S.a (x 0) / S.a (x 0)) ^ 2
         + S.k / (S.a (x 0)) ^ 2) * (S.a (x 0) ^ 2 / (1 - S.k * x 1 ^ 2))
@@ -160,7 +155,7 @@ lemma einsteinTensor_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight) (Λ : 
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
     (∀ i j, S.toCoordinateMetric.einsteinTensor x i j + Λ * S.metric x i j
-        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * perfectFluidStressEnergy c ρ p (S.metric x) i j)
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * GeneralRelativity.perfectFluidStressEnergy c ρ p (S.metric x) i j)
       ↔ ((deriv S.a (x 0) / S.a (x 0)) ^ 2
             = (8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * ρ - S.k / (S.a (x 0)) ^ 2 + Λ / 3)
           ∧ (deriv (deriv S.a) (x 0) / S.a (x 0)
@@ -190,7 +185,7 @@ lemma einsteinTensor_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight) (Λ : 
           = 2 * (4 * Real.pi * G.val / (c : ℝ) ^ 4 * p) := by ring
       rw [hrhs] at hf2
       linarith
-    fin_cases i <;> fin_cases j <;> simp [metric, perfectFluidStressEnergy]
+    fin_cases i <;> fin_cases j <;> simp [metric, GeneralRelativity.perfectFluidStressEnergy]
     · have hrhs0 : 8 * Real.pi * G.val / (c : ℝ) ^ 4 * (ρ * (c : ℝ) ^ 2)
           = 3 * (8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2) * ρ) := by
         field_simp [hc]
