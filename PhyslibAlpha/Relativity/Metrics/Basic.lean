@@ -6,6 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Data.Set.Basic
 public import PhyslibAlpha.Relativity.Tensors.Tensor2
 import Mathlib.Tactic.Ring
 
@@ -13,7 +14,8 @@ import Mathlib.Tactic.Ring
 
 # Nondegenerate metric tensors with explicit inverses
 
-Pseudo-Riemannian metric components paired with a certified two-sided inverse matrix.
+Pseudo-Riemannian metric components paired with a certified two-sided inverse matrix, and
+coordinate metric fields on a regular chart.
 
 ## i. Overview
 
@@ -28,10 +30,13 @@ so contractions and trace operations use an inverse certified for that metric.
 - `MetricTensor.sum_ginv_mul_g_left`, `MetricTensor.sum_ginv_mul_g_right`,
   `MetricTensor.sum_ginv_mul_g_apply`, `MetricTensor.sum_mul_ginv_g_apply` :
   componentwise inverse-metric contraction identities.
+- `CoordinateMetric`, `CoordinateMetric.metricTensor` : coordinate metric field with its regular
+  domain and pointwise `MetricTensor` restriction.
 
 ## iii. Table of contents
 
 - A. Metric tensors with explicit inverses
+- B. Coordinate metrics
 
 ## iv. References
 
@@ -117,5 +122,39 @@ lemma MetricTensor.sum_mul_ginv_g_apply {n : ℕ} (M : MetricTensor n) (j : Fin 
         refine Finset.sum_congr rfl fun m _ => by rw [Finset.mul_sum]
     _ = f j := by
         simp [M.sum_ginv_mul_g_right j]
+
+/-!
+
+## B. Coordinate metrics
+
+A `CoordinateMetric n` bundles a coordinate-dependent symmetric metric field with its inverse and
+the chart domain on which they are two-sided inverses.
+
+-/
+
+/-- A coordinate-chart metric field `g` paired with its inverse `ginv` and regularity domain. -/
+structure CoordinateMetric (n : ℕ) where
+  /-- The covariant metric component field `g_{ij}(x)`. -/
+  g : (Fin n → ℝ) → Tensor2 n
+  /-- The contravariant inverse metric component field `g^{ij}(x)`. -/
+  ginv : (Fin n → ℝ) → Tensor2 n
+  /-- Regular coordinate domain where `g` is nondegenerate. -/
+  domain : Set (Fin n → ℝ)
+  /-- Symmetry of the covariant metric at every point. -/
+  symm : ∀ x, IsSymm (g x)
+  /-- Left-to-right inverse relation `g(x) * ginv(x) = 1` on `domain`. -/
+  inv_left : ∀ x ∈ domain, g x * ginv x = 1
+  /-- Right-to-left inverse relation `ginv(x) * g(x) = 1` on `domain`. -/
+  inv_right : ∀ x ∈ domain, ginv x * g x = 1
+
+/-- Restrict a coordinate metric to a pointwise `MetricTensor` at a regular point in its
+domain. -/
+def CoordinateMetric.metricTensor {n : ℕ} (C : CoordinateMetric n) (x : Fin n → ℝ)
+    (hx : x ∈ C.domain) : MetricTensor n where
+  g := C.g x
+  ginv := C.ginv x
+  symm := C.symm x
+  inv_left := C.inv_left x hx
+  inv_right := C.inv_right x hx
 
 end GeneralRelativity

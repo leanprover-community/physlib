@@ -8,7 +8,6 @@ module
 public import Physlib.Mathematics.ForMathlib.Distribution
 public import Physlib.SpaceAndTime.SpaceTime.Derivatives
 public import Physlib.SpaceAndTime.TimeAndSpace.Basic
-public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 /-!
 # Time slice
 

@@ -34,7 +34,7 @@ equation equivalent to Ricci flatness and G + Λ g = 0 equivalent to Ric = Λ g 
 contracted second-Bianchi curvature derivatives establish covariant divergence-freeness of the
 Einstein tensor and stress-energy conservation [15]. In four dimensions, the trace-free Maxwell
 stress-energy tensor [16] bridges index-level electrovacuum sources to Physlib's coordinate-free
-electromagnetic field strength [17].
+electromagnetic field strength [17]{2}{3}.
 Coordinate-free covariant differentiation on general smooth manifolds is a planned extension. [TODO]
 
 ### Geodesics, ADM 3+1 decomposition, linearized gravity, and physical constants
@@ -56,9 +56,9 @@ establishing diffeomorphism gauge invariance [29], proving that in Lorenz gauge 
 Einstein tensor reduces to -½ □_η h̄_{ij} [30], verifying that transverse-traceless gravitational
 waves solve the linearized vacuum equations [31], bridging the spatial Laplacian `laplacian3` on
 constant-time slices to `Space.laplacian` [32], and deriving Poisson's equation in the weak-field
-Newtonian limit [33]. Newton's universal gravitational constant G carries dimension L³ M⁻¹ T⁻² and
+Newtonian limit [33]{4}. Newton's universal gravitational constant G carries dimension L³ M⁻¹ T⁻² and
 CODATA 2022 SI value 6.67430 × 10⁻¹¹ m³ kg⁻¹ s⁻², and admits natural and geometric unit systems
-in which c, G, and k_B are simultaneously equal to 1 (see the Units API map) [34].
+in which c, G, and k_B are simultaneously equal to 1 (see the Units API map) [34]{1}.
 
 ### Exact black-hole and cosmological spacetimes
 
@@ -102,7 +102,7 @@ four-dimensional Einstein-Fokker curvature identity R = -6 □_η φ / φ³ and 
 nonlinear scalar wave equation □_η φ = -4 π φ³ T [55]. Brans-Dicke scalar-tensor gravity couples a
 scalar mode to curvature with dimensionless parameter ω on `BransDickeTheory`, yielding the
 post-Newtonian parameter γ(ω) = (1 + ω) / (2 + ω) approaching the General Relativity value 1 under
-the Cassini bound ω > 40000, the weak-field effective gravitational coupling
+the Cassini bound ω > 40000{7}, the weak-field effective gravitational coupling
 `coupling(ω) = (4 + 2ω) / (3 + 2ω) = 1 + 1 / (3 + 2ω)` bounded in `[1, 4/3]` for ω ≥ 0, and the
 ω = 0 metric f(R) value γ = 1 / 2 [56]. Non-linear f(R) gravity (`FRTheory`) replaces the
 Einstein-Hilbert density R with f(R), modifying the algebraic field equations, recovering General
@@ -156,7 +156,7 @@ dRGT potential on `DRGTTheory` from `Matrix.trace` elementary symmetric polynomi
 rotation-curve alternatives without non-baryonic dark matter are represented by Milgrom's Modified
 Newtonian Dynamics (`MONDTheory`), which interpolates between the Newtonian regime a ≫ a₀ and the
 deep-MOND regime a = √(a_N a₀) to produce asymptotically flat circular velocities v⁴ = G M a₀ and
-bridges directly to Physlib's `pairGravityAcceleration` [75], by Bekenstein's relativistic
+bridges directly to Physlib's `pairGravityAcceleration` [75]{8}, by Bekenstein's relativistic
 Tensor-Vector-Scalar (`TeVeSMetric`) disformal physical metric and its exact analytical
 inverse [76], and by Moffat's Scalar-Tensor-Vector Gravity (`MOGTheory`) Yukawa-enhancement factor
 `1 + α (1 - e^{-μ r})` and Yukawa-enhanced gravitational potential
@@ -165,7 +165,7 @@ Post-Newtonian (PPN) formalism unifies solar-system tests across metric theories
 dimensionless parameters (γ, β, ξ, α₁, α₂, α₃, ζ₁, ζ₂, ζ₃, ζ₄), classifying fully conservative and
 semiconservative theories, embedding General Relativity, `BransDickeTheory`, metric f(R), and
 Nordström gravity, and evaluating light deflection, Shapiro time delay, perihelion precession, and
-the Nordtvedt Strong Equivalence Principle violation parameter η_N [78].
+the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
 
 ## Lean References
 
@@ -196,9 +196,10 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78].
     `CoordinateMetric.einsteinTensor`
 12. PhyslibAlpha/Relativity/Metrics/RiemannFromData.lean — `riemannFromData`,
     `riemannFromData_congr`
-13. PhyslibAlpha/Relativity/Metrics/Pipeline.lean — namespace `CoordinateCurvature`: `christoffel`,
-    `riemann`, `ricciTensor`, `ricciScalar`, `einsteinTensor`, `christoffel_const`, `riemann_const`,
-    `riemann_eq_riemannFromData`
+13. PhyslibAlpha/Relativity/Metrics/Christoffel.lean — namespace `CoordinateCurvature`:
+    `christoffel`, `christoffel_diag`, and `CoordinateMetric.christoffel`. The companion Riemann,
+    Ricci, and Einstein modules supply the remaining coordinate curvature operators and the
+    constant-metric vanishing lemmas.
 14. PhyslibAlpha/Relativity/Tensors/EinsteinTensor.lean — `einstein`, `einstein_symm`,
     `einstein_flat`, `metricTrace_einstein`, `ricciScalar_eq_zero_of_einstein_eq_zero`,
     `vacuum_iff_ricci_flat`, `einsteinSpace_iff`
@@ -277,7 +278,8 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78].
     `StaticSphericalMetric.ricciScalar`, `StaticSphericalMetric.einsteinTensor`
 39. PhyslibAlpha/Relativity/General/Schwarzschild/ElectricWeyl.lean — `electricPart`,
     `electricPart_symm`, `electricPart_trace`, `electricWeylRiemann`, `ricci_eq_zero`,
-    `electricWeyl_frameKretschmannScalar_eq`, `kretschmann_scalar`, `weyl_purely_electric`
+    `electricWeyl_frameKretschmannScalar_eq`, `kretschmann_scalar`, `weyl_purely_electric`,
+    `electricPart_from_metric`
 40. PhyslibAlpha/Relativity/General/Schwarzschild/Basic.lean — `SchwarzschildSpacetime`,
     `SchwarzschildSpacetime.metricFn`, `SchwarzschildSpacetime.metric`,
     `SchwarzschildSpacetime.toStaticSpherical`, `SchwarzschildSpacetime.toCoordinateMetric`,
@@ -285,7 +287,6 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78].
     `SchwarzschildSpacetime.christoffelTtr_from_metric`,
     `SchwarzschildSpacetime.christoffelRrr_from_metric`,
     `SchwarzschildSpacetime.riemann_t_rtr_from_metric`,
-    `SchwarzschildSpacetime.electricPart_from_metric`,
     `SchwarzschildSpacetime.riemann_components_from_metric`
 41. PhyslibAlpha/Relativity/General/Schwarzschild/CoordinateCurvature.lean —
     `SchwarzschildSpacetime.toDeSitter`, `SchwarzschildSpacetime.toDeSitter_metric`,
