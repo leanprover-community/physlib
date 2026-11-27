@@ -44,9 +44,9 @@ into a manifold is differentiable. [TODO]
 1. Physlib/SpaceAndTime/SpaceTime/Basic.lean — `SpaceTime (d : ℕ := 3)`, `coord`, `coordCLM`
 2. Physlib/SpaceAndTime/SpaceTime/Basic.lean — `space`, `time`, `toTimeAndSpace`
 3. Physlib/SpaceAndTime/SpaceTime/Basic.lean — `space_equivariant`
-4. Physlib/SpaceAndTime/SpaceTime/Derivatives.lean — `deriv`, `tensorDeriv`
-5. Physlib/SpaceAndTime/SpaceTime/Derivatives.lean — `manifoldDeriv`, `manifoldDeriv_eq`
-6. Physlib/SpaceAndTime/SpaceTime/Derivatives.lean — `distDeriv`, `distTensorDeriv`
+4. Physlib/SpaceAndTime/SpaceTime/Derivatives.lean — `deriv`, `derivOfTensor`
+5. Physlib/SpaceAndTime/SpaceTime/Derivatives.lean — `derivOfManifold`, `derivOfManifold_eq`
+6. Physlib/SpaceAndTime/SpaceTime/Derivatives.lean — `derivOfDist`, `derivOfDistTensor`
 7. Physlib/SpaceAndTime/SpaceTime/Basic.lean — `spaceTime_integral_eq_time_space_integral`,
    `spaceTime_integral_eq_time_integral_space_integral`,
    `spaceTime_integral_eq_space_integral_time_integral`
