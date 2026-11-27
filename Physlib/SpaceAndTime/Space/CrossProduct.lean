@@ -13,12 +13,13 @@ public import Physlib.SpaceAndTime.Time.Derivatives
 
 ## i. Overview
 
-In this module we define the cross product on `EuclideanSpace ℝ (Fin 3)`,
-and prove various properties about it related to time derivatives and inner products.
+We define the cross product on `EuclideanSpace ℝ (Fin 3)`, prove that it preserves continuous
+differentiability, and describe its interaction with time derivatives and inner products.
 
 ## ii. Key results
 
 - `⨯ₑ₃` : The cross product on `EuclideanSpace ℝ (Fin 3)`.
+- `contDiff_cross` : The pointwise cross product of two `Cⁿ` vector fields is `Cⁿ`.
 - `time_deriv_cross_commute` : Time derivatives move out of cross products.
 - `inner_cross_self` : Inner product of a vector with the cross product of another vector
   and itself is zero.
@@ -52,6 +53,16 @@ set_option quotPrecheck false in
 `\vectorproduct` or `\crossproduct`. -/
 infixl:70 " ⨯ₑ₃ " => fun a b => (WithLp.equiv 2 (Fin 3 → ℝ)).symm
     (WithLp.equiv 2 (Fin 3 → ℝ) a ⨯₃ WithLp.equiv 2 (Fin 3 → ℝ) b)
+
+/-- The pointwise cross product of two `Cⁿ` vector fields is `Cⁿ`. -/
+@[fun_prop]
+lemma contDiff_cross {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
+    {n : WithTop ENat} {v w : X → EuclideanSpace ℝ (Fin 3)}
+    (hv : ContDiff ℝ n v) (hw : ContDiff ℝ n w) :
+    ContDiff ℝ n (fun x => v x ⨯ₑ₃ w x) := by
+  rw [contDiff_euclidean]
+  intro i
+  fin_cases i <;> simp [crossProduct] <;> fun_prop
 
 /-!
 
