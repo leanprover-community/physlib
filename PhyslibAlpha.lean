@@ -276,6 +276,7 @@ public import PhyslibAlpha.Mathematics.AlgebraRepresentation
 public import PhyslibAlpha.Mathematics.Analysis.LocalOperator
 public import PhyslibAlpha.Mathematics.Analysis.Normed.HolderDual
 public import PhyslibAlpha.Mathematics.Analysis.RealBounds
+public import PhyslibAlpha.Mathematics.Calculus.CoordDeriv
 public import PhyslibAlpha.Mathematics.Calculus.IteratedFDerivBounds
 public import PhyslibAlpha.Mathematics.Calculus.ParametricIntegral
 public import PhyslibAlpha.Mathematics.Calculus.SmoothDistance
@@ -314,6 +315,7 @@ public import PhyslibAlpha.Mathematics.Fourier.Inversion
 public import PhyslibAlpha.Mathematics.Fourier.LinearChange
 public import PhyslibAlpha.Mathematics.Fourier.Marginal
 public import PhyslibAlpha.Mathematics.Fourier.SchwartzDecay
+public import PhyslibAlpha.Mathematics.GeneralizedKronecker
 public import PhyslibAlpha.Mathematics.Geometry.Simplex
 public import PhyslibAlpha.Mathematics.Geometry.Sphere.Fourier
 public import PhyslibAlpha.Mathematics.Geometry.Sphere.Polar
@@ -883,7 +885,6 @@ public import PhyslibAlpha.Relativity.Modified.KaluzaKlein.GaugeTransform
 public import PhyslibAlpha.Relativity.Modified.KaluzaKlein.KaluzaMiracle
 public import PhyslibAlpha.Relativity.Modified.KaluzaKlein.TriangularFactorization
 public import PhyslibAlpha.Relativity.Modified.Lovelock.Basic
-public import PhyslibAlpha.Relativity.Modified.Lovelock.GeneralizedKronecker
 public import PhyslibAlpha.Relativity.Modified.MassiveGravity.Basic
 public import PhyslibAlpha.Relativity.Modified.MassiveGravity.DRGT
 public import PhyslibAlpha.Relativity.Modified.MassiveGravity.FierzPauli

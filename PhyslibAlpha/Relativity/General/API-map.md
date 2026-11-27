@@ -24,7 +24,7 @@ rescalings g ↦ Ω g preserve metric invertibility [4] and leave null tangent c
 Algebraic (0, 4) Riemann curvature tensors satisfy pair antisymmetry, pair-exchange symmetry, and
 the first Bianchi identity [6][82], and contract with the inverse metric to the symmetric Ricci tensor
 [7] and scalar curvature defined as its metric trace [8][9]. Using coordinate-axis partial
-derivatives bridged to `SpaceTime.deriv` [10], coordinate curvature operators compute the
+derivatives bridged to `SpaceTime.deriv` [10][85], coordinate curvature operators compute the
 Levi-Civita Christoffel symbols from a coordinate metric field [11], construct the Riemann
 curvature tensor [12][13], Ricci tensor, Ricci scalar, and Einstein tensor, and establish that any
 covariant coordinate components lower to algebraic curvature contractions through the bridge
@@ -190,9 +190,9 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
    `sum_ginv_mul_g`, `metricTrace_mul_g`
 9. PhyslibAlpha/Relativity/Metrics/RicciScalar.lean — `ricciScalar`, `ricciScalar_eq_metricTrace`,
    `ricciScalar_flat`
-10. PhyslibAlpha/Relativity/Metrics/CoordDeriv.lean — `coordDeriv`, `coordDeriv_of_hasDerivAt`,
+10. PhyslibAlpha/Mathematics/Calculus/CoordDeriv.lean — `coordDeriv`, `coordDeriv_of_hasDerivAt`,
     `coordDeriv_const_slice`, `coordDeriv_const`, `coordDeriv_congr`, `coordDeriv_congr_nhds`,
-    `coordDeriv_eq_fderiv`, `coordDeriv_eq_spaceTime_deriv`, `coordDeriv_comm`
+    `coordDeriv_eq_fderiv`, `coordDeriv_comm`
 11. PhyslibAlpha/Relativity/Metrics/CoordinateMetric.lean — `CoordinateMetric`,
     `CoordinateMetric.metricTensor`, `CoordinateMetric.christoffel`, `CoordinateMetric.riemann`,
     `CoordinateMetric.ricciTensor`, `CoordinateMetric.ricciScalar`,
@@ -268,17 +268,17 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `minkowskiCoordinateMetric_einsteinTensor`, `minkowskiCoordinateMetric_riemannFromData`,
     `minkowski_ricci_eq_zero`, `minkowski_ricciScalar_eq_zero`,
     `minkowski_einstein_eq_zero`, `minkowski_vacuum_iff_ricci_flat`
-36. PhyslibAlpha/Relativity/Metrics/StaticSphericalMetric/Basic.lean — `StaticSphericalMetric`,
-    `StaticSphericalMetric.metric`, `StaticSphericalMetric.metricInv`,
-    `StaticSphericalMetric.metric_symm`, `StaticSphericalMetric.metric_mul_inv`,
-    `StaticSphericalMetric.metricTensor`, `StaticSphericalMetric.toCoordinateMetric`
+36. PhyslibAlpha/Relativity/Metrics/StaticSphericalMetric/Basic.lean — `Metric`,
+    `Metric.metric`, `Metric.metricInv`,
+    `Metric.metric_symm`, `Metric.metric_mul_inv`,
+    `Metric.metricTensor`, `Metric.toCoordinateMetric`
 37. PhyslibAlpha/Relativity/Metrics/StaticSphericalMetric/Christoffel.lean —
-    `StaticSphericalMetric.christoffel`, `StaticSphericalMetric.christoffel_eq`,
-    `StaticSphericalMetric.eventually_christoffel_eq`, `StaticSphericalMetric.christoffelDeriv`,
-    `StaticSphericalMetric.pd_christoffel_eq_deriv`
+    `Metric.christoffel`, `Metric.christoffel_eq`,
+    `Metric.eventually_christoffel_eq`, `Metric.christoffelDeriv`,
+    `Metric.pd_christoffel_eq_deriv`
 38. PhyslibAlpha/Relativity/Metrics/StaticSphericalMetric/RicciCurvature.lean —
-    `StaticSphericalMetric.riemann_eq_data`, `StaticSphericalMetric.ricciTensor`,
-    `StaticSphericalMetric.ricciScalar`, `StaticSphericalMetric.einsteinTensor`
+    `Metric.riemann_eq_data`, `Metric.ricciTensor`,
+    `Metric.ricciScalar`, `Metric.einsteinTensor`
 39. PhyslibAlpha/Relativity/General/Schwarzschild/ElectricWeyl.lean — `electricPart`,
     `electricPart_symm`, `electricPart_trace`, `electricWeylRiemann`, `ricci_eq_zero`,
     `electricWeyl_frameKretschmannScalar_eq`, `kretschmann_scalar`, `weyl_purely_electric`,
@@ -411,7 +411,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
 64. PhyslibAlpha/Relativity/Modified/Teleparallel/FTGravity.lean — `FTTheory`,
     `FTTheory.tegr`, `FTTheory.quadratic`, `FTTheory.friedmannLHS`, `FTTheory.friedmannLHS_tegr`,
     `FTTheory.friedmannLHS_quadratic`
-65. PhyslibAlpha/Relativity/Modified/Lovelock/GeneralizedKronecker.lean — `generalizedKroneckerDelta`,
+65. PhyslibAlpha/Mathematics/GeneralizedKronecker.lean — `generalizedKroneckerDelta`,
     `generalizedKroneckerDelta_eq_zero_of_lt`, `generalizedKroneckerDelta_five_eq_sum_perm`, `perm_fin5_fiber_split`
 66. PhyslibAlpha/Relativity/Modified/Lovelock/Basic.lean — `AlgebraicCurvature`,
     `AlgebraicCurvature.ricciMixed`, `AlgebraicCurvature.ricciScalar`, `AlgebraicCurvature.ricciSq`,
@@ -502,6 +502,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `InitialData.covariantDerivTensor2`
 84. PhyslibAlpha/Cosmology/FLRW/Curvature.lean — `FLRWSpacetime.ricciTensor`,
     `FLRWSpacetime.ricciScalar`, `FLRWSpacetime.einsteinTensor`
+85. PhyslibAlpha/Relativity/Metrics/CoordDeriv.lean — `coordDeriv_eq_spaceTime_deriv`
 
 ## References
 

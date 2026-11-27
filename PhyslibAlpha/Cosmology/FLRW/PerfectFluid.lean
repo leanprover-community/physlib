@@ -61,7 +61,9 @@ to the standard cosmic-time Friedmann equations bridged in `FriedmannBridge.lean
 
 @[expose] public section
 
-namespace GeneralRelativity
+open GeneralRelativity
+
+namespace Cosmology
 
 namespace FLRW
 
@@ -199,4 +201,4 @@ end FLRWSpacetime
 
 end FLRW
 
-end GeneralRelativity
+end Cosmology

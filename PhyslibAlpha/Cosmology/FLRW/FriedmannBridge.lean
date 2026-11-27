@@ -57,7 +57,9 @@ of light. Reparametrizing cosmic time `t` by the length-dimensioned coordinate `
 
 @[expose] public section
 
-namespace GeneralRelativity
+open GeneralRelativity
+
+namespace Cosmology
 
 namespace FLRW
 
@@ -252,4 +254,4 @@ lemma friedmannSolution_of_einsteinTensor (c : SpeedOfLight) (U : Cosmology.FLRW
 
 end FLRW
 
-end GeneralRelativity
+end Cosmology

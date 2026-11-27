@@ -25,9 +25,9 @@ and the Einstein tensor in terms of `f`, `f'`, and `f''`.
 
 ## ii. Key results
 
-- `StaticSphericalMetric.riemann_eq_data` : coordinate Riemann tensor via `riemannFromData`.
-- `StaticSphericalMetric.ricciTensor`, `StaticSphericalMetric.ricciScalar`,
-  `StaticSphericalMetric.einsteinTensor` : closed-form curvature formulas for arbitrary
+- `Metric.riemann_eq_data` : coordinate Riemann tensor via `riemannFromData`.
+- `Metric.ricciTensor`, `Metric.ricciScalar`,
+  `Metric.einsteinTensor` : closed-form curvature formulas for arbitrary
   twice-differentiable radial metric functions.
 
 ## iii. Table of contents
@@ -49,9 +49,9 @@ namespace GeneralRelativity
 
 namespace StaticSpherical
 
-open GeneralRelativity.CoordinateCurvature
+namespace Metric
 
-namespace StaticSphericalMetric
+open GeneralRelativity.CoordinateCurvature
 
 /-!
 
@@ -65,7 +65,7 @@ spherically symmetric spacetimes such as Schwarzschild, Kottler, and Reissner–
 
 /-- The coordinate Riemann tensor of a static spherical metric agrees with
 `riemannFromData S.christoffel S.christoffelDeriv` across all 256 components. -/
-lemma riemann_eq_data (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma riemann_eq_data (S : Metric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ S.metricFn s)
     (hf2 : DifferentiableAt ℝ (deriv S.metricFn) (x 1)) (ρ σ μ ν : Fin 4) :
@@ -92,7 +92,7 @@ lemma riemann_eq_data (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 
     fun k i j => (hconv x k i j).trans (S.christoffel_eq x hr hf hsin hf1 k i j)
   simp only [riemannFromData, h1, h2, hquad]
 
-private lemma ricciComponent_tt (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+private lemma ricciComponent_tt (S : Metric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ S.metricFn s)
     (hf2 : DifferentiableAt ℝ (deriv S.metricFn) (x 1)) :
@@ -105,7 +105,7 @@ private lemma ricciComponent_tt (S : StaticSphericalMetric) (x : Fin 4 → ℝ) 
   field_simp [hr, hf]
   ring
 
-private lemma ricciComponent_rr (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+private lemma ricciComponent_rr (S : Metric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ S.metricFn s)
     (hf2 : DifferentiableAt ℝ (deriv S.metricFn) (x 1)) :
@@ -118,7 +118,7 @@ private lemma ricciComponent_rr (S : StaticSphericalMetric) (x : Fin 4 → ℝ) 
   field_simp [hr, hf]
   ring
 
-private lemma ricciComponent_thetatheta (S : StaticSphericalMetric) (x : Fin 4 → ℝ)
+private lemma ricciComponent_thetatheta (S : Metric) (x : Fin 4 → ℝ)
     (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ S.metricFn s)
     (hf2 : DifferentiableAt ℝ (deriv S.metricFn) (x 1)) :
@@ -131,7 +131,7 @@ private lemma ricciComponent_thetatheta (S : StaticSphericalMetric) (x : Fin 4 �
   rw [Real.sin_sq (x 2)]
   ring
 
-private lemma ricciComponent_phiphi (S : StaticSphericalMetric) (x : Fin 4 → ℝ)
+private lemma ricciComponent_phiphi (S : Metric) (x : Fin 4 → ℝ)
     (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ S.metricFn s)
     (hf2 : DifferentiableAt ℝ (deriv S.metricFn) (x 1)) :
@@ -143,7 +143,7 @@ private lemma ricciComponent_phiphi (S : StaticSphericalMetric) (x : Fin 4 → �
   field_simp [hr, hf, hsin]
   ring
 
-private lemma ricciComponent_offdiag (S : StaticSphericalMetric) (x : Fin 4 → ℝ)
+private lemma ricciComponent_offdiag (S : Metric) (x : Fin 4 → ℝ)
     (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ S.metricFn s)
     (hf2 : DifferentiableAt ℝ (deriv S.metricFn) (x 1)) {σ ν : Fin 4} (h : σ ≠ ν) :
@@ -157,7 +157,7 @@ private lemma ricciComponent_offdiag (S : StaticSphericalMetric) (x : Fin 4 → 
 
 /-- Complete coordinate Ricci tensor for any static spherically symmetric metric
 `ds² = -f(r) dt² + f(r)⁻¹ dr² + r² dΩ²`. -/
-lemma ricciTensor (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma ricciTensor (S : Metric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ S.metricFn s)
     (hf2 : DifferentiableAt ℝ (deriv S.metricFn) (x 1)) (σ ν : Fin 4) :
@@ -181,7 +181,7 @@ lemma ricciTensor (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 
 
 /-- Scalar curvature of a static spherical metric computed from the coordinate metric:
 `R = -f'' - 4 f'/r + 2 (1 - f) / r²`. -/
-lemma ricciScalar (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma ricciScalar (S : Metric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ S.metricFn s)
     (hf2 : DifferentiableAt ℝ (deriv S.metricFn) (x 1)) :
@@ -195,7 +195,7 @@ lemma ricciScalar (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 
   ring
 
 /-- Einstein tensor of a static spherical metric computed from the coordinate metric. -/
-lemma einsteinTensor (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma einsteinTensor (S : Metric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ S.metricFn s)
     (hf2 : DifferentiableAt ℝ (deriv S.metricFn) (x 1)) (i j : Fin 4) :
@@ -219,7 +219,7 @@ lemma einsteinTensor (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 �
   · field_simp [hr]; ring
   · field_simp [hr]; ring
 
-end StaticSphericalMetric
+end Metric
 
 end StaticSpherical
 

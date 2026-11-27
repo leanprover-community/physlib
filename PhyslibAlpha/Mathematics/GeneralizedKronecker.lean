@@ -52,11 +52,7 @@ underlies the proof of the four-dimensional Bach–Lanczos identity in `Lovelock
 
 @[expose] public section
 
-namespace GeneralRelativity
-
-namespace Modified
-
-namespace Lovelock
+namespace GeneralizedKronecker
 
 open Equiv
 
@@ -282,8 +278,4 @@ lemma perm_fin5_fiber_split (k : Fin 5) (F : Fin 5 → Fin 5 → Fin 5 → Fin 5
     (fun a b c d => h34 (s a) (s b) (s c) (s d))]
   ring
 
-end Lovelock
-
-end Modified
-
-end GeneralRelativity
+end GeneralizedKronecker

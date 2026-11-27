@@ -61,7 +61,9 @@ connection directly from the metric components:
 
 @[expose] public section
 
-namespace GeneralRelativity
+open GeneralRelativity
+
+namespace Cosmology
 
 namespace FLRW
 
@@ -654,4 +656,4 @@ end FLRWSpacetime
 
 end FLRW
 
-end GeneralRelativity
+end Cosmology

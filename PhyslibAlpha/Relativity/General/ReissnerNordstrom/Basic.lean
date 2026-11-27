@@ -123,9 +123,9 @@ namespace ReissnerNordstromSpacetime
 noncomputable def metricFn (S : ReissnerNordstromSpacetime) (r : ℝ) : ℝ :=
   1 - 2 * S.M / r + S.Q ^ 2 / r ^ 2
 
-/-- View a Reissner–Nordström spacetime as a `StaticSphericalMetric` with profile
+/-- View a Reissner–Nordström spacetime as a `Metric` with profile
 `S.metricFn`. -/
-noncomputable def toStaticSpherical (S : ReissnerNordstromSpacetime) : StaticSphericalMetric :=
+noncomputable def toStaticSpherical (S : ReissnerNordstromSpacetime) : Metric :=
   ⟨S.metricFn⟩
 
 /-- The underlying radial metric function of `S.toStaticSpherical` is `S.metricFn`. -/
@@ -330,8 +330,8 @@ private lemma einsteinTensor_eq_maxwell_raw (S : ReissnerNordstromSpacetime) (x 
     S.ricciScalar_raw x hr hf hsin]
   simp only [maxwellStressEnergyGaussian, GeneralRelativity.maxwellStressEnergy,
     maxwellFieldInvariant,
-    StaticSphericalMetric.metricTensor, StaticSphericalMetric.metric,
-    StaticSphericalMetric.metricInv, toStaticSpherical, coulombFieldStrength, Matrix.of_apply,
+    Metric.metricTensor, Metric.metric,
+    Metric.metricInv, toStaticSpherical, coulombFieldStrength, Matrix.of_apply,
     Fin.sum_univ_four]
   fin_cases i <;> fin_cases j <;> simp
   · field_simp [hr, hf, hpi]; ring

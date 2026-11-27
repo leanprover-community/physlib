@@ -133,8 +133,6 @@ curvature: Weyl part plus trace part. -/
 noncomputable def frameSumOfSquares (S : SchwarzschildDeSitterSpacetime) (r : ℝ) : ℝ :=
   ∑ i, ∑ j, ∑ k, ∑ l, S.frameCurvatureComponent r i j k l * S.frameCurvatureComponent r i j k l
 
-section kretschmann
-
 private lemma sum_kl_mul_deSitterPart (Λ : ℝ) (F : Fin 4 → Fin 4 → ℝ) (i j : Fin 4) :
     (∑ k : Fin 4, ∑ l : Fin 4, F k l * deSitterPart Λ i j k l) =
       (Λ / 3) * minkowskiMetric4 i i * minkowskiMetric4 j j * (F i j - F j i) := by
@@ -218,8 +216,6 @@ lemma kretschmann (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0) 
   have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
   have hr6 : r ^ 6 ≠ 0 := pow_ne_zero 6 hr
   field_simp [hr3, hr6]
-
-end kretschmann
 
 /-!
 

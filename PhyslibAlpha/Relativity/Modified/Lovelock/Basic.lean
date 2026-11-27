@@ -5,7 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
-public import PhyslibAlpha.Relativity.Modified.Lovelock.GeneralizedKronecker
+public import PhyslibAlpha.Mathematics.GeneralizedKronecker
 public import PhyslibAlpha.Relativity.Tensors.Tensor2
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
@@ -62,7 +62,7 @@ namespace Modified
 
 namespace Lovelock
 
-open Equiv
+open Equiv GeneralizedKronecker
 
 /-!
 

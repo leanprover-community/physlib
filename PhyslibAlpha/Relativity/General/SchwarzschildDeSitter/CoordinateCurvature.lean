@@ -174,7 +174,7 @@ private lemma christoffel_eq_staticSpherical (S : SchwarzschildDeSitterSpacetime
   intro k i j
   have hd1 := S.deriv_metricFn (x 1) hr
   fin_cases k <;> fin_cases i <;> fin_cases j <;> simp [christoffel,
-    StaticSphericalMetric.christoffel, toStaticSpherical, hd1] <;> ring
+    Metric.christoffel, toStaticSpherical, hd1] <;> ring
 
 private lemma christoffelDeriv_eq_staticSpherical (S : SchwarzschildDeSitterSpacetime)
     (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (μ k i j : Fin 4) :
@@ -183,13 +183,13 @@ private lemma christoffelDeriv_eq_staticSpherical (S : SchwarzschildDeSitterSpac
   have hd1 := S.deriv_metricFn (x 1) hr
   have hd2 := (S.hasDerivAt_deriv_metricFn (x 1) hr).deriv
   fin_cases μ
-  · simp [christoffelDeriv, StaticSphericalMetric.christoffelDeriv]
+  · simp [christoffelDeriv, Metric.christoffelDeriv]
   · fin_cases k <;> fin_cases i <;> fin_cases j <;>
-      simp [christoffelDeriv, StaticSphericalMetric.christoffelDeriv, toStaticSpherical, hd1, hd2]
+      simp [christoffelDeriv, Metric.christoffelDeriv, toStaticSpherical, hd1, hd2]
     all_goals field_simp [hf]; ring
   · fin_cases k <;> fin_cases i <;> fin_cases j <;>
-      simp [christoffelDeriv, StaticSphericalMetric.christoffelDeriv, toStaticSpherical]
-  · simp [christoffelDeriv, StaticSphericalMetric.christoffelDeriv]
+      simp [christoffelDeriv, Metric.christoffelDeriv, toStaticSpherical]
+  · simp [christoffelDeriv, Metric.christoffelDeriv]
 
 /-- All 64 Christoffel symbols computed from the coordinate metric equal
 `SchwarzschildDeSitterSpacetime.christoffel`, for every `Λ`. -/
@@ -202,8 +202,8 @@ lemma christoffel_eq (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (h
   have hmi : S.metricInv = S.toStaticSpherical.metricInv := rfl
   have h := S.toStaticSpherical.christoffel_eq x hr hf hsin
     (S.hasDerivAt_metricFn (x 1) hr).differentiableAt k i j
-  simp only [CoordinateMetric.christoffel_apply, StaticSphericalMetric.toCoordinateMetric_g,
-    StaticSphericalMetric.toCoordinateMetric_ginv] at h
+  simp only [CoordinateMetric.christoffel_apply, Metric.toCoordinateMetric_g,
+    Metric.toCoordinateMetric_ginv] at h
   rw [hm, hmi, h, S.christoffel_eq_staticSpherical x hr k i j]
 
 /-- Away from the central singularity (`r ≠ 0`), event and cosmological horizons (`f ≠ 0`), and
@@ -218,8 +218,8 @@ lemma pd_christoffel_eq (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ)
   have hmi : S.metricInv = S.toStaticSpherical.metricInv := rfl
   have h := S.toStaticSpherical.pd_christoffel_eq x hr hf hsin
     (S.eventually_differentiableAt_metricFn (x 1) hr) μ a b c
-  simp only [CoordinateMetric.christoffel_apply, StaticSphericalMetric.toCoordinateMetric_g,
-    StaticSphericalMetric.toCoordinateMetric_ginv] at h
+  simp only [CoordinateMetric.christoffel_apply, Metric.toCoordinateMetric_g,
+    Metric.toCoordinateMetric_ginv] at h
   rw [hm, hmi, h]
   have hr_nhds : ∀ᶠ y in nhds x, y 1 ≠ 0 :=
     (continuous_apply (1 : Fin 4)).continuousAt.eventually_ne hr
@@ -328,7 +328,7 @@ private lemma ricciTensor_raw (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 �
   simp only [toStaticSpherical_metricFn] at *
   rw [hf1, hf2]
   fin_cases σ <;> fin_cases ν <;>
-    simp [StaticSphericalMetric.metric, metricFn, metricFnHalfDeriv]
+    simp [Metric.metric, metricFn, metricFnHalfDeriv]
   · field_simp [hr]; ring
   · field_simp [hr, hf]; ring
   · field_simp [hr]; ring
@@ -376,7 +376,7 @@ lemma ricciTensor_frame (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ)
       = S.Λ * minkowskiMetric4 σ ν := by
   rw [S.ricciTensor_raw x hr hf hsin]
   fin_cases σ <;> fin_cases ν <;>
-    simp [frameScale, metric, toStaticSpherical, StaticSphericalMetric.metric]
+    simp [frameScale, metric, toStaticSpherical, Metric.metric]
   · field_simp [hf]
   · field_simp [hf]
   · field_simp [hr]

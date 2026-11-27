@@ -46,7 +46,9 @@ curvature `R = 6 (a''/a + (a'/a)² + k/a²)`, and the Einstein tensor directly f
 
 @[expose] public section
 
-namespace GeneralRelativity
+open GeneralRelativity
+
+namespace Cosmology
 
 namespace FLRW
 
@@ -255,4 +257,4 @@ end FLRWSpacetime
 
 end FLRW
 
-end GeneralRelativity
+end Cosmology

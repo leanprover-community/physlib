@@ -62,7 +62,7 @@ namespace Modified
 namespace Teleparallel
 
 open GeneralRelativity.CoordinateCurvature
-open GeneralRelativity.FLRW
+open Cosmology.FLRW
 open GeneralRelativity.Modified.EinsteinCartan
 
 /-!

@@ -56,7 +56,9 @@ domain, and constructs the resulting `MetricTensor 4` and `CoordinateMetric 4`.
 
 @[expose] public section
 
-namespace GeneralRelativity
+open GeneralRelativity
+
+namespace Cosmology
 
 namespace FLRW
 
@@ -191,4 +193,4 @@ end FLRWSpacetime
 
 end FLRW
 
-end GeneralRelativity
+end Cosmology

@@ -15,7 +15,7 @@ import Mathlib.Tactic.Ring
 
 # Static spherically symmetric metrics
 
-Static spherically symmetric metric `StaticSphericalMetric`, its diagonal coordinate metric and
+Static spherically symmetric metric `Metric`, its diagonal coordinate metric and
 inverse in `(t, r, θ, φ)` coordinates, symmetry, two-sided invertibility, and `CoordinateMetric 4`
 instance.
 
@@ -26,18 +26,18 @@ parameterized by a single radial metric function `f(r) = S.metricFn r`:
 
 `ds² = -f(r) dt² + f(r)⁻¹ dr² + r² dθ² + r² sin²θ dφ²`.
 
-This module defines `StaticSphericalMetric` in terms of `f` and establishes the nondegeneracy of the
+This module defines `Metric` in terms of `f` and establishes the nondegeneracy of the
 metric on the regular chart `{x | x 1 ≠ 0 ∧ S.metricFn (x 1) ≠ 0 ∧ Real.sin (x 2) ≠ 0}`,
 yielding both pointwise `MetricTensor 4` instances and a `CoordinateMetric 4`.
 
 ## ii. Key results
 
-- `StaticSphericalMetric` : a static spherically symmetric metric parameterized by its radial metric
+- `Metric` : a static spherically symmetric metric parameterized by its radial metric
   function `metricFn`.
-- `StaticSphericalMetric.metric`, `StaticSphericalMetric.metricInv`,
-  `StaticSphericalMetric.metric_symm`, `StaticSphericalMetric.metric_mul_inv`,
-  `StaticSphericalMetric.metricInv_mul` : coordinate metric, inverse, symmetry, and invertibility.
-- `StaticSphericalMetric.metricTensor`, `StaticSphericalMetric.toCoordinateMetric` : certified
+- `Metric.metric`, `Metric.metricInv`,
+  `Metric.metric_symm`, `Metric.metric_mul_inv`,
+  `Metric.metricInv_mul` : coordinate metric, inverse, symmetry, and invertibility.
+- `Metric.metricTensor`, `Metric.toCoordinateMetric` : certified
   `MetricTensor 4` and `CoordinateMetric 4` instances.
 
 ## iii. Table of contents
@@ -76,15 +76,15 @@ function `f(r)` in coordinates `(t, r, θ, φ)`: the restricted ansatz `g_tt = -
 `g_rr = f(r)⁻¹`, `g_{θθ} = r²`, `g_{φφ} = r² sin²θ`, which automatically satisfies
 `g_tt g_rr = -1`. Metrics without this pairing of the `tt` and `rr` components are not
 representable. -/
-structure StaticSphericalMetric where
+structure Metric where
   /-- The radial metric function `f(r)` entering `g_tt = -f(r)` and `g_rr = f(r)⁻¹`. -/
   metricFn : ℝ → ℝ
 
-namespace StaticSphericalMetric
+namespace Metric
 
 /-- A regular chart point of a static spherically symmetric metric: `r ≠ 0`, `f(r) ≠ 0`, and
 `sin θ ≠ 0`, so the metric and its inverse are both defined. -/
-structure RegularPoint (S : StaticSphericalMetric) where
+structure RegularPoint (S : Metric) where
   /-- Coordinate point `(t, r, θ, φ)`. -/
   x : Fin 4 → ℝ
   /-- The radial coordinate is nonzero. -/
@@ -96,7 +96,7 @@ structure RegularPoint (S : StaticSphericalMetric) where
 
 /-- General static spherically symmetric metric `diag(-f(r), f(r)⁻¹, r², r² sin²θ)` in
 coordinates `(t, r, θ, φ)`. -/
-noncomputable def metric (S : StaticSphericalMetric) (x : Fin 4 → ℝ) : Tensor2 4 :=
+noncomputable def metric (S : Metric) (x : Fin 4 → ℝ) : Tensor2 4 :=
   Matrix.of fun i j =>
     if i = j then
       if i = 0 then -(S.metricFn (x 1))
@@ -106,7 +106,7 @@ noncomputable def metric (S : StaticSphericalMetric) (x : Fin 4 → ℝ) : Tenso
     else 0
 
 /-- Inverse of the general static spherically symmetric metric. -/
-noncomputable def metricInv (S : StaticSphericalMetric) (x : Fin 4 → ℝ) : Tensor2 4 :=
+noncomputable def metricInv (S : Metric) (x : Fin 4 → ℝ) : Tensor2 4 :=
   Matrix.of fun i j =>
     if i = j then
       if i = 0 then -(S.metricFn (x 1))⁻¹
@@ -116,14 +116,14 @@ noncomputable def metricInv (S : StaticSphericalMetric) (x : Fin 4 → ℝ) : Te
     else 0
 
 /-- Symmetry of the static spherically symmetric metric tensor. -/
-lemma metric_symm (S : StaticSphericalMetric) (x : Fin 4 → ℝ) :
+lemma metric_symm (S : Metric) (x : Fin 4 → ℝ) :
     IsSymm (S.metric x) := by
   ext i j
   fin_cases i <;> fin_cases j <;> simp [Matrix.transpose_apply, metric]
 
 /-- Right inverse identity `g * g⁻¹ = 1` on the regular chart `r ≠ 0`, `f(r) ≠ 0`,
 `sin θ ≠ 0`. -/
-lemma metric_mul_inv (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma metric_mul_inv (S : Metric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     S.metric x * S.metricInv x = 1 := by
   ext i j
@@ -136,7 +136,7 @@ lemma metric_mul_inv (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 �
 
 /-- Left inverse identity `g⁻¹ * g = 1` on the regular chart `r ≠ 0`, `f(r) ≠ 0`,
 `sin θ ≠ 0`. -/
-lemma metricInv_mul (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma metricInv_mul (S : Metric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     S.metricInv x * S.metric x = 1 := by
   ext i j
@@ -149,7 +149,7 @@ lemma metricInv_mul (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 �
 
 /-- The metric as a `MetricTensor 4` at a point away from coordinate and horizon
 singularities. -/
-noncomputable def metricTensor (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+noncomputable def metricTensor (S : Metric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) : MetricTensor 4 where
   g := S.metric x
   ginv := S.metricInv x
@@ -158,23 +158,23 @@ noncomputable def metricTensor (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (
   inv_right := S.metricInv_mul x hr hf hsin
 
 /-- The metric at a bundled regular chart point. -/
-noncomputable def RegularPoint.metricTensor {S : StaticSphericalMetric} (p : S.RegularPoint) :
+noncomputable def RegularPoint.metricTensor {S : Metric} (p : S.RegularPoint) :
     MetricTensor 4 :=
   S.metricTensor p.x p.hr p.hf p.hsin
 
 /-- Right inverse identity at a bundled regular chart point. -/
-lemma RegularPoint.metric_mul_inv {S : StaticSphericalMetric} (p : S.RegularPoint) :
+lemma RegularPoint.metric_mul_inv {S : Metric} (p : S.RegularPoint) :
     S.metric p.x * S.metricInv p.x = 1 :=
   S.metric_mul_inv p.x p.hr p.hf p.hsin
 
 /-- Left inverse identity at a bundled regular chart point. -/
-lemma RegularPoint.metricInv_mul {S : StaticSphericalMetric} (p : S.RegularPoint) :
+lemma RegularPoint.metricInv_mul {S : Metric} (p : S.RegularPoint) :
     S.metricInv p.x * S.metric p.x = 1 :=
   S.metricInv_mul p.x p.hr p.hf p.hsin
 
 /-- The metric as a `CoordinateMetric 4` on its regular chart where
 `r ≠ 0`, `f(r) ≠ 0`, `sin θ ≠ 0`. -/
-noncomputable def toCoordinateMetric (S : StaticSphericalMetric) : CoordinateMetric 4 where
+noncomputable def toCoordinateMetric (S : Metric) : CoordinateMetric 4 where
   g := S.metric
   ginv := S.metricInv
   domain := {x | x 1 ≠ 0 ∧ S.metricFn (x 1) ≠ 0 ∧ Real.sin (x 2) ≠ 0}
@@ -183,14 +183,14 @@ noncomputable def toCoordinateMetric (S : StaticSphericalMetric) : CoordinateMet
   inv_right x hx := S.metricInv_mul x hx.1 hx.2.1 hx.2.2
 
 /-- The covariant field of `S.toCoordinateMetric` is `S.metric`. -/
-@[simp] lemma toCoordinateMetric_g (S : StaticSphericalMetric) :
+@[simp] lemma toCoordinateMetric_g (S : Metric) :
     S.toCoordinateMetric.g = S.metric := rfl
 
 /-- The inverse field of `S.toCoordinateMetric` is `S.metricInv`. -/
-@[simp] lemma toCoordinateMetric_ginv (S : StaticSphericalMetric) :
+@[simp] lemma toCoordinateMetric_ginv (S : Metric) :
     S.toCoordinateMetric.ginv = S.metricInv := rfl
 
-end StaticSphericalMetric
+end Metric
 
 end StaticSpherical
 
