@@ -160,6 +160,16 @@ public import PhyslibAlpha.ClassicalMechanics.MomentMap.Basic
 public import PhyslibAlpha.ClassicalMechanics.MomentMap.Cohomology
 public import PhyslibAlpha.ClassicalMechanics.MomentMap.GalileanMass
 public import PhyslibAlpha.ClassicalMechanics.MomentMap.GalileanMassCocycle
+public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.GaussianDensity.Basic
+public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.GaussianDensity.InteractionEnergy
+public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.GaussianKernel
+public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.InteractionEnergy
+public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.InteractionEnergyDefinite
+public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.InteractionEnergyTranslation
+public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.InvNormKernel
+public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.NewtonPotential
+public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.NewtonPotentialDeriv
+public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.NewtonPotentialLaplacian
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.Basic
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.Determinism
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.NewtonianSystem
@@ -303,6 +313,7 @@ public import PhyslibAlpha.Mathematics.ForMathlib.Analysis.Normed.Algebra.Matrix
 public import PhyslibAlpha.Mathematics.ForMathlib.DataStructures.Matrix.PlaneMatrix
 public import PhyslibAlpha.Mathematics.ForMathlib.DataStructures.Matrix.Scalar
 public import PhyslibAlpha.Mathematics.ForMathlib.Fin
+public import PhyslibAlpha.Mathematics.ForMathlib.LinearAlgebra.BilinearForm.PosSemidef
 public import PhyslibAlpha.Mathematics.ForMathlib.RingTheory.TensorProduct.Derivation
 public import PhyslibAlpha.Mathematics.Fourier.Integral
 public import PhyslibAlpha.Mathematics.Fourier.Inversion
