@@ -181,7 +181,8 @@ lemma gradKineticTerm_eq_distTensorDeriv {d} {𝓕 : FreeSpace}
     derivOfDistTensor A.fieldStrength ε | κ κ ν'}ᵀ)) ν := by
   trans η ν ν * (Lorentz.Vector.basis.repr
     ((Tensorial.toTensor (M := Lorentz.Vector d)).symm
-    (permT id (IsReindexing.auto) {(1/ 𝓕.μ₀ : ℝ) • derivOfDistTensor A.fieldStrength ε | κ κ ν'}ᵀ))) ν
+    (permT id (IsReindexing.auto) {(1/ 𝓕.μ₀ : ℝ) • derivOfDistTensor
+      A.fieldStrength ε | κ κ ν'}ᵀ))) ν
   swap
   · rfl
   simp [Lorentz.Vector.basis_eq_map_tensor_basis]

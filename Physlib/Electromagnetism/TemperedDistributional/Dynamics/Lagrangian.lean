@@ -190,8 +190,8 @@ lemma gradLagrangian_eq_tensor {𝓕 : FreeSpace}
     (ε : 𝓢(SpaceTime d, ℝ)) (ν : Fin 1 ⊕ Fin d) :
     A.gradLagrangian 𝓕 J ε ν =
     η ν ν * ((Tensorial.toTensor (M := Lorentz.Vector d)).symm
-    (permT id (IsReindexing.auto) {((1/ 𝓕.μ₀ : ℝ) • (derivOfDistTensor A.fieldStrength ε) | κ κ ν') +
-    - (J ε | ν')}ᵀ)) ν := by
+    (permT id (IsReindexing.auto) {((1/ 𝓕.μ₀ : ℝ) • (derivOfDistTensor A.fieldStrength ε) | κ κ ν')
+    + - (J ε | ν')}ᵀ)) ν := by
   rw [gradLagrangian]
   simp only [FunLike.coe_sub, Pi.sub_apply, apply_sub, one_div,
     map_smul, map_neg, map_add, permT_permT, CompTriple.comp_eq, apply_add,
