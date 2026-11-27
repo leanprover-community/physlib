@@ -64,6 +64,26 @@ noncomputable def ricciScalar {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     (x : Fin n → ℝ) : ℝ :=
   ∑ σ, ∑ ν, ginv x σ ν * ricciTensor g ginv x σ ν
 
+/-- A constant metric is Ricci flat. -/
+lemma ricciTensor_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
+    (hg : ∀ x, g x = G) (x : Fin n → ℝ) (σ ν : Fin n) :
+    ricciTensor g ginv x σ ν = 0 := by
+  simp only [ricciTensor]
+  apply Finset.sum_eq_zero
+  intro ρ _
+  exact riemann_const g ginv G hg x ρ σ ρ ν
+
+/-- A constant metric has zero scalar curvature. -/
+lemma ricciScalar_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
+    (hg : ∀ x, g x = G) (x : Fin n → ℝ) : ricciScalar g ginv x = 0 := by
+  simp only [ricciScalar]
+  apply Finset.sum_eq_zero
+  intro σ _
+  apply Finset.sum_eq_zero
+  intro ν _
+  rw [ricciTensor_const g ginv G hg x σ ν]
+  ring
+
 end CoordinateCurvature
 
 /-- Ricci tensor of a `CoordinateMetric`. -/

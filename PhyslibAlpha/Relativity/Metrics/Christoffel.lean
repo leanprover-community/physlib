@@ -81,6 +81,18 @@ lemma christoffel_diag {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (x : F
   simp only [christoffel]
   rw [Finset.sum_eq_single k (fun l _ hl => by simp [hdiag l hl]) (by simp)]
 
+/-- A constant metric has vanishing Christoffel symbols at every point. -/
+lemma christoffel_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
+    (hg : ∀ x, g x = G) (x : Fin n → ℝ) (k i j : Fin n) :
+    christoffel g ginv x k i j = 0 := by
+  have hpd : ∀ (μ a b : Fin n), coordDeriv μ (fun y => g y a b) x = 0 := by
+    intro μ a b
+    rw [coordDeriv_congr μ x (fun y => by rw [hg y])]
+    exact coordDeriv_const μ (G a b) x
+  simp only [christoffel]
+  rw [Finset.sum_eq_zero (fun l _ => by rw [hpd i j l, hpd j i l, hpd l i j]; ring)]
+  ring
+
 end CoordinateCurvature
 
 /-- Christoffel symbols of a `CoordinateMetric`. -/

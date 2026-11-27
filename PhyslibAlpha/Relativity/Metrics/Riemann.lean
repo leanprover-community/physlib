@@ -91,6 +91,26 @@ lemma riemann_eq_riemannFromData_of_eventuallyEq {n : ℕ} (g ginv : (Fin n → 
   simp only [riemannFromData, coordDeriv_congr_nhds _ x (hG_eq _ _ _), hdG,
     (hG_eq _ _ _).eq_of_nhds]
 
+/-- A constant metric has zero Riemann curvature at every point. -/
+lemma riemann_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
+    (hg : ∀ x, g x = G) (x : Fin n → ℝ) (ρ σ μ ν : Fin n) :
+    riemann g ginv x ρ σ μ ν = 0 := by
+  have hc := fun y => christoffel_const g ginv G hg y
+  have h1 : coordDeriv μ (fun y => christoffel g ginv y ρ ν σ) x = 0 := by
+    rw [coordDeriv_congr μ x (fun y => hc y ρ ν σ)]
+    exact coordDeriv_const μ 0 x
+  have h2 : coordDeriv ν (fun y => christoffel g ginv y ρ μ σ) x = 0 := by
+    rw [coordDeriv_congr ν x (fun y => hc y ρ μ σ)]
+    exact coordDeriv_const ν 0 x
+  have h3 : (∑ l, (christoffel g ginv x ρ μ l * christoffel g ginv x l ν σ
+              - christoffel g ginv x ρ ν l * christoffel g ginv x l μ σ)) = 0 := by
+    apply Finset.sum_eq_zero
+    intro l _
+    rw [hc x ρ μ l, hc x ρ ν l, hc x l ν σ, hc x l μ σ]
+    ring
+  rw [riemann, h1, h2, h3]
+  ring
+
 end CoordinateCurvature
 
 /-- Riemann curvature tensor of a `CoordinateMetric`. -/

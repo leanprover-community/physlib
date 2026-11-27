@@ -68,61 +68,12 @@ noncomputable def einsteinTensor {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2
 ## B. Flatness of constant metrics
 
 When all metric components are constant across spacetime, every partial derivative vanishes, so the
-connection, Riemann, Ricci, scalar, and Einstein curvature tensors all vanish identically.
+connection, Riemann, Ricci, scalar, and Einstein curvature tensors all vanish identically. The
+`christoffel_const`, `riemann_const`, `ricciTensor_const`, and `ricciScalar_const` cases sit next to
+their definitions in the `Christoffel`, `Riemann`, and `Ricci` modules; `einsteinTensor_const` is
+proved here.
 
 -/
-
-/-- A constant metric has vanishing Christoffel symbols at every point. -/
-lemma christoffel_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
-    (hg : ∀ x, g x = G) (x : Fin n → ℝ) (k i j : Fin n) :
-    christoffel g ginv x k i j = 0 := by
-  have hpd : ∀ (μ a b : Fin n), coordDeriv μ (fun y => g y a b) x = 0 := by
-    intro μ a b
-    rw [coordDeriv_congr μ x (fun y => by rw [hg y])]
-    exact coordDeriv_const μ (G a b) x
-  simp only [christoffel]
-  rw [Finset.sum_eq_zero (fun l _ => by rw [hpd i j l, hpd j i l, hpd l i j]; ring)]
-  ring
-
-/-- A constant metric has zero Riemann curvature at every point. -/
-lemma riemann_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
-    (hg : ∀ x, g x = G) (x : Fin n → ℝ) (ρ σ μ ν : Fin n) :
-    riemann g ginv x ρ σ μ ν = 0 := by
-  have hc := fun y => christoffel_const g ginv G hg y
-  have h1 : coordDeriv μ (fun y => christoffel g ginv y ρ ν σ) x = 0 := by
-    rw [coordDeriv_congr μ x (fun y => hc y ρ ν σ)]
-    exact coordDeriv_const μ 0 x
-  have h2 : coordDeriv ν (fun y => christoffel g ginv y ρ μ σ) x = 0 := by
-    rw [coordDeriv_congr ν x (fun y => hc y ρ μ σ)]
-    exact coordDeriv_const ν 0 x
-  have h3 : (∑ l, (christoffel g ginv x ρ μ l * christoffel g ginv x l ν σ
-              - christoffel g ginv x ρ ν l * christoffel g ginv x l μ σ)) = 0 := by
-    apply Finset.sum_eq_zero
-    intro l _
-    rw [hc x ρ μ l, hc x ρ ν l, hc x l ν σ, hc x l μ σ]
-    ring
-  rw [riemann, h1, h2, h3]
-  ring
-
-/-- A constant metric is Ricci flat. -/
-lemma ricciTensor_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
-    (hg : ∀ x, g x = G) (x : Fin n → ℝ) (σ ν : Fin n) :
-    ricciTensor g ginv x σ ν = 0 := by
-  simp only [ricciTensor]
-  apply Finset.sum_eq_zero
-  intro ρ _
-  exact riemann_const g ginv G hg x ρ σ ρ ν
-
-/-- A constant metric has zero scalar curvature. -/
-lemma ricciScalar_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
-    (hg : ∀ x, g x = G) (x : Fin n → ℝ) : ricciScalar g ginv x = 0 := by
-  simp only [ricciScalar]
-  apply Finset.sum_eq_zero
-  intro σ _
-  apply Finset.sum_eq_zero
-  intro ν _
-  rw [ricciTensor_const g ginv G hg x σ ν]
-  ring
 
 /-- A constant metric satisfies the vacuum Einstein equations (`G_{ij} = 0`). -/
 lemma einsteinTensor_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
