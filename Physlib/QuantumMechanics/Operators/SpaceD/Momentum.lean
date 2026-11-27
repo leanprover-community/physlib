@@ -10,6 +10,7 @@ public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.SchwartzSubmodule
 public import Physlib.QuantumMechanics.PlanckConstant
 public import Physlib.SpaceAndTime.Space.Derivatives.Basic
 public import Physlib.Mathematics.ForMathlib.HasTemperateGrowth
+public import Physlib.SpaceAndTime.Space.Integrals.IntegrationByParts
 import Mathlib.Analysis.Calculus.FDeriv.Star
 /-!
 
@@ -183,18 +184,7 @@ lemma momentumSqOperator_domain_eq : momentumSqOperator.domain = SchwartzSubmodu
 lemma integral_mul_momentumCLM {g : Space d → ℂ} (hg : g.HasTemperateGrowth)
     (ψ : 𝓢(Space d, ℂ)) :
     ∫ x, g x * 𝐩 i ψ x = I * ℏ * ∫ x, ∂[i] g x * ψ x := by
-  have hg' : (∂[i] g).HasTemperateGrowth :=
-    (ContinuousLinearMap.apply ℝ ℂ (basis i)).hasTemperateGrowth.comp hg.fderiv
-  have hψ' : ∂[i] ψ = ⇑(SchwartzMap.evalCLM ℂ (Space d) ℂ (basis i)
-      (SchwartzMap.fderivCLM ℂ (Space d) ℂ ψ)) := rfl
-  have hibp : ∫ x, g x * ∂[i] ψ x = -∫ x, ∂[i] g x * ψ x := by
-    have h := integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
-      (μ := volume) (B := ContinuousLinearMap.mul ℝ ℂ) (f := g) (f' := ∂[i] g) (g := ψ)
-      (g' := ∂[i] ψ) (v := basis i) (hg'.integrable_mul_schwartzMap ψ)
-      (by rw [hψ']; exact hg.integrable_mul_schwartzMap _) (hg.integrable_mul_schwartzMap ψ)
-      (fun x _ => ((hg.1.differentiable (by simp)) x).hasFDerivAt.hasLineDerivAt (basis i))
-      (fun x _ => ψ.differentiableAt.hasFDerivAt.hasLineDerivAt (basis i))
-    simpa using h
+  have hibp := integral_mul_deriv_schwartzMap i hg ψ
   simp only [momentumCLM_apply]
   simp_rw [mul_left_comm (g _), integral_const_mul, hibp]
   ring

@@ -617,6 +617,7 @@ public import Physlib.SpaceAndTime.Space.EuclideanGroup.AffineGroup
 public import Physlib.SpaceAndTime.Space.EuclideanGroup.Basic
 public import Physlib.SpaceAndTime.Space.Integrals.Basic
 public import Physlib.SpaceAndTime.Space.Integrals.Hardy
+public import Physlib.SpaceAndTime.Space.Integrals.IntegrationByParts
 public import Physlib.SpaceAndTime.Space.Integrals.NormPow
 public import Physlib.SpaceAndTime.Space.Integrals.RadialAngularMeasure
 public import Physlib.SpaceAndTime.Space.IsDistBounded

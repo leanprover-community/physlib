@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 public import Physlib.Mathematics.Distribution.TemperedDistribution
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Basic
 public import Physlib.SpaceAndTime.Space.Module
+public import Physlib.Mathematics.ForMathlib.HasTemperateGrowth
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 /-!
 
@@ -43,6 +44,8 @@ in the standard directions.
     - A.10.2. Derivative of the inner product function
     - A.10.3. Derivative of the inner product on one side
   - A.11. Differentiability of derivatives
+  - A.12. Derivatives of complex-valued functions
+  - A.13. Temperate growth and Schwartz maps
 - B. Derivatives of distributions on `Space d`
   - B.1. The definition
   - B.2. Basic equality
@@ -434,6 +437,48 @@ lemma deriv_contDiff {d} {f : Space d → ℝ} (hf : ContDiff ℝ (n + 1) f) :
     ContDiff ℝ n fun x i => deriv i f x := by
   unfold deriv
   fun_prop
+
+/-!
+
+### A.12. Derivatives of complex-valued functions
+
+-/
+
+/-- Space derivatives commute with the inclusion `ℝ → ℂ`. -/
+lemma deriv_ofReal {d : ℕ} {u : Fin d} {f : Space d → ℝ} {x : Space d}
+    (hf : DifferentiableAt ℝ f x) :
+    ∂[u] (fun x => (f x : ℂ)) x = ((∂[u] f x : ℝ) : ℂ) := by
+  rw [deriv_eq, deriv_eq, show (fun x => (f x : ℂ)) = (Complex.ofRealCLM : ℝ →L[ℝ] ℂ) ∘ f from rfl,
+    ((Complex.ofRealCLM : ℝ →L[ℝ] ℂ).hasFDerivAt.comp x hf.hasFDerivAt).fderiv]
+  simp
+
+/-- Space derivatives commute with complex conjugation. -/
+lemma deriv_conj {d : ℕ} {u : Fin d} {f : Space d → ℂ} {x : Space d}
+    (hf : DifferentiableAt ℝ f x) :
+    ∂[u] (fun x => (starRingEnd ℂ) (f x)) x = (starRingEnd ℂ) (∂[u] f x) := by
+  rw [deriv_eq, deriv_eq,
+    show (fun x => (starRingEnd ℂ) (f x)) = (Complex.conjCLE : ℂ →L[ℝ] ℂ) ∘ f from rfl,
+    ((Complex.conjCLE : ℂ →L[ℝ] ℂ).hasFDerivAt.comp x hf.hasFDerivAt).fderiv]
+  simp
+
+/-!
+
+### A.13. Temperate growth and Schwartz maps
+
+-/
+
+/-- The space derivative of a function of temperate growth has temperate growth. -/
+lemma deriv_hasTemperateGrowth {M} [NormedAddCommGroup M] [NormedSpace ℝ M] {d : ℕ}
+    {f : Space d → M} (u : Fin d) (hf : f.HasTemperateGrowth) :
+    (∂[u] f).HasTemperateGrowth :=
+  (ContinuousLinearMap.apply ℝ M (basis u)).hasTemperateGrowth.comp hf.fderiv
+
+/-- The space derivative of a Schwartz map, written as a Schwartz map. -/
+lemma deriv_schwartzMap_eq {M} [NormedAddCommGroup M] [NormedSpace ℝ M] {d : ℕ} (u : Fin d)
+    (ψ : SchwartzMap (Space d) M) :
+    ∂[u] ψ = ⇑(SchwartzMap.evalCLM ℝ (Space d) M (basis u)
+      (SchwartzMap.fderivCLM ℝ (Space d) M ψ)) :=
+  rfl
 
 /-!
 

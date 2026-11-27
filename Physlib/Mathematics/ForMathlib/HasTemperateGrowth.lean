@@ -62,4 +62,22 @@ lemma integrable_mul_schwartzMap {E : Type*} [NormedAddCommGroup E] [NormedSpace
   rw [SchwartzMap.smulLeftCLM_apply hg] at h
   simpa using h
 
+/-- The complex conjugate of a function of temperate growth has temperate growth. -/
+lemma conj {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {g : E → ℂ}
+    (hg : HasTemperateGrowth g) : HasTemperateGrowth (fun x => (starRingEnd ℂ) (g x)) :=
+  (Complex.conjCLE : ℂ →L[ℝ] ℂ).hasTemperateGrowth.comp hg
+
+/-- For a real function `g` of temperate growth and a Schwartz map `ψ`, the function
+`g |ψ|²` is integrable. -/
+lemma integrable_mul_norm_sq_schwartzMap {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] {μ : MeasureTheory.Measure E}
+    [μ.HasTemperateGrowth] {g : E → ℝ} (hg : HasTemperateGrowth g) (ψ : SchwartzMap E ℂ) :
+    MeasureTheory.Integrable (fun x => g x * ‖ψ x‖ ^ 2) μ := by
+  have h := ((((Complex.ofRealCLM : ℝ →L[ℝ] ℂ).hasTemperateGrowth.comp hg).mul
+    ψ.hasTemperateGrowth.conj).integrable_mul_schwartzMap (μ := μ) ψ).re
+  refine h.congr (Filter.Eventually.of_forall fun x => ?_)
+  simp only [Function.comp_apply, Pi.mul_apply, Complex.ofRealCLM_apply]
+  rw [mul_assoc, Complex.conj_mul', ← Complex.ofReal_pow, ← Complex.ofReal_mul,
+    RCLike.re_to_complex, Complex.ofReal_re]
+
 end Function.HasTemperateGrowth
