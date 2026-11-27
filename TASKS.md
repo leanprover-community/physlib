@@ -11,6 +11,7 @@
 | 5. Spacetime solutions | Done | Schwarzschild, Schwarzschild–de Sitter, Reissner–Nordström, Kerr, FLRW, Nordström. |
 | 6. Scope renames | Done | Committed in `64176f69`; includes `oscillatorKineticHessian`, `inertialDivergence`, and line wrapping. |
 | 7. Coordinate curvature operators and `Pipeline` split | Done | `Pipeline` removed; `Christoffel`, `Riemann`, `Ricci`, `Einstein`, and the `CoordinateMetric` aggregator added; committed in `3b20c5de`, `e1b37bae`. |
+| 1b. FLRW speed-of-light generalization | Done | `SpeedOfLight` and `GravitationalConstant` are used in `PerfectFluid`, `FriedmannBridge`, and `FLRWTorsion`; full build passes. |
 
 ## Follow-ups
 
