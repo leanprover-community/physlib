@@ -250,7 +250,7 @@ lemma netExternalForce_eq_sum :
   exact congrArg Multiset.sum (Multiset.map_univ system.externalForces (fun f => f.value t))
 
 /-- If there are no external forces, their resultant vanishes. -/
-lemma netExternalForce_eq_zero_of_noExternalForces (hExt : system.externalForces = 0) :
+lemma netExternalForce_eq_zero_of_externalForces_eq_zero (hExt : system.externalForces = 0) :
     system.netExternalForce = 0 := by
   funext u
   simp only [system.netExternalForce_eq_sum, hExt, Multiset.map_zero, Multiset.sum_zero,
@@ -269,9 +269,10 @@ lemma sum_mass_acceleration_eq_netExternalForce :
       system.netExternalForce_eq_sum]
 
 /-- With no external forces, the sum of mass times acceleration vanishes. -/
-lemma sum_mass_acceleration_eq_zero (hExt : system.externalForces = 0) (t : ℝ) :
+lemma sum_mass_acceleration_eq_zero_of_externalForces_eq_zero
+    (hExt : system.externalForces = 0) (t : ℝ) :
     ∑ p : system.Particle, p.mass.val • p.acceleration t = 0 := by
-  simpa only [system.netExternalForce_eq_zero_of_noExternalForces hExt, Pi.zero_apply] using
+  simpa only [system.netExternalForce_eq_zero_of_externalForces_eq_zero hExt, Pi.zero_apply] using
     system.sum_mass_acceleration_eq_netExternalForce t
 
 /-- The time derivative of total momentum is the net external force. -/

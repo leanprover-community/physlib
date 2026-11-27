@@ -75,7 +75,7 @@ lemma hasDerivAt_centerOfMass_of_netExternalForce_eq_zero (hExt : S.netExternalF
 lemma hasDerivAt_centerOfMass_of_noExternalForces (hExt : S.externalForces = 0) (t₀ t : ℝ) :
     HasDerivAt S.centerOfMass (S.mass⁻¹ • S.momentum t₀) t :=
   S.hasDerivAt_centerOfMass_of_netExternalForce_eq_zero
-    (S.netExternalForce_eq_zero_of_noExternalForces hExt) t₀ t
+    (S.netExternalForce_eq_zero_of_externalForces_eq_zero hExt) t₀ t
 
 /-- The center of mass follows the straight line fixed by its initial position and momentum. -/
 lemma centerOfMass_eq_of_netExternalForce_eq_zero (hExt : S.netExternalForce = 0) (t₀ t : ℝ) :
@@ -94,6 +94,6 @@ lemma centerOfMass_eq_of_netExternalForce_eq_zero (hExt : S.netExternalForce = 0
 lemma centerOfMass_eq_of_noExternalForces (hExt : S.externalForces = 0) (t₀ t : ℝ) :
     S.centerOfMass t = S.centerOfMass t₀ + (t - t₀) • (S.mass⁻¹ • S.momentum t₀) :=
   S.centerOfMass_eq_of_netExternalForce_eq_zero
-    (S.netExternalForce_eq_zero_of_noExternalForces hExt) t₀ t
+    (S.netExternalForce_eq_zero_of_externalForces_eq_zero hExt) t₀ t
 
 end ClassicalMechanics.PointParticle.NewtonianSystem
