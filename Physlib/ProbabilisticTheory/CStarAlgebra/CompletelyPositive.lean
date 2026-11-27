@@ -5,7 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.CompletelyPositiveMap
+public import Physlib.Mathematics.CStarAlgebra.CompletelyPositiveMap
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Channel
 
 /-!
@@ -27,6 +27,8 @@ operators positive for every `k`.
   completely positive maps of all operators.
 - `Channel.isCompletelyPositive_ofStarAlgHom` : a unital star homomorphism is a completely
   positive channel.
+- `Channel.IsCompletelyPositive.kadison_schwarz` : the Kadison–Schwarz inequality for
+  completely positive channels.
 - `Channel.completelyPositive` : the completely positive channels of a C⋆-algebra form a monoid
   under composition.
 
@@ -35,6 +37,7 @@ operators positive for every `k`.
 - A. Completely positive channels
 - B. Star homomorphisms
 - C. Composition
+- D. The Kadison–Schwarz inequality
 
 ## iv. References
 
@@ -90,6 +93,11 @@ noncomputable def ofStarAlgHom (π : 𝒜 →⋆ₐ[ℂ] ℬ) : Channel (ofCStar
 lemma coe_ofStarAlgHom_apply (π : 𝒜 →⋆ₐ[ℂ] ℬ) (A : selfAdjoint 𝒜) :
     (ofStarAlgHom π A : ℬ) = π A := rfl
 
+/-- The channel of a star homomorphism extends back to the star homomorphism. -/
+@[simp]
+lemma extend_ofStarAlgHom_apply (π : 𝒜 →⋆ₐ[ℂ] ℬ) (a : 𝒜) : (ofStarAlgHom π).extend a = π a :=
+  DFunLike.congr_fun (extend_ofComplex _ (map_one π)) a
+
 /-- The channel of a unital star homomorphism is completely positive. -/
 lemma isCompletelyPositive_ofStarAlgHom (π : 𝒜 →⋆ₐ[ℂ] ℬ) :
     (ofStarAlgHom π).IsCompletelyPositive := by
@@ -116,5 +124,13 @@ def completelyPositive : Submonoid (Channel (ofCStarAlgebra 𝒜) (ofCStarAlgebr
   carrier := {Φ | Φ.IsCompletelyPositive}
   mul_mem' := IsCompletelyPositive.comp
   one_mem' := isCompletelyPositive_id
+
+/-! ## D. The Kadison–Schwarz inequality -/
+
+/-- A completely positive channel satisfies the Kadison–Schwarz inequality on all operators. -/
+lemma IsCompletelyPositive.kadison_schwarz {Φ : Channel (ofCStarAlgebra 𝒜) (ofCStarAlgebra ℬ)}
+    (hΦ : Φ.IsCompletelyPositive) (a : 𝒜) :
+    star (Φ.extend a) * Φ.extend a ≤ Φ.extend (star a * a) :=
+  hΦ.toCompletelyPositiveMap.star_map_mul_map_le Φ.extend_one a
 
 end Channel

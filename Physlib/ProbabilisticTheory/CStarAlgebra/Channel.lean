@@ -166,4 +166,12 @@ lemma extend_comp (Ψ : Channel (ofCStarAlgebra ℬ) (ofCStarAlgebra 𝒞))
     (complexExtension_unique _ (Ψ.extend.comp Φ.extend).toLinearMap fun A =>
       (congrArg Ψ.extend (Φ.extend_apply A)).trans (Ψ.extend_apply (Φ A))).symm
 
+/-- The extended identity channel is the identity on all operators. -/
+@[simp]
+lemma extend_id : (Channel.id (ofCStarAlgebra 𝒜)).extend = PositiveLinearMap.id ℂ 𝒜 := by
+  have hone : PositiveLinearMap.id ℂ 𝒜 1 = 1 := by simp
+  have h : ofComplex (PositiveLinearMap.id ℂ 𝒜) hone = Channel.id (ofCStarAlgebra 𝒜) :=
+    Channel.ext fun _ ↦ rfl
+  rw [← h, extend_ofComplex]
+
 end Channel

@@ -101,4 +101,8 @@ noncomputable abbrev _root_.ProbabilisticTheory.quantum : ProbabilisticTheory :=
 /-- A quantum channel is a completely positive channel from `quantum H` to `quantum K`. -/
 abbrev QuantumChannel := {Φ : Channel (quantum H) (quantum K) // Φ.IsCompletelyPositive}
 
+/-- The quantum channels of a system form a monoid under composition. -/
+noncomputable instance : Monoid (QuantumChannel H H) :=
+  inferInstanceAs (Monoid (Channel.completelyPositive (𝒜 := 𝓑(H))))
+
 end QuantumMechanics
