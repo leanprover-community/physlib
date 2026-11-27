@@ -27,7 +27,7 @@ with `fourierIntegral` and `fourierIntegralInv`.
   Fourier transform. In particular, the parametrizations in terms of `a` and `b` are the same.
 - `fourierSchwartzInv_fourierSchwartz_eq`/`fourierSchwartz_fourierSchwartzInv_eq` :
   The Fourier inversion formulae for `fourierSchwartz` and `fourierSchwartzInv`.
-- `fourierTransformCLE` : The Fourier transform and its inverse between the Schwartz spaces
+- `fourierSchwartzEquiv` : The Fourier transform and its inverse between the Schwartz spaces
   `𝓢(Space d, E)` and `𝓢(WaveVectorSpace d, E)` bundled as a continuous linear equivalence
   when `E` is a complete space.
 
@@ -174,13 +174,13 @@ section CLE
 variable [CompleteSpace E]
 
 /-- The Fourier transform between Schwartz spaces as a continuous linear equivalence. -/
-def fourierTransformCLE : 𝓢(Space d, E) ≃L[𝕜] 𝓢(WaveVectorSpace d, E) :=
+def fourierSchwartzEquiv : 𝓢(Space d, E) ≃L[𝕜] 𝓢(WaveVectorSpace d, E) :=
   .equivOfInverse' (fourierSchwartz a b 𝕜) (fourierSchwartzInv a b 𝕜) (by ext; simp) (by ext; simp)
 
-lemma fourierTransformCLE_apply : fourierTransformCLE a b 𝕜 f = fourierSchwartz a b 𝕜 f := rfl
+lemma fourierSchwartzEquiv_apply : fourierSchwartzEquiv a b 𝕜 f = fourierSchwartz a b 𝕜 f := rfl
 
-lemma fourierTransformCLE_symm_apply :
-    (fourierTransformCLE a b 𝕜).symm g = fourierSchwartzInv a b 𝕜 g := rfl
+lemma fourierSchwartzEquiv_symm_apply :
+    (fourierSchwartzEquiv a b 𝕜).symm g = fourierSchwartzInv a b 𝕜 g := rfl
 
 end CLE
 
