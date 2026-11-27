@@ -15,6 +15,8 @@ public import Physlib.ClassicalMechanics.HamiltonianMechanics.PoissonBracket
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Basic
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.Basic
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.KineticEnergy
+public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.Lagrangian
+public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.PotentialEnergy
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.Trajectory
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.AmplitudePhase
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.Basic

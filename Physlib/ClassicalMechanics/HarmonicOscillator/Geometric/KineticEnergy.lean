@@ -6,11 +6,13 @@ Authors: Nathaneal Sajan
 module
 
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Basic
-public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.Basic
+public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.Trajectory
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 
 /-!
 # Geometric kinetic energy of the harmonic oscillator
+
+The mass metric gives the kinetic energy of a configuration and tangent velocity.
 
 ## i. Overview
 
@@ -38,6 +40,8 @@ In coordinates this gives the standard expression
 - `massRiemannianMetric_pos` : positive definiteness of the mass Riemannian metric.
 - `geometricKineticEnergy_massMetric_eq` : the metric-induced kinetic energy for
   the oscillator mass metric is the mass-scaled coordinate kinetic energy.
+- `geometricKineticEnergy_eq_kineticEnergy` : kinetic energy along a trajectory agrees with
+  the kinetic energy of its coordinate curve.
 
 ## iii. Table of contents
 
@@ -223,6 +227,12 @@ lemma geometricKineticEnergy_massMetric_eq
       (1 / 2 : ℝ) * S.m * ⟪tangentCoord q v, tangentCoord q v⟫_ℝ := by
   rw [geometricKineticEnergy_eq, massRiemannianMetric_inner_apply]
   ring
+
+/-- Along a trajectory, the mass metric gives the kinetic energy of the coordinate curve. -/
+lemma geometricKineticEnergy_eq_kineticEnergy (S : HarmonicOscillator) (γ : Trajectory) (t : Time) :
+    S.geometricKineticEnergy (γ t) (γ.velocity t) = S.kineticEnergy γ.coord t := by
+  rw [geometricKineticEnergy_massMetric_eq, Trajectory.velocity_eq_deriv_coord]
+  rfl
 
 end
 
