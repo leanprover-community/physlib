@@ -372,6 +372,41 @@ private lemma einsteinTensor_eq_maxwell_raw (S : ReissnerNordstromSpacetime) (x 
   · field_simp [hr, hf, hpi]; ring
   · field_simp [hr, hf, hpi]; ring
 
+/-- Coordinate Ricci tensor of a Reissner–Nordström spacetime, stated with the chart-level
+operator. -/
+lemma ricciTensor (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
+    S.toCoordinateMetric.ricciTensor x σ ν
+      = if σ = ν then
+          if σ = 0 then S.metricFn (x 1) * S.Q ^ 2 / (x 1) ^ 4
+          else if σ = 1 then -(S.Q ^ 2 / ((x 1) ^ 4 * S.metricFn (x 1)))
+          else if σ = 2 then S.Q ^ 2 / (x 1) ^ 2
+          else S.Q ^ 2 * Real.sin (x 2) ^ 2 / (x 1) ^ 2
+        else 0 := by
+  simp only [CoordinateMetric.ricciTensor_apply, S.toCoordinateMetric_g,
+    S.toCoordinateMetric_ginv]
+  exact S.ricciTensor_raw x hr hf hsin σ ν
+
+/-- The Reissner–Nordström scalar curvature vanishes, stated with the chart-level operator. -/
+lemma ricciScalar (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
+    S.toCoordinateMetric.ricciScalar x = 0 := by
+  simp only [CoordinateMetric.ricciScalar_apply, S.toCoordinateMetric_g,
+    S.toCoordinateMetric_ginv]
+  exact S.ricciScalar_raw x hr hf hsin
+
+/-- Field equations of the electrovacuum Reissner–Nordström solution, stated with the chart-level
+operator: `G_{ij} = 8 π T^{EM}_{ij}`. -/
+lemma einsteinTensor_eq_maxwell (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ)
+    (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
+    S.toCoordinateMetric.einsteinTensor x i j
+      = 8 * Real.pi
+          * maxwellStressEnergyGaussian (S.toStaticSpherical.metricTensor x hr hf hsin)
+              (S.coulombFieldStrength (x 1)) i j := by
+  simp only [CoordinateMetric.einsteinTensor_apply, S.toCoordinateMetric_g,
+    S.toCoordinateMetric_ginv]
+  exact S.einsteinTensor_eq_maxwell_raw x hr hf hsin i j
+
 /-!
 
 ## C. Horizons, extremal limit, and overcharged regime
@@ -450,41 +485,6 @@ lemma metricFn_pos_of_overcharged (S : ReissnerNordstromSpacetime) (hQ : S.M ^ 2
     ring
   rw [hid]
   exact div_pos hnum (sq_pos_iff.mpr hr)
-
-/-- Coordinate Ricci tensor of a Reissner–Nordström spacetime, stated with the chart-level
-operator. -/
-lemma ricciTensor (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
-    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
-    S.toCoordinateMetric.ricciTensor x σ ν
-      = if σ = ν then
-          if σ = 0 then S.metricFn (x 1) * S.Q ^ 2 / (x 1) ^ 4
-          else if σ = 1 then -(S.Q ^ 2 / ((x 1) ^ 4 * S.metricFn (x 1)))
-          else if σ = 2 then S.Q ^ 2 / (x 1) ^ 2
-          else S.Q ^ 2 * Real.sin (x 2) ^ 2 / (x 1) ^ 2
-        else 0 := by
-  simp only [CoordinateMetric.ricciTensor_apply, S.toCoordinateMetric_g,
-    S.toCoordinateMetric_ginv]
-  exact S.ricciTensor_raw x hr hf hsin σ ν
-
-/-- The Reissner–Nordström scalar curvature vanishes, stated with the chart-level operator. -/
-lemma ricciScalar (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
-    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
-    S.toCoordinateMetric.ricciScalar x = 0 := by
-  simp only [CoordinateMetric.ricciScalar_apply, S.toCoordinateMetric_g,
-    S.toCoordinateMetric_ginv]
-  exact S.ricciScalar_raw x hr hf hsin
-
-/-- Field equations of the electrovacuum Reissner–Nordström solution, stated with the chart-level
-operator: `G_{ij} = 8 π T^{EM}_{ij}`. -/
-lemma einsteinTensor_eq_maxwell (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ)
-    (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
-    S.toCoordinateMetric.einsteinTensor x i j
-      = 8 * Real.pi
-          * maxwellStressEnergyGaussian (S.toStaticSpherical.metricTensor x hr hf hsin)
-              (S.coulombFieldStrength (x 1)) i j := by
-  simp only [CoordinateMetric.einsteinTensor_apply, S.toCoordinateMetric_g,
-    S.toCoordinateMetric_ginv]
-  exact S.einsteinTensor_eq_maxwell_raw x hr hf hsin i j
 
 end ReissnerNordstromSpacetime
 
