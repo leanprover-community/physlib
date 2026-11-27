@@ -143,12 +143,12 @@ TODO "Add a constructor for TempDistElectromagneticPotential from electric and
 
 lemma distTensorDeriv_eq_sum_sum {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) :
-    derivOfDistTensor A ε =∑ μ, ∑ ν, (derivOfDist μ A ε ν) •
+    derivOfDistTensor A ε =∑ μ, ∑ ν, (derivOfTempDist μ A ε ν) •
       Lorentz.CoVector.basis μ ⊗ₜ[ℝ] Lorentz.Vector.basis ν := by
   simp [derivOfDistTensor_apply]
   congr
   funext μ
-  conv_lhs => rw [← Lorentz.Vector.basis.sum_repr (derivOfDist μ A ε)]
+  conv_lhs => rw [← Lorentz.Vector.basis.sum_repr (derivOfTempDist μ A ε)]
   rw [tmul_sum]
   congr
   funext ν
@@ -166,7 +166,7 @@ lemma distTensorDeriv_basis_repr_apply {d} {μν : (Fin 1 ⊕ Fin d) × (Fin 1 �
     (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) :
     (Lorentz.CoVector.basis.tensorProduct Lorentz.Vector.basis).repr (derivOfDistTensor A ε) μν =
-    derivOfDist μν.1 A ε μν.2 := by
+    derivOfTempDist μν.1 A ε μν.2 := by
   match μν with
   | (μ, ν) =>
   rw [distTensorDeriv_eq_sum_sum]
@@ -185,7 +185,7 @@ lemma toTensor_distTensorDeriv_basis_repr_apply {d} (A : TempDistElectromagnetic
     (ε : 𝓢(SpaceTime d, ℝ)) (b : ComponentIdx (S := realLorentzTensor d)
       (Fin.append ![Color.down] ![Color.up])) :
     (Tensor.basis _).repr (Tensorial.toTensor (derivOfDistTensor A ε)) b =
-    derivOfDist (b 0) A ε (b 1) := by
+    derivOfTempDist (b 0) A ε (b 1) := by
   rw [Tensorial.basis_toTensor_apply]
   rw [Tensorial.basis_map_prod]
   simp only [Nat.reduceSucc, Nat.reduceAdd, Basis.repr_reindex, Fin.isValue]
