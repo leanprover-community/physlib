@@ -6,6 +6,7 @@ Authors: Sergey A. Cherkis, Michael R. Douglas, Sarah Hoback, Anna Mei, Ron Niss
 -/
 module
 
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.Analysis.Normed.Module.WeakDual
 public import Physlib.SpaceAndTime.TimeAndSpace.Basic
 
