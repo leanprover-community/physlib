@@ -22,7 +22,7 @@ distributions on `SpaceTime d`.
 ## ii. Key results
 
 - `deriv` : The derivative of a function `SpaceTime d → M` along the `μ` coordinate.
-- `manifoldDeriv` : The derivative of a function from `SpaceTime d` to a manifold along
+- `derivOfManifold` : The derivative of a function from `SpaceTime d` to a manifold along
   the `μ` coordinate.
 - `contDiff_deriv` : If `f` is `C^{n+1}` then `∂_ μ f` is `C^n`.
 - `differentiable_deriv` : If `f` is `C^2` then `∂_ μ f` is differentiable.
@@ -32,8 +32,9 @@ distributions on `SpaceTime d`.
 - `deriv_sum_inl` : The derivative along the temporal coordinate in terms of the
   derivative on `Time`.
 - `iteratedDeriv` : Iterated derivatives along a multiset of coordinates.
-- `distDeriv` : The derivative of a distribution on `SpaceTime d` along the `μ` coordinate.
-- `distDeriv_commute` : Derivatives of distributions on `SpaceTime d` commute.
+- `derivOfTempDist` : The derivative of a tempered distribution on `SpaceTime d` along the
+  `μ` coordinate.
+- `derivOfTempDist_commute` : Derivatives of tempered distributions on `SpaceTime d` commute.
 
 ## iii. Table of contents
 

@@ -92,7 +92,7 @@ lemma magneticFieldMatrix_eq_vectorPotential {c : SpeedOfLight}
     ContinuousLinearMap.coe_coe, Lorentz.Vector.spatialCLM_basis_sum_inl,
     Lorentz.Vector.spatialCLM_basis_sum_inr, EuclideanSpace.basisFun_apply, zero_tmul,
     smul_zero, Finset.sum_const_zero, tmul_zero]
-  simp [← timeSliceOfTempDist_apply, timeSliceOfDist_derivOfDist_inr, vectorPotential,
+  simp [← timeSliceOfTempDist_apply, timeSliceOfTempDist_derivOfTempDist_inr, vectorPotential,
   Space.distSpaceDeriv_apply_CLM, Lorentz.Vector.spatialCLM, neg_add_eq_sub]
 
 lemma magneticFieldMatrix_basis_repr_eq_vector_potential {c : SpeedOfLight}
@@ -135,7 +135,7 @@ lemma magneticFieldMatrix_basis_repr_eq_fieldStrength {c : SpeedOfLight}
     fieldStrength_basis_repr_eq_single, inr_i_inr_i, neg_mul, one_mul, sub_neg_eq_add]
   simp only [vectorPotential, Vector.spatialCLM, LinearMap.coe_mk, AddHom.coe_mk,
     Space.distSpaceDeriv_apply_CLM, ContinuousLinearMap.coe_comp, ContinuousLinearMap.coe_mk',
-    Function.comp_apply, ← timeSliceOfTempDist_apply, timeSliceOfDist_derivOfDist_inr]
+    Function.comp_apply, ← timeSliceOfTempDist_apply, timeSliceOfTempDist_derivOfTempDist_inr]
   ring
 
 /-!

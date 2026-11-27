@@ -86,8 +86,8 @@ lemma electricField_eq_fieldStrength {d} {c : SpeedOfLight}
     _root_.neg_apply, FunLike.coe_smul, Pi.smul_apply,
     Function.comp_apply, PiLp.sub_apply, PiLp.neg_apply, PiLp.smul_apply, Space.distSpaceGrad_apply,
     Space.distSpaceDeriv_apply_CLM, LinearMap.coe_toContinuousLinearMap', smul_eq_mul,
-    ← timeSliceOfTempDist_apply, timeSliceOfDist_derivOfDist_inl, one_div, Vector.apply_smul,
-    timeSliceOfDist_derivOfDist_inr]
+    ← timeSliceOfTempDist_apply, timeSliceOfTempDist_derivOfTempDist_inl, one_div,
+    Vector.apply_smul, timeSliceOfTempDist_derivOfTempDist_inr]
   field_simp
   ring
 

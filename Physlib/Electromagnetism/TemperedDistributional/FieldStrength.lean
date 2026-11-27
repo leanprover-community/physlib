@@ -96,8 +96,8 @@ lemma toTensor_fieldStrengthAux_basis_repr {d} (A : TempDistElectromagneticPoten
     (ε : 𝓢(SpaceTime d, ℝ))
     (b : ComponentIdx (S := realLorentzTensor d) (Fin.append ![Color.up] ![Color.up])) :
     (Tensor.basis _).repr (Tensorial.toTensor (fieldStrengthAux A ε)) b =
-    ∑ κ, (η (b 0) κ * derivOfDist κ A ε (b 1) -
-      η (b 1) κ * derivOfDist κ A ε (b 0)) := by
+    ∑ κ, (η (b 0) κ * derivOfTempDist κ A ε (b 1) -
+      η (b 1) κ * derivOfTempDist κ A ε (b 0)) := by
   rw [toTensor_fieldStrengthAux]
   simp only [map_sub, Finsupp.coe_sub, Pi.sub_apply]
   rw [Tensor.permT_basis_repr_symm_apply, contrT_basis_repr_apply_eq_fin]
@@ -109,7 +109,7 @@ lemma toTensor_fieldStrengthAux_basis_repr {d} (A : TempDistElectromagneticPoten
   conv_lhs =>
     enter [1, 2, n, 2]
     rw [toTensor_distTensorDeriv_basis_repr_apply]
-    change derivOfDist n A ε (b 1)
+    change derivOfTempDist n A ε (b 1)
   rw [Tensor.permT_basis_repr_symm_apply, contrT_basis_repr_apply_eq_fin]
   conv_lhs =>
     enter [2, 2, n]
@@ -119,7 +119,7 @@ lemma toTensor_fieldStrengthAux_basis_repr {d} (A : TempDistElectromagneticPoten
   conv_lhs =>
     enter [2, 2, n, 2]
     rw [toTensor_distTensorDeriv_basis_repr_apply]
-    change derivOfDist n A ε (b 0)
+    change derivOfTempDist n A ε (b 0)
   rw [← Finset.sum_sub_distrib]
 
 lemma fieldStrengthAux_tensor_basis_eq_basis {d} (A : TempDistElectromagneticPotential d)
@@ -147,7 +147,7 @@ lemma fieldStrengthAux_tensor_basis_eq_basis {d} (A : TempDistElectromagneticPot
 lemma fieldStrengthAux_basis_repr_apply {d} {μν : (Fin 1 ⊕ Fin d) × (Fin 1 ⊕ Fin d)}
     (A : TempDistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
     (Lorentz.Vector.basis.tensorProduct Lorentz.Vector.basis).repr (A.fieldStrengthAux ε) μν =
-    ∑ κ, ((η μν.1 κ * derivOfDist κ A ε μν.2) - η μν.2 κ * derivOfDist κ A ε μν.1) := by
+    ∑ κ, ((η μν.1 κ * derivOfTempDist κ A ε μν.2) - η μν.2 κ * derivOfTempDist κ A ε μν.1) := by
   match μν with
   | (μ, ν) =>
   trans (Tensor.basis _).repr (Tensorial.toTensor (A.fieldStrengthAux ε))
@@ -158,7 +158,8 @@ lemma fieldStrengthAux_basis_repr_apply {d} {μν : (Fin 1 ⊕ Fin d) × (Fin 1 
 lemma fieldStrengthAux_basis_repr_apply_eq_single {d} {μν : (Fin 1 ⊕ Fin d) × (Fin 1 ⊕ Fin d)}
     (A : TempDistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
     (Lorentz.Vector.basis.tensorProduct Lorentz.Vector.basis).repr (A.fieldStrengthAux ε) μν =
-    ((η μν.1 μν.1 * derivOfDist μν.1 A ε μν.2) - η μν.2 μν.2 * derivOfDist μν.2 A ε μν.1) := by
+    ((η μν.1 μν.1 * derivOfTempDist μν.1 A ε μν.2)
+      - η μν.2 μν.2 * derivOfTempDist μν.2 A ε μν.1) := by
   rw [fieldStrengthAux_basis_repr_apply]
   simp only [Finset.sum_sub_distrib]
   rw [Finset.sum_eq_single μν.1, Finset.sum_eq_single μν.2]
@@ -176,7 +177,7 @@ lemma fieldStrengthAux_basis_repr_apply_eq_single {d} {μν : (Fin 1 ⊕ Fin d) 
 lemma fieldStrengthAux_eq_basis {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) :
     (A.fieldStrengthAux ε) = ∑ μ, ∑ ν,
-      ((η μ μ * derivOfDist μ A ε ν) - η ν ν * derivOfDist ν A ε μ)
+      ((η μ μ * derivOfTempDist μ A ε ν) - η ν ν * derivOfTempDist ν A ε μ)
       • Lorentz.Vector.basis μ ⊗ₜ[ℝ] Lorentz.Vector.basis ν := by
   apply (Lorentz.Vector.basis.tensorProduct Lorentz.Vector.basis).repr.injective
   ext b
@@ -241,7 +242,7 @@ lemma fieldStrength_eq_fieldStrengthAux {d} (A : TempDistElectromagneticPotentia
 lemma fieldStrength_eq_basis {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) :
     A.fieldStrength ε = ∑ μ, ∑ ν,
-      ((η μ μ * derivOfDist μ A ε ν) - η ν ν * derivOfDist ν A ε μ)
+      ((η μ μ * derivOfTempDist μ A ε ν) - η ν ν * derivOfTempDist ν A ε μ)
       • Lorentz.Vector.basis μ ⊗ₜ[ℝ] Lorentz.Vector.basis ν := by
   rw [fieldStrength]
   exact fieldStrengthAux_eq_basis A ε
@@ -249,7 +250,8 @@ lemma fieldStrength_eq_basis {d} (A : TempDistElectromagneticPotential d)
 lemma fieldStrength_basis_repr_eq_single {d} {μν : (Fin 1 ⊕ Fin d) × (Fin 1 ⊕ Fin d)}
     (A : TempDistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
     (Lorentz.Vector.basis.tensorProduct Lorentz.Vector.basis).repr (A.fieldStrength ε) μν =
-    ((η μν.1 μν.1 * derivOfDist μν.1 A ε μν.2) - η μν.2 μν.2 * derivOfDist μν.2 A ε μν.1) := by
+    ((η μν.1 μν.1 * derivOfTempDist μν.1 A ε μν.2)
+      - η μν.2 μν.2 * derivOfTempDist μν.2 A ε μν.1) := by
   rw [fieldStrength]
   exact fieldStrengthAux_basis_repr_apply_eq_single A ε
 
@@ -265,8 +267,8 @@ lemma fieldStrength_diag_zero {d} (A : TempDistElectromagneticPotential d)
 lemma distDeriv_fieldStrength_diag_zero {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) (μ ν : Fin 1 ⊕ Fin d) :
     (Lorentz.Vector.basis.tensorProduct Lorentz.Vector.basis).repr
-    (derivOfDist ν A.fieldStrength ε) (μ, μ) = 0 := by
-  rw [derivOfDist_apply']
+    (derivOfTempDist ν A.fieldStrength ε) (μ, μ) = 0 := by
+  rw [derivOfTempDist_apply']
   simp
 
 lemma fieldStrength_antisymmetric_basis {d} (A : TempDistElectromagneticPotential d)

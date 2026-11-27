@@ -138,8 +138,8 @@ lemma isExtrema_iff_tensors {𝓕 : FreeSpace}
     simp only [IsExtrema] at h
     intro x
     have h1 : ((Tensorial.toTensor (M := Lorentz.Vector d)).symm
-        (permT id (IsReindexing.auto) {((1/ 𝓕.μ₀ : ℝ) • derivOfTensor A.toFieldStrength x | κ κ ν') +
-        - (J x | ν')}ᵀ)) = 0 := by
+        (permT id (IsReindexing.auto) {((1/ 𝓕.μ₀ : ℝ) • derivOfTensor A.toFieldStrength x | κ κ ν')
+         + - (J x | ν')}ᵀ)) = 0 := by
       funext ν
       have h2 : gradLagrangian 𝓕 A J x ν = 0 := by simp [h]
       rw [gradLagrangian_eq_tensor A hA J hJ] at h2

@@ -251,7 +251,7 @@ lemma timeSliceOfTempDist_derivOfTempDist_inr {M d} [NormedAddCommGroup M] [Norm
     exact SchwartzMap.differentiable κ
   · fun_prop
 
-lemma derivOfDist_inr_timeSliceOfDist_symm {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma derivOfTempDist_inr_timeSliceOfTempDist_symm {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     {c : SpeedOfLight}
     (i : Fin d) (f : (Time × Space d) →d[ℝ] M) :
     derivOfTempDist (Sum.inr i) ((timeSliceOfTempDist c).symm f) =
