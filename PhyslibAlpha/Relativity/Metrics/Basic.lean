@@ -127,7 +127,7 @@ lemma MetricTensor.sum_mul_ginv_g_apply {n : ℕ} (M : MetricTensor n) (j : Fin 
 
 ## B. Coordinate metrics
 
-A `CoordinateMetric n` bundles a coordinate-dependent symmetric metric field with its inverse and
+A `CoordinateMetric n` consists of a coordinate-dependent symmetric metric field, its inverse, and
 the chart domain on which they are two-sided inverses.
 
 -/

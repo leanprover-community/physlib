@@ -13,6 +13,16 @@
 | 7. Coordinate curvature operators and `Pipeline` split | Done | `Pipeline` removed; `Christoffel`, `Riemann`, `Ricci`, `Einstein`, and the `CoordinateMetric` aggregator added; committed in `3b20c5de`, `e1b37bae`. |
 | 1b. FLRW speed-of-light generalization | Done | `SpeedOfLight` and `GravitationalConstant` are used in `PerfectFluid`, `FriedmannBridge`, and `FLRWTorsion`; full build passes. |
 
+## Handbook alignment
+
+| Task | Status | Notes |
+| --- | --- | --- |
+| 1. Move `Modified` modules | Done | Files live under `PhyslibAlpha/Relativity/Modified/`; imports and API map updated. |
+| 1b. FLRW speed-of-light generalization | Done | `SpeedOfLight` and `GravitationalConstant` used throughout the FLRW APIs; full build passes. |
+| 2. Documentation physics accuracy | Done | Ostrogradsky pairs, Kretschmann signature, Kottler wording, and IncompressibleSphere notation checked. |
+| 3. Review notes and software jargon | Done | No reviewer handles or pipeline jargon; `bundle` wording removed; proof rationales are `--` comments; Ricci scalar written `R`. |
+| 5. References and bibliography | Skipped | Deferred pending human source/page verification. |
+
 ## Follow-ups
 
 | Follow-up | Status | Notes |

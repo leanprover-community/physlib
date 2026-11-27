@@ -173,7 +173,7 @@ lemma geodesic_ivp_unique (G : GeodesicSystem E) {K : NNReal} {a b t₀ : ℝ}
 
 ## C. Flat-space straight lines
 
-In Minkowski spacetime or any inertial chart (`Γ = 0`, bundled as `GeodesicSystem.flat`), free
+In Minkowski spacetime or any inertial chart (`Γ = 0`, expressed as `GeodesicSystem.flat`), free
 particles experience no gravitational acceleration and follow unaccelerated straight worldlines
 `x₀ + t • v₀`.
 
