@@ -361,7 +361,11 @@ private lemma einsteinTensor_raw (S : SchwarzschildDeSitterSpacetime) (x : Fin 4
   ring
 
 /-- The inverse diagonal scale `|g_{aa}|⁻¹` relating coordinate Ricci components of `S.metric`
-to the orthonormal frame `η`. -/
+to the orthonormal frame `η`.
+
+This is deliberately not `S.metricInv`: the inverse metric carries the Lorentzian sign, so
+`g^{00} = -(f)⁻¹`, while the frame components below are compared with `η = diag(-1, 1, 1, 1)` and
+therefore need the positive scale `(f)⁻¹` in the time slot. -/
 noncomputable def frameScale (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ)
     (a : Fin 4) : ℝ :=
   if a = 0 then (S.metricFn (x 1))⁻¹

@@ -105,7 +105,8 @@ nonlinear scalar wave equation □_η φ = -4 π φ³ T [55]. Brans-Dicke scalar
 scalar mode to curvature with dimensionless parameter ω on `BransDickeTheory`, yielding the
 post-Newtonian parameter γ(ω) = (1 + ω) / (2 + ω) approaching the General Relativity value 1 under
 the Cassini bound ω > 40000{7}, the weak-field effective gravitational coupling
-`coupling(ω) = (4 + 2ω) / (3 + 2ω) = 1 + 1 / (3 + 2ω)` bounded in `[1, 4/3]` for ω ≥ 0, and the
+`effectiveCouplingRatio(ω) = (4 + 2ω) / (3 + 2ω) = 1 + 1 / (3 + 2ω)` bounded in `[1, 4/3]` for
+ω ≥ 0, and the
 ω = 0 metric f(R) value γ = 1 / 2 [56]. Non-linear f(R) gravity (`FRTheory`) replaces the
 Einstein-Hilbert density R with f(R), modifying the algebraic field equations, recovering General
 Relativity with Λ via `FRTheory.generalRelativity Λ`, deriving the `n`-dimensional and 4D `3 □f'`
@@ -210,7 +211,8 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `CurvatureDerivatives.einsteinDeriv`, `inertialDivergence`, `inertialDivergence_combination`,
     `inertialDivergence_einstein_eq_zero`, `combination_conserved_iff`
 16. PhyslibAlpha/Relativity/Tensors/MaxwellStressEnergy.lean — `maxwellFieldInvariant`,
-    `metricTrace_maxwellQuad`, `maxwellStressEnergy`, `maxwellStressEnergy_trace_zero`
+    `metricTrace_maxwellQuad`, `maxwellStressEnergy`, `maxwellStressEnergy_trace_zero`,
+    `maxwellStressEnergyGaussian`, `maxwellStressEnergyGaussian_eq_smul`
 17. PhyslibAlpha/Relativity/Tensors/EMFieldStrength.lean — `emFieldStrengthComponents`,
     `emFieldStrengthComponents_antisymm`
 18. PhyslibAlpha/Relativity/General/GeodesicSystem.lean — `Christoffel`, `GeodesicSystem`,
@@ -281,7 +283,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `StaticSphericalMetric.ricciScalar`, `StaticSphericalMetric.einsteinTensor`
 39. PhyslibAlpha/Relativity/General/Schwarzschild/ElectricWeyl.lean — `electricPart`,
     `electricPart_symm`, `electricPart_trace`, `electricWeylRiemann`, `ricci_eq_zero`,
-    `electricWeyl_frameKretschmannScalar_eq`, `kretschmann_scalar`, `weyl_purely_electric`,
+    `electricWeyl_frameSumOfSquares_eq`, `kretschmann_scalar`, `weyl_purely_electric`,
     `electricPart_from_metric`
 40. PhyslibAlpha/Relativity/General/Schwarzschild/Basic.lean — `SchwarzschildSpacetime`,
     `SchwarzschildSpacetime.metricFn`, `SchwarzschildSpacetime.metric`,
@@ -369,8 +371,10 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
 56. PhyslibAlpha/Relativity/Modified/BransDicke.lean — `BransDickeTheory`,
     `BransDickeTheory.gamma`, `BransDickeTheory.gamma_eq_one_sub`,
     `BransDickeTheory.gamma_bounds`, `BransDickeTheory.cassini_deviation`,
-    `BransDickeTheory.coupling`, `BransDickeTheory.coupling_eq_one_add`,
-    `BransDickeTheory.coupling_bounds`, `BransDickeTheory.fR`, `BransDickeTheory.fR_gamma`,
+    `BransDickeTheory.effectiveCouplingRatio`,
+    `BransDickeTheory.effectiveCouplingRatio_eq_one_add`,
+    `BransDickeTheory.effectiveCouplingRatio_bounds`, `BransDickeTheory.fR`,
+    `BransDickeTheory.fR_gamma`,
     `gamma_tendsto_atTop`
 57. PhyslibAlpha/Relativity/Modified/FRGravity.lean — `FRTheory`,
     `FRTheory.generalRelativity`, `FRTheory.starobinsky`, `FRTheory.algebraicFieldEqn`,
@@ -490,7 +494,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `MassiveGravityTheory.generalRelativity`, `MassiveGravityTheory.fierzPauli`
 81. PhyslibAlpha/Relativity/Tensors/PerfectFluidStressEnergy.lean — `perfectFluidStressEnergy`
 82. PhyslibAlpha/Relativity/General/FrameKretschmann.lean —
-    `RiemannTensor.frameKretschmannScalar`
+    `RiemannTensor.frameSumOfSquares`
 83. PhyslibAlpha/Relativity/Metrics/CovariantDerivTensor2.lean —
     `InitialData.covariantDerivTensor2`
 84. PhyslibAlpha/Cosmology/FLRW/Curvature.lean — `FLRWSpacetime.ricciTensor`,

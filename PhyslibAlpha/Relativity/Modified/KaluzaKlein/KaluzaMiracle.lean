@@ -73,6 +73,9 @@ namespace KaluzaKlein
 
 Evaluating the constant-dilaton Kaluza–Klein Ricci components of a `KaluzaKleinData` splits the 5D
 scalar curvature into the 4D Einstein–Hilbert term and the Maxwell gauge-field invariant.
+Throughout this file the dilaton is fixed to its unit value `φ = 1`, so the components below are
+not the general dilaton-dependent ones; a running dilaton adds the `∂φ` terms of the reduced
+action, which are not treated here.
 
 -/
 

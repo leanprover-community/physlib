@@ -51,7 +51,7 @@ contracted Bianchi identity holds without being assumed (`frame_einstein_conserv
 ## iii. Table of contents
 
 - A. The de Sitter trace part and its symmetries
-- B. Frame Kretschmann scalar
+- B. Sum of squared frame curvature components
 - C. Frame Ricci, scalar curvature, and Einstein tensors
 - D. Vacuum limit at `Λ = 0`
 - E. Conservation of the frame Einstein tensor
@@ -116,7 +116,7 @@ namespace SchwarzschildDeSitterSpacetime
 
 /-!
 
-## B. Frame Kretschmann scalar
+## B. Sum of squared frame curvature components
 
 Because the Weyl tensor is trace-free, its contraction with the pure-trace de Sitter Riemann part
 vanishes identically, so the Kretschmann scalar separates cleanly into `48 M² / r⁶ + 8 Λ² / 3`.
@@ -188,7 +188,7 @@ lemma frameSumOfSquares_eq (S : SchwarzschildDeSitterSpacetime) (r : ℝ) :
       (Schwarzschild.electricWeylRiemann (S.M / r ^ 3)).comp i j k l *
         (Schwarzschild.electricWeylRiemann (S.M / r ^ 3)).comp i j k l)
       = 48 * (S.M / r ^ 3) ^ 2 :=
-    Schwarzschild.electricWeyl_frameKretschmannScalar_eq (S.M / r ^ 3)
+    Schwarzschild.electricWeyl_frameSumOfSquares_eq (S.M / r ^ 3)
   have hA := deSitterPart_sq_sum S.Λ
   have hX := weyl_deSitter_cross_zero S.M S.Λ r
   have hpt : ∀ i j k l : Fin 4,

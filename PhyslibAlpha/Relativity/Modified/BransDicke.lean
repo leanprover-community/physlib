@@ -161,41 +161,44 @@ lemma BransDickeTheory.cassini_deviation (T : BransDickeTheory) (h : 40000 < T.�
 ## B. The effective gravitational coupling
 
 Virtual scalar exchange enhances Newton's gravitational constant between non-relativistic masses
-by the weak-field factor `coupling ω = (4 + 2ω) / (3 + 2ω)`.
+by the weak-field factor `effectiveCouplingRatio ω = (4 + 2ω) / (3 + 2ω)`.
 
 -/
 
 /-- The Brans–Dicke effective gravitational coupling ratio `(4 + 2ω) / (3 + 2ω)`. -/
-noncomputable def coupling (ω : ℝ) : ℝ := (4 + 2 * ω) / (3 + 2 * ω)
+noncomputable def effectiveCouplingRatio (ω : ℝ) : ℝ := (4 + 2 * ω) / (3 + 2 * ω)
 
 /-- `(4 + 2ω) / (3 + 2ω) = 1 + 1 / (3 + 2ω)`. -/
-lemma coupling_eq_one_add (ω : ℝ) (h : 3 + 2 * ω ≠ 0) :
-    coupling ω = 1 + 1 / (3 + 2 * ω) := by
-  simp only [coupling]
+lemma effectiveCouplingRatio_eq_one_add (ω : ℝ) (h : 3 + 2 * ω ≠ 0) :
+    effectiveCouplingRatio ω = 1 + 1 / (3 + 2 * ω) := by
+  simp only [effectiveCouplingRatio]
   field_simp
   ring
 
 /-- For `ω ≥ 0`, the effective coupling lies in `[1, 4/3]`. -/
-lemma coupling_bounds (ω : ℝ) (hω : 0 ≤ ω) : 1 ≤ coupling ω ∧ coupling ω ≤ 4 / 3 := by
+lemma effectiveCouplingRatio_bounds (ω : ℝ) (hω : 0 ≤ ω) :
+    1 ≤ effectiveCouplingRatio ω ∧ effectiveCouplingRatio ω ≤ 4 / 3 := by
   have hden : (0 : ℝ) < 3 + 2 * ω := by linarith
   have hinv_le : 1 / (3 + 2 * ω) ≤ 1 / 3 :=
     one_div_le_one_div_of_le (by norm_num) (by linarith)
   have hinv_pos : (0 : ℝ) < 1 / (3 + 2 * ω) := by positivity
-  rw [coupling_eq_one_add ω (by linarith)]
+  rw [effectiveCouplingRatio_eq_one_add ω (by linarith)]
   constructor <;> linarith
 
 /-- The effective gravitational coupling ratio of a `BransDickeTheory`. -/
-noncomputable def BransDickeTheory.coupling (T : BransDickeTheory) : ℝ := BransDicke.coupling T.ω
+noncomputable def BransDickeTheory.effectiveCouplingRatio (T : BransDickeTheory) : ℝ :=
+  BransDicke.effectiveCouplingRatio T.ω
 
 /-- `(4 + 2ω) / (3 + 2ω) = 1 + 1 / (3 + 2ω)` for a `BransDickeTheory`. -/
-lemma BransDickeTheory.coupling_eq_one_add (T : BransDickeTheory) (h : 3 + 2 * T.ω ≠ 0) :
-    T.coupling = 1 + 1 / (3 + 2 * T.ω) :=
-  GeneralRelativity.Modified.BransDicke.coupling_eq_one_add T.ω h
+lemma BransDickeTheory.effectiveCouplingRatio_eq_one_add (T : BransDickeTheory)
+    (h : 3 + 2 * T.ω ≠ 0) :
+    T.effectiveCouplingRatio = 1 + 1 / (3 + 2 * T.ω) :=
+  GeneralRelativity.Modified.BransDicke.effectiveCouplingRatio_eq_one_add T.ω h
 
 /-- For `ω ≥ 0`, the effective coupling of a `BransDickeTheory` lies in `[1, 4/3]`. -/
-lemma BransDickeTheory.coupling_bounds (T : BransDickeTheory) (hω : 0 ≤ T.ω) :
-    1 ≤ T.coupling ∧ T.coupling ≤ 4 / 3 :=
-  GeneralRelativity.Modified.BransDicke.coupling_bounds T.ω hω
+lemma BransDickeTheory.effectiveCouplingRatio_bounds (T : BransDickeTheory) (hω : 0 ≤ T.ω) :
+    1 ≤ T.effectiveCouplingRatio ∧ T.effectiveCouplingRatio ≤ 4 / 3 :=
+  GeneralRelativity.Modified.BransDicke.effectiveCouplingRatio_bounds T.ω hω
 
 end BransDicke
 

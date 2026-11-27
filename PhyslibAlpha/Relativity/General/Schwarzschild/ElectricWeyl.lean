@@ -40,7 +40,7 @@ Hessian of `Φ`, not the frame Riemann tensor.)
 
 - `electricPart`, `electricPart_symm`, `electricPart_trace` : trace-free static Weyl electric
   matrix `diag(0, -2k, k, k)`.
-- `electricWeylRiemann`, `ricci_eq_zero`, `electricWeyl_frameKretschmannScalar_eq` : Schwarzschild
+- `electricWeylRiemann`, `ricci_eq_zero`, `electricWeyl_frameSumOfSquares_eq` : Schwarzschild
   frame curvature `RiemannTensor 4`, Ricci flatness, and frame sum of squares `48 k²`.
 - `weyl_purely_electric` : every component with one temporal index vanishes.
 - `SchwarzschildSpacetime.frameRiemann`, `SchwarzschildSpacetime.kretschmann_scalar`,
@@ -137,9 +137,9 @@ lemma ricci_eq_zero (k : ℝ) : ricci minkowski (electricWeylRiemann k) = 0 := b
     two_mul, add_assoc]
 
 /-- The frame Kretschmann sum of squares of `electricWeylRiemann k` equals `48 k²`. -/
-lemma electricWeyl_frameKretschmannScalar_eq (k : ℝ) :
-    (electricWeylRiemann k).frameKretschmannScalar = 48 * k ^ 2 := by
-  simp [RiemannTensor.frameKretschmannScalar, electricWeylRiemann, electricPart, Fin.sum_univ_four,
+lemma electricWeyl_frameSumOfSquares_eq (k : ℝ) :
+    (electricWeylRiemann k).frameSumOfSquares = 48 * k ^ 2 := by
+  simp [RiemannTensor.frameSumOfSquares, electricWeylRiemann, electricPart, Fin.sum_univ_four,
     two_mul, add_assoc]
   ring
 
@@ -177,8 +177,8 @@ noncomputable def frameRiemann (S : SchwarzschildSpacetime) (r : ℝ) : RiemannT
 
 /-- The Schwarzschild Kretschmann scalar `48 M² / r⁶` in the orthonormal frame at radius `r`. -/
 lemma kretschmann_scalar (S : SchwarzschildSpacetime) (r : ℝ) (hr : r ≠ 0) :
-    (S.frameRiemann r).frameKretschmannScalar = 48 * S.M ^ 2 / r ^ 6 := by
-  rw [frameRiemann, electricWeyl_frameKretschmannScalar_eq]
+    (S.frameRiemann r).frameSumOfSquares = 48 * S.M ^ 2 / r ^ 6 := by
+  rw [frameRiemann, electricWeyl_frameSumOfSquares_eq]
   have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
   field_simp
 
