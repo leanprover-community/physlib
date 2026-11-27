@@ -22,15 +22,15 @@ import Mathlib.Tactic.Ring
 # Static spherically symmetric Christoffel symbols and derivatives
 
 Closed-form Levi-Civita connection coefficients `StaticSphericalMetric.christoffel` and their
-partial derivatives `StaticSphericalMetric.christoffelDeriv`, verified against
-`Pipeline.christoffel`.
+partial derivatives `StaticSphericalMetric.christoffelDeriv`, verified against the coordinate
+Christoffel symbols of the metric.
 
 ## i. Overview
 
 Differentiating `ds² = -f(r) dt² + f(r)⁻¹ dr² + r² dθ² + r² sin²θ dφ²` produces only radial and
 polar coordinate derivatives of the metric components, since the metric is static (`∂_t g = 0`)
 and axisymmetric (`∂_φ g = 0`). Combining these derivatives with `S.metricInv` identifies all 64
-components of `Pipeline.christoffel` with the closed-form table `S.christoffel` and identifies all
+coordinate Christoffel symbols with the closed-form table `S.christoffel` and identifies all
 256 coordinate partial derivatives `∂_μ Γ^k_{ij}` with `S.christoffelDeriv`.
 
 ## ii. Key results
@@ -205,8 +205,8 @@ private lemma metricDeriv_r (S : StaticSphericalMetric) (x : Fin 4 → ℝ)
     | exact metricDeriv_r_33 S x
     | simp [coordDeriv, metric]
 
-/-- All 64 Christoffel symbols computed by `Pipeline.christoffel` agree with the closed-form
-connection table at every regular point where the radial metric function is differentiable. -/
+/-- All 64 coordinate Christoffel symbols agree with the closed-form connection table at every
+regular point where the radial metric function is differentiable. -/
 lemma christoffel_eq (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : DifferentiableAt ℝ S.metricFn (x 1)) :
@@ -238,8 +238,8 @@ lemma eventually_christoffel_eq (S : StaticSphericalMetric) (x : Fin 4 → ℝ) 
   filter_upwards [hr', hf', hsin', hdiff'] with y hyr hyf hysin hydiff
   exact S.christoffel_eq y hyr hyf hysin hydiff a b c
 
-/-- Equality of coordinate partial derivatives of `Pipeline.christoffel` and the closed-form
-static spherical Christoffel table along every coordinate axis. -/
+/-- Equality of coordinate partial derivatives of the coordinate Christoffel symbols and the
+closed-form static spherical Christoffel table along every coordinate axis. -/
 lemma pd_christoffel_eq (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ S.metricFn s) (μ a b c : Fin 4) :

@@ -17,16 +17,16 @@ import Mathlib.Tactic.Ring
 
 /-!
 
-# Schwarzschild and Schwarzschild–de Sitter through the metric pipeline
+# Schwarzschild and Schwarzschild–de Sitter coordinate curvature
 
-End-to-end verification of `SchwarzschildDeSitterSpacetime` and Schwarzschild (`Λ = 0`) metrics
-through the coordinate pipeline `g ↦ ∂g ↦ Γ ↦ ∂Γ ↦ R^ρ_{σμν} ↦ Ric ↦ S ↦ G`.
+Coordinate verification of `SchwarzschildDeSitterSpacetime` and Schwarzschild (`Λ = 0`) metrics
+from `g ↦ ∂g ↦ Γ ↦ ∂Γ ↦ R^ρ_{σμν} ↦ Ric ↦ R ↦ G`.
 
 ## i. Overview
 
 This module connects `SchwarzschildDeSitterSpacetime.metric` and
-`SchwarzschildDeSitterSpacetime.metricInv` directly to the general static spherically symmetric
-curvature engine in `GeneralRelativity.StaticSpherical` and `GeneralRelativity.Pipeline`:
+`SchwarzschildDeSitterSpacetime.metricInv` to the general static spherically symmetric curvature
+formulas in `GeneralRelativity.StaticSpherical`:
 
 1. Equates `S.christoffel` and `S.christoffelDeriv` with `S.toStaticSpherical.christoffel` and
    `S.toStaticSpherical.christoffelDeriv`.
@@ -191,7 +191,7 @@ private lemma christoffelDeriv_eq_staticSpherical (S : SchwarzschildDeSitterSpac
       simp [christoffelDeriv, StaticSphericalMetric.christoffelDeriv, toStaticSpherical]
   · simp [christoffelDeriv, StaticSphericalMetric.christoffelDeriv]
 
-/-- All 64 Christoffel symbols computed by `Pipeline.christoffel` equal
+/-- All 64 Christoffel symbols computed from the coordinate metric equal
 `SchwarzschildDeSitterSpacetime.christoffel`, for every `Λ`. -/
 lemma christoffel_eq (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
@@ -205,8 +205,8 @@ lemma christoffel_eq (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (h
     S.christoffel_eq_staticSpherical x hr k i j]
 
 /-- Away from the central singularity (`r ≠ 0`), event and cosmological horizons (`f ≠ 0`), and
-polar axis (`sin θ ≠ 0`), every spacetime point has a regular neighborhood where
-`Pipeline.christoffel` and `S.christoffel` agree, so their coordinate partial derivatives match
+polar axis (`sin θ ≠ 0`), every spacetime point has a regular neighborhood where the coordinate
+Christoffel symbols and `S.christoffel` agree, so their coordinate partial derivatives match
 along every axis. -/
 lemma pd_christoffel_eq (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (μ a b c : Fin 4) :
@@ -250,7 +250,7 @@ verifies the cosmological Einstein-space equations `Ric_{ij} = Λ g_{ij}` and `G
 
 -/
 
-/-- The pipeline Riemann tensor of `S.metric` equals
+/-- The coordinate Riemann tensor of `S.metric` equals
 `riemannFromData S.christoffel S.christoffelDeriv` at every 4-tuple `(ρ, σ, μ, ν)`, for general
 `Λ`. -/
 lemma riemann_eq_data (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
@@ -268,8 +268,8 @@ lemma riemann_eq_data (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (
       (S.pd_christoffel_eq_deriv x hr hf hsin ν ρ μ σ)
   simp only [riemannFromData, h1, h2, S.christoffel_eq x hr hf hsin]
 
-/-- All six independent Schwarzschild–de Sitter Riemann components directly from the metric
-pipeline, for general `Λ`. -/
+/-- All six independent Schwarzschild–de Sitter Riemann components computed directly from the
+coordinate metric, for general `Λ`. -/
 lemma riemann_components_pipeline (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ)
     (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     (Pipeline.riemann S.metric S.metricInv x 0 1 0 1
@@ -306,8 +306,8 @@ lemma riemann_components_pipeline (S : SchwarzschildDeSitterSpacetime) (x : Fin 
       christoffelDeriv, Fin.sum_univ_four, add_assoc, sub_eq_add_neg, pow_two] using
       S.riemann_theta_phitheta (x 1) (x 2) hr hsin
 
-/-- Metric-level Ricci tensor for Schwarzschild–de Sitter: `Ric_{σν} = Λ g_{σν}` directly from
-`Pipeline.ricciTensorOf S.metric S.metricInv`. -/
+/-- Metric-level Ricci tensor for Schwarzschild–de Sitter: `Ric_{σν} = Λ g_{σν}`, computed directly
+from the coordinate metric. -/
 lemma ricciTensorOf (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
     Pipeline.ricciTensorOf S.metric S.metricInv x σ ν = S.Λ * S.metric x σ ν := by

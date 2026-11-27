@@ -50,7 +50,7 @@ namespace GeneralRelativity
 
 ## A. Rank-2 tensors and symmetry
 
-Rank-2 tensors on `Fin n` are modeled as `Matrix (Fin n) (Fin n) ℝ` together with `IsSymm`.
+Symmetric rank-2 tensors include the spacetime metric, Ricci, Einstein, and stress-energy tensors.
 
 -/
 

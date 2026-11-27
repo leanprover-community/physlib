@@ -15,10 +15,10 @@ First-order linearized Einstein tensor for a `MetricPerturbation` around Minkows
 
 ## i. Overview
 
-Forming the trace-reversed combination `G^{(1)}_{ij} = R^{(1)}_{ij} - ½ η_{ij} S^{(1)}` from
-`linearizedRicci` and `linearizedRicciScalar` defines the linearized Einstein tensor
-`linearizedEinstein P`, supplying the gravitational left-hand side for linearized gauge invariance,
-Lorenz-gauge wave equations, gravitational radiation, and the Newtonian Poisson limit.
+Forming the trace-reversed combination `G^{(1)}_{ij} = R^{(1)}_{ij} - ½ η_{ij} R^{(1)}` defines
+the first-order Einstein tensor around Minkowski spacetime, supplying the gravitational field
+operator for linearized gauge invariance, Lorenz-gauge wave equations, gravitational radiation, and
+the Newtonian Poisson limit.
 
 ## ii. Key results
 
@@ -47,12 +47,12 @@ namespace Linearized
 
 ## A. Linearized Einstein tensor
 
-The first-order Einstein tensor combines `linearizedRicci` and `linearizedRicciScalar` into the
-divergence-free linearized gravitational field operator.
+The weak-field Einstein tensor is the trace-reversed linearized Ricci tensor on Minkowski
+background.
 
 -/
 
-/-- Linearized Einstein tensor `G^{(1)}_{ij} = R^{(1)}_{ij} - ½ η_{ij} S^{(1)}`. -/
+/-- Linearized Einstein tensor `G^{(1)}_{ij} = R^{(1)}_{ij} - ½ η_{ij} R^{(1)}`. -/
 noncomputable def linearizedEinstein (P : MetricPerturbation) (x : Fin 4 → ℝ)
     (i j : Fin 4) : ℝ :=
   linearizedRicci P x i j - (1 / 2) * minkowskiMetric4 i j * linearizedRicciScalar P x

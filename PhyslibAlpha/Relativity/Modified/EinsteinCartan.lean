@@ -33,7 +33,7 @@ corollary `S = 0 → T = 0`.
 ## ii. Key results
 
 - `AffineConnection`, `EinsteinCartanData`, `torsion`, `torsion_antisymm` : affine connections,
-  bundled Einstein–Cartan geometry, and torsion tensor.
+  metric-compatible connection data with torsion, and torsion tensor.
 - `EinsteinCartanData.torsion`, `EinsteinCartanData.MetricCompatible`, `MetricCompatible`,
   `leviCivitaOfDeriv`, `contorsion` : metric compatibility and contorsion `K`.
 - `contorsion_torsion`, `leviCivita_add_contorsion_compatible`,

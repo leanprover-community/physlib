@@ -11,20 +11,18 @@ public import PhyslibAlpha.Relativity.Tensors.EinsteinTensor
 
 /-!
 
-# The Minkowski coordinate metric and vacuum flatness
+# Flat Minkowski spacetime and the vacuum Einstein equations
 
-Coordinate-chart bundle `minkowskiCoordinateMetric` for flat Minkowski spacetime together with
-verification that it satisfies the vacuum Einstein equations both through the differential pipeline
-and algebraically.
+Flat Minkowski spacetime in global inertial coordinates, with vanishing Christoffel symbols,
+vanishing curvature tensors, and verification of the vacuum Einstein equations `G_{ij} = 0`.
 
 ## i. Overview
 
 In global inertial coordinates `(t, x, y, z)` on `ℝ⁴`, flat Minkowski spacetime carries the
-constant Lorentzian metric `η = diag(-1, 1, 1, 1)` bundled on `Set.univ` as
-`minkowskiCoordinateMetric`. Because every metric component is position independent, all
-Levi-Civita connection coefficients `Γ^k_{ij}` vanish identically, so the Riemann curvature, Ricci
-tensor, scalar curvature, and Einstein tensor all vanish identically and Minkowski spacetime solves
-the vacuum Einstein equations `G_{ij} = 0`.
+constant Lorentzian metric `η = diag(-1, 1, 1, 1)` on all of `ℝ⁴`. Because every metric component
+is position independent, all Levi-Civita connection coefficients `Γ^k_{ij}` vanish identically, so
+the Riemann curvature, Ricci tensor, scalar curvature, and Einstein tensor all vanish identically
+and Minkowski spacetime solves the vacuum Einstein equations `G_{ij} = 0`.
 
 ## ii. Key results
 
@@ -32,13 +30,13 @@ the vacuum Einstein equations `G_{ij} = 0`.
 - `minkowskiCoordinateMetric_christoffel`, `minkowskiCoordinateMetric_riemann`,
   `minkowskiCoordinateMetric_ricciTensorOf`, `minkowskiCoordinateMetric_ricciScalarOf`,
   `minkowskiCoordinateMetric_einsteinTensorOf`, `minkowskiCoordinateMetric_riemannFromData` :
-  Minkowski spacetime as a computed `CoordinateMetric` vacuum solution.
+  vanishing coordinate connection and curvature tensors of Minkowski spacetime.
 - `minkowskiFlatRiemann`, `minkowski_ricci_eq_zero`, `minkowski_ricciScalar_eq_zero`,
   `minkowski_einstein_eq_zero`, `minkowski_vacuum_iff_ricci_flat` : algebraic vacuum properties.
 
 ## iii. Table of contents
 
-- A. The Minkowski coordinate metric and pipeline flatness
+- A. The Minkowski coordinate metric and flatness
 - B. Algebraic vacuum Einstein equations on Minkowski spacetime
 
 ## iv. References
@@ -56,10 +54,10 @@ namespace GeneralRelativity
 
 /-!
 
-## A. The Minkowski coordinate metric and pipeline flatness
+## A. The Minkowski coordinate metric and flatness
 
-Bundling the constant Minkowski metric field on `Set.univ` into `minkowskiCoordinateMetric` yields
-identically zero Christoffel symbols and curvature tensors through the coordinate pipeline.
+On global inertial coordinates covering all of `ℝ⁴`, the constant Minkowski metric has identically
+vanishing Levi-Civita Christoffel symbols and curvature tensors.
 
 -/
 
@@ -72,36 +70,31 @@ noncomputable def minkowskiCoordinateMetric : CoordinateMetric 4 where
   inv_left := fun _ _ => minkowskiMetric4_mul_self
   inv_right := fun _ _ => minkowskiMetric4_mul_self
 
-/-- The coordinate pipeline produces vanishing Christoffel symbols for
-`minkowskiCoordinateMetric`. -/
+/-- In inertial coordinates, all Christoffel symbols of Minkowski spacetime vanish. -/
 lemma minkowskiCoordinateMetric_christoffel (x : Fin 4 → ℝ) (k i j : Fin 4) :
     minkowskiCoordinateMetric.christoffel x k i j = 0 :=
   Pipeline.christoffel_const minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv
     minkowskiMetric4 (fun _ => rfl) x k i j
 
-/-- The coordinate pipeline produces vanishing Riemann curvature for
-`minkowskiCoordinateMetric`. -/
+/-- All coordinate Riemann curvature components of Minkowski spacetime vanish. -/
 lemma minkowskiCoordinateMetric_riemann (x : Fin 4 → ℝ) (ρ σ μ ν : Fin 4) :
     minkowskiCoordinateMetric.riemann x ρ σ μ ν = 0 :=
   Pipeline.riemann_const minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv
     minkowskiMetric4 (fun _ => rfl) x ρ σ μ ν
 
-/-- The coordinate pipeline produces vanishing Ricci curvature for
-`minkowskiCoordinateMetric`. -/
+/-- Minkowski spacetime is Ricci flat in global inertial coordinates. -/
 lemma minkowskiCoordinateMetric_ricciTensorOf (x : Fin 4 → ℝ) (σ ν : Fin 4) :
     minkowskiCoordinateMetric.ricciTensorOf x σ ν = 0 :=
   Pipeline.ricciTensorOf_const minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv
     minkowskiMetric4 (fun _ => rfl) x σ ν
 
-/-- The coordinate pipeline produces vanishing scalar curvature for
-`minkowskiCoordinateMetric`. -/
+/-- Minkowski spacetime has vanishing scalar curvature in global inertial coordinates. -/
 lemma minkowskiCoordinateMetric_ricciScalarOf (x : Fin 4 → ℝ) :
     minkowskiCoordinateMetric.ricciScalarOf x = 0 :=
   Pipeline.ricciScalarOf_const minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv
     minkowskiMetric4 (fun _ => rfl) x
 
-/-- `minkowskiCoordinateMetric` is a vacuum solution of the Einstein equations (`G_{ij} = 0`),
-computed from the metric rather than assumed. -/
+/-- Minkowski spacetime satisfies the vacuum Einstein equations (`G_{ij} = 0`). -/
 lemma minkowskiCoordinateMetric_einsteinTensorOf (x : Fin 4 → ℝ) (i j : Fin 4) :
     minkowskiCoordinateMetric.einsteinTensorOf x i j = 0 :=
   Pipeline.einsteinTensorOf_const minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv

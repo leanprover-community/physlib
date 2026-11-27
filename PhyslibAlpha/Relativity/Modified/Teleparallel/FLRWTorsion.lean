@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Alex Vergara Gil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Vergara Gil, thunder-detector
+Authors: Alex Vergara Gil
 -/
 module
 
@@ -23,12 +23,12 @@ and exact equivalence `R_LC = -T + B` with `FLRWSpacetime.ricciScalarOf`.
 
 On a spatially flat FLRW cosmology with diagonal tetrad `e^A_i = diag(1, a(t), a(t), a(t))`, the
 teleparallel torsion scalar reduces to `T = 6 H² = 6 (a'/a)²`, and the Levi-Civita Ricci scalar
-computed by the metric pipeline satisfies `R_LC = -T + B`.
+computed from the coordinate metric satisfies `R_LC = -T + B`.
 
 ## ii. Key results
 
 - `flrwTetrad`, `flrwTetradInv`, `flrwTetrad_mul_inv`, `flrwTetradFrame` : diagonal flat FLRW
-  comoving tetrad and `Tetrad 4` bundle.
+  comoving tetrad and `Tetrad 4` structure.
 - `flrwWeitzenbock_hubble` : spatial Weitzenböck connection equals Hubble parameter `a'/a`.
 - `flrwTorsionScalar`, `torsionScalar_flrw_eq_flrwTorsionScalar`, `flrwBoundaryTerm`,
   `ricciScalarOf_flrw_flat_eq_neg_torsion_add_boundary` : reconciliation of `torsionScalar` with
@@ -100,7 +100,7 @@ lemma flrwTetradInv_mul (a : ℝ → ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 
   fin_cases i <;> fin_cases j <;>
     simp [flrwTetrad, flrwTetradInv, Fin.sum_univ_four, ha]
 
-/-- Bundled `Tetrad 4` for the diagonal flat FLRW comoving frame when `a(t) ≠ 0`. -/
+/-- The diagonal flat FLRW comoving frame as a `Tetrad 4` when `a(t) ≠ 0`. -/
 noncomputable def flrwTetradFrame (a : ℝ → ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0) : Tetrad 4 where
   e := flrwTetrad a x
   einv := flrwTetradInv a x

@@ -57,8 +57,8 @@ namespace Teleparallel
 
 ## A. `f(T)` modified Friedmann cosmology
 
-Bundling the torsion modification `F` and its derivative `dF` in `FTTheory` produces the modified
-flat-FLRW Friedmann left-hand side evaluated at the Hubble scalar `T = 6 H²`.
+On a flat FLRW background with torsion scalar `T = 6 H²`, modifying the teleparallel action by a
+function `F(T)` adds `½ F(T) - T F'(T)` to the Friedmann expansion equation.
 
 -/
 

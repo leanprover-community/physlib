@@ -122,8 +122,8 @@ noncomputable def toStaticSpherical (S : SchwarzschildSpacetime) :
 lemma toStaticSpherical_metricFn (S : SchwarzschildSpacetime) :
     S.toStaticSpherical.metricFn = S.metricFn := rfl
 
-/-- Bundled `CoordinateMetric 4` for the Schwarzschild exterior geometry on its regular
-Schwarzschild chart `r ≠ 0`, `1 - 2M/r ≠ 0`, `sin θ ≠ 0`. -/
+/-- The Schwarzschild metric as a `CoordinateMetric 4` on the regular chart
+`r ≠ 0`, `1 - 2M/r ≠ 0`, `sin θ ≠ 0`. -/
 noncomputable def toCoordinateMetric (S : SchwarzschildSpacetime) : CoordinateMetric 4 :=
   S.toStaticSpherical.toCoordinateMetric
 

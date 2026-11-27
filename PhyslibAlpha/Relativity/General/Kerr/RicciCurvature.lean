@@ -20,34 +20,33 @@ import Mathlib.Tactic.Ring
 
 # Kerr spacetime vacuum Einstein equations
 
-Full pipeline proof that `KerrSpacetime` is Ricci flat, scalar flat, and satisfies the vacuum
+Coordinate-metric proof that `KerrSpacetime` is Ricci flat, scalar flat, and satisfies the vacuum
 Einstein equation `G = 0`.
 
 ## i. Overview
 
-Using the coordinate-pipeline Christoffel agreement `KerrSpacetime.christoffel_eq` and trace
-identity `KerrSpacetime.sum_christoffel_trace` from `Kerr.Christoffel`, this module evaluates all
-required partial derivatives of `KerrSpacetime.christoffel` and `KerrSpacetime.christoffelTrace`
-and proves that `Pipeline.ricciTensorOf K.metric K.metricInv x σ ν` vanishes for every coordinate
-pair `(σ, ν)` at all regular points (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`). It immediately follows that
-`ricciScalarOf` and `einsteinTensorOf` vanish identically.
+Using the Boyer–Lindquist Christoffel agreement `KerrSpacetime.christoffel_eq` and trace identity
+`KerrSpacetime.sum_christoffel_trace` from `Kerr.Christoffel`, this module evaluates all required
+partial derivatives of `KerrSpacetime.christoffel` and `KerrSpacetime.christoffelTrace` and proves
+that the coordinate Ricci tensor vanishes for every index pair `(σ, ν)` at all regular points
+(`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`). It immediately follows that the scalar curvature and Einstein
+tensor vanish identically.
 
 ## ii. Key results
 
-- `KerrSpacetime.ricci`, `KerrSpacetime.einstein` : Boyer–Lindquist Kerr pipeline Ricci and Einstein
-  tensors.
+- `KerrSpacetime.ricci`, `KerrSpacetime.einstein` : Boyer–Lindquist Kerr coordinate Ricci and
+  Einstein tensors.
 - `KerrSpacetime.christoffelTraceDeriv_rr`, `KerrSpacetime.christoffelTraceDeriv_rtheta`,
   `KerrSpacetime.christoffelTraceDeriv_thetar`, `KerrSpacetime.christoffelTraceDeriv_thetatheta` :
   partial derivatives of `KerrSpacetime.christoffelTrace`.
-- `KerrSpacetime.ricciTensorOf_eq_zero` : vacuum Ricci flatness `Ric_{σ ν} = 0` via
-  `Pipeline.ricciTensorOf`.
+- `KerrSpacetime.ricciTensorOf_eq_zero` : vacuum Ricci flatness `Ric_{σ ν} = 0`.
 - `KerrSpacetime.ricciScalarOf_eq_zero` : vanishing scalar curvature `R = 0`.
 - `KerrSpacetime.einsteinTensorOf_eq_zero` : vacuum Einstein equations `G_{i j} = 0`.
 
 ## iii. Table of contents
 
 - A. Trace and Christoffel partial derivatives
-- B. Ricci flatness through the coordinate pipeline
+- B. Ricci flatness from the coordinate metric
 - C. Scalar curvature and vacuum Einstein equations
 
 ## iv. References
@@ -80,11 +79,11 @@ Ricci tensor components.
 
 -/
 
-/-- Boyer–Lindquist Kerr Ricci tensor computed via `Pipeline.ricciTensorOf`. -/
+/-- Boyer–Lindquist Kerr Ricci tensor computed from the coordinate metric `K.metric`. -/
 noncomputable def ricci (K : KerrSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
   Pipeline.ricciTensorOf K.metric K.metricInv x
 
-/-- Boyer–Lindquist Kerr Einstein tensor computed via `Pipeline.einsteinTensorOf`. -/
+/-- Boyer–Lindquist Kerr Einstein tensor computed from the coordinate metric `K.metric`. -/
 noncomputable def einstein (K : KerrSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
   Pipeline.einsteinTensorOf K.metric K.metricInv x
 
@@ -504,7 +503,7 @@ private lemma christoffelDeriv_theta_33 (K : KerrSpacetime) (x : Fin 4 → ℝ)
 
 /-!
 
-## B. Ricci flatness through the coordinate pipeline
+## B. Ricci flatness from the coordinate metric
 
 Contracting all Riemann contributions using the trace derivative identities shows that every
 component `Ric_{σ ν}` vanishes across both the `(t, φ)` and `(r, θ)` blocks and the off-block

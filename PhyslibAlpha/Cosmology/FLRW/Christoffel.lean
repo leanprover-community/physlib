@@ -24,28 +24,28 @@ import Mathlib.Tactic.Ring
 
 # FLRW Christoffel symbols and curvature tensors
 
-Closed-form Levi-Civita Christoffel symbols, partial-derivative tables, and coordinate-pipeline
-Riemann, Ricci, scalar, and Einstein tensors for `FLRWSpacetime`.
+Closed-form Levi-Civita Christoffel symbols, partial-derivative tables, and Riemann, Ricci,
+scalar, and Einstein curvature tensors computed from the FLRW coordinate metric.
 
 ## i. Overview
 
-For an `FLRWSpacetime` `S` in comoving coordinates `(t, r, θ, φ)`, this module evaluates the full
-coordinate differential-geometry pipeline `GeneralRelativity.Pipeline`:
+For an FLRW spacetime in comoving coordinates `(t, r, θ, φ)`, this module derives the Levi-Civita
+connection and curvature tensors directly from the metric components:
 
 1. Defines closed-form tables `FLRWSpacetime.christoffel` and `FLRWSpacetime.christoffelDeriv`.
-2. Proves all 64 Christoffel symbols and all 256 partial derivatives match the pipeline
-   (`christoffel_eq`, `eventually_christoffel_eq`, `pd_christoffel_eq_deriv`).
-3. Bridges the pipeline Riemann tensor to `riemannFromData` (`riemann_eq_data`) and derives
-   closed-form `ricciTensorOf`, `ricciScalarOf`, and `einsteinTensorOf`.
+2. Proves all 64 Christoffel symbols and all 256 partial derivatives match the general coordinate
+   expressions (`christoffel_eq`, `eventually_christoffel_eq`, `pd_christoffel_eq_deriv`).
+3. Identifies the coordinate Riemann tensor with `riemannFromData` (`riemann_eq_data`) and derives
+   closed-form expressions for the Ricci tensor, scalar curvature, and Einstein tensor.
 
 ## ii. Key results
 
 - `FLRWSpacetime.christoffel`, `FLRWSpacetime.christoffelDeriv` : closed-form Christoffel and
   partial-derivative tables.
 - `FLRWSpacetime.christoffel_eq`, `FLRWSpacetime.eventually_christoffel_eq`,
-  `FLRWSpacetime.pd_christoffel_eq_deriv` : coordinate-pipeline connection identities.
+  `FLRWSpacetime.pd_christoffel_eq_deriv` : coordinate-metric connection identities.
 - `FLRWSpacetime.riemann_eq_data`, `FLRWSpacetime.ricciTensorOf`, `FLRWSpacetime.ricciScalarOf`,
-  `FLRWSpacetime.einsteinTensorOf` : metric-pipeline curvature tensors.
+  `FLRWSpacetime.einsteinTensorOf` : curvature tensors computed from the FLRW metric.
 
 ## iii. Table of contents
 
@@ -75,9 +75,9 @@ namespace FLRWSpacetime
 
 ## A. Christoffel symbols and derivative tables
 
-Evaluating `Pipeline.christoffel` and its partial derivatives isolates the Hubble-rate terms
-`a' / a`, spatial curvature factor `1 - k r²`, and angular factors across all 256 index
-combinations.
+Evaluating the coordinate Christoffel symbols and their partial derivatives isolates the
+Hubble-rate terms `a' / a`, spatial curvature factor `1 - k r²`, and angular factors across all
+256 index combinations.
 
 -/
 
@@ -281,7 +281,7 @@ private lemma pd_theta (S : FLRWSpacetime) (x : Fin 4 → ℝ) (c d : Fin 4) :
     | exact pd_theta_33 S x
     | simp [coordDeriv, metric]
 
-/-- All 64 Christoffel symbols computed by `Pipeline.christoffel` match
+/-- All 64 Christoffel symbols computed from the FLRW coordinate metric match
 `FLRWSpacetime.christoffel`. -/
 lemma christoffel_eq (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
@@ -306,7 +306,7 @@ lemma christoffel_eq (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠
         pd_r S x hkr, pd_theta S x]
     all_goals field_simp [ha, hr, hkr, hsin]
 
-/-- Neighbourhood equality between `Pipeline.christoffel` and closed-form
+/-- Neighbourhood equality between the coordinate Christoffel symbols and the closed-form
 `FLRWSpacetime.christoffel` around a regular chart point `x`. -/
 lemma eventually_christoffel_eq (S : FLRWSpacetime) (x : Fin 4 → ℝ)
     (ha : S.a (x 0) ≠ 0) (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0)
@@ -332,8 +332,8 @@ lemma eventually_christoffel_eq (S : FLRWSpacetime) (x : Fin 4 → ℝ)
   filter_upwards [ha', hr', hkr', hsin', hdiff'] with y hya hyr hykr hysin hydiff
   exact S.christoffel_eq y hya hyr hykr hysin hydiff m i j
 
-/-- Neighbourhood equality promotes `Pipeline.christoffel = S.christoffel` to partial derivatives
-along every coordinate axis `μ`. -/
+/-- Neighbourhood equality promotes `christoffel_eq` to partial derivatives along every coordinate
+axis `μ`. -/
 lemma pd_christoffel_eq (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t) (μ m i j : Fin 4) :
@@ -635,7 +635,7 @@ lemma pd_christoffel_eq_deriv (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a 
       coordDeriv_const_slice 3 (S.christoffel x m i j) fun _ => by simp [christoffel]
     simp [hc, christoffelDeriv]
 
-/-- The pipeline Riemann tensor of `S.metric` equals
+/-- The coordinate Riemann tensor of an FLRW spacetime equals
 `riemannFromData S.christoffel S.christoffelDeriv`. -/
 lemma riemann_eq_data (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
@@ -721,7 +721,7 @@ private lemma ricci_offdiag (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x
       riemannFromData, christoffel, christoffelDeriv]
   all_goals ring
 
-/-- Complete coordinate-pipeline Ricci tensor of an FLRW spacetime. -/
+/-- Complete coordinate Ricci tensor of an FLRW spacetime. -/
 lemma ricciTensorOf (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)

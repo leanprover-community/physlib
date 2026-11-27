@@ -13,21 +13,21 @@ import Mathlib.Tactic.Ring
 
 # Static spherically symmetric curvature tensors
 
-Coordinate-pipeline Riemann, Ricci, scalar, and Einstein tensors for any
-`StaticSphericalMetric` `ds² = -f(r) dt² + f(r)⁻¹ dr² + r² dΩ²`.
+Riemann, Ricci, scalar, and Einstein curvature tensors computed from any static spherically
+symmetric coordinate metric `ds² = -f(r) dt² + f(r)⁻¹ dr² + r² dΩ²`.
 
 ## i. Overview
 
-Feeding the closed-form static spherical Christoffel table and its derivative table into
-`riemannFromData` evaluates all 256 components of `Pipeline.riemann` and produces closed-form
+Evaluating `riemannFromData` on the closed-form static spherical Christoffel symbols and their
+partial derivatives determines all 256 coordinate Riemann components and yields closed-form
 expressions for the diagonal Ricci tensor, the Ricci scalar `R = -f'' - 4 f'/r + 2(1 - f)/r²`,
-and the Einstein tensor in terms of `S.metricFn`, `(S.metricFn)'`, and `(S.metricFn)''`.
+and the Einstein tensor in terms of `f`, `f'`, and `f''`.
 
 ## ii. Key results
 
-- `StaticSphericalMetric.riemann_eq_data` : metric-to-Riemann bridge via `riemannFromData`.
+- `StaticSphericalMetric.riemann_eq_data` : coordinate Riemann tensor via `riemannFromData`.
 - `StaticSphericalMetric.ricciTensorOf`, `StaticSphericalMetric.ricciScalarOf`,
-  `StaticSphericalMetric.einsteinTensorOf` : pipeline curvature formulas for arbitrary
+  `StaticSphericalMetric.einsteinTensorOf` : closed-form curvature formulas for arbitrary
   twice-differentiable radial metric functions.
 
 ## iii. Table of contents
@@ -63,7 +63,7 @@ spherically symmetric spacetimes such as Schwarzschild, Kottler, and Reissner–
 
 -/
 
-/-- The pipeline Riemann tensor of a static spherical metric agrees with
+/-- The coordinate Riemann tensor of a static spherical metric agrees with
 `riemannFromData S.christoffel S.christoffelDeriv` across all 256 components. -/
 lemma riemann_eq_data (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
@@ -148,7 +148,7 @@ private lemma ricciComponent_offdiag (S : StaticSphericalMetric) (x : Fin 4 → 
       riemannFromData, christoffel, christoffelDeriv]
   ring
 
-/-- Complete coordinate-pipeline Ricci tensor for any static spherically symmetric metric
+/-- Complete coordinate Ricci tensor for any static spherically symmetric metric
 `ds² = -f(r) dt² + f(r)⁻¹ dr² + r² dΩ²`. -/
 lemma ricciTensorOf (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
@@ -172,7 +172,7 @@ lemma ricciTensorOf (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 �
     · simpa using ricciComponent_phiphi S x hr hf hsin hf_diff hf2
   · simp [h, ricciComponent_offdiag S x hr hf hsin hf_diff hf2 h]
 
-/-- Scalar curvature computed by `Pipeline.ricciScalarOf` for a static spherical metric:
+/-- Scalar curvature of a static spherical metric computed from the coordinate metric:
 `R = -f'' - 4 f'/r + 2 (1 - f) / r²`. -/
 lemma ricciScalarOf (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
@@ -187,7 +187,7 @@ lemma ricciScalarOf (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 �
   field_simp [hr, hf, hsin]
   ring
 
-/-- Einstein tensor computed by `Pipeline.einsteinTensorOf` for a static spherical metric. -/
+/-- Einstein tensor of a static spherical metric computed from the coordinate metric. -/
 lemma einsteinTensorOf (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ S.metricFn s)

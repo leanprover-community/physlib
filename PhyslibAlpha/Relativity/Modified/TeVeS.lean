@@ -26,10 +26,10 @@ metric `g`, a scalar field `φ`, and a unit timelike vector field `U`:
 `g̃ = e^{-2φ} (g + U ⊗ U) - e^{2φ} U ⊗ U`.
 
 In an orthonormal frame where `g = η = diag(-1, 1, 1, 1)` and `U = ∂_t`, this reduces to
-`diag(-e^{2φ}, e^{-2φ}, e^{-2φ}, e^{-2φ})`. This module bundles that configuration into
+`diag(-e^{2φ}, e^{-2φ}, e^{-2φ}, e^{-2φ})`. This module encodes that configuration as
 `TeVeSMetric`, proves that `T.metric` remains symmetric and Lorentzian
 (`g̃_{00} < 0`, `g̃_{ii} > 0`) for every `φ : ℝ`, preserves the conformal spatial metric
-`e^{-2φ} δ`, and admits an explicit two-sided inverse bundled into `MetricTensor 4`.
+`e^{-2φ} δ`, and admits an explicit two-sided inverse giving a `MetricTensor 4`.
 
 ## ii. Key results
 
@@ -37,12 +37,12 @@ In an orthonormal frame where `g = η = diag(-1, 1, 1, 1)` and `U = ∂_t`, this
   physical metric, and inverse in the aether rest frame.
 - `TeVeSMetric.symm`, `TeVeSMetric.lorentzian`, `TeVeSMetric.spatial` : symmetry, preserved
   Lorentzian signature, and spatial conformal rescaling.
-- `TeVeSMetric.metricTensor` : the TeVeS physical metric bundled as a `MetricTensor 4`.
+- `TeVeSMetric.metricTensor` : the TeVeS physical metric as a `MetricTensor 4`.
 
 ## iii. Table of contents
 
 - A. The TeVeS physical metric and its inverse
-- B. Signature, spatial rescaling, and bundled metric tensor
+- B. Signature, spatial rescaling, and metric tensor
 
 ## iv. References
 
@@ -100,7 +100,7 @@ lemma TeVeSMetric.symm (T : TeVeSMetric) : IsSymm T.metric := by
 
 /-!
 
-## B. Signature, spatial rescaling, and bundled metric tensor
+## B. Signature, spatial rescaling, and metric tensor
 
 Positivity of the real exponential guarantees preserved Lorentzian signature and exact invertibility
 for every scalar field value `T.φ`.
@@ -136,7 +136,7 @@ lemma TeVeSMetric.inv_mul (T : TeVeSMetric) : T.metricInv * T.metric = 1 := by
     simp [TeVeSMetric.metric, TeVeSMetric.metricInv, Matrix.mul_apply, Fin.sum_univ_four,
       ← Real.exp_add]
 
-/-- The TeVeS physical metric of `T` bundled as a `MetricTensor 4` with its certified inverse. -/
+/-- The TeVeS physical metric of `T` as a `MetricTensor 4` with its certified inverse. -/
 noncomputable def TeVeSMetric.metricTensor (T : TeVeSMetric) : MetricTensor 4 where
   g := T.metric
   ginv := T.metricInv

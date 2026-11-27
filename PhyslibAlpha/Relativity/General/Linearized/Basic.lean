@@ -19,7 +19,7 @@ pointwise symmetry and `C²` coordinate regularity predicates.
 
 In linearized general relativity, the spacetime metric is expanded around flat Minkowski
 spacetime as `g_{ij}(x) = η_{ij} + h_{ij}(x)` with `|h_{ij}| ≪ 1`. The structure
-`MetricPerturbation` bundles a symmetric `(0, 2)` tensor field `h : (Fin 4 → ℝ) → Tensor2 4`
+`MetricPerturbation` pairs a symmetric `(0, 2)` tensor field `h : (Fin 4 → ℝ) → Tensor2 4`
 with its pointwise symmetry proof, providing the shared geometric object across trace reversal,
 linearized curvature, diffeomorphism gauge transformations, Lorenz gauge reduction, gravitational
 waves, and the Newtonian limit.

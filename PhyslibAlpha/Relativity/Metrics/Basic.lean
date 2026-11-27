@@ -17,13 +17,13 @@ Pseudo-Riemannian metric components paired with a certified two-sided inverse ma
 
 ## i. Overview
 
-A nondegenerate metric (`MetricTensor n`) bundles covariant metric components `g : Tensor2 n`
+A nondegenerate metric (`MetricTensor n`) consists of covariant metric components `g : Tensor2 n`
 together with an explicit two-sided inverse matrix `ginv : Tensor2 n` and component symmetry,
 so contractions and trace operations use an inverse certified for that metric.
 
 ## ii. Key results
 
-- `MetricTensor` : nondegenerate metric bundled with its two-sided inverse.
+- `MetricTensor` : nondegenerate metric with its explicit two-sided inverse.
 - `MetricTensor.ginv_symm` : the inverse of a symmetric metric is symmetric.
 - `MetricTensor.sum_ginv_mul_g_left`, `MetricTensor.sum_ginv_mul_g_right`,
   `MetricTensor.sum_ginv_mul_g_apply`, `MetricTensor.sum_mul_ginv_g_apply` :

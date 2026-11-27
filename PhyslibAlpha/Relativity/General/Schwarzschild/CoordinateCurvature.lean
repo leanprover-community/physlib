@@ -11,10 +11,10 @@ import Mathlib.Tactic.Ring
 
 /-!
 
-# Schwarzschild curvature through the coordinate pipeline
+# Schwarzschild curvature from the coordinate metric
 
 Vacuum Schwarzschild Riemann, Ricci, scalar, and Einstein tensors obtained from the coordinate
-differential pipeline by specializing `SchwarzschildDeSitterSpacetime` to `Λ = 0`.
+metric by specializing `SchwarzschildDeSitterSpacetime` to `Λ = 0`.
 
 ## i. Overview
 
@@ -31,11 +31,11 @@ Specializing `S.toDeSitter` (`⟨S.M, 0⟩ : SchwarzschildDeSitterSpacetime`) to
 - `SchwarzschildSpacetime.riemann_components` : all six independent Schwarzschild Riemann
   components.
 - `SchwarzschildSpacetime.ricciTensorOf`, `SchwarzschildSpacetime.ricciScalarOf`,
-  `SchwarzschildSpacetime.einsteinTensorOf` : pipeline vacuum solution theorems.
+  `SchwarzschildSpacetime.einsteinTensorOf` : vacuum Einstein solution theorems.
 
 ## iii. Table of contents
 
-- A. Schwarzschild pipeline specialization at `Λ = 0`
+- A. Schwarzschild specialization at `Λ = 0`
 
 ## iv. References
 
@@ -58,11 +58,11 @@ namespace SchwarzschildSpacetime
 
 /-!
 
-## A. Schwarzschild pipeline specialization at `Λ = 0`
+## A. Schwarzschild specialization at `Λ = 0`
 
-Because a Schwarzschild black hole is a zero-cosmological-constant limit of Schwarzschild–de Sitter
-spacetime, the pipeline Riemann, Ricci, scalar, and Einstein tensors follow by evaluating at
-`Λ = 0`.
+Because a Schwarzschild black hole is the zero-cosmological-constant limit of Schwarzschild–de
+Sitter spacetime, its coordinate Riemann, Ricci, scalar, and Einstein tensors follow by evaluating
+at `Λ = 0`.
 
 -/
 
@@ -97,7 +97,7 @@ lemma toDeSitter_metricInv (S : SchwarzschildSpacetime) :
   simp [SchwarzschildDeSitterSpacetime.metricInv, SchwarzschildDeSitterSpacetime.toStaticSpherical,
     StaticSpherical.StaticSphericalMetric.metricInv, metricInv, toStaticSpherical]
 
-/-- All six independent Schwarzschild Riemann components directly from the metric pipeline,
+/-- All six independent Schwarzschild Riemann components computed from the coordinate metric,
 specialized from `SchwarzschildDeSitterSpacetime.riemann_components_pipeline` at `Λ = 0`. -/
 lemma riemann_components (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :

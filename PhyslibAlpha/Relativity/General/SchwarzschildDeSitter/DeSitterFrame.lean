@@ -25,8 +25,8 @@ contribution `deSitterPart S.Λ i j k l = (S.Λ / 3) (η_{ik} η_{jl} - η_{il} 
 
 Squaring this decomposition yields the Kretschmann scalar `48 M² / r⁶ + 8 Λ² / 3`, where cross
 terms vanish by trace-freeness of the Weyl part. Contracting against `η` annihilates the Weyl part
-(`weylRic_zero`) and leaves `Ric = Λ η`, `S = 4 Λ`, and `G = -Λ η`, specializing at `Λ = 0` to
-Schwarzschild's vacuum solution. Because `Ric = Λ η` and `S = 4 Λ` are constant in the frame, the
+(`weylRic_zero`) and leaves `Ric = Λ η`, `R = 4 Λ`, and `G = -Λ η`, specializing at `Λ = 0` to
+Schwarzschild's vacuum solution. Because `Ric = Λ η` and `R = 4 Λ` are constant in the frame, the
 contracted Bianchi identity holds without being assumed (`frame_einstein_conserved`).
 
 ## ii. Key results
@@ -36,7 +36,7 @@ contracted Bianchi identity holds without being assumed (`frame_einstein_conserv
 - `SchwarzschildDeSitterSpacetime.frameSqSum`, `SchwarzschildDeSitterSpacetime.frameSqSum_eq`,
   `SchwarzschildDeSitterSpacetime.kretschmann` : frame Kretschmann scalar `48 M² / r⁶ + 8 Λ² / 3`.
 - `SchwarzschildDeSitterSpacetime.frameRic_eq`, `SchwarzschildDeSitterSpacetime.frameScalar_eq`,
-  `SchwarzschildDeSitterSpacetime.frameEinstein_eq` : `Ric = Λ η`, `S = 4 Λ`, `G = -Λ η`.
+  `SchwarzschildDeSitterSpacetime.frameEinstein_eq` : `Ric = Λ η`, `R = 4 Λ`, `G = -Λ η`.
 - `SchwarzschildDeSitterSpacetime.vacuum_ricci_zero`,
   `SchwarzschildDeSitterSpacetime.vacuum_scalar_zero`,
   `SchwarzschildDeSitterSpacetime.vacuum_einstein_zero` : `Λ = 0` vacuum specialization.
@@ -336,8 +336,8 @@ derivatives vanish and the contracted Bianchi identity holds identically.
 
 -/
 
-/-- The frame derivative bundle of the Schwarzschild–de Sitter Einstein space: since `Ric = Λ η`
-and `S = 4 Λ` are constant in the orthonormal frame, all frame derivatives vanish. -/
+/-- The frame derivatives of the Schwarzschild–de Sitter Einstein space: since `Ric = Λ η`
+and `R = 4 Λ` are constant in the orthonormal frame, all frame derivatives vanish. -/
 noncomputable def frameCurvDeriv : CurvatureDerivatives where
   dRic := fun _ _ _ => 0
   dS := fun _ => 0

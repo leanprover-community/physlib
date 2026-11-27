@@ -22,36 +22,34 @@ import Mathlib.Tactic.Ring
 # Nordström scalar gravitation (Einstein–Fokker formulation)
 
 Conformally flat Nordström spacetime `g = φ² η`, null-cone invariance (zero light bending), and
-the 4D Einstein–Fokker scalar curvature identity `S = -6 □φ / φ³`.
+the 4D Einstein–Fokker scalar curvature identity `R = -6 □φ / φ³`.
 
 ## i. Overview
 
 This module formalizes Nordström's second scalar theory of gravity in its geometric
-Einstein–Fokker reformulation around `NordstromSpacetime`: the metric `N.metric x = N.φ(x)² η` is
-conformally flat around Minkowski spacetime `minkowskiMetric4`, inducing a `CoordinateMetric 4` via
-`N.toCoordinateMetric` on `{x | N.φ x ≠ 0}`. It proves conformal null-cone invariance
-(`vᵀ g v = 0 ↔ vᵀ η v = 0`, explaining the absence of gravitational light bending), evaluates the
-exact Christoffel symbols through `Pipeline.christoffel`, derives the exact four-dimensional Ricci
-scalar curvature `ricciScalarOf = -6 □φ / φ³` through `Pipeline.ricciScalarOf`, and establishes
-equivalence between the Einstein–Fokker equation `S = 24 π T` and Nordström's nonlinear scalar
-wave equation `□φ = -4 π φ³ T`.
+Einstein–Fokker reformulation around `NordstromSpacetime`: the metric `g(x) = φ(x)² η` is
+conformally flat around Minkowski spacetime, inducing a `CoordinateMetric 4` wherever `φ(x) ≠ 0`.
+It proves conformal null-cone invariance (`vᵀ g v = 0 ↔ vᵀ η v = 0`, explaining the absence of
+gravitational light bending), evaluates the exact conformal Christoffel symbols, derives the exact
+four-dimensional Ricci scalar curvature `R = -6 □φ / φ³`, and establishes equivalence between the
+Einstein–Fokker equation `R = 24 π T` and Nordström's nonlinear scalar wave equation
+`□φ = -4 π φ³ T`.
 
 ## ii. Key results
 
 - `NordstromSpacetime`, `NordstromSpacetime.metric`, `NordstromSpacetime.metricInv`,
   `NordstromSpacetime.metricTensor`, `NordstromSpacetime.toCoordinateMetric` : conformally flat
-  Nordström spacetime metric, `MetricTensor 4`, and `CoordinateMetric 4` bundle.
+  Nordström spacetime metric, `MetricTensor 4`, and `CoordinateMetric 4`.
 - `NordstromSpacetime.light_deflection_zero` : null cones coincide with Minkowski space via
   `nullVector_conformal_iff` (zero light bending).
-- `NordstromSpacetime.christoffel_eq` : exact conformal Christoffel symbols via
-  `Pipeline.christoffel`.
-- `NordstromSpacetime.ricciScalarOf` : exact 4D Einstein–Fokker identity `S = -6 □φ / φ³`.
-- `NordstromSpacetime.einsteinFokker_iff` : equivalence between `S = 24 π T` and `□φ = -4 π φ³ T`.
+- `NordstromSpacetime.christoffel_eq` : exact conformal Christoffel symbols.
+- `NordstromSpacetime.ricciScalarOf` : exact 4D Einstein–Fokker identity `R = -6 □φ / φ³`.
+- `NordstromSpacetime.einsteinFokker_iff` : equivalence between `R = 24 π T` and `□φ = -4 π φ³ T`.
 
 ## iii. Table of contents
 
 - A. Conformally flat Nordström metric and zero light bending
-- B. Conformal Christoffel symbols via the coordinate pipeline
+- B. Conformal Christoffel symbols from the coordinate metric
 - C. Four-dimensional Einstein–Fokker scalar curvature
 
 ## iv. References
@@ -130,16 +128,16 @@ lemma NordstromSpacetime.light_deflection_zero (N : NordstromSpacetime) (x : Fin
 
 /-!
 
-## B. Conformal Christoffel symbols via the coordinate pipeline
+## B. Conformal Christoffel symbols from the coordinate metric
 
-Evaluating `Pipeline.christoffel` on `N.metric` produces the closed-form conformal Weyl connection
-coefficients in terms of first partial derivatives of `N.φ`.
+Evaluating the coordinate Christoffel symbols on `N.metric` produces the closed-form conformal Weyl
+connection coefficients in terms of first partial derivatives of `N.φ`.
 
 -/
 
 /-- Closed-form Christoffel symbols `Γ^k_{ij} = (δ^k_i ∂_j φ + δ^k_j ∂_i φ - η_{ij} η^{kk} ∂_k φ)
-/ φ` of the conformally flat metric `φ² η`, kept separate from `Pipeline.christoffel` so
-conformal Ricci computations stay tractable. -/
+/ φ` of the conformally flat metric `φ² η`, stated separately from the general coordinate
+Christoffel formula so conformal Ricci computations stay tractable. -/
 noncomputable def NordstromSpacetime.christoffel (N : NordstromSpacetime) (x : Fin 4 → ℝ)
     (k i j : Fin 4) : ℝ :=
   ((if k = i then coordDeriv j N.φ x else 0) + (if k = j then coordDeriv i N.φ x else 0)
@@ -159,8 +157,8 @@ private lemma pd_conformal_eta (N : NordstromSpacetime) (x : Fin 4 → ℝ)
     funext s; simp [NordstromSpacetime.metric, conformalRescaleMetric]
   rw [coordDeriv, hfun, hsq.deriv]
 
-/-- Agreement of `Pipeline.christoffel` for `N.metric` with `N.christoffel` at every point where
-`N.φ x ≠ 0` and `N.φ` is differentiable. -/
+/-- Agreement of the coordinate Christoffel symbols of `N.metric` with `N.christoffel` at every
+point where `N.φ x ≠ 0` and `N.φ` is differentiable. -/
 lemma NordstromSpacetime.christoffel_eq (N : NordstromSpacetime) (x : Fin 4 → ℝ)
     (hφ : N.φ x ≠ 0) (hd : DifferentiableAt ℝ N.φ x) (k i j : Fin 4) :
     Pipeline.christoffel N.metric N.metricInv x k i j = N.christoffel x k i j := by
@@ -174,7 +172,7 @@ lemma NordstromSpacetime.christoffel_eq (N : NordstromSpacetime) (x : Fin 4 → 
 ## C. Four-dimensional Einstein–Fokker scalar curvature
 
 Differentiating `N.christoffel` and taking the Minkowski trace identifies the 4D scalar curvature
-of `φ² η` with `-6 □φ / φ³`, equating `S = 24 π T` to `□φ = -4 π φ³ T`.
+of `φ² η` with `-6 □φ / φ³`, equating `R = 24 π T` to `□φ = -4 π φ³ T`.
 
 -/
 
@@ -277,8 +275,8 @@ private lemma ricciTensorOf_nordstrom_diag (N : NordstromSpacetime) (x : Fin 4 �
   all_goals field_simp [hφ]
   all_goals ring
 
-/-- Exact 4D Einstein–Fokker scalar curvature identity `S = -6 □φ / φ³` for a `NordstromSpacetime`
-computed through `GeneralRelativity.Pipeline`. -/
+/-- Exact 4D Einstein–Fokker scalar curvature identity `R = -6 □φ / φ³` for a `NordstromSpacetime`,
+obtained from the coordinate metric `N.metric`. -/
 lemma NordstromSpacetime.ricciScalarOf (N : NordstromSpacetime) (x : Fin 4 → ℝ) (hφ : N.φ x ≠ 0)
     (hc2 : ContDiffAt ℝ 2 N.φ x) :
     Pipeline.ricciScalarOf N.metric N.metricInv x

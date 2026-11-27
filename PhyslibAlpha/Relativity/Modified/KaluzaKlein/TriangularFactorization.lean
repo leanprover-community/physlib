@@ -100,7 +100,7 @@ lemma kkMetric_eq_triangular_conj (g4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ
       kkMetric, metric4Ext, kkTriangular, kkBlockDiag, extendedPotential] <;>
     ring
 
-/-- Bundle form of `kkMetric_eq_triangular_conj` acting directly on `KaluzaKleinData`. -/
+/-- The structure form of `kkMetric_eq_triangular_conj`, acting directly on a `KaluzaKleinData`. -/
 lemma KaluzaKleinData.metric_eq_triangular_conj (D : KaluzaKleinData) :
     D.metric = kkTriangular D.A * kkBlockDiag D.M.g D.φ * (kkTriangular D.A).transpose :=
   kkMetric_eq_triangular_conj D.M.g D.A D.φ

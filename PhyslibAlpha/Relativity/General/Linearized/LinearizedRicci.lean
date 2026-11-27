@@ -16,8 +16,9 @@ Minkowski spacetime.
 
 ## i. Overview
 
-Contracting `linearizedRiemann P` on its first and third indices yields the linearized Ricci
-tensor `linearizedRicci P`, whose Minkowski trace defines `linearizedRicciScalar P`.
+Contracting the first and third indices of the linearized Riemann tensor yields the first-order
+Ricci tensor `R^{(1)}_{ij}`, and taking its Minkowski trace yields the linearized Ricci scalar
+`R^{(1)} = η^{ij} R^{(1)}_{ij}`.
 
 ## ii. Key results
 
@@ -46,8 +47,7 @@ namespace Linearized
 
 ## A. Linearized Ricci tensor and scalar curvature
 
-Contracting the first and third indices of the linearized Riemann tensor and taking its Minkowski
-trace produces the first-order Ricci tensor and scalar curvature.
+These contractions assemble the weak-field Ricci curvature entering the linearized Einstein tensor.
 
 -/
 
@@ -55,7 +55,7 @@ trace produces the first-order Ricci tensor and scalar curvature.
 noncomputable def linearizedRicci (P : MetricPerturbation) (x : Fin 4 → ℝ) (i j : Fin 4) : ℝ :=
   ∑ r : Fin 4, linearizedRiemann P x r i r j
 
-/-- Linearized Ricci scalar `S^{(1)} = η^{ij} R^{(1)}_{ij}`. -/
+/-- Linearized Ricci scalar `R^{(1)} = η^{ij} R^{(1)}_{ij}`. -/
 noncomputable def linearizedRicciScalar (P : MetricPerturbation) (x : Fin 4 → ℝ) : ℝ :=
   ∑ i : Fin 4, minkowskiMetric4 i i * linearizedRicci P x i i
 

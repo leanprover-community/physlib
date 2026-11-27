@@ -15,8 +15,8 @@ import Mathlib.Tactic.Ring
 
 # Static spherically symmetric metrics
 
-Metric bundle `StaticSphericalMetric`, its diagonal coordinate metric and inverse in
-`(t, r, θ, φ)` coordinates, symmetry, two-sided invertibility, and `CoordinateMetric 4`
+Static spherically symmetric metric `StaticSphericalMetric`, its diagonal coordinate metric and
+inverse in `(t, r, θ, φ)` coordinates, symmetry, two-sided invertibility, and `CoordinateMetric 4`
 instance.
 
 ## i. Overview
@@ -26,23 +26,23 @@ parameterized by a single radial metric function `f(r) = S.metricFn r`:
 
 `ds² = -f(r) dt² + f(r)⁻¹ dr² + r² dθ² + r² sin²θ dφ²`.
 
-This module packages `f` into `StaticSphericalMetric` and establishes the nondegeneracy of the
+This module defines `StaticSphericalMetric` in terms of `f` and establishes the nondegeneracy of the
 metric on the regular chart `{x | x 1 ≠ 0 ∧ S.metricFn (x 1) ≠ 0 ∧ Real.sin (x 2) ≠ 0}`,
-yielding both pointwise `MetricTensor 4` instances and a bundled `CoordinateMetric 4`.
+yielding both pointwise `MetricTensor 4` instances and a `CoordinateMetric 4`.
 
 ## ii. Key results
 
-- `StaticSphericalMetric` : bundle of a static spherically symmetric metric parameterized by its
-  radial metric function `metricFn`.
+- `StaticSphericalMetric` : a static spherically symmetric metric parameterized by its radial metric
+  function `metricFn`.
 - `StaticSphericalMetric.metric`, `StaticSphericalMetric.metricInv`,
   `StaticSphericalMetric.metric_symm`, `StaticSphericalMetric.metric_mul_inv`,
   `StaticSphericalMetric.metricInv_mul` : coordinate metric, inverse, symmetry, and invertibility.
 - `StaticSphericalMetric.metricTensor`, `StaticSphericalMetric.toCoordinateMetric` : certified
-  `MetricTensor 4` and `CoordinateMetric 4` bundles.
+  `MetricTensor 4` and `CoordinateMetric 4` instances.
 
 ## iii. Table of contents
 
-- A. Metric, inverse, and MetricTensor bundle
+- A. Metric, inverse, and MetricTensor
 
 ## iv. References
 
@@ -63,7 +63,7 @@ namespace StaticSpherical
 
 /-!
 
-## A. Metric, inverse, and MetricTensor bundle
+## A. Metric, inverse, and MetricTensor
 
 On a static spherically symmetric spacetime parameterized by a single radial metric function
 `f(r)`, the diagonal metric `diag(-f, f⁻¹, r², r² sin²θ)` is nondegenerate everywhere away from the
@@ -132,8 +132,8 @@ lemma metricInv_mul (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 �
   · field_simp [hr]
   · field_simp [hr, hsin]
 
-/-- Bundled `MetricTensor 4` for any static spherically symmetric metric away from coordinate and
-horizon singularities. -/
+/-- The metric as a `MetricTensor 4` at a point away from coordinate and horizon
+singularities. -/
 noncomputable def metricTensor (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) : MetricTensor 4 where
   g := S.metric x
@@ -142,8 +142,8 @@ noncomputable def metricTensor (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (
   inv_left := S.metric_mul_inv x hr hf hsin
   inv_right := S.metricInv_mul x hr hf hsin
 
-/-- Bundled `CoordinateMetric 4` for a static spherically symmetric metric on its regular chart
-domain `r ≠ 0`, `f(r) ≠ 0`, `sin θ ≠ 0`. -/
+/-- The metric as a `CoordinateMetric 4` on its regular chart where
+`r ≠ 0`, `f(r) ≠ 0`, `sin θ ≠ 0`. -/
 noncomputable def toCoordinateMetric (S : StaticSphericalMetric) : CoordinateMetric 4 where
   g := S.metric
   ginv := S.metricInv

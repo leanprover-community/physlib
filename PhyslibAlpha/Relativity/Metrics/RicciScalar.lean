@@ -12,19 +12,19 @@ public import PhyslibAlpha.Relativity.Tensors.RicciTensor
 
 # Scalar curvature
 
-The Ricci scalar curvature `S = g^{ij} Ric_{ij}` obtained by contracting the Ricci tensor against
-the inverse metric.
+The Ricci scalar curvature `R = g^{ij} Ric_{ij}` of a metric and Riemann curvature tensor.
 
 ## i. Overview
 
-This module defines the scalar curvature `ricciScalar M R` as the full contraction of `M.ginv` with
-`ricci M R` and shows that it agrees definitionally with `metricTrace M (ricci M R)`.
+Contracting the Ricci tensor against the inverse metric produces the scalar curvature invariant
+`R = g^{ij} Ric_{ij}`. This module defines `ricciScalar` as the metric trace of `ricci` and
+verifies that it vanishes identically for flat spacetime.
 
 ## ii. Key results
 
-- `ricciScalar` : scalar curvature `S = ∑ i j, g^{ij} Ric_{ij}`.
-- `ricciScalar_eq_metricTrace` : `ricciScalar` is the metric trace of `ricci`.
-- `ricciScalar_flat` : the flat Riemann tensor has zero scalar curvature.
+- `ricciScalar` : scalar curvature `R = ∑ i j, g^{ij} Ric_{ij}`.
+- `ricciScalar_eq_metricTrace` : the scalar curvature as the metric trace of the Ricci tensor.
+- `ricciScalar_flat` : vanishing scalar curvature for flat spacetime.
 
 ## iii. Table of contents
 
@@ -47,12 +47,12 @@ namespace GeneralRelativity
 
 ## A. Scalar curvature
 
-Contracting `ricci M R` with `M.ginv` produces the scalar curvature invariant `ricciScalar M R`,
-matching `metricTrace M (ricci M R)`.
+The scalar curvature invariant enters the Einstein–Hilbert action and the trace-reversed Einstein
+tensor.
 
 -/
 
-/-- Scalar curvature `S = ∑ i j, g^{ij} Ric_{ij}`. -/
+/-- Scalar curvature `R = ∑ i j, g^{ij} Ric_{ij}`. -/
 noncomputable def ricciScalar {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) : ℝ :=
   ∑ i, ∑ j, M.ginv i j * ricci M R i j
 

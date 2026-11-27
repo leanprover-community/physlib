@@ -14,21 +14,21 @@ import Mathlib.Tactic.Ring
 
 # The Einstein tensor and the vacuum equations
 
-`G_{ij} = Ric_{ij} - (1/2) S g_{ij}`, with trace identity and four-dimensional vacuum
+`G_{ij} = Ric_{ij} - (1/2) R g_{ij}`, with trace identity and four-dimensional vacuum
 equivalences.
 
 ## i. Overview
 
-This module defines the Einstein tensor `einstein M R`, proves its symmetry and trace identity
-`g^{ij} G_{ij} = (1 - n / 2) S`, and proves the four-dimensional equivalences between the
+This module defines the Einstein tensor `einstein`, proves its symmetry and trace identity
+`g^{ij} G_{ij} = (1 - n / 2) R`, and proves the four-dimensional equivalences between the
 vacuum Einstein equations `G = 0` and Ricci flatness `Ric = 0`, as well as between the
 cosmological Einstein-space equation `G + Λ g = 0` and `Ric = Λ g`.
 
 ## ii. Key results
 
-- `einstein` : the Einstein tensor `G_{ij} = Ric_{ij} - (1/2) S g_{ij}`.
+- `einstein` : the Einstein tensor `G_{ij} = Ric_{ij} - (1/2) R g_{ij}`.
 - `einstein_symm`, `einstein_flat` : symmetry and vanishing for flat curvature.
-- `metricTrace_einstein` : `g^{ij} G_{ij} = (1 - n/2) S`; in 4D the trace of `G` is `-S`.
+- `metricTrace_einstein` : `g^{ij} G_{ij} = (1 - n/2) R`; in 4D the trace of `G` is `-R`.
 - `vacuum_iff_ricci_flat` : in 4D, `G = 0 ↔ Ric = 0`.
 - `einsteinSpace_iff` : in 4D, `G + Λ g = 0 ↔ Ric = Λ g`.
 
@@ -58,11 +58,11 @@ variable {n : ℕ}
 ## A. The Einstein tensor and its trace identity
 
 Subtracting half the scalar curvature trace guarantees divergence-free dynamics and yields the
-dimension-dependent trace identity `(1 - n/2) S`.
+dimension-dependent trace identity `(1 - n/2) R`.
 
 -/
 
-/-- The Einstein tensor `G_{ij} = Ric_{ij} - (1/2) S g_{ij}`. -/
+/-- The Einstein tensor `G_{ij} = Ric_{ij} - (1/2) R g_{ij}`. -/
 noncomputable def einstein (M : MetricTensor n) (R : RiemannTensor n) : Tensor2 n :=
   fun i j => ricci M R i j - (1 / 2) * ricciScalar M R * M.g i j
 
@@ -78,7 +78,7 @@ lemma einstein_flat (M : MetricTensor n) : einstein M (RiemannTensor.flat n) = 0
   ext i j
   simp [einstein]
 
-/-- Metric trace of the Einstein tensor: `g^{ij} G_{ij} = (1 - n/2) S`. -/
+/-- Metric trace of the Einstein tensor: `g^{ij} G_{ij} = (1 - n/2) R`. -/
 lemma metricTrace_einstein (M : MetricTensor n) (R : RiemannTensor n) :
     metricTrace M (einstein M R) = (1 - (n : ℝ) / 2) * ricciScalar M R := by
   have hsub := metricTrace_sub_fun M (ricci M R) (fun i j => ((1 / 2) * ricciScalar M R) * M.g i j)
@@ -124,7 +124,7 @@ lemma vacuum_iff_ricci_flat (M : MetricTensor 4) (R : RiemannTensor 4) :
     simp [einstein, h, hS]
 
 /-- In four dimensions, the Einstein equation with cosmological constant `G + Λ g = 0` is
-equivalent to the Einstein-space condition `Ric = Λ g` (with `S = 4 Λ`). -/
+equivalent to the Einstein-space condition `Ric = Λ g` (with `R = 4 Λ`). -/
 lemma einsteinSpace_iff (M : MetricTensor 4) (R : RiemannTensor 4) (Λ : ℝ) :
     (∀ i j, einstein M R i j + Λ * M.g i j = 0) ↔
       (∀ i j, ricci M R i j = Λ * M.g i j) := by

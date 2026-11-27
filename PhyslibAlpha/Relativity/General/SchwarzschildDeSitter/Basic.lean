@@ -103,8 +103,8 @@ namespace SchwarzschildDeSitterSpacetime
 noncomputable def metricFn (S : SchwarzschildDeSitterSpacetime) (r : ℝ) : ℝ :=
   1 - 2 * S.M / r - S.Λ * r ^ 2 / 3
 
-/-- Half the radial derivative of the metric function, `n = f'/2 = M / r² - Λ r / 3`. -/
 -- Factored out to avoid repeated factor-of-2 cancellation in Christoffel and Riemann expressions.
+/-- Half the radial derivative of the metric function, `n = f'/2 = M / r² - Λ r / 3`. -/
 noncomputable def metricFnHalfDeriv (S : SchwarzschildDeSitterSpacetime) (r : ℝ) : ℝ :=
   S.M / r ^ 2 - S.Λ * r / 3
 
@@ -119,8 +119,8 @@ noncomputable def toStaticSpherical (S : SchwarzschildDeSitterSpacetime) :
 lemma toStaticSpherical_metricFn (S : SchwarzschildDeSitterSpacetime) :
     S.toStaticSpherical.metricFn = S.metricFn := rfl
 
-/-- Bundled `CoordinateMetric 4` for Schwarzschild–de Sitter spacetime on its regular coordinate
-domain. -/
+/-- The Schwarzschild–de Sitter metric as a `CoordinateMetric 4` on its regular chart, where the
+radial metric function and `sin θ` are nonzero. -/
 noncomputable def toCoordinateMetric (S : SchwarzschildDeSitterSpacetime) : CoordinateMetric 4 :=
   S.toStaticSpherical.toCoordinateMetric
 

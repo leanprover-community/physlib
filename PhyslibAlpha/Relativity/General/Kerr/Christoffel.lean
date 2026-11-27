@@ -38,7 +38,7 @@ coordinates (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`) and on a neighborhood there
 ## iii. Table of contents
 
 - A. Explicit Boyer–Lindquist Christoffel symbols
-- B. Agreement with the coordinate pipeline and trace identity
+- B. Agreement with the Levi-Civita formula and trace identity
 
 ## iv. References
 
@@ -148,7 +148,7 @@ lemma pd_christoffel_const_03 (K : KerrSpacetime) (x : Fin 4 → ℝ) (μ : Fin 
 
 /-!
 
-## B. Agreement with the coordinate pipeline and trace identity
+## B. Agreement with the Levi-Civita formula and trace identity
 
 Evaluating `Pipeline.christoffel` confirms the 20 closed-form Christoffel symbols across all 64
 components and yields the logarithmic divergence formula `∑ ρ, Γ^ρ_{ρ μ} = ∂_μ ln(Σ sin θ)`.
@@ -205,7 +205,7 @@ private lemma christoffel_3 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     simp -failIfUnchanged only [sigma, delta, axialFactor, hs2]
     ring
 
-/-- Every Christoffel symbol computed via `Pipeline.christoffel` agrees with `K.christoffel` at
+/-- Every Christoffel symbol computed from the coordinate metric agrees with `K.christoffel` at
 every regular coordinate point (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`). -/
 lemma christoffel_eq (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)

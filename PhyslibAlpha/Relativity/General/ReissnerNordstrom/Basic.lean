@@ -23,18 +23,18 @@ import Mathlib.Tactic.Ring
 
 # The Reissner–Nordström electrovacuum black hole
 
-Coordinate metric, electrovacuum Maxwell stress-energy tensor, pipeline verification of
+Coordinate metric, electrovacuum Maxwell stress-energy tensor, Einstein–Maxwell equations
 `G_{ij} = 8 π T_{ij}`, vanishing scalar curvature, and inner/outer horizon structure for
 `ReissnerNordstromSpacetime`.
 
 ## i. Overview
 
-A static spherically symmetric charged black hole `S : ReissnerNordstromSpacetime` of mass `S.M`
-and electric charge `S.Q` has line element `ds² = -f(r) dt² + f(r)⁻¹ dr² + r² dΩ²` with radial
-metric function `f(r) = 1 - 2 M / r + Q² / r²`, sourced by a radial Coulomb electric field
-`F_{01} = -Q / r²`, `F_{10} = Q / r²`.
+A static spherically symmetric charged black hole of mass `M` and electric charge `Q` has line
+element `ds² = -f(r) dt² + f(r)⁻¹ dr² + r² dΩ²` with radial metric function
+`f(r) = 1 - 2 M / r + Q² / r²`, sourced by a radial Coulomb electric field `F_{01} = -Q / r²`,
+`F_{10} = Q / r²`.
 
-Feeding `S.metric` through `GeneralRelativity.StaticSpherical` and `GeneralRelativity.Pipeline`,
+Using the static spherically symmetric curvature formulas in `GeneralRelativity.StaticSpherical`,
 this module proves:
 
 - `ReissnerNordstromSpacetime.ricciScalarOf` : vanishing Ricci scalar `R = 0`, matching
@@ -43,7 +43,7 @@ this module proves:
   Einstein–Maxwell field equations `G_{ij} = 8 π T^{EM}_{ij}` at every index pair `(i, j)`;
 - horizon theorems (`ReissnerNordstromSpacetime.metricFn_horizonPlus`,
   `ReissnerNordstromSpacetime.metricFn_horizonMinus`, extremal double root when `Q² = M²`, and
-  positivity `0 < S.metricFn r` in the overcharged naked-singularity regime `M² < Q²`).
+  positivity `0 < f(r)` in the overcharged naked-singularity regime `M² < Q²`).
 
 ## ii. Key results
 
@@ -55,8 +55,8 @@ this module proves:
   strength and Maxwell stress-energy.
 - `ReissnerNordstromSpacetime.ricciTensorOf`, `ReissnerNordstromSpacetime.ricciScalarOf`,
   `ReissnerNordstromSpacetime.maxwellStressEnergy_trace_zero`,
-  `ReissnerNordstromSpacetime.einsteinTensorOf_eq_maxwell` : verified Einstein–Maxwell solution
-  through `GeneralRelativity.Pipeline`.
+  `ReissnerNordstromSpacetime.einsteinTensorOf_eq_maxwell` : coordinate-metric verification of the
+  Einstein–Maxwell solution.
 - `ReissnerNordstromSpacetime.horizonPlus`, `ReissnerNordstromSpacetime.horizonMinus`,
   `ReissnerNordstromSpacetime.metricFn_horizonPlus`,
   `ReissnerNordstromSpacetime.metricFn_horizonMinus`,
@@ -67,7 +67,7 @@ this module proves:
 ## iii. Table of contents
 
 - A. Metric, derivatives, and electrovacuum Maxwell field
-- B. Electrovacuum Einstein equations through the pipeline
+- B. Electrovacuum Einstein equations from the coordinate metric
 - C. Horizons, extremal limit, and overcharged regime
 
 ## iv. References
@@ -126,8 +126,8 @@ noncomputable def toStaticSpherical (S : ReissnerNordstromSpacetime) : StaticSph
 lemma toStaticSpherical_metricFn (S : ReissnerNordstromSpacetime) :
     S.toStaticSpherical.metricFn = S.metricFn := rfl
 
-/-- Bundled `CoordinateMetric 4` for the Reissner–Nordström spacetime on its regular coordinate
-domain. -/
+/-- The Reissner–Nordström metric as a `CoordinateMetric 4` on its regular chart, where the radial
+metric function and `sin θ` are nonzero. -/
 noncomputable def toCoordinateMetric (S : ReissnerNordstromSpacetime) : CoordinateMetric 4 :=
   S.toStaticSpherical.toCoordinateMetric
 
@@ -240,7 +240,7 @@ lemma coulombFieldStrength_antisymm (S : ReissnerNordstromSpacetime) (r : ℝ) (
 
 /-!
 
-## B. Electrovacuum Einstein equations through the pipeline
+## B. Electrovacuum Einstein equations from the coordinate metric
 
 Reducing the general static spherical curvature formulas to `f(r) = 1 - 2M/r + Q²/r²` shows that
 the scalar curvature vanishes identically (`R = 0`) and the Einstein tensor satisfies the coupled
@@ -248,7 +248,7 @@ Einstein–Maxwell equation `G_{ij} = 8 π T^{EM}_{ij}`.
 
 -/
 
-/-- Metric-level Ricci tensor of a Reissner–Nordström spacetime computed via `Pipeline`. -/
+/-- Coordinate Ricci tensor of a Reissner–Nordström spacetime. -/
 lemma ricciTensorOf (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
     Pipeline.ricciTensorOf S.metric S.metricInv x σ ν
@@ -297,8 +297,8 @@ lemma maxwellStressEnergy_trace_zero (S : ReissnerNordstromSpacetime) (x : Fin 4
   unfold maxwellStressEnergy
   rw [hsmul, GeneralRelativity.maxwellStressEnergy_trace_zero, mul_zero]
 
-/-- Electrovacuum Einstein–Maxwell equations verified directly through `GeneralRelativity.Pipeline`:
-`G_{ij} = 8 π T^{EM}_{ij}` at every coordinate index `(i, j)`. -/
+/-- Field equations of the electrovacuum Reissner–Nordström solution, obtained from the coordinate
+curvature of `S.metric`: `G_{ij} = 8 π T^{EM}_{ij}` at every coordinate index `(i, j)`. -/
 lemma einsteinTensorOf_eq_maxwell (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ)
     (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
     Pipeline.einsteinTensorOf S.metric S.metricInv x i j

@@ -12,28 +12,28 @@ public import PhyslibAlpha.Relativity.Metrics.Pipeline
 
 # Coordinate metrics
 
-Coordinate-chart metric fields (`CoordinateMetric`), regular chart `MetricTensor` projections,
-and `CoordinateMetric` methods delegating to `GeneralRelativity.Pipeline`.
+Spacetime metrics on coordinate charts, pointwise `MetricTensor` restrictions, and coordinate
+curvature operators.
 
 ## i. Overview
 
-A `CoordinateMetric n` packages a coordinate-dependent symmetric metric field `g`, its inverse
-`ginv`, and the regular chart `domain` on which `g` and `ginv` are two-sided inverses. At any
-point `x ∈ C.domain`, `C.metricTensor x hx` yields a bundled `MetricTensor n`, while
-`CoordinateMetric.{christoffel, riemann, ricciTensorOf, ricciScalarOf, einsteinTensorOf}`
-delegate directly to `Pipeline`.
+A `CoordinateMetric n` pairs a coordinate-dependent symmetric metric field `g_{ij}(x)` with its
+inverse `g^{ij}(x)` and the regular chart domain on which they are two-sided inverses. At any
+regular point in the domain, `CoordinateMetric.metricTensor` restricts it to a pointwise
+`MetricTensor n`, while `christoffel`, `riemann`, `ricciTensorOf`, `ricciScalarOf`, and
+`einsteinTensorOf` evaluate the Levi-Civita connection and curvature tensors on the chart.
 
 ## ii. Key results
 
-- `CoordinateMetric`, `CoordinateMetric.metricTensor` : coordinate metric field bundled with its
-  regular domain and two-sided inverse proofs.
+- `CoordinateMetric`, `CoordinateMetric.metricTensor` : coordinate metric field with its regular
+  domain and pointwise `MetricTensor` restriction.
 - `CoordinateMetric.christoffel`, `CoordinateMetric.riemann`, `CoordinateMetric.ricciTensorOf`,
-  `CoordinateMetric.ricciScalarOf`, `CoordinateMetric.einsteinTensorOf` : coordinate curvature
-  operators for `CoordinateMetric`.
+  `CoordinateMetric.ricciScalarOf`, `CoordinateMetric.einsteinTensorOf` : the Levi-Civita
+  connection and curvature tensors of a `CoordinateMetric`.
 
 ## iii. Table of contents
 
-- A. Coordinate metric bundles and pipeline projections
+- A. Coordinate metrics and curvature operators
 
 ## iv. References
 
@@ -52,10 +52,10 @@ namespace GeneralRelativity
 
 /-!
 
-## A. Coordinate metric bundles and pipeline projections
+## A. Coordinate metrics and curvature operators
 
-A `CoordinateMetric` bundles a coordinate-dependent metric tensor field `g_{ij}(x)` together with
-its inverse `g^{ij}(x)` and the regular chart domain where both matrices remain nondegenerate.
+A `CoordinateMetric` records a coordinate-dependent metric tensor field `g_{ij}(x)` together with
+its inverse `g^{ij}(x)` and the regular coordinate domain where both remain nondegenerate.
 
 -/
 
@@ -74,7 +74,8 @@ structure CoordinateMetric (n : ℕ) where
   /-- Right-to-left inverse relation `ginv(x) * g(x) = 1` on `domain`. -/
   inv_right : ∀ x ∈ domain, ginv x * g x = 1
 
-/-- Package a `CoordinateMetric` at a regular point `x ∈ C.domain` as a `MetricTensor`. -/
+/-- Restrict a coordinate metric to a pointwise `MetricTensor` at a regular point in its
+domain. -/
 def CoordinateMetric.metricTensor {n : ℕ} (C : CoordinateMetric n) (x : Fin n → ℝ)
     (hx : x ∈ C.domain) : MetricTensor n where
   g := C.g x

@@ -4,9 +4,9 @@
 
 General Relativity models gravitation as the pseudo-Riemannian geometry of a four-dimensional
 spacetime manifold carrying a Lorentzian metric of signature (-, +, +, +) governed by the Einstein
-field equations. This API formalizes the coordinate differential-geometry pipeline from a spacetime
-metric and its analytical inverse through the Levi-Civita Christoffel symbols, Riemann curvature,
-Ricci tensor, Ricci scalar, and Einstein tensor, together with covariant conservation, geodesic
+field equations. This API formalizes coordinate differential geometry from a spacetime metric and
+its analytical inverse through the Levi-Civita Christoffel symbols, Riemann curvature, Ricci
+tensor, Ricci scalar, and Einstein tensor, together with covariant conservation, geodesic
 dynamics, the ADM 3+1 initial-value formulation, linearized gravitational waves, Newton's
 gravitational constant in arbitrary and natural unit systems, exact black-hole and cosmological
 solutions (Minkowski, Schwarzschild, interior Schwarzschild, Schwarzschild-de Sitter,
@@ -15,7 +15,7 @@ alternative theories and frameworks of gravitation.
 
 ## Content (Alpha)
 
-### Metric geometry, curvature, differential pipeline, and Einstein field equations
+### Metric geometry, curvature, coordinate differentiation, and Einstein field equations
 
 A rank-2 covariant tensor is represented as an n × n matrix of components [1], paired with a
 nondegenerate metric carrying its explicit two-sided inverse [2], with the four-dimensional
@@ -24,12 +24,12 @@ rescalings g ↦ Ω g preserve metric invertibility [4] and leave null tangent c
 Algebraic (0, 4) Riemann curvature tensors satisfy pair antisymmetry, pair-exchange symmetry, and
 the first Bianchi identity [6], and contract with the inverse metric to the symmetric Ricci tensor
 [7] and scalar curvature defined as its metric trace [8][9]. Using coordinate-axis partial
-derivatives bridged to `SpaceTime.deriv` [10], the differential pipeline computes the Levi-Civita
-Christoffel symbols from a bundled coordinate metric field [11], constructs the Riemann curvature
-tensor [12][13], Ricci tensor, Ricci scalar, and Einstein tensor, and establishes that any locally
-constant metric has identically vanishing connection and curvature [13]. From any metric and
-curvature tensor, the Einstein tensor G_{ij} = R_{ij} - ½ R g_{ij} is symmetric, has metric trace
-(1 - n / 2) R in n dimensions, and in n = 4 spacetime dimensions makes the vacuum Einstein
+derivatives bridged to `SpaceTime.deriv` [10], coordinate curvature operators compute the
+Levi-Civita Christoffel symbols from a coordinate metric field [11], construct the Riemann
+curvature tensor [12][13], Ricci tensor, Ricci scalar, and Einstein tensor, and establish that any
+locally constant metric has identically vanishing connection and curvature [13]. From any metric
+and curvature tensor, the Einstein tensor G_{ij} = R_{ij} - ½ R g_{ij} is symmetric, has metric
+trace (1 - n / 2) R in n dimensions, and in n = 4 spacetime dimensions makes the vacuum Einstein
 equation equivalent to Ricci flatness and G + Λ g = 0 equivalent to Ric = Λ g [14], while
 contracted second-Bianchi curvature derivatives establish covariant divergence-freeness of the
 Einstein tensor and stress-energy conservation [15]. In four dimensions, the trace-free Maxwell
@@ -44,9 +44,9 @@ Test-particle trajectories satisfy the second-order geodesic differential equati
 solutions by the Picard-Lindelöf theorem, reducing to straight lines when the connection vanishes
 [18]. In the Arnowitt-Deser-Misner 3+1 initial-value formulation, spatial slices carry a
 Riemannian 3-metric and symmetric extrinsic curvature tensor K_{ij} subject to the Hamiltonian and
-momentum constraint equations (using the 3D Levi-Civita covariant derivative `∇K`), which simplify on
-time-symmetric (K_{ij} = 0) and maximal (tr K = 0) slices [19], distinguish flat Minkowski vacuum
-data [20] from non-vacuum initial data with anisotropic extrinsic curvature [21]. Around the
+momentum constraint equations (using the 3D Levi-Civita covariant derivative `∇K`), which simplify
+on time-symmetric (K_{ij} = 0) and maximal (tr K = 0) slices [19], distinguish flat Minkowski
+vacuum data [20] from non-vacuum initial data with anisotropic extrinsic curvature [21]. Around the
 Minkowski background g = η + h, first-order perturbation theory packages symmetric metric
 perturbations `MetricPerturbation` [22], defines the Minkowski trace `perturbationTrace` and
 trace-reversed perturbation h̄_{ij} = h_{ij} - ½ η_{ij} h [23], and defines the Minkowski
@@ -63,10 +63,10 @@ in which c, G, and k_B are simultaneously equal to 1 (see the Units API map) [34
 ### Exact black-hole and cosmological spacetimes
 
 Flat Minkowski spacetime has vanishing Ricci tensor, scalar curvature, and Einstein tensor both
-algebraically and through the coordinate differential pipeline [35]. A general static spherically
-symmetric metric with radial metric function f(r) (line element diag(-f(r), f(r)⁻¹, r², r² sin²θ))
-carries a certified `MetricTensor` and `CoordinateMetric` [36], explicit coordinate Christoffel
-symbols and derivatives [37], and pipeline Riemann, Ricci, and Einstein curvature evaluation [38].
+algebraically and from the coordinate metric [35]. A general static spherically symmetric metric
+with radial metric function f(r) (line element diag(-f(r), f(r)⁻¹, r², r² sin²θ)) carries a
+certified `MetricTensor` and `CoordinateMetric` [36], explicit coordinate Christoffel symbols and
+derivatives [37], and closed-form Riemann, Ricci, and Einstein curvature evaluation [38].
 The orthonormal Schwarzschild Weyl electric tidal tensor yields the Kretschmann scalar 48 M² / r⁶
 and proves purely electric Weyl curvature [39], while `SchwarzschildSpacetime` with metric
 function f(r) = 1 - 2 M / r gives direct metric-derivative Christoffel and Riemann components and
@@ -157,15 +157,15 @@ rotation-curve alternatives without non-baryonic dark matter are represented by 
 Newtonian Dynamics (`MONDTheory`), which interpolates between the Newtonian regime a ≫ a₀ and the
 deep-MOND regime a = √(a_N a₀) to produce asymptotically flat circular velocities v⁴ = G M a₀ and
 bridges directly to Physlib's `pairGravityAcceleration` [75], by Bekenstein's relativistic
-Tensor-Vector-Scalar (`TeVeSMetric`) disformal physical metric and its exact analytical inverse [76],
-and by Moffat's Scalar-Tensor-Vector Gravity (`MOGTheory`) Yukawa-enhancement factor
-`1 + α (1 - e^{-μ r})` and Yukawa-enhanced gravitational potential `Φ(r) = -(G M / r) (1 + α (1 -
-e^{-μ r}))` [77]. Finally, the Will-Nordtvedt Parameterized Post-Newtonian (PPN) formalism unifies
-solar-system tests across metric theories via ten dimensionless parameters
-(γ, β, ξ, α₁, α₂, α₃, ζ₁, ζ₂, ζ₃, ζ₄), classifying fully conservative and semiconservative
-theories, embedding General Relativity, `BransDickeTheory`, metric f(R), and Nordström gravity,
-and evaluating light deflection, Shapiro time delay, perihelion precession, and the Nordtvedt Strong
-Equivalence Principle violation parameter η_N [78].
+Tensor-Vector-Scalar (`TeVeSMetric`) disformal physical metric and its exact analytical
+inverse [76], and by Moffat's Scalar-Tensor-Vector Gravity (`MOGTheory`) Yukawa-enhancement factor
+`1 + α (1 - e^{-μ r})` and Yukawa-enhanced gravitational potential
+`Φ(r) = -(G M / r) (1 + α (1 - e^{-μ r}))` [77]. Finally, the Will-Nordtvedt Parameterized
+Post-Newtonian (PPN) formalism unifies solar-system tests across metric theories via ten
+dimensionless parameters (γ, β, ξ, α₁, α₂, α₃, ζ₁, ζ₂, ζ₃, ζ₄), classifying fully conservative and
+semiconservative theories, embedding General Relativity, `BransDickeTheory`, metric f(R), and
+Nordström gravity, and evaluating light deflection, Shapiro time delay, perihelion precession, and
+the Nordtvedt Strong Equivalence Principle violation parameter η_N [78].
 
 ## Lean References
 

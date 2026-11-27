@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Alex Vergara Gil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Vergara Gil, thunder-detector
+Authors: Alex Vergara Gil
 -/
 module
 
@@ -29,13 +29,14 @@ Metric `f(R)` gravity replaces the Einstein–Hilbert Lagrangian `R` by a nonlin
 `f(R)`, yielding fourth-order metric equations containing a propagating scalar mode `φ = f'(R)`
 with mass squared `1 / (3 f''(R))`.
 
-This module packages `FRTheory` (`f` and `df = f'`), isolates the algebraic curvature equations from
-the fourth-order derivative terms `-∇_i ∇_j f'(R) + g_{ij} □f'(R)` (which vanish whenever `f'` is
-constant, i.e., for constant-scalar or General Relativity solutions), and formalises:
+This module defines `FRTheory` (a potential `f` together with its derivative `df = f'`), isolates
+the algebraic curvature equations from the fourth-order derivative terms
+`-∇_i ∇_j f'(R) + g_{ij} □f'(R)` (which vanish whenever `f'` is constant, i.e., for
+constant-scalar or General Relativity solutions), and formalises:
 
 - the algebraic part `FRTheory.algebraicFieldEqn` of the `f(R)` field equation and its reduction to
   `G + Λ g` when `FRTheory.generalRelativity Λ` is chosen (`linear_is_einstein`);
-- the `n`-dimensional trace identity `f'(S) S - (n/2) f(S) + (n - 1) □f'`
+- the `n`-dimensional trace identity `f'(R) R - (n/2) f(R) + (n - 1) □f'`
   (`trace_algebraicFieldEqn`) and its four-dimensional `3 □f'` specialisation
   (`trace_algebraicFieldEqn_four`);
 - Starobinsky's `R + α R²` model (`FRTheory.starobinsky α`), its Legendre potential
@@ -106,8 +107,8 @@ def FRTheory.starobinsky (α : ℝ) : FRTheory where
   df S := 1 + 2 * α * S
 
 /-- The algebraic metric-formalism `f(R)` field equation tensor
-`T.df(S) Ric_{ij} - (1/2) T.f(S) g_{ij}` evaluated on metric tensor `M` and Riemann curvature
-tensor `R` (exact when `df` is constant so `-∇_i ∇_j f' + g_{ij} □f'` vanishes). -/
+`f'(R) Ric_{ij} - (1/2) f(R) g_{ij}` evaluated on a spacetime metric and Riemann curvature tensor
+(exact when `f'(R)` is constant so `-∇_i ∇_j f' + g_{ij} □f'` vanishes). -/
 noncomputable def FRTheory.algebraicFieldEqn (T : FRTheory) {n : ℕ} (M : MetricTensor n)
     (R : RiemannTensor n) : Tensor2 n :=
   fun i j => T.df (ricciScalar M R) * ricci M R i j - (1 / 2) * T.f (ricciScalar M R) * M.g i j
@@ -122,8 +123,8 @@ lemma linear_is_einstein {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) (�
   ring
 
 /-- Trace of the metric-formalism `f(R)` field equation tensor
-`T.df(S) Ric_{ij} - ½ T.f(S) g_{ij} + (g_{ij} □f' - ∇_i ∇_j f')` in `n` dimensions, yielding
-`T.df(S) S - (n/2) T.f(S) + (n - 1) □f'`. -/
+`f'(R) Ric_{ij} - ½ f(R) g_{ij} + (g_{ij} □f' - ∇_i ∇_j f')` in `n` dimensions, yielding
+`f'(R) R - (n/2) f(R) + (n - 1) □f'`. -/
 lemma trace_algebraicFieldEqn (T : FRTheory) {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n)
     (box : ℝ) (d2 : Tensor2 n) (hbox : metricTrace M d2 = box) :
     metricTrace M (fun i j => T.df (ricciScalar M R) * ricci M R i j
@@ -148,7 +149,7 @@ lemma trace_algebraicFieldEqn (T : FRTheory) {n : ℕ} (M : MetricTensor n) (R :
   ring
 
 /-- Four-dimensional trace of the `f(R)` field equation tensor:
-`T.df(S) S - 2 T.f(S) + 3 □f'`. -/
+`f'(R) R - 2 f(R) + 3 □f'`. -/
 lemma trace_algebraicFieldEqn_four (T : FRTheory) (M : MetricTensor 4) (R : RiemannTensor 4)
     (box : ℝ) (d2 : Tensor2 4) (hbox : metricTrace M d2 = box) :
     metricTrace M (fun i j => T.df (ricciScalar M R) * ricci M R i j
@@ -205,8 +206,7 @@ lemma starobinsky_nonconstant_deriv (α : ℝ) (hα : α ≠ 0) :
 
 /-- The Einstein-frame potential `U(φ) = V(φ) / φ²` under conformal rescaling `g̃ = φ g` in 4D,
 preserving `√(-g) V(φ) = √(-g̃) U(φ)` when `V` is the normalized Jordan-frame potential
-`(φ R - f) / 2` (this `V(φ) / φ²` volume-density normalization correction was identified by
-`thunder-detector`). -/
+`(φ R - f) / 2`. -/
 noncomputable def einsteinFramePotential (V : ℝ → ℝ) (φ : ℝ) : ℝ := V φ / φ ^ 2
 
 /-- Einstein-frame Starobinsky potential: `U(φ) = (φ - 1)² / (8 α φ²)`. -/

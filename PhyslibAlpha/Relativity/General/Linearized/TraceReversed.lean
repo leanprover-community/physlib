@@ -29,8 +29,8 @@ preserves `C²` regularity.
 - `perturbationTrace`, `perturbationTrace_eq_metricTrace`, `traceReversed`, `traceReversed_trace`,
   `traceReversed_involutive`, `traceReversed_symm` : Minkowski trace, bridge to `metricTrace`,
   and trace-reversal involution.
-- `MetricPerturbation.traceReversed`, `MetricPerturbation.IsC2At.traceReversed` : bundle-level
-  trace reversal and `C²` regularity preservation.
+- `MetricPerturbation.traceReversed`, `MetricPerturbation.IsC2At.traceReversed` : trace reversal
+  on metric perturbations and `C²` regularity preservation.
 
 ## iii. Table of contents
 
@@ -93,7 +93,7 @@ lemma traceReversed_symm {h : Tensor2 4} (hs : IsSymm h) : IsSymm (traceReversed
   simp only [Matrix.transpose_apply, traceReversed, Matrix.of_apply]
   rw [hs.apply i j, minkowskiMetric4_symm.apply i j]
 
-/-- Trace reversal lifted to a `MetricPerturbation` bundle. -/
+/-- Trace reversal of a metric perturbation. -/
 noncomputable def MetricPerturbation.traceReversed (P : MetricPerturbation) :
     MetricPerturbation where
   h x := Linearized.traceReversed (P.h x)

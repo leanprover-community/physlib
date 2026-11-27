@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Alex Vergara Gil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Vergara Gil, thunder-detector
+Authors: Alex Vergara Gil
 -/
 module
 
@@ -88,9 +88,7 @@ structure InitialData where
 namespace InitialData
 
 /-- Three-dimensional Levi-Civita covariant derivative of a rank-2 tensor `K`:
-`∇_μ K_{ij} = ∂_μ K_{ij} - Γ^l_{μi} K_{lj} - Γ^l_{μj} K_{il}`. The 3D Levi-Civita
-covariant-derivative correction (versus raw partial derivatives in curved coordinates) was
-identified by `thunder-detector`. -/
+`∇_μ K_{ij} = ∂_μ K_{ij} - Γ^l_{μi} K_{lj} - Γ^l_{μj} K_{il}`. -/
 def covariantDerivTensor2 (Γ : Fin 3 → Fin 3 → Fin 3 → ℝ) (dK : Fin 3 → Tensor2 3)
     (K : Tensor2 3) : Fin 3 → Tensor2 3 :=
   fun μ i j => dK μ i j - (∑ l, Γ l μ i * K l j) - (∑ l, Γ l μ j * K i l)

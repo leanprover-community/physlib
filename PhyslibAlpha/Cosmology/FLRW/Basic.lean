@@ -26,9 +26,10 @@ spatial curvature `k`, carrying the diagonal line element:
 
 `g = diag(-1, a(t)² / (1 - k r²), a(t)² r², a(t)² r² sin²θ)`.
 
-This module bundles `(a, k)` in `FLRWSpacetime` and establishes its coordinate metric `metric`,
-inverse `metricInv`, symmetry, two-sided invertibility on the regular chart domain, pointwise
-`MetricTensor 4`, and bundled `CoordinateMetric 4`.
+This module defines the family of FLRW spacetimes `FLRWSpacetime` carrying a scale factor `a` and
+spatial curvature `k`, and establishes its coordinate metric `metric`, inverse `metricInv`,
+symmetry, two-sided invertibility on the regular chart domain, and the resulting `MetricTensor 4`
+and `CoordinateMetric 4`.
 
 ## ii. Key results
 
@@ -37,12 +38,12 @@ inverse `metricInv`, symmetry, two-sided invertibility on the regular chart doma
   comoving coordinates `(t, r, θ, φ)`.
 - `FLRWSpacetime.metric_symm`, `FLRWSpacetime.metric_mul_inv`, `FLRWSpacetime.metricInv_mul` :
   symmetry and two-sided inverse identities on the regular coordinate domain.
-- `FLRWSpacetime.metricTensor`, `FLRWSpacetime.toCoordinateMetric` : bundled `MetricTensor 4`
-  and `CoordinateMetric 4` on the regular coordinate domain.
+- `FLRWSpacetime.metricTensor`, `FLRWSpacetime.toCoordinateMetric` : `MetricTensor 4` at a regular
+  point and `CoordinateMetric 4` on the regular chart.
 
 ## iii. Table of contents
 
-- A. FLRW spacetime structure, metric, and CoordinateMetric bundle
+- A. FLRW spacetime structure, metric, and CoordinateMetric
 
 ## iv. References
 
@@ -61,7 +62,7 @@ namespace FLRW
 
 /-!
 
-## A. FLRW spacetime structure, metric, and CoordinateMetric bundle
+## A. FLRW spacetime structure, metric, and CoordinateMetric
 
 In comoving coordinates `(t, r, θ, φ)`, the spatially homogeneous and isotropic FLRW line element
 is diagonal, invertible whenever the scale factor `a(t)`, radius `r`, `1 - k r²`, and `sin θ` are
@@ -127,7 +128,8 @@ lemma metricInv_mul (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 
   · field_simp [ha, hr]
   · field_simp [ha, hr, hsin]
 
-/-- Bundled `MetricTensor 4` for an FLRW spacetime on the regular coordinate domain. -/
+/-- The FLRW metric as a `MetricTensor 4` at a point where the scale factor, `r`, `1 - k r²`, and
+`sin θ` are nonzero. -/
 noncomputable def metricTensor (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     MetricTensor 4 where
@@ -137,7 +139,7 @@ noncomputable def metricTensor (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a
   inv_left := S.metric_mul_inv x ha hr hkr hsin
   inv_right := S.metricInv_mul x ha hr hkr hsin
 
-/-- Bundled `CoordinateMetric 4` for an FLRW spacetime on its regular comoving chart domain
+/-- The FLRW metric as a `CoordinateMetric 4` on its regular comoving chart where
 `a(t) ≠ 0`, `r ≠ 0`, `1 - k r² ≠ 0`, `sin θ ≠ 0`. -/
 noncomputable def toCoordinateMetric (S : FLRWSpacetime) : CoordinateMetric 4 where
   g := S.metric

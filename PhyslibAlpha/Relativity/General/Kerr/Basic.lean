@@ -22,8 +22,8 @@ on `KerrSpacetime`.
 ## i. Overview
 
 This module defines the Boyer–Lindquist Kerr metric `KerrSpacetime.metric` and its analytical
-inverse `KerrSpacetime.metricInv`, packages them as both a pointwise `MetricTensor 4` and a bundled
-`CoordinateMetric 4` away from the ring singularity `Σ = 0`, horizons `Δ = 0`, and polar axis
+inverse `KerrSpacetime.metricInv`, and certifies them as a `MetricTensor 4` at each point and as a
+`CoordinateMetric 4` on the chart away from the ring singularity `Σ = 0`, horizons `Δ = 0`, and polar axis
 `sin θ = 0`, and establishes the basic causal and rotational properties of the Kerr geometry:
 outer/inner event horizons `r±`, extremal coalescence `a² = M²`, stationary-limit surface
 (ergosphere) `g₀₀ = 0`, zero-angular-momentum observer (ZAMO) frame-dragging angular velocity
@@ -34,7 +34,8 @@ outer/inner event horizons `r±`, extremal coalescence `a² = M²`, stationary-l
 - `KerrSpacetime`, `KerrSpacetime.sigma`, `KerrSpacetime.delta`, `KerrSpacetime.axialFactor` :
   Kerr spacetime structure and Boyer–Lindquist auxiliary functions `Σ`, `Δ`, and `axialFactor`.
 - `KerrSpacetime.metric`, `KerrSpacetime.metricInv`, `KerrSpacetime.metricTensor`,
-  `KerrSpacetime.toCoordinateMetric` : Kerr metric, inverse, and coordinate-metric bundles.
+  `KerrSpacetime.toCoordinateMetric` : Kerr metric, its inverse, and the coordinate metric on the
+  regular chart.
 - `KerrSpacetime.horizonPlus`, `KerrSpacetime.horizonMinus`, `KerrSpacetime.delta_horizonPlus`,
   `KerrSpacetime.extremal` : event horizons `r±`.
 - `KerrSpacetime.ergosphereRadius`, `KerrSpacetime.metric_00_ergosphere` : stationary-limit
@@ -195,7 +196,7 @@ noncomputable def metricTensor (K : KerrSpacetime) (x : Fin 4 → ℝ)
   inv_left := K.metric_mul_metricInv x hsig hdel hs
   inv_right := K.metricInv_mul_metric x hsig hdel hs
 
-/-- Bundled `CoordinateMetric 4` for the Boyer–Lindquist Kerr spacetime away from the ring
+/-- The Boyer–Lindquist Kerr metric as a `CoordinateMetric 4` on the chart away from the ring
 singularity `Σ = 0`, horizons `Δ = 0`, and polar axis `sin θ = 0`. -/
 noncomputable def toCoordinateMetric (K : KerrSpacetime) : CoordinateMetric 4 where
   g := K.metric

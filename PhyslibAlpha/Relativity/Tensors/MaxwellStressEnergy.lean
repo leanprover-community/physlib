@@ -22,7 +22,7 @@ In four spacetime dimensions, classical electromagnetism has stress-energy tenso
 `T^{EM}_{ab} = g^{cd} F_{ac} F_{bd} - ¼ g_{ab} F_{cd} F^{cd}` in Heaviside–Lorentz units
 (Gaussian units include an overall `1 / (4 π)` prefactor). Contraction with the inverse metric
 `g^{ab}` yields the conformal trace identity `g^{ab} T^{EM}_{ab} = 0`, a hallmark of classical
-scale invariance in four dimensions that underlies vanishing scalar curvature `S = 0` for
+scale invariance in four dimensions that underlies vanishing scalar curvature `R = 0` for
 electrovacuum solutions such as Reissner–Nordström spacetime and the Einstein–Maxwell sector of
 Kaluza–Klein reduction.
 

@@ -47,8 +47,8 @@ namespace GeneralRelativity
 
 ## A. Null vectors and conformal invariance
 
-A vector is null when its Lorentzian norm squared vanishes, a condition preserved by every nonzero
-conformal rescaling of the spacetime metric.
+Light cones are defined purely by the vanishing of the metric quadratic form, independent of any
+overall positive or negative conformal factor.
 
 -/
 

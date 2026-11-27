@@ -21,10 +21,11 @@ certification as a `MetricTensor 5`.
 
 ## i. Overview
 
-Kaluza–Klein theory packages a four-dimensional metric `g_{μν}`, an electromagnetic four-potential
-`A_μ`, and a dilaton scalar `φ` into the five-dimensional metric `G_{μν} = g_{μν} + φ² A_μ A_ν`,
-`G_{μ4} = φ² A_μ`, `G_{44} = φ²`. This module defines `KaluzaKleinData`, `kkMetric`, and
-`kkMetricInv`, proves both two-sided inverse relations and symmetry, and bundles `kkMetricTensor`.
+Kaluza–Klein theory combines a four-dimensional metric `g_{μν}`, an electromagnetic four-potential
+`A_μ`, and a dilaton scalar `φ` into the five-dimensional metric
+`G_{μν} = g_{μν} + φ² A_μ A_ν`, `G_{μ4} = φ² A_μ`, `G_{44} = φ²`. This module defines
+`KaluzaKleinData`, `kkMetric`, and `kkMetricInv`, proves both two-sided inverse relations and
+symmetry, and assembles the `MetricTensor 5` `kkMetricTensor`.
 
 ## ii. Key results
 
@@ -32,7 +33,7 @@ Kaluza–Klein theory packages a four-dimensional metric `g_{μν}`, an electrom
 - `extendedPotential`, `metric4Ext`, `kkMetric`, `contravariantPotential`, `kkMetricInv` : 5D
   metric and analytical inverse.
 - `kkMetricInv_mul_kkMetric`, `kkMetric_mul_kkMetricInv`, `kkMetricTensor` : certified
-  `MetricTensor 5` package.
+  `MetricTensor 5`.
 
 ## iii. Table of contents
 
@@ -76,9 +77,9 @@ structure KaluzaKleinData where
   /-- Scalar dilaton field `φ`. -/
   φ : ℝ
 
-/-- Five-component extension `(A_0, A_1, A_2, A_3, 1)` of a 4D gauge potential `A`. Padding with
-the fifth component `1` allows `kkMetric` to express the off-diagonal `(μ, 4)` and `(4, 4)`
-Kaluza–Klein entries as a uniform product `φ² A_A A_B` on `Fin 5` without index case-splitting. -/
+-- Padding with `1` lets `kkMetric` write the `(μ, 4)` and `(4, 4)` entries as `φ² A_A A_B`.
+/-- Five-component extension `(A_0, A_1, A_2, A_3, 1)` of a 4D electromagnetic four-potential,
+providing the Kaluza–Klein gauge-plus-circle vector `A_A` with fifth component `A_4 = 1`. -/
 def extendedPotential (A : Fin 4 → ℝ) : Fin 5 → ℝ := ![A 0, A 1, A 2, A 3, 1]
 
 @[simp]
@@ -95,9 +96,9 @@ private lemma extendedPotential_apply_lt (A : Fin 4 → ℝ) {i : Fin 5} (hi : i
 private lemma extendedPotential_four (A : Fin 4 → ℝ) :
     extendedPotential A 4 = 1 := rfl
 
-/-- Five-dimensional zero-padded embedding of a 4D rank-2 tensor `g4`. This auxiliary block
-extension lets `kkMetric` write the Kaluza–Klein metric ansatz uniformly over `Fin 5 × Fin 5`
-without splitting `4 × 4` vs. fifth-dimension cases in its top-level formula. -/
+-- Auxiliary block extension avoiding `4 × 4` vs. fifth-dimension case splits in `kkMetric`.
+/-- Five-dimensional zero-padded embedding of a four-dimensional rank-2 tensor into the upper
+`4 × 4` spacetime block. -/
 def metric4Ext (g4 : Tensor2 4) : Tensor2 5 :=
   fun i j =>
     if hi : i.val < 4 then
@@ -108,7 +109,7 @@ def metric4Ext (g4 : Tensor2 4) : Tensor2 5 :=
 def kkMetric (g4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ) : Tensor2 5 :=
   fun i j => metric4Ext g4 i j + φ ^ 2 * extendedPotential A i * extendedPotential A j
 
-/-- The 5D Kaluza–Klein metric of a `KaluzaKleinData` bundle. -/
+/-- The five-dimensional Kaluza–Klein metric associated with a Kaluza–Klein configuration. -/
 def KaluzaKleinData.metric (D : KaluzaKleinData) : Tensor2 5 :=
   kkMetric D.M.g D.A D.φ
 
@@ -323,7 +324,7 @@ noncomputable def kkMetricTensor (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : 
   inv_left := kkMetric_mul_kkMetricInv M A φ hφ
   inv_right := kkMetricInv_mul_kkMetric M A φ hφ
 
-/-- The inverse 5D Kaluza–Klein metric of a `KaluzaKleinData` bundle. -/
+/-- The inverse 5D Kaluza–Klein metric of the data `D`. -/
 noncomputable def KaluzaKleinData.metricInv (D : KaluzaKleinData) : Tensor2 5 :=
   kkMetricInv D.M.ginv D.A D.φ
 

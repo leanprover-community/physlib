@@ -17,18 +17,17 @@ public import PhyslibAlpha.Relativity.Metrics.MetricTrace
 # The four-dimensional Minkowski metric
 
 The flat metric `η = diag(-1, 1, 1, 1)` in inertial coordinates, constructed from
-`Physlib.Relativity.MinkowskiMatrix` and packaged as a `MetricTensor 4` and constant field.
+`Physlib.Relativity.MinkowskiMatrix`, together with its certified `MetricTensor 4` instance and its
+constant field on spacetime.
 
 ## i. Overview
 
 Throughout `GeneralRelativity`, the Minkowski metric `minkowskiMetric4` uses the mostly-plus
-Lorentzian
-signature `(-, +, +, +)` standard in general relativity (Wald / Misner–Thorne–Wheeler), whereas
-`Physlib.Relativity.MinkowskiMatrix.minkowskiMatrix` (and `realLorentzTensor.coMetric 3`) uses the
-particle-physics mostly-minus convention `(+, -, -, -)`.
+Lorentzian signature `(-, +, +, +)` standard in general relativity (Wald / Misner–Thorne–Wheeler),
+whereas `Physlib.Relativity.MinkowskiMatrix.minkowskiMatrix` (and `realLorentzTensor.coMetric 3`)
+uses the particle-physics mostly-minus convention `(+, -, -, -)`.
 
-We define `minkowskiMetric4` directly as the negation of `minkowskiMatrix (d := 3)` transported
-along
+We define `minkowskiMetric4` directly as the negation of `minkowskiMatrix (d := 3)` transported along
 `finSumFinEquiv : Fin 1 ⊕ Fin 3 ≃ Fin 4`, inherit its symmetry and self-inverse property from
 `minkowskiMatrix.eq_transpose` and `minkowskiMatrix.sq`, and bridge it to
 `realLorentzTensor.coMetric 3`.
@@ -46,7 +45,7 @@ along
 ## iii. Table of contents
 
 - A. The Minkowski matrix `η`
-- B. The Minkowski spacetime metric bundle
+- B. The Minkowski spacetime metric
 
 ## iv. References
 
@@ -68,7 +67,7 @@ namespace GeneralRelativity
 ## A. The Minkowski matrix `η`
 
 Fixing the `(-, +, +, +)` signature convention defines the constant reference metric
-`minkowskiMetric4` and bundles it as `minkowski : MetricTensor 4`.
+`minkowskiMetric4` and its component contractions.
 
 -/
 
@@ -144,10 +143,10 @@ lemma sum_minkowskiMetric4_left (i : Fin 4) (f : Fin 4 → ℝ) :
 
 /-!
 
-## B. The Minkowski spacetime metric bundle
+## B. The Minkowski spacetime metric
 
-Flat Minkowski spacetime packages the constant matrix `η` as a nondegenerate `MetricTensor 4`
-and supplies the constant metric field on `ℝ⁴`.
+Flat Minkowski spacetime equips the constant matrix `η` with its symmetry and self-inverse
+properties as a `MetricTensor 4` and supplies the constant metric field on `ℝ⁴`.
 
 -/
 

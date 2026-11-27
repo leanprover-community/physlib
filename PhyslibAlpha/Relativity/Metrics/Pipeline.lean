@@ -13,35 +13,35 @@ import Mathlib.Tactic.Ring
 
 /-!
 
-# The differential curvature pipeline
+# Coordinate curvature tensors from a metric field
 
-Differential chain from a coordinate metric and inverse `(g, ginv)` through Levi-Civita
-Christoffel symbols, Riemann tensor, Ricci tensor, scalar curvature, and Einstein tensor.
+Levi-Civita Christoffel symbols, Riemann curvature, Ricci tensor, scalar curvature, and Einstein
+tensor computed from a coordinate metric and its inverse.
 
 ## i. Overview
 
-From any coordinate-dependent metric field `g` and inverse `ginv`, `GeneralRelativity.Pipeline`
-evaluates the differential chain
+From a coordinate-dependent metric field `g` and its inverse `ginv`, the `GeneralRelativity.Pipeline`
+namespace evaluates the standard coordinate curvature tensors
 
-`g ↦ ∂g ↦ Γ^k_{ij} ↦ ∂Γ ↦ R^ρ_{σμν} ↦ Ric_{σν} ↦ S ↦ G_{ij}`
+`g ↦ ∂g ↦ Γ^k_{ij} ↦ ∂Γ ↦ R^ρ_{σμν} ↦ Ric_{σν} ↦ R ↦ G_{ij}`
 
 and proves that every constant metric has vanishing connection, Riemann, Ricci, scalar, and
-Einstein curvature, while equating `riemann` definitionally to `riemannFromData`.
+Einstein curvature, while identifying `riemann` definitionally with `riemannFromData`.
 
 ## ii. Key results
 
 - `Pipeline.christoffel`, `Pipeline.christoffel_diag`, `Pipeline.riemann`,
-  `Pipeline.ricciTensorOf`, `Pipeline.ricciScalarOf`, `Pipeline.einsteinTensorOf` : coordinate
-  differential pipeline from `(g, ginv)` to the Einstein tensor.
+  `Pipeline.ricciTensorOf`, `Pipeline.ricciScalarOf`, `Pipeline.einsteinTensorOf` : Levi-Civita
+  connection and curvature tensors computed from a coordinate metric and its inverse.
 - `Pipeline.christoffel_const`, `Pipeline.riemann_const`, `Pipeline.ricciTensorOf_const`,
-  `Pipeline.ricciScalarOf_const`, `Pipeline.einsteinTensorOf_const` : vanishing of all pipeline
-  outputs for any constant metric.
+  `Pipeline.ricciScalarOf_const`, `Pipeline.einsteinTensorOf_const` : vanishing connection and
+  curvature for any constant metric.
 - `Pipeline.riemann_eq_riemannFromData`, `Pipeline.riemann_eq_riemannFromData_of_eventuallyEq` :
   identification of `riemann` with `riemannFromData`.
 
 ## iii. Table of contents
 
-- A. Metric-to-Einstein differential pipeline
+- A. Connection and curvature from a coordinate metric
 - B. Flatness of constant metrics
 
 ## iv. References
@@ -63,7 +63,7 @@ namespace Pipeline
 
 /-!
 
-## A. Metric-to-Einstein differential pipeline
+## A. Connection and curvature from a coordinate metric
 
 The coordinate partial derivatives `coordDeriv` define the Levi-Civita connection `Γ^k_{ij}`,
 Riemann curvature `R^ρ_{σμν}`, Ricci tensor, scalar curvature, and Einstein tensor directly from
@@ -104,12 +104,12 @@ noncomputable def ricciTensorOf {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 
     (x : Fin n → ℝ) (σ ν : Fin n) : ℝ :=
   ∑ ρ, riemann g ginv x ρ σ ρ ν
 
-/-- The coordinate scalar curvature `S = ∑ σ ν, g^{σν} Ric_{σν}`. -/
+/-- The coordinate scalar curvature `R = ∑ σ ν, g^{σν} Ric_{σν}`. -/
 noncomputable def ricciScalarOf {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     (x : Fin n → ℝ) : ℝ :=
   ∑ σ, ∑ ν, ginv x σ ν * ricciTensorOf g ginv x σ ν
 
-/-- The coordinate Einstein tensor `G_{ij} = Ric_{ij} - (1/2) S g_{ij}`. -/
+/-- The coordinate Einstein tensor `G_{ij} = Ric_{ij} - (1/2) R g_{ij}`. -/
 noncomputable def einsteinTensorOf {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     (x : Fin n → ℝ) (i j : Fin n) : ℝ :=
   ricciTensorOf g ginv x i j - (1 / 2) * ricciScalarOf g ginv x * g x i j
@@ -141,8 +141,8 @@ lemma riemann_eq_riemannFromData_of_eventuallyEq {n : ℕ} (g ginv : (Fin n → 
 
 ## B. Flatness of constant metrics
 
-When all metric components are constant across spacetime, every partial derivative vanishes and the
-pipeline automatically produces zero connection, Riemann, Ricci, and Einstein curvature.
+When all metric components are constant across spacetime, every partial derivative vanishes, so the
+connection, Riemann, Ricci, scalar, and Einstein curvature tensors all vanish identically.
 
 -/
 
@@ -178,7 +178,7 @@ lemma riemann_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tens
   rw [riemann, h1, h2, h3]
   ring
 
-/-- A constant metric is Ricci flat, as computed by the pipeline. -/
+/-- A constant metric is Ricci flat. -/
 lemma ricciTensorOf_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
     (hg : ∀ x, g x = G) (x : Fin n → ℝ) (σ ν : Fin n) :
     ricciTensorOf g ginv x σ ν = 0 := by
@@ -198,8 +198,7 @@ lemma ricciScalarOf_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G 
   rw [ricciTensorOf_const g ginv G hg x σ ν]
   ring
 
-/-- A constant metric is a vacuum solution of the Einstein equations (`G_{ij} = 0`), as computed
-by the pipeline. -/
+/-- A constant metric satisfies the vacuum Einstein equations (`G_{ij} = 0`). -/
 lemma einsteinTensorOf_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
     (hg : ∀ x, g x = G) (x : Fin n → ℝ) (i j : Fin n) :
     einsteinTensorOf g ginv x i j = 0 := by

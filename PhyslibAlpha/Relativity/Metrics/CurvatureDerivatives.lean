@@ -15,34 +15,34 @@ import Mathlib.Tactic.Ring
 # Conservation of the Einstein tensor
 
 The contracted Bianchi identity implies that the Einstein tensor is divergence free and is the
-unique conserved combination of `Ric` and `S g` up to scale.
+unique conserved combination of `Ric` and `R g` up to scale.
 
 ## i. Overview
 
-The contracted Bianchi identity `∇^a Ric_ab = (1/2) ∇_b S` follows in differential geometry from
+The contracted Bianchi identity `∇^a Ric_ab = (1/2) ∇_b R` follows in differential geometry from
 the second Bianchi identity together with metric compatibility. Taking it as an explicit
 hypothesis in locally inertial (Riemann normal) coordinates at a point (`g = ginv = η` and
 `∂g = 0`, so covariant and coordinate derivatives coincide there), this module derives:
 
-- `divergence_combination` : `∇^a (α Ric + β S g)_b = (α / 2 + β) ∇_b S`;
+- `divergence_combination` : `∇^a (α Ric + β R g)_b = (α / 2 + β) ∇_b R`;
 - `divergence_einstein_eq_zero` : `∇^a G_ab = 0`;
-- `combination_conserved_iff` : if `∇S ≠ 0` somewhere, `α Ric + β S g` is conserved only when
+- `combination_conserved_iff` : if `∇R ≠ 0` somewhere, `α Ric + β R g` is conserved only when
   `α = -2β`, isolating the Einstein tensor up to an overall constant.
 
 ## ii. Key results
 
-- `CurvatureDerivatives` : bundle of pointwise partial derivatives of `Ric` and `S` in locally
-  inertial coordinates.
+- `CurvatureDerivatives` : the pointwise partial derivatives of `Ric` and `R` in locally inertial
+  coordinates.
 - `CurvatureDerivatives.einsteinDeriv` : pointwise derivative of the Einstein tensor.
 - `divergence` : divergence `∇^a T_ab = ∑ a, η^{aa} ∂_a T_ab` in locally inertial coordinates.
-- `divergence_combination` : divergence of `α Ric + β S g`.
+- `divergence_combination` : divergence of `α Ric + β R g`.
 - `divergence_einstein_eq_zero` : conservation of the Einstein tensor from the contracted
   Bianchi hypothesis.
 - `combination_conserved_iff` : uniqueness of the Einstein combination `α = -2β`.
 
 ## iii. Table of contents
 
-- A. Derivative bundles and divergence in locally inertial coordinates
+- A. Derivatives and divergence in locally inertial coordinates
 - B. Conservation and uniqueness of the Einstein tensor
 
 ## iv. References
@@ -60,25 +60,25 @@ namespace GeneralRelativity
 
 /-!
 
-## A. Derivative bundles and divergence in locally inertial coordinates
+## A. Derivatives and divergence in locally inertial coordinates
 
 At any point in locally inertial (Riemann normal) coordinates, `g_{ab} = η_{ab}` and
-`∂_e g_{ab} = 0`, so covariant derivatives of `Ric`, `S`, and `G` reduce to partial derivatives
-packaged in `CurvatureDerivatives` separately from `coordDeriv`.
+`∂_e g_{ab} = 0`, so covariant derivatives of `Ric`, `R`, and `G` reduce to the partial derivatives
+stored in `CurvatureDerivatives`, separately from `coordDeriv`.
 
 -/
 
 /-- First partial derivatives of the Ricci tensor and scalar curvature at a point in locally
-inertial (Riemann normal) coordinates (`dRic e i j = ∂_e Ric_ij`, `dS e = ∂_e S`), packaged
-separately from `coordDeriv` to state the pointwise contracted Bianchi identity algebraically. -/
+inertial (Riemann normal) coordinates (`dRic e i j = ∂_e Ric_ij`, `dS e = ∂_e R`), stated separately
+from `coordDeriv` to give the pointwise contracted Bianchi identity algebraically. -/
 structure CurvatureDerivatives where
   /-- Coordinate derivatives `∂_e Ric_ij` of the Ricci tensor. -/
   dRic : Fin 4 → Tensor2 4
-  /-- Coordinate derivatives `∂_e S` of the scalar curvature. -/
+  /-- Coordinate derivatives `∂_e R` of the scalar curvature. -/
   dS : Fin 4 → ℝ
 
 /-- Pointwise derivative of the Einstein tensor in locally inertial coordinates:
-`∂_e G_ij = ∂_e Ric_ij - (1/2) ∂_e S η_ij` (since `g = η` and `∂g = 0` at the origin of locally
+`∂_e G_ij = ∂_e Ric_ij - (1/2) ∂_e R η_ij` (since `g = η` and `∂g = 0` at the origin of locally
 inertial coordinates). -/
 noncomputable def CurvatureDerivatives.einsteinDeriv (D : CurvatureDerivatives) (e : Fin 4) :
     Tensor2 4 :=
@@ -98,8 +98,8 @@ divergence free and singles out `α = -2 β` uniquely.
 
 -/
 
-/-- The divergence of a linear combination `α Ric + β S g`: the contracted Bianchi identity
-collapses `∇Ric` to `(1/2) ∇S`, leaving `(α/2 + β) ∇_b S`. -/
+/-- The divergence of a linear combination `α Ric + β R g`: the contracted Bianchi identity
+collapses `∇Ric` to `(1/2) ∇R`, leaving `(α/2 + β) ∇_b R`. -/
 lemma divergence_combination (D : CurvatureDerivatives)
     (hB : ∀ b, (∑ a, minkowskiMetric4 a a * D.dRic a a b) = (1 / 2) * D.dS b)
     (α β : ℝ) (b : Fin 4) :
@@ -129,8 +129,8 @@ lemma divergence_einstein_eq_zero (D : CurvatureDerivatives)
   rw [heq, h]
   ring
 
-/-- Uniqueness of the Einstein combination: if `∇_b S ≠ 0` somewhere, `α Ric + β S g` is
-divergence free only when `α = -2β`, i.e. a multiple of `G = Ric - (1/2) S g`. -/
+/-- Uniqueness of the Einstein combination: if `∇_b R ≠ 0` somewhere, `α Ric + β R g` is
+divergence free only when `α = -2β`, i.e. a multiple of `G = Ric - (1/2) R g`. -/
 lemma combination_conserved_iff (D : CurvatureDerivatives)
     (hB : ∀ b, (∑ a, minkowskiMetric4 a a * D.dRic a a b) = (1 / 2) * D.dS b)
     (α β : ℝ) (hne : ∃ b, D.dS b ≠ 0)

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Alex Vergara Gil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Vergara Gil, thunder-detector
+Authors: Alex Vergara Gil
 -/
 module
 
@@ -84,9 +84,8 @@ structure Tetrad (n : ℕ) where
 
 namespace Tetrad
 
-/-- Weitzenböck affine connection `Γ^k_{ij} = ∑_A e_A^k ∂_i e^A_j` constructed from a `Tetrad`
-and coframe partial derivatives `de i A j = ∂_i e^A_j`, satisfying `e * Γ_i = ∂_i e` (the `einv k A`
-index contraction correction was identified by `thunder-detector`). -/
+/-- Weitzenböck affine connection `Γ^k_{ij} = ∑_A e_A^k ∂_i e^A_j` constructed from a tetrad
+and coframe partial derivatives `∂_i e^A_j`, satisfying `e * Γ_i = ∂_i e`. -/
 def weitzenbockConnection {n : ℕ} (T : Tetrad n) (de : Fin n → Tensor2 n) :
     AffineConnection n :=
   fun k i j => ∑ A : Fin n, T.einv k A * de i A j
@@ -132,9 +131,8 @@ end Tetrad
 
 /-- Covariant teleparallel superpotential
 `S_{k i j} = ¼ (T_{kij} + T_{jik} - T_{ijk}) + ½ (g_{ki} T^m_{jm} - g_{kj} T^m_{im})`,
-antisymmetric in its last two indices `(i, j)` and matching `T = S_k^{ij} T^k_{ij}` (this TEGR
-superpotential normalization reconciling `torsionScalar` with `flrwTorsionScalar` was identified
-by `thunder-detector`). -/
+antisymmetric in its last two indices `(i, j)` and contracting with torsion as
+`T = S_k^{ij} T^k_{ij}`. -/
 noncomputable def superpotential (M : MetricTensor 4) (T : AffineConnection 4) :
     AffineConnection 4 :=
   fun k i j =>

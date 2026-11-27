@@ -97,7 +97,7 @@ lemma kkGaugeJacobian_pullback (g4 : Tensor2 4) (A dlam : Fin 4 → ℝ) (φ : �
       kkMetric, metric4Ext, kkGaugeJacobian, extendedPotential] <;>
     ring
 
-/-- Bundle form of `kkGaugeJacobian_pullback` acting directly on `KaluzaKleinData`. -/
+/-- The structure form of `kkGaugeJacobian_pullback`, acting directly on a `KaluzaKleinData`. -/
 lemma KaluzaKleinData.gaugeJacobian_pullback (D : KaluzaKleinData) (dlam : Fin 4 → ℝ) :
     (kkGaugeJacobian dlam).transpose * D.metric * kkGaugeJacobian dlam =
       (D.gaugeShift dlam).metric :=

@@ -27,7 +27,7 @@ gauge-invariant polynomial effective potential is a polynomial in these four gau
 bilinears.
 
 The proof gauge-fixes the potential to the polynomial family of orbit representatives `repHiggs X`
-and runs the following physical pipeline:
+and proceeds in the following steps:
 
 1. **Charge balancing.** Invariance under the gauge torus forces the potential, written in
    hypercharge eigen-coordinates, to be supported only on hypercharge-neutral monomials.

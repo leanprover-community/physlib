@@ -54,15 +54,16 @@ namespace Pipeline
 ## A. Curvature from Christoffel data
 
 Evaluating the Riemann curvature tensor directly from closed-form connection coefficients `Γ` and
-their coordinate derivatives `∂Γ` matches `Pipeline.riemann` while isolating algebraic curvature
-contractions.
+their coordinate derivatives `∂Γ` reproduces the same curvature as differentiating the connection
+symbol by symbol, while isolating the algebraic curvature contractions.
 
 -/
 
-/-- The Riemann tensor evaluated from supplied Christoffel symbols `G` and partial derivatives
-`dG`: `R^ρ_{σμν} = ∂_μ Γ^ρ_{νσ} - ∂_ν Γ^ρ_{μσ} + Γ^ρ_{μλ} Γ^λ_{νσ} - Γ^ρ_{νλ} Γ^λ_{μσ}`.
-Decoupled from `Pipeline.riemann` so explicit closed-form Christoffel and derivative tables
-avoid re-differentiating inverse-metric sums. -/
+-- Decoupled from the derivative-based `Pipeline.riemann` so closed-form Christoffel tables avoid
+-- re-differentiation.
+/-- The Riemann curvature tensor evaluated from supplied Christoffel symbols and their coordinate
+partial derivatives:
+`R^ρ_{σμν} = ∂_μ Γ^ρ_{νσ} - ∂_ν Γ^ρ_{μσ} + Γ^ρ_{μλ} Γ^λ_{νσ} - Γ^ρ_{νλ} Γ^λ_{μσ}`. -/
 noncomputable def riemannFromData {n : ℕ}
     (G : (Fin n → ℝ) → Fin n → Fin n → Fin n → ℝ)
     (dG : Fin n → (Fin n → ℝ) → Fin n → Fin n → Fin n → ℝ)
