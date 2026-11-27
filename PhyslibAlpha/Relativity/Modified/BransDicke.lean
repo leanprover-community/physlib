@@ -134,6 +134,28 @@ lemma gamma_tendsto_atTop :
 lemma fR_gamma : gamma 0 = 1 / 2 := by
   norm_num [gamma]
 
+/-- Metric `f(R)` gravity as a `BransDickeTheory` with `ω = 0`. -/
+def BransDickeTheory.fR : BransDickeTheory := ⟨0⟩
+
+/-- The `f(R)` specialization has `γ = 1/2`. -/
+@[simp] lemma BransDickeTheory.fR_gamma : BransDickeTheory.fR.gamma = 1 / 2 :=
+  GeneralRelativity.Modified.BransDicke.fR_gamma
+
+/-- `γ = 1 - 1 / (2 + ω)` for a `BransDickeTheory`. -/
+lemma BransDickeTheory.gamma_eq_one_sub (T : BransDickeTheory) (h : 2 + T.ω ≠ 0) :
+    T.gamma = 1 - 1 / (2 + T.ω) :=
+  GeneralRelativity.Modified.BransDicke.gamma_eq_one_sub T.ω h
+
+/-- For every `ω > 0`, a `BransDickeTheory` satisfies `1/2 < γ < 1`. -/
+lemma BransDickeTheory.gamma_bounds (T : BransDickeTheory) (hω : 0 < T.ω) :
+    1 / 2 < T.gamma ∧ T.gamma < 1 :=
+  GeneralRelativity.Modified.BransDicke.gamma_bounds T.ω hω
+
+/-- Cassini bound for a `BransDickeTheory`: `ω > 40000` forces `1 - γ < 1 / 40000`. -/
+lemma BransDickeTheory.cassini_deviation (T : BransDickeTheory) (h : 40000 < T.ω) :
+    1 - T.gamma < 1 / 40000 :=
+  GeneralRelativity.Modified.BransDicke.cassini_deviation T.ω h
+
 /-!
 
 ## B. The effective gravitational coupling
@@ -164,6 +186,16 @@ lemma coupling_bounds (ω : ℝ) (hω : 0 ≤ ω) : 1 ≤ coupling ω ∧ coupli
 
 /-- The effective gravitational coupling ratio of a `BransDickeTheory`. -/
 noncomputable def BransDickeTheory.coupling (T : BransDickeTheory) : ℝ := BransDicke.coupling T.ω
+
+/-- `(4 + 2ω) / (3 + 2ω) = 1 + 1 / (3 + 2ω)` for a `BransDickeTheory`. -/
+lemma BransDickeTheory.coupling_eq_one_add (T : BransDickeTheory) (h : 3 + 2 * T.ω ≠ 0) :
+    T.coupling = 1 + 1 / (3 + 2 * T.ω) :=
+  GeneralRelativity.Modified.BransDicke.coupling_eq_one_add T.ω h
+
+/-- For `ω ≥ 0`, the effective coupling of a `BransDickeTheory` lies in `[1, 4/3]`. -/
+lemma BransDickeTheory.coupling_bounds (T : BransDickeTheory) (hω : 0 ≤ T.ω) :
+    1 ≤ T.coupling ∧ T.coupling ≤ 4 / 3 :=
+  GeneralRelativity.Modified.BransDicke.coupling_bounds T.ω hω
 
 end BransDicke
 

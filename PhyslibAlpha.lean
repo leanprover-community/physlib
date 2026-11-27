@@ -881,6 +881,7 @@ public import PhyslibAlpha.Relativity.Modified.KaluzaKlein.KaluzaMiracle
 public import PhyslibAlpha.Relativity.Modified.KaluzaKlein.TriangularFactorization
 public import PhyslibAlpha.Relativity.Modified.Lovelock.Basic
 public import PhyslibAlpha.Relativity.Modified.Lovelock.GeneralizedKronecker
+public import PhyslibAlpha.Relativity.Modified.MassiveGravity.Basic
 public import PhyslibAlpha.Relativity.Modified.MassiveGravity.DRGT
 public import PhyslibAlpha.Relativity.Modified.MassiveGravity.FierzPauli
 public import PhyslibAlpha.Relativity.Modified.MassiveGravity.VDVZ

@@ -162,6 +162,16 @@ noncomputable def RegularPoint.metricTensor {S : StaticSphericalMetric} (p : S.R
     MetricTensor 4 :=
   S.metricTensor p.x p.hr p.hf p.hsin
 
+/-- Right inverse identity at a bundled regular chart point. -/
+lemma RegularPoint.metric_mul_inv {S : StaticSphericalMetric} (p : S.RegularPoint) :
+    S.metric p.x * S.metricInv p.x = 1 :=
+  S.metric_mul_inv p.x p.hr p.hf p.hsin
+
+/-- Left inverse identity at a bundled regular chart point. -/
+lemma RegularPoint.metricInv_mul {S : StaticSphericalMetric} (p : S.RegularPoint) :
+    S.metricInv p.x * S.metric p.x = 1 :=
+  S.metricInv_mul p.x p.hr p.hf p.hsin
+
 /-- The metric as a `CoordinateMetric 4` on its regular chart where
 `r ≠ 0`, `f(r) ≠ 0`, `sin θ ≠ 0`. -/
 noncomputable def toCoordinateMetric (S : StaticSphericalMetric) : CoordinateMetric 4 where

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Fin
 public import PhyslibAlpha.Relativity.Metrics.MetricTrace
 public import PhyslibAlpha.Relativity.Metrics.Minkowski
+public import PhyslibAlpha.Relativity.Modified.MassiveGravity.Basic
 import Mathlib.Tactic.Ring
 
 /-!
@@ -28,7 +29,7 @@ factor `1/2`, producing the van Dam–Veltman–Zakharov (vDVZ) discontinuity be
 
 - `staticSource` : static point-mass stress-energy tensor.
 - `grPropagatorCoupling`, `massivePropagatorCoupling` : massless GR and massive spin-2 propagator
-  residues using `metricTrace minkowski`.
+  residues using `MassiveGravityTheory` and `metricTrace minkowski`.
 - `vdvz_static_ratio`, `vdvz_light_deflection_ratio` : static `4/3` enhancement and `3/4`
   light-bending discontinuity.
 
@@ -71,14 +72,13 @@ exchange amplitudes exhibits the discontinuous `4/3` static coupling and `3/4` l
 /-- Massless General Relativity spin-2 propagator residue contracted between two conserved
 stress-energy tensors `T₁, T₂`: `T₁_{ab} T₂^{ab} - ½ T₁ T₂`. -/
 noncomputable def grPropagatorCoupling (T1 T2 : Tensor2 4) : ℝ :=
-  (∑ a : Fin 4, ∑ b : Fin 4, minkowskiMetric4 a a * minkowskiMetric4 b b * T1 a b * T2 a b)
-    - (1 / 2) * metricTrace minkowski T1 * metricTrace minkowski T2
+  MassiveGravityTheory.generalRelativity.propagatorCoupling T1 T2
 
 /-- Massive Fierz–Pauli spin-2 propagator residue in the `m → 0` limit contracted between two
-conserved stress-energy tensors `T₁, T₂`: `T₁_{ab} T₂^{ab} - ⅓ T₁ T₂`. -/
-noncomputable def massivePropagatorCoupling (T1 T2 : Tensor2 4) : ℝ :=
-  (∑ a : Fin 4, ∑ b : Fin 4, minkowskiMetric4 a a * minkowskiMetric4 b b * T1 a b * T2 a b)
-    - (1 / 3) * metricTrace minkowski T1 * metricTrace minkowski T2
+conserved stress-energy tensors `T₁, T₂`, for a massive-gravity model `M` with trace coefficient
+`M.c = 1/3`: `T₁_{ab} T₂^{ab} - ⅓ T₁ T₂`. -/
+noncomputable def massivePropagatorCoupling (M : MassiveGravityTheory) (T1 T2 : Tensor2 4) : ℝ :=
+  M.propagatorCoupling T1 T2
 
 /-- Stress-energy tensor of a static non-relativistic mass density `ρ`: `T_{00} = ρ`, all other
 components zero. -/
@@ -87,11 +87,12 @@ def staticSource (ρ : ℝ) : Tensor2 4 :=
 
 /-- The vDVZ static discontinuity: for two static non-relativistic sources `ρ₁, ρ₂`, the massive
 graviton exchange amplitude is `4/3` times the massless General Relativity amplitude. -/
-lemma vdvz_static_ratio (ρ1 ρ2 : ℝ) :
-    massivePropagatorCoupling (staticSource ρ1) (staticSource ρ2) =
+lemma vdvz_static_ratio (M : MassiveGravityTheory) (hM : M.c = 1 / 3) (ρ1 ρ2 : ℝ) :
+    massivePropagatorCoupling M (staticSource ρ1) (staticSource ρ2) =
       (4 / 3) * grPropagatorCoupling (staticSource ρ1) (staticSource ρ2) := by
-  simp only [massivePropagatorCoupling, grPropagatorCoupling, metricTrace_minkowski, staticSource,
-    Fin.sum_univ_four, minkowskiMetric4_apply]
+  simp only [massivePropagatorCoupling, grPropagatorCoupling,
+    MassiveGravityTheory.propagatorCoupling, MassiveGravityTheory.generalRelativity, hM,
+    metricTrace_minkowski, staticSource, Fin.sum_univ_four, minkowskiMetric4_apply]
   norm_num
   ring
 
@@ -99,11 +100,12 @@ lemma vdvz_static_ratio (ρ1 ρ2 : ℝ) :
 (`metricTrace minkowski Tlight = 0`), after calibrating the massive gravitational coupling by `3/4`
 to reproduce Newton's law for static masses, the effective coupling to light is strictly `3/4` of
 the General Relativity coupling. -/
-lemma vdvz_light_deflection_ratio (Tmass Tlight : Tensor2 4)
-    (hnull : metricTrace minkowski Tlight = 0) :
-    (3 / 4) * massivePropagatorCoupling Tmass Tlight =
+lemma vdvz_light_deflection_ratio (M : MassiveGravityTheory) (hM : M.c = 1 / 3)
+    (Tmass Tlight : Tensor2 4) (hnull : metricTrace minkowski Tlight = 0) :
+    (3 / 4) * massivePropagatorCoupling M Tmass Tlight =
       (3 / 4) * grPropagatorCoupling Tmass Tlight := by
-  simp only [massivePropagatorCoupling, grPropagatorCoupling, hnull]
+  simp only [massivePropagatorCoupling, grPropagatorCoupling,
+    MassiveGravityTheory.propagatorCoupling, MassiveGravityTheory.generalRelativity, hM, hnull]
   ring
 
 end MassiveGravity

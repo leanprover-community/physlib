@@ -153,7 +153,8 @@ gravity formalize the Lorentz-invariant mass term -(m² / 4)(h_{ab} h^{ab} + α 
 `FierzPauliTheory`, proving that the ghost-free tuning α = -1 uniquely eliminates the sixth
 longitudinal derivative mode and enforces vacuum tracelessness h = 0 [72], derive the van
 Dam-Veltman-Zakharov (vDVZ) 4 / 3 static coupling ratio and 3 / 4 light-deflection discontinuity
-between `massivePropagatorCoupling` and `grPropagatorCoupling` [73], and construct the ghost-free
+between `massivePropagatorCoupling` and `grPropagatorCoupling`, both built on the shared
+`MassiveGravityTheory` core [73][80], and construct the ghost-free
 dRGT potential on `DRGTTheory` from `Matrix.trace` elementary symmetric polynomials [74]. Galactic
 rotation-curve alternatives without non-baryonic dark matter are represented by Milgrom's Modified
 Newtonian Dynamics (`MONDTheory`), which interpolates between the Newtonian regime a ≫ a₀ and the
@@ -368,9 +369,11 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `NordstromSpacetime.christoffel`, `NordstromSpacetime.christoffel_eq`,
     `NordstromSpacetime.ricciScalar`, `NordstromSpacetime.einsteinFokker_iff`
 56. PhyslibAlpha/Relativity/Modified/BransDicke.lean — `BransDickeTheory`,
-    `BransDickeTheory.gamma`, `BransDickeTheory.coupling`, `gamma`, `gamma_eq_one_sub`,
-    `gamma_bounds`, `cassini_deviation`, `gamma_tendsto_atTop`, `fR_gamma`, `coupling`,
-    `coupling_eq_one_add`, `coupling_bounds`
+    `BransDickeTheory.gamma`, `BransDickeTheory.gamma_eq_one_sub`,
+    `BransDickeTheory.gamma_bounds`, `BransDickeTheory.cassini_deviation`,
+    `BransDickeTheory.coupling`, `BransDickeTheory.coupling_eq_one_add`,
+    `BransDickeTheory.coupling_bounds`, `BransDickeTheory.fR`, `BransDickeTheory.fR_gamma`,
+    `gamma_tendsto_atTop`
 57. PhyslibAlpha/Relativity/Modified/FRGravity.lean — `FRTheory`,
     `FRTheory.generalRelativity`, `FRTheory.starobinsky`, `FRTheory.algebraicFieldEqn`,
     `linear_is_einstein`, `trace_algebraicFieldEqn`, `trace_algebraicFieldEqn_four`,
@@ -386,11 +389,13 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `CubicGalileon.density`, `cubic_total_derivative`, `CubicGalileon.density_hasDerivAt`,
     `shift_total_derivative`, `shift_forbids_potential`
 60. PhyslibAlpha/Relativity/Modified/ChameleonScreening.lean — `ChameleonModel`,
-    `ChameleonModel.massSq`, `ChameleonModel.mass`, `ChameleonModel.mass_mono`, `comptonRange`,
-    `comptonRange_antitone`, `ChameleonModel.range_shrinks`, `yukawaSuppression`,
-    `yukawaSuppression_lt_half`, `thinShellParameter`, `screeningFactor`, `thin_shell_suppressed`
+    `ChameleonModel.massSq`, `ChameleonModel.mass`, `ChameleonModel.mass_mono`,
+    `ChameleonModel.range`, `ChameleonModel.range_shrinks`, `ChameleonModel.suppression`,
+    `comptonRange`, `comptonRange_antitone`, `yukawaSuppression`, `yukawaSuppression_lt_half`,
+    `thinShellParameter`, `screeningFactor`, `thin_shell_suppressed`
 61. PhyslibAlpha/Relativity/Modified/EinsteinCartan.lean — `AffineConnection`,
-    `EinsteinCartanData`, `EinsteinCartanData.torsion`, `EinsteinCartanData.MetricCompatible`,
+    `EinsteinCartanData`, `EinsteinCartanData.torsion`, `EinsteinCartanData.torsion_antisymm`,
+    `EinsteinCartanData.torsion_diag`, `EinsteinCartanData.MetricCompatible`,
     `EinsteinCartanData.connection_unique`, `torsion`, `torsion_antisymm`, `MetricCompatible`,
     `leviCivitaOfDeriv`, `leviCivitaOfDeriv_compatible`, `contorsion`,
     `contorsion_antisymm_outer`, `contorsion_torsion`, `connection_unique`, `modifiedTorsion`,
@@ -418,7 +423,8 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `constantCurvature`, `gaussBonnetScalar_constantCurvature_four`,
     `lanczosTensor_constantCurvature_five`
 67. PhyslibAlpha/Relativity/Modified/KaluzaKlein/Basic.lean — `KaluzaKleinData`,
-    `KaluzaKleinData.metric`, `KaluzaKleinData.metricInv`, `KaluzaKleinData.gaugeShift`,
+    `KaluzaKleinData.metric`, `KaluzaKleinData.metric_symm`, `KaluzaKleinData.metricInv`,
+    `KaluzaKleinData.metricInv_symm`, `KaluzaKleinData.gaugeShift`,
     `KaluzaKleinData.toMetricTensor`, `extendedPotential`, `metric4Ext`, `kkMetric`,
     `kkMetric_symm`, `contravariantPotential`, `kkMetricInv`, `kkMetricInv_mul_kkMetric`,
     `kkMetricInv_symm`, `kkMetric_mul_kkMetricInv`, `kkMetricTensor`
@@ -488,6 +494,9 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `CoordinateMetric.ricci_toRiemannTensorConst`,
     `CoordinateMetric.ricciScalar_toRiemannTensorConst`,
     `CoordinateMetric.einstein_toRiemannTensorConst`
+80. PhyslibAlpha/Relativity/Modified/MassiveGravity/Basic.lean — `MassiveGravityTheory`,
+    `MassiveGravityTheory.massSq`, `MassiveGravityTheory.propagatorCoupling`,
+    `MassiveGravityTheory.generalRelativity`, `MassiveGravityTheory.fierzPauli`
 
 ## References
 

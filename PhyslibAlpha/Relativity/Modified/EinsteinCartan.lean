@@ -107,6 +107,16 @@ lemma torsion_antisymm {n : ℕ} (Γ : AffineConnection n) (k i j : Fin n) :
 lemma torsion_diag {n : ℕ} (Γ : AffineConnection n) (k i : Fin n) : torsion Γ k i i = 0 := by
   simp [torsion]
 
+/-- Antisymmetry of the torsion of an `EinsteinCartanData` in its lower two indices. -/
+lemma EinsteinCartanData.torsion_antisymm {n : ℕ} (D : EinsteinCartanData n) (k i j : Fin n) :
+    D.torsion k i j = -D.torsion k j i :=
+  GeneralRelativity.Modified.EinsteinCartan.torsion_antisymm D.conn k i j
+
+/-- Diagonal components of the torsion of an `EinsteinCartanData` vanish. -/
+lemma EinsteinCartanData.torsion_diag {n : ℕ} (D : EinsteinCartanData n) (k i : Fin n) :
+    D.torsion k i i = 0 :=
+  GeneralRelativity.Modified.EinsteinCartan.torsion_diag D.conn k i
+
 /-- Any symmetric connection (such as Levi-Civita) has zero torsion. -/
 lemma torsion_eq_zero_of_symm {n : ℕ} (Γ : AffineConnection n) (hs : ∀ k i j, Γ k i j = Γ k j i) :
     torsion Γ = 0 := by

@@ -104,6 +104,10 @@ lemma ChameleonModel.mass_mono (M : ChameleonModel) {ρ₁ ρ₂ : ℝ} (h : ρ�
 /-- Compton wavelength `λ = 1 / m` of a scalar of mass `m`. -/
 noncomputable def comptonRange (m : ℝ) : ℝ := 1 / m
 
+/-- Compton wavelength `λ = 1 / M.mass ρ` of a `ChameleonModel` in ambient density `ρ`. -/
+noncomputable def ChameleonModel.range (M : ChameleonModel) (ρ : ℝ) : ℝ :=
+  ChameleonScreening.comptonRange (M.mass ρ)
+
 /-- A heavier scalar has a shorter Compton range. -/
 lemma comptonRange_antitone {m₁ m₂ : ℝ} (h₁ : 0 < m₁) (h : m₁ ≤ m₂) :
     comptonRange m₂ ≤ comptonRange m₁ :=
@@ -112,11 +116,16 @@ lemma comptonRange_antitone {m₁ m₂ : ℝ} (h₁ : 0 < m₁) (h : m₁ ≤ m�
 /-- In a denser environment, the chameleon Compton range shrinks. -/
 lemma ChameleonModel.range_shrinks (M : ChameleonModel) {ρ₁ ρ₂ : ℝ} (hpos : 0 < M.mass ρ₁)
     (h : ρ₁ ≤ ρ₂) :
-    comptonRange (M.mass ρ₂) ≤ comptonRange (M.mass ρ₁) :=
-  comptonRange_antitone hpos (M.mass_mono h)
+    ChameleonScreening.comptonRange (M.mass ρ₂) ≤
+    ChameleonScreening.comptonRange (M.mass ρ₁) :=
+  ChameleonScreening.comptonRange_antitone hpos (M.mass_mono h)
 
 /-- Yukawa suppression factor `e^{-x}` at dimensionless distance `x = r / λ`. -/
 noncomputable def yukawaSuppression (x : ℝ) : ℝ := Real.exp (-x)
+
+/-- Yukawa suppression `e^{-r / λ}` at radius `r` for a `ChameleonModel` in ambient density `ρ`. -/
+noncomputable def ChameleonModel.suppression (M : ChameleonModel) (ρ r : ℝ) : ℝ :=
+  ChameleonScreening.yukawaSuppression (r / M.range ρ)
 
 /-- Beyond one Compton range (`r ≥ λ`), the Yukawa factor drops below `1/2`. -/
 lemma yukawaSuppression_lt_half {x : ℝ} (h : 1 ≤ x) : yukawaSuppression x < 1 / 2 := by

@@ -154,6 +154,10 @@ lemma kkMetric_symm (g4 : Tensor2 4) (hg : IsSymm g4) (A : Fin 4 → ℝ) (φ : 
   · simp only [hi, hj, ↓reduceDIte]; ring
   · simp only [hi, hj, ↓reduceDIte]; ring
 
+/-- Symmetry of the metric of a `KaluzaKleinData`. -/
+lemma KaluzaKleinData.metric_symm (D : KaluzaKleinData) : IsSymm D.metric :=
+  kkMetric_symm D.M.g D.M.symm D.A D.φ
+
 /-- Contravariant 4D potential `A^μ = ∑_ν g^{μν} A_ν`. -/
 def contravariantPotential (ginv4 : Tensor2 4) (A : Fin 4 → ℝ) (i : Fin 4) : ℝ :=
   ∑ k : Fin 4, ginv4 i k * A k
@@ -327,6 +331,10 @@ noncomputable def kkMetricTensor (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : 
 /-- The inverse 5D Kaluza–Klein metric of the data `D`. -/
 noncomputable def KaluzaKleinData.metricInv (D : KaluzaKleinData) : Tensor2 5 :=
   kkMetricInv D.M.ginv D.A D.φ
+
+/-- Symmetry of the inverse metric of a `KaluzaKleinData`. -/
+lemma KaluzaKleinData.metricInv_symm (D : KaluzaKleinData) : IsSymm D.metricInv :=
+  kkMetricInv_symm D.M D.A D.φ
 
 /-- Shift the electromagnetic four-potential of a `KaluzaKleinData` by a gradient `dlam`. -/
 def KaluzaKleinData.gaugeShift (D : KaluzaKleinData) (dlam : Fin 4 → ℝ) : KaluzaKleinData where

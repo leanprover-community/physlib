@@ -158,6 +158,16 @@ noncomputable def RegularPoint.metricTensor {S : FLRWSpacetime} (p : S.RegularPo
     MetricTensor 4 :=
   S.metricTensor p.x p.ha p.hr p.hkr p.hsin
 
+/-- Right inverse identity at a bundled regular chart point. -/
+lemma RegularPoint.metric_mul_inv {S : FLRWSpacetime} (p : S.RegularPoint) :
+    S.metric p.x * S.metricInv p.x = 1 :=
+  S.metric_mul_inv p.x p.ha p.hr p.hkr p.hsin
+
+/-- Left inverse identity at a bundled regular chart point. -/
+lemma RegularPoint.metricInv_mul {S : FLRWSpacetime} (p : S.RegularPoint) :
+    S.metricInv p.x * S.metric p.x = 1 :=
+  S.metricInv_mul p.x p.ha p.hr p.hkr p.hsin
+
 /-- The FLRW metric as a `CoordinateMetric 4` on its regular comoving chart where
 `a(t) ≠ 0`, `r ≠ 0`, `1 - k r² ≠ 0`, `sin θ ≠ 0`. -/
 noncomputable def toCoordinateMetric (S : FLRWSpacetime) : CoordinateMetric 4 where
