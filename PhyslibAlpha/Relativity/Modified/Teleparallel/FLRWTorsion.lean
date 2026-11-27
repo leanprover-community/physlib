@@ -188,21 +188,77 @@ private lemma flrwTetrad_coordDeriv_eq (a : ℝ → ℝ) (x : Fin 4 → ℝ) (u 
     simp [hu]
     exact coordDeriv_const_slice u (f := fun y => flrwTetrad a y A j) _ hconst
 
+private lemma flrwTetradFrame_weitzenbockTorsion_eq_k0 (a : ℝ → ℝ) (x : Fin 4 → ℝ)
+    (ha : a (x 0) ≠ 0) (i j : Fin 4) :
+    (flrwTetradFrame a x ha).weitzenbockTorsion (flrwTetradDeriv a x) 0 i j =
+      if (0 : Fin 4) ≠ 0 ∧ i = 0 ∧ j = 0 then deriv a (x 0) / a (x 0)
+      else if (0 : Fin 4) ≠ 0 ∧ j = 0 ∧ i = 0 then -(deriv a (x 0) / a (x 0))
+      else 0 := by
+  have hdiag : ∀ A : Fin 4, flrwTetradInv a x 0 A =
+      if (0 : Fin 4) = A then ![(1 : ℝ), (a (x 0))⁻¹, (a (x 0))⁻¹, (a (x 0))⁻¹] 0 else 0 := by
+    intro A
+    simp [flrwTetradInv, Matrix.diagonal_apply]
+  rw [Tetrad.weitzenbockTorsion_eq]
+  simp only [flrwTetradFrame, hdiag, ite_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ,
+    ↓reduceIte, flrwTetrad_coordDeriv_eq]
+  fin_cases i <;> fin_cases j <;> simp [div_eq_inv_mul]
+
+private lemma flrwTetradFrame_weitzenbockTorsion_eq_k1 (a : ℝ → ℝ) (x : Fin 4 → ℝ)
+    (ha : a (x 0) ≠ 0) (i j : Fin 4) :
+    (flrwTetradFrame a x ha).weitzenbockTorsion (flrwTetradDeriv a x) 1 i j =
+      if (1 : Fin 4) ≠ 0 ∧ i = 0 ∧ j = 1 then deriv a (x 0) / a (x 0)
+      else if (1 : Fin 4) ≠ 0 ∧ j = 0 ∧ i = 1 then -(deriv a (x 0) / a (x 0))
+      else 0 := by
+  have hdiag : ∀ A : Fin 4, flrwTetradInv a x 1 A =
+      if (1 : Fin 4) = A then ![(1 : ℝ), (a (x 0))⁻¹, (a (x 0))⁻¹, (a (x 0))⁻¹] 1 else 0 := by
+    intro A
+    simp [flrwTetradInv, Matrix.diagonal_apply]
+  rw [Tetrad.weitzenbockTorsion_eq]
+  simp only [flrwTetradFrame, hdiag, ite_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ,
+    ↓reduceIte, flrwTetrad_coordDeriv_eq]
+  fin_cases i <;> fin_cases j <;> simp [div_eq_inv_mul]
+
+private lemma flrwTetradFrame_weitzenbockTorsion_eq_k2 (a : ℝ → ℝ) (x : Fin 4 → ℝ)
+    (ha : a (x 0) ≠ 0) (i j : Fin 4) :
+    (flrwTetradFrame a x ha).weitzenbockTorsion (flrwTetradDeriv a x) 2 i j =
+      if (2 : Fin 4) ≠ 0 ∧ i = 0 ∧ j = 2 then deriv a (x 0) / a (x 0)
+      else if (2 : Fin 4) ≠ 0 ∧ j = 0 ∧ i = 2 then -(deriv a (x 0) / a (x 0))
+      else 0 := by
+  have hdiag : ∀ A : Fin 4, flrwTetradInv a x 2 A =
+      if (2 : Fin 4) = A then ![(1 : ℝ), (a (x 0))⁻¹, (a (x 0))⁻¹, (a (x 0))⁻¹] 2 else 0 := by
+    intro A
+    simp [flrwTetradInv, Matrix.diagonal_apply]
+  rw [Tetrad.weitzenbockTorsion_eq]
+  simp only [flrwTetradFrame, hdiag, ite_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ,
+    ↓reduceIte, flrwTetrad_coordDeriv_eq]
+  fin_cases i <;> fin_cases j <;> simp [div_eq_inv_mul]
+
+private lemma flrwTetradFrame_weitzenbockTorsion_eq_k3 (a : ℝ → ℝ) (x : Fin 4 → ℝ)
+    (ha : a (x 0) ≠ 0) (i j : Fin 4) :
+    (flrwTetradFrame a x ha).weitzenbockTorsion (flrwTetradDeriv a x) 3 i j =
+      if (3 : Fin 4) ≠ 0 ∧ i = 0 ∧ j = 3 then deriv a (x 0) / a (x 0)
+      else if (3 : Fin 4) ≠ 0 ∧ j = 0 ∧ i = 3 then -(deriv a (x 0) / a (x 0))
+      else 0 := by
+  have hdiag : ∀ A : Fin 4, flrwTetradInv a x 3 A =
+      if (3 : Fin 4) = A then ![(1 : ℝ), (a (x 0))⁻¹, (a (x 0))⁻¹, (a (x 0))⁻¹] 3 else 0 := by
+    intro A
+    simp [flrwTetradInv, Matrix.diagonal_apply]
+  rw [Tetrad.weitzenbockTorsion_eq]
+  simp only [flrwTetradFrame, hdiag, ite_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ,
+    ↓reduceIte, flrwTetrad_coordDeriv_eq]
+  fin_cases i <;> fin_cases j <;> simp [div_eq_inv_mul]
+
 private lemma flrwTetradFrame_weitzenbockTorsion_eq (a : ℝ → ℝ) (x : Fin 4 → ℝ)
     (ha : a (x 0) ≠ 0) (k i j : Fin 4) :
     (flrwTetradFrame a x ha).weitzenbockTorsion (flrwTetradDeriv a x) k i j =
       if k ≠ 0 ∧ i = 0 ∧ j = k then deriv a (x 0) / a (x 0)
       else if k ≠ 0 ∧ j = 0 ∧ i = k then -(deriv a (x 0) / a (x 0))
       else 0 := by
-  have hdiag : ∀ A : Fin 4, flrwTetradInv a x k A =
-      if k = A then ![(1 : ℝ), (a (x 0))⁻¹, (a (x 0))⁻¹, (a (x 0))⁻¹] k else 0 := by
-    intro A
-    simp [flrwTetradInv, Matrix.diagonal_apply]
-  rw [Tetrad.weitzenbockTorsion_eq]
-  simp only [flrwTetradFrame, hdiag, ite_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ,
-    ↓reduceIte, flrwTetrad_coordDeriv_eq]
-  fin_cases k <;> fin_cases i <;> fin_cases j <;>
-    simp [div_eq_inv_mul]
+  fin_cases k
+  · exact flrwTetradFrame_weitzenbockTorsion_eq_k0 a x ha i j
+  · exact flrwTetradFrame_weitzenbockTorsion_eq_k1 a x ha i j
+  · exact flrwTetradFrame_weitzenbockTorsion_eq_k2 a x ha i j
+  · exact flrwTetradFrame_weitzenbockTorsion_eq_k3 a x ha i j
 
 private lemma flrw_torsionTrace_eq (a : ℝ → ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0) (j : Fin 4) :
     torsionTrace ((flrwTetradFrame a x ha).weitzenbockTorsion (flrwTetradDeriv a x)) j =

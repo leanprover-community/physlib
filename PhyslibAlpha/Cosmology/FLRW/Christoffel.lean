@@ -295,6 +295,50 @@ private lemma pd_theta (S : FLRWSpacetime) (x : Fin 4 → ℝ) (c d : Fin 4) :
     | exact pd_theta_33 S x
     | simp [coordDeriv, metric]
 
+/-- Time components (`m = 0`) of the FLRW Christoffel comparison. -/
+private lemma christoffel_eq_m0 (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
+    (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
+    (ha_diff : DifferentiableAt ℝ S.a (x 0)) (i j : Fin 4) :
+    CoordinateCurvature.christoffel S.metric S.metricInv x 0 i j = S.christoffel x 0 i j := by
+  rw [christoffel_diag S.metric S.metricInv x 0 i j
+    (fun l hl => S.metricInv_offdiag x (Ne.symm hl))]
+  fin_cases i <;> fin_cases j <;>
+    simp [christoffel, metricInv, pd_t S x ha_diff, pd_r S x hkr, pd_theta S x] <;>
+    field_simp [ha, hr, hkr, hsin]
+
+/-- Radial components (`m = 1`) of the FLRW Christoffel comparison. -/
+private lemma christoffel_eq_m1 (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
+    (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
+    (ha_diff : DifferentiableAt ℝ S.a (x 0)) (i j : Fin 4) :
+    CoordinateCurvature.christoffel S.metric S.metricInv x 1 i j = S.christoffel x 1 i j := by
+  rw [christoffel_diag S.metric S.metricInv x 1 i j
+    (fun l hl => S.metricInv_offdiag x (Ne.symm hl))]
+  fin_cases i <;> fin_cases j <;>
+    simp [christoffel, metricInv, pd_t S x ha_diff, pd_r S x hkr, pd_theta S x] <;>
+    field_simp [ha, hr, hkr, hsin]
+
+/-- Polar components (`m = 2`) of the FLRW Christoffel comparison. -/
+private lemma christoffel_eq_m2 (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
+    (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
+    (ha_diff : DifferentiableAt ℝ S.a (x 0)) (i j : Fin 4) :
+    CoordinateCurvature.christoffel S.metric S.metricInv x 2 i j = S.christoffel x 2 i j := by
+  rw [christoffel_diag S.metric S.metricInv x 2 i j
+    (fun l hl => S.metricInv_offdiag x (Ne.symm hl))]
+  fin_cases i <;> fin_cases j <;>
+    simp [christoffel, metricInv, pd_t S x ha_diff, pd_r S x hkr, pd_theta S x] <;>
+    field_simp [ha, hr, hkr, hsin]
+
+/-- Azimuthal components (`m = 3`) of the FLRW Christoffel comparison. -/
+private lemma christoffel_eq_m3 (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
+    (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
+    (ha_diff : DifferentiableAt ℝ S.a (x 0)) (i j : Fin 4) :
+    CoordinateCurvature.christoffel S.metric S.metricInv x 3 i j = S.christoffel x 3 i j := by
+  rw [christoffel_diag S.metric S.metricInv x 3 i j
+    (fun l hl => S.metricInv_offdiag x (Ne.symm hl))]
+  fin_cases i <;> fin_cases j <;>
+    simp [christoffel, metricInv, pd_t S x ha_diff, pd_r S x hkr, pd_theta S x] <;>
+    field_simp [ha, hr, hkr, hsin]
+
 /-- All 64 Christoffel symbols computed from the FLRW coordinate metric match
 `FLRWSpacetime.christoffel`. -/
 lemma christoffel_eq (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
@@ -303,12 +347,11 @@ lemma christoffel_eq (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠
     ∀ m i j, CoordinateCurvature.christoffel S.metric S.metricInv x m i j =
       S.christoffel x m i j := by
   intro m i j
-  have hdiag : ∀ l : Fin 4, l ≠ m → S.metricInv x m l = 0 :=
-    fun l hl => S.metricInv_offdiag x (Ne.symm hl)
-  rw [christoffel_diag S.metric S.metricInv x m i j hdiag]
-  fin_cases m <;> fin_cases i <;> fin_cases j <;>
-    simp [christoffel, metricInv, pd_t S x ha_diff, pd_r S x hkr, pd_theta S x] <;>
-    field_simp [ha, hr, hkr, hsin]
+  fin_cases m
+  · exact christoffel_eq_m0 S x ha hr hkr hsin ha_diff i j
+  · exact christoffel_eq_m1 S x ha hr hkr hsin ha_diff i j
+  · exact christoffel_eq_m2 S x ha hr hkr hsin ha_diff i j
+  · exact christoffel_eq_m3 S x ha hr hkr hsin ha_diff i j
 
 /-- Neighbourhood equality between the coordinate Christoffel symbols and the closed-form
 `FLRWSpacetime.christoffel` around a regular chart point `x`. -/

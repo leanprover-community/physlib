@@ -101,6 +101,12 @@ noncomputable def NordstromSpacetime.metricInv (N : NordstromSpacetime) (x : Fin
     Tensor2 4 :=
   conformalRescaleMetricInv minkowskiMetric4 (N.φ x ^ 2)
 
+/-- Off-diagonal entries of the inverse Nordström metric vanish. -/
+@[simp] lemma NordstromSpacetime.metricInv_offdiag (N : NordstromSpacetime) (x : Fin 4 → ℝ)
+    {i j : Fin 4} (hij : i ≠ j) : N.metricInv x i j = 0 := by
+  fin_cases i <;> fin_cases j <;>
+    simp_all [NordstromSpacetime.metricInv, conformalRescaleMetricInv, minkowskiMetric4]
+
 /-- Package `N.metric` and `N.metricInv` as a `MetricTensor 4` wherever `N.φ x ≠ 0`. -/
 noncomputable def NordstromSpacetime.metricTensor (N : NordstromSpacetime) (x : Fin 4 → ℝ)
     (hφ : N.φ x ≠ 0) : MetricTensor 4 :=
@@ -165,22 +171,72 @@ private lemma pd_conformal_eta (N : NordstromSpacetime) (x : Fin 4 → ℝ)
     funext s; simp [NordstromSpacetime.metric, conformalRescaleMetric]
   rw [coordDeriv, hfun, hsq.deriv]
 
+/-- Time components (`k = 0`) of the coordinate-versus-conformal Nordström Christoffel
+comparison. -/
+private lemma NordstromSpacetime.christoffel_eq_k0 (N : NordstromSpacetime) (x : Fin 4 → ℝ)
+    (hφ : N.φ x ≠ 0) (hd : DifferentiableAt ℝ N.φ x) (i j : Fin 4) :
+    N.toCoordinateMetric.christoffel x 0 i j = N.christoffel x 0 i j := by
+  simp only [CoordinateMetric.christoffel_apply, NordstromSpacetime.toCoordinateMetric_g,
+    NordstromSpacetime.toCoordinateMetric_ginv]
+  rw [christoffel_diag N.metric N.metricInv x 0 i j
+    (fun l hl => N.metricInv_offdiag x (Ne.symm hl))]
+  simp only [pd_conformal_eta N x hd, NordstromSpacetime.metricInv, conformalRescaleMetricInv,
+    NordstromSpacetime.christoffel]
+  fin_cases i <;> fin_cases j <;>
+    simp only [minkowskiMetric4_apply] <;> norm_num <;> field_simp [hφ]
+
+/-- Radial components (`k = 1`) of the coordinate-versus-conformal Nordström Christoffel
+comparison. -/
+private lemma NordstromSpacetime.christoffel_eq_k1 (N : NordstromSpacetime) (x : Fin 4 → ℝ)
+    (hφ : N.φ x ≠ 0) (hd : DifferentiableAt ℝ N.φ x) (i j : Fin 4) :
+    N.toCoordinateMetric.christoffel x 1 i j = N.christoffel x 1 i j := by
+  simp only [CoordinateMetric.christoffel_apply, NordstromSpacetime.toCoordinateMetric_g,
+    NordstromSpacetime.toCoordinateMetric_ginv]
+  rw [christoffel_diag N.metric N.metricInv x 1 i j
+    (fun l hl => N.metricInv_offdiag x (Ne.symm hl))]
+  simp only [pd_conformal_eta N x hd, NordstromSpacetime.metricInv, conformalRescaleMetricInv,
+    NordstromSpacetime.christoffel]
+  fin_cases i <;> fin_cases j <;>
+    simp only [minkowskiMetric4_apply] <;> norm_num <;> field_simp [hφ]
+
+/-- Polar components (`k = 2`) of the coordinate-versus-conformal Nordström Christoffel
+comparison. -/
+private lemma NordstromSpacetime.christoffel_eq_k2 (N : NordstromSpacetime) (x : Fin 4 → ℝ)
+    (hφ : N.φ x ≠ 0) (hd : DifferentiableAt ℝ N.φ x) (i j : Fin 4) :
+    N.toCoordinateMetric.christoffel x 2 i j = N.christoffel x 2 i j := by
+  simp only [CoordinateMetric.christoffel_apply, NordstromSpacetime.toCoordinateMetric_g,
+    NordstromSpacetime.toCoordinateMetric_ginv]
+  rw [christoffel_diag N.metric N.metricInv x 2 i j
+    (fun l hl => N.metricInv_offdiag x (Ne.symm hl))]
+  simp only [pd_conformal_eta N x hd, NordstromSpacetime.metricInv, conformalRescaleMetricInv,
+    NordstromSpacetime.christoffel]
+  fin_cases i <;> fin_cases j <;>
+    simp only [minkowskiMetric4_apply] <;> norm_num <;> field_simp [hφ]
+
+/-- Azimuthal components (`k = 3`) of the coordinate-versus-conformal Nordström Christoffel
+comparison. -/
+private lemma NordstromSpacetime.christoffel_eq_k3 (N : NordstromSpacetime) (x : Fin 4 → ℝ)
+    (hφ : N.φ x ≠ 0) (hd : DifferentiableAt ℝ N.φ x) (i j : Fin 4) :
+    N.toCoordinateMetric.christoffel x 3 i j = N.christoffel x 3 i j := by
+  simp only [CoordinateMetric.christoffel_apply, NordstromSpacetime.toCoordinateMetric_g,
+    NordstromSpacetime.toCoordinateMetric_ginv]
+  rw [christoffel_diag N.metric N.metricInv x 3 i j
+    (fun l hl => N.metricInv_offdiag x (Ne.symm hl))]
+  simp only [pd_conformal_eta N x hd, NordstromSpacetime.metricInv, conformalRescaleMetricInv,
+    NordstromSpacetime.christoffel]
+  fin_cases i <;> fin_cases j <;>
+    simp only [minkowskiMetric4_apply] <;> norm_num <;> field_simp [hφ]
+
 /-- Agreement of the coordinate Christoffel symbols of `N.metric` with `N.christoffel` at every
 point where `N.φ x ≠ 0` and `N.φ` is differentiable. -/
 lemma NordstromSpacetime.christoffel_eq (N : NordstromSpacetime) (x : Fin 4 → ℝ)
     (hφ : N.φ x ≠ 0) (hd : DifferentiableAt ℝ N.φ x) (k i j : Fin 4) :
     N.toCoordinateMetric.christoffel x k i j = N.christoffel x k i j := by
-  have hdiag : ∀ l : Fin 4, l ≠ k → N.metricInv x k l = 0 := by
-    intro l hl
-    fin_cases k <;> fin_cases l <;> simp_all [NordstromSpacetime.metricInv,
-      conformalRescaleMetricInv, minkowskiMetric4]
-  simp only [CoordinateMetric.christoffel_apply, NordstromSpacetime.toCoordinateMetric_g,
-    NordstromSpacetime.toCoordinateMetric_ginv]
-  rw [christoffel_diag N.metric N.metricInv x k i j hdiag]
-  simp only [pd_conformal_eta N x hd, NordstromSpacetime.metricInv, conformalRescaleMetricInv,
-    NordstromSpacetime.christoffel]
-  fin_cases k <;> fin_cases i <;> fin_cases j <;>
-    simp only [minkowskiMetric4_apply] <;> norm_num <;> field_simp [hφ]
+  fin_cases k
+  · exact N.christoffel_eq_k0 x hφ hd i j
+  · exact N.christoffel_eq_k1 x hφ hd i j
+  · exact N.christoffel_eq_k2 x hφ hd i j
+  · exact N.christoffel_eq_k3 x hφ hd i j
 
 /-!
 
