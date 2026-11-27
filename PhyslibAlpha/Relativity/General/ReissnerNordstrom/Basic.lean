@@ -51,8 +51,8 @@ this module proves:
   `ReissnerNordstromSpacetime.toCoordinateMetric`, `ReissnerNordstromSpacetime.metric`,
   `ReissnerNordstromSpacetime.metricInv` : Reissner–Nordström spacetime structure, metric function,
   and coordinate metric.
-- `ReissnerNordstromSpacetime.coulombFieldStrength`, `maxwellStressEnergy` : radial electric field
-  strength and Maxwell stress-energy.
+- `ReissnerNordstromSpacetime.coulombFieldStrength`, `maxwellStressEnergyGaussian` : radial electric
+  field strength and Gaussian-unit Maxwell stress-energy.
 - `ReissnerNordstromSpacetime.ricciTensor`, `ReissnerNordstromSpacetime.ricciScalar`,
   `ReissnerNordstromSpacetime.maxwellStressEnergy_trace_zero`,
   `ReissnerNordstromSpacetime.einsteinTensor_eq_maxwell` : coordinate-metric verification of the
@@ -107,7 +107,8 @@ structure ReissnerNordstromSpacetime where
 
 /-- Electromagnetic stress-energy tensor `T^{EM}_{ij} = (1 / (4π)) (F_{ik} F_j{}^k - (1/4) g_{ij}
 F_{ab} F^{ab})` in Gaussian-cgs/geometrized units (`G = c = 1`). -/
-noncomputable def maxwellStressEnergy (M : MetricTensor 4) (F : Tensor2 4) : Tensor2 4 :=
+noncomputable def maxwellStressEnergyGaussian (M : MetricTensor 4) (F : Tensor2 4) :
+    Tensor2 4 :=
   fun i j => (1 / (4 * Real.pi)) * GeneralRelativity.maxwellStressEnergy M F i j
 
 namespace ReissnerNordstromSpacetime
@@ -296,14 +297,14 @@ private lemma ricciScalar_raw (S : ReissnerNordstromSpacetime) (x : Fin 4 → �
 lemma maxwellStressEnergy_trace_zero (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ)
     (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     metricTrace (S.toStaticSpherical.metricTensor x hr hf hsin)
-      (maxwellStressEnergy (S.toStaticSpherical.metricTensor x hr hf hsin)
+      (maxwellStressEnergyGaussian (S.toStaticSpherical.metricTensor x hr hf hsin)
         (S.coulombFieldStrength (x 1))) = 0 := by
   have hf' : S.toStaticSpherical.metricFn (x 1) ≠ 0 := hf
   have hsmul := metricTrace_smul (S.toStaticSpherical.metricTensor x hr hf' hsin)
     (1 / (4 * Real.pi))
     (GeneralRelativity.maxwellStressEnergy (S.toStaticSpherical.metricTensor x hr hf' hsin)
       (S.coulombFieldStrength (x 1)))
-  unfold maxwellStressEnergy
+  unfold maxwellStressEnergyGaussian
   rw [hsmul, GeneralRelativity.maxwellStressEnergy_trace_zero, mul_zero]
 
 /-- Field equations of the electrovacuum Reissner–Nordström solution, obtained from the coordinate
@@ -312,12 +313,13 @@ private lemma einsteinTensor_eq_maxwell_raw (S : ReissnerNordstromSpacetime) (x 
     (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
     CoordinateCurvature.einsteinTensor S.metric S.metricInv x i j
       = 8 * Real.pi
-          * maxwellStressEnergy (S.toStaticSpherical.metricTensor x hr hf hsin)
+          * maxwellStressEnergyGaussian (S.toStaticSpherical.metricTensor x hr hf hsin)
               (S.coulombFieldStrength (x 1)) i j := by
   have hpi : Real.pi ≠ 0 := Real.pi_ne_zero
   simp only [CoordinateCurvature.einsteinTensor, S.ricciTensor_raw x hr hf hsin,
     S.ricciScalar_raw x hr hf hsin]
-  simp only [maxwellStressEnergy, GeneralRelativity.maxwellStressEnergy, maxwellFieldInvariant,
+  simp only [maxwellStressEnergyGaussian, GeneralRelativity.maxwellStressEnergy,
+    maxwellFieldInvariant,
     StaticSphericalMetric.metricTensor, StaticSphericalMetric.metric,
     StaticSphericalMetric.metricInv, toStaticSpherical, coulombFieldStrength, Matrix.of_apply,
     Fin.sum_univ_four]
@@ -435,7 +437,7 @@ lemma einsteinTensor_eq_maxwell (S : ReissnerNordstromSpacetime) (x : Fin 4 → 
     (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
     S.toCoordinateMetric.einsteinTensor x i j
       = 8 * Real.pi
-          * maxwellStressEnergy (S.toStaticSpherical.metricTensor x hr hf hsin)
+          * maxwellStressEnergyGaussian (S.toStaticSpherical.metricTensor x hr hf hsin)
               (S.coulombFieldStrength (x 1)) i j := by
   simp only [CoordinateMetric.einsteinTensor_apply, S.toCoordinateMetric_g,
     S.toCoordinateMetric_ginv]

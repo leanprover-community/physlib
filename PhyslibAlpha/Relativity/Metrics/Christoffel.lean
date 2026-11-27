@@ -5,6 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
+public import PhyslibAlpha.Relativity.General.GeodesicSystem
 public import PhyslibAlpha.Relativity.Metrics.Basic
 public import PhyslibAlpha.Relativity.Metrics.CoordDeriv
 
@@ -27,6 +28,9 @@ takes the metric and inverse as bare functions and is used by coordinate-chart p
 - `CoordinateCurvature.christoffel` : component-level Christoffel symbols.
 - `CoordinateCurvature.christoffel_diag` : diagonal-inverse collapse of the contraction.
 - `CoordinateMetric.christoffel` : Christoffel symbols of a `CoordinateMetric`.
+- `CoordinateMetric.geodesicAccel`, `CoordinateMetric.IsGeodesic` : chart geodesic acceleration
+  and free-fall predicate.
+- `CoordinateMetric.isGeodesic_iff` : agreement with `GeodesicSystem.IsGeodesic`.
 
 ## iii. Table of contents
 
@@ -86,5 +90,27 @@ noncomputable def CoordinateMetric.christoffel {n : ℕ} (C : CoordinateMetric n
 @[simp] lemma CoordinateMetric.christoffel_apply {n : ℕ} (C : CoordinateMetric n)
     (x : Fin n → ℝ) (k i j : Fin n) :
     C.christoffel x k i j = CoordinateCurvature.christoffel C.g C.ginv x k i j := rfl
+
+/-- Chart geodesic acceleration `-Γ^k_{ij}(x) v^i v^j` of a coordinate metric at position `x` for
+velocity `v`. -/
+noncomputable def CoordinateMetric.geodesicAccel {n : ℕ} (C : CoordinateMetric n)
+    (x v : Fin n → ℝ) : Fin n → ℝ :=
+  fun k => -∑ i, ∑ j, C.christoffel x k i j * v i * v j
+
+/-- Predicate asserting that `(γ, w)` solves the coordinate geodesic equation of `C` on a
+parameter set `s`, with acceleration supplied by `C.geodesicAccel`. -/
+def CoordinateMetric.IsGeodesic {n : ℕ} (C : CoordinateMetric n) (s : Set ℝ)
+    (γ w : ℝ → Fin n → ℝ) : Prop :=
+  ∀ t ∈ s, HasDerivAt γ (w t) t ∧ HasDerivAt w (C.geodesicAccel (γ t) (w t)) t
+
+/-- A `GeodesicSystem` whose acceleration agrees with the chart Christoffel acceleration of `C`
+has exactly the same free-fall trajectories as `C`. -/
+lemma CoordinateMetric.isGeodesic_iff {n : ℕ} (C : CoordinateMetric n)
+    (G : GeodesicSystem (Fin n → ℝ))
+    (hΓ : ∀ x v, G.accel x v = C.geodesicAccel x v) (s : Set ℝ) (γ w : ℝ → Fin n → ℝ) :
+    C.IsGeodesic s γ w ↔ GeneralRelativity.IsGeodesic G s γ w := by
+  constructor <;> intro h t ht
+  · simpa [CoordinateMetric.IsGeodesic, GeneralRelativity.IsGeodesic, hΓ] using h t ht
+  · simpa [CoordinateMetric.IsGeodesic, GeneralRelativity.IsGeodesic, hΓ] using h t ht
 
 end GeneralRelativity

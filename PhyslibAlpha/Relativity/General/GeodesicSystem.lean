@@ -5,6 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
+public import Mathlib.Analysis.Calculus.Deriv.Prod
 public import Mathlib.Analysis.ODE.ExistUnique
 
 /-!
@@ -30,8 +31,9 @@ velocity `(x₀, v₀)` via the Picard–Lindelöf theorem, reducing to unaccele
 - `contDiffAt_geodesicField`, `geodesic_ivp_exists` : local existence of a trajectory on some
   proper-time interval `(-ε, ε)` for smooth (`C¹`) Christoffel symbols.
 - `geodesic_ivp_exists_curve` : `IsGeodesic` position-and-velocity form of local existence.
-- `geodesic_ivp_unique` : uniqueness of free-fall trajectories on `[a, b]` within a bounded region
-  of phase space where `G.field` is Lipschitz.
+- `geodesic_ivp_unique`, `geodesic_ivp_unique_curve` : uniqueness of free-fall trajectories on
+  `[a, b]` within a bounded region of phase space where `G.field` is Lipschitz, in phase-space and
+  `IsGeodesic` form.
 - `GeodesicSystem.flat`, `geodesicField_zero`, `flat_geodesic` : flat geodesic system and inertial
   straight-line trajectories.
 
@@ -168,6 +170,32 @@ lemma geodesic_ivp_unique (G : GeodesicSystem E) {K : NNReal} {a b t₀ : ℝ}
     (h₀ : z₁ t₀ = z₂ t₀) : EqOn z₁ z₂ (Icc a b) :=
   ODE_solution_unique_of_mem_Icc (v := fun _ => G.field)
     (s := fun _ => closedBall c R) hLip ht h₁ h₁' h₁s h₂ h₂' h₂s h₀
+
+/-- Uniqueness of the geodesic Cauchy problem stated directly with `IsGeodesic`: two free-fall
+trajectories `(γ, w)` with the same event and velocity at `t₀` coincide on `[a, b]` whenever their
+phase-space paths stay in a region where `G.field` is `K`-Lipschitz. -/
+lemma geodesic_ivp_unique_curve (G : GeodesicSystem E) {K : NNReal} {a b t₀ : ℝ}
+    {c : E × E} {R : ℝ}
+    (hLip : ∀ t ∈ Ioo a b, LipschitzOnWith K G.field (closedBall c R))
+    (ht : t₀ ∈ Ioo a b) {γ₁ w₁ γ₂ w₂ : ℝ → E}
+    (h₁c : ContinuousOn (fun t => (γ₁ t, w₁ t)) (Icc a b))
+    (h₁ : IsGeodesic G (Ioo a b) γ₁ w₁)
+    (h₁s : ∀ t ∈ Ioo a b, (γ₁ t, w₁ t) ∈ closedBall c R)
+    (h₂c : ContinuousOn (fun t => (γ₂ t, w₂ t)) (Icc a b))
+    (h₂ : IsGeodesic G (Ioo a b) γ₂ w₂)
+    (h₂s : ∀ t ∈ Ioo a b, (γ₂ t, w₂ t) ∈ closedBall c R)
+    (h₀ : (γ₁ t₀, w₁ t₀) = (γ₂ t₀, w₂ t₀)) : EqOn γ₁ γ₂ (Icc a b) := by
+  have hpair : EqOn (fun t => (γ₁ t, w₁ t)) (fun t => (γ₂ t, w₂ t)) (Icc a b) :=
+    geodesic_ivp_unique G hLip ht h₁c
+      (fun t ht => by
+        simpa [GeodesicSystem.field] using
+          HasDerivAt.prodMk (h₁ t ht).1 (h₁ t ht).2)
+      h₁s h₂c
+      (fun t ht => by
+        simpa [GeodesicSystem.field] using
+          HasDerivAt.prodMk (h₂ t ht).1 (h₂ t ht).2)
+      h₂s h₀
+  exact fun t ht => congrArg Prod.fst (hpair ht)
 
 /-!
 

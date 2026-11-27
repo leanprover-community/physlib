@@ -100,12 +100,13 @@ lemma covariantDerivTensor2_eq_of_zero (dK : Fin 3 → Tensor2 3) (K : Tensor2 3
   ext μ i j
   simp [covariantDerivTensor2]
 
-/-- The momentum constraint `M_i = g^{jk} (∇_j K_{ik} - ∇_i K_{jk})` on a spatial slice,
-where `dK μ i j = ∇_μ K_{ij}` is the 3D Levi-Civita covariant derivative of the extrinsic
-curvature (coinciding with coordinate partial derivatives in locally inertial coordinates). -/
-noncomputable def momentumConstraint (D : InitialData) (dK : Fin 3 → Tensor2 3) (i : Fin 3) :
-    ℝ :=
-  (∑ j, ∑ k, D.h.ginv j k * dK j i k) - ∑ j, ∑ k, D.h.ginv j k * dK i j k
+/-- The momentum constraint `M_i = g^{jk} (∇_j K_{ik} - ∇_i K_{jk})` on a spatial slice. The
+table `dK μ i j = ∂_μ K_{ij}` holds coordinate partial derivatives of the extrinsic curvature, and
+`covariantDerivTensor2` supplies the 3D Levi-Civita covariant derivative from `Γ`. -/
+noncomputable def momentumConstraint (D : InitialData) (Γ : Fin 3 → Fin 3 → Fin 3 → ℝ)
+    (dK : Fin 3 → Tensor2 3) (i : Fin 3) : ℝ :=
+  (∑ j, ∑ k, D.h.ginv j k * covariantDerivTensor2 Γ dK D.K j i k)
+    - ∑ j, ∑ k, D.h.ginv j k * covariantDerivTensor2 Γ dK D.K i j k
 
 /-- The Hamiltonian (energy) constraint `H = ³R + (tr K)² - K_ij K^ij`, contracting `K` with the
 inverse spatial metric `D.h.ginv`. -/
@@ -114,8 +115,9 @@ noncomputable def hamiltonianConstraint (D : InitialData) : ℝ :=
     - ∑ i, ∑ j, ∑ k, ∑ l, D.h.ginv i k * D.h.ginv j l * D.K i j * D.K k l
 
 /-- Combined predicate stating that the data satisfy both vacuum constraints. -/
-def IsVacuumData (D : InitialData) (dK : Fin 3 → Tensor2 3) : Prop :=
-  D.hamiltonianConstraint = 0 ∧ ∀ i, D.momentumConstraint dK i = 0
+def IsVacuumData (D : InitialData) (Γ : Fin 3 → Fin 3 → Fin 3 → ℝ)
+    (dK : Fin 3 → Tensor2 3) : Prop :=
+  D.hamiltonianConstraint = 0 ∧ ∀ i, D.momentumConstraint Γ dK i = 0
 
 /-!
 
@@ -154,10 +156,12 @@ lemma trace_sq_eq_of_hamiltonianConstraint_zero (D : InitialData)
   simp only [hamiltonianConstraint] at hH
   linarith
 
-/-- If the covariant derivative tensor `dK = ∇K` vanishes everywhere on the spatial slice, the
-momentum constraint holds identically. -/
-lemma momentumConstraint_zero_of_covariantDeriv_zero (D : InitialData) (dK : Fin 3 → Tensor2 3)
-    (hdK : ∀ μ, dK μ = 0) : ∀ i, D.momentumConstraint dK i = 0 := by
+/-- If the covariant derivative `∇K` vanishes everywhere on the spatial slice, the momentum
+constraint holds identically. -/
+lemma momentumConstraint_zero_of_covariantDeriv_zero (D : InitialData)
+    (Γ : Fin 3 → Fin 3 → Fin 3 → ℝ) (dK : Fin 3 → Tensor2 3)
+    (hdK : ∀ μ i j, covariantDerivTensor2 Γ dK D.K μ i j = 0) :
+    ∀ i, D.momentumConstraint Γ dK i = 0 := by
   intro i
   simp [momentumConstraint, hdK]
 

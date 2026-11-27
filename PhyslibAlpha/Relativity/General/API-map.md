@@ -288,9 +288,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `SchwarzschildSpacetime.toStaticSpherical`, `SchwarzschildSpacetime.toCoordinateMetric`,
     `SchwarzschildSpacetime.metricFn_ofIncompressibleSphere`,
     `SchwarzschildSpacetime.christoffelTtr_from_metric`,
-    `SchwarzschildSpacetime.christoffelRrr_from_metric`,
-    `SchwarzschildSpacetime.riemann_t_rtr_from_metric`,
-    `SchwarzschildSpacetime.riemann_components_from_metric`
+    `SchwarzschildSpacetime.christoffelRrr_from_metric`
 41. PhyslibAlpha/Relativity/General/Schwarzschild/CoordinateCurvature.lean —
     `SchwarzschildSpacetime.toDeSitter`, `SchwarzschildSpacetime.toDeSitter_metric`,
     `SchwarzschildSpacetime.riemann_components_from_coordinateMetric`,

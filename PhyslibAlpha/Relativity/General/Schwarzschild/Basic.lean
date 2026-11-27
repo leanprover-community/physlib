@@ -53,21 +53,14 @@ Note that this module uses the `(-, +, +, +)` signature (`g_tt = -f`), whereas
   `SchwarzschildSpacetime.christoffelRThetaTheta_from_metric`,
   `SchwarzschildSpacetime.christoffelRPhiPhi_from_metric` : radial Christoffel symbols derived
   from the metric.
-- `SchwarzschildSpacetime.riemann_t_rtr_from_metric`,
-  `SchwarzschildSpacetime.riemann_t_thetatheta_from_metric`,
-  `SchwarzschildSpacetime.riemann_t_phitphi_from_metric`,
-  `SchwarzschildSpacetime.riemann_r_thetar_from_metric`,
-  `SchwarzschildSpacetime.riemann_r_phirphi_from_metric`,
-  `SchwarzschildSpacetime.riemann_theta_phitheta_from_metric`,
-  `SchwarzschildSpacetime.riemann_components_from_metric` : all six independent Riemann
-  components derived directly from the metric.
+
+The coordinate Riemann, Ricci, scalar, and Einstein tensors are proved in
+`Schwarzschild/CoordinateCurvature.lean` from `SchwarzschildSpacetime.toCoordinateMetric`.
 
 ## iii. Table of contents
 
 - A. Metric function and radial Christoffel symbols
-- B. Radial-temporal Riemann components
-- C. Remaining independent Riemann components
-- D. Assembled curvature components and incompressible sphere match
+- B. Exterior matching with the incompressible sphere
 
 ## iv. References
 
@@ -275,174 +268,13 @@ lemma deriv_christoffelTtr (S : SchwarzschildSpacetime) (r : ℝ) (hr : r ≠ 0)
 
 /-!
 
-## B. Radial-temporal Riemann components
+## B. Exterior matching with the incompressible sphere
 
-Contracting the derivatives and quadratic products of the Christoffel symbols evaluates the radial
-and polar electric Riemann components directly from the coordinate metric.
-
--/
-
-/-- In the index formula `R^t{}_{rtr} = -∂_r Γ^t_{tr} + Γ^t_{tr} Γ^r_{rr} - (Γ^t_{tr})²`, the
-radial derivative of `Γ^t_{tr} = M/(r² f)` combines with the two quadratic connection terms to
-produce `2M / (r³ f)`. -/
-lemma riemann_t_rtr_from_metric (S : SchwarzschildSpacetime) (r : ℝ) (hr : r ≠ 0)
-    (hf : S.metricFn r ≠ 0) :
-    -(deriv (fun s : ℝ => S.M / (s ^ 2 * S.metricFn s)) r)
-      + (S.M / (r ^ 2 * S.metricFn r)) * (-S.M / (r * (r - 2 * S.M)))
-      - (S.M / (r ^ 2 * S.metricFn r)) ^ 2
-      = 2 * S.M / (r ^ 3 * S.metricFn r) := by
-  have h2 := S.sub_ne_zero_of_ne r hr hf
-  rw [S.deriv_christoffelTtr r hr hf, metricFn_eq]
-  rw [metricFn_eq] at hf
-  field_simp [inv_eq_one_div]
-  ring
-
-/-- `Γ^r_{θθ} = (1/2) g^{rr} (-∂_r g_{θθ}) = -r f`. -/
-lemma christoffelRThetaTheta_from_metric (S : SchwarzschildSpacetime) (r : ℝ) :
-    (1 / 2 : ℝ) * (S.metricFn r) * (-(2 * r)) = -(r * S.metricFn r) := by
-  ring
-
-/-- Contracting `Γ^t_{tr}` against `Γ^r_{θθ}` gives `R^t{}_{θtθ} = -M / r`. -/
-lemma riemann_t_thetatheta_from_metric (S : SchwarzschildSpacetime) (r : ℝ) (hr : r ≠ 0)
-    (hf : S.metricFn r ≠ 0) :
-    (S.M / (r ^ 2 * S.metricFn r)) * (-(r * S.metricFn r)) = -S.M / r := by
-  field_simp
-
-/-!
-
-## C. Remaining independent Riemann components
-
-Combining the angular metric derivatives `∂_r(r²)` and `∂_θ(r² sin²θ)` evaluates the azimuthal
-and purely spatial Riemann components directly from the coordinate metric.
+Matching the exterior mass `M = r_s / 2` to the constant-density sphere connects the point-mass
+Schwarzschild geometry to the uniform-density stellar interior. The Riemann, Ricci, scalar, and
+Einstein tensors are computed from the coordinate metric in `Schwarzschild/CoordinateCurvature.lean`.
 
 -/
-
-/-- `Γ^r_{φφ} = (1/2) g^{rr} (-∂_r g_{φφ}) = -r f sin²θ`. -/
-lemma christoffelRPhiPhi_from_metric (S : SchwarzschildSpacetime) (r th : ℝ) :
-    (1 / 2 : ℝ) * (S.metricFn r) * (-(2 * r * Real.sin th ^ 2))
-      = -(r * Real.sin th ^ 2 * S.metricFn r) := by
-  ring
-
-/-- By the azimuthal factor `sin²θ` in `g_{φφ} = r² sin²θ`, contracting `Γ^t_{tr} = M / (r² f)`
-with `Γ^r_{φφ} = -r f sin²θ` in `R^t{}_{φtφ} = Γ^t_{tr} Γ^r_{φφ}` yields `-(M / r) sin²θ`. -/
-lemma riemann_t_phitphi_from_metric (S : SchwarzschildSpacetime) (r th : ℝ) (hr : r ≠ 0)
-    (hf : S.metricFn r ≠ 0) :
-    (S.M / (r ^ 2 * S.metricFn r))
-        * (-(r * Real.sin th ^ 2 * S.metricFn r))
-      = -(S.M / r) * Real.sin th ^ 2 := by
-  field_simp
-
-/-- Product `Γ^r_{rr} Γ^r_{θθ} = M / r`. -/
-lemma christoffelRrr_mul_christoffelRThetaTheta (S : SchwarzschildSpacetime) (r : ℝ) (hr : r ≠ 0)
-    (hf : S.metricFn r ≠ 0) :
-    (-S.M / (r ^ 2 * S.metricFn r)) * (-(r * S.metricFn r))
-      = S.M / r := by
-  field_simp
-
-/-- Product `Γ^r_{θθ} Γ^θ_{rθ} = -f`. -/
-lemma christoffelRThetaTheta_mul_christoffelThetaRTheta (S : SchwarzschildSpacetime) (r : ℝ)
-    (hr : r ≠ 0) :
-    (-(r * S.metricFn r)) * (1 / r) = -S.metricFn r := by
-  field_simp
-
-/-- Evaluating `R^r{}_{θrθ} = ∂_r Γ^r_{θθ} + Γ^r_{rr} Γ^r_{θθ} - Γ^r_{θθ} Γ^θ_{rθ}` adds the
-radial derivative `-f - r f'` of `Γ^r_{θθ} = -r f` to the two quadratic connection products to give
-`-M / r`. -/
-lemma riemann_r_thetar_from_metric (S : SchwarzschildSpacetime) (r : ℝ) (hr : r ≠ 0)
-    (hf : S.metricFn r ≠ 0) :
-    (-(S.metricFn r) - 2 * S.M / r)
-      + (-S.M / (r ^ 2 * S.metricFn r)) * (-(r * S.metricFn r))
-      - (-(r * S.metricFn r)) * (1 / r)
-      = -S.M / r := by
-  rw [S.christoffelRrr_mul_christoffelRThetaTheta r hr hf,
-    S.christoffelRThetaTheta_mul_christoffelThetaRTheta r hr]
-  field_simp
-  ring
-
-/-- Product `Γ^r_{rr} Γ^r_{φφ} = (M / r) sin²θ`. -/
-lemma christoffelRrr_mul_christoffelRPhiPhi (S : SchwarzschildSpacetime) (r th : ℝ) (hr : r ≠ 0)
-    (hf : S.metricFn r ≠ 0) :
-    (-S.M / (r ^ 2 * S.metricFn r))
-        * (-(r * Real.sin th ^ 2 * S.metricFn r))
-      = (S.M / r) * Real.sin th ^ 2 := by
-  field_simp
-
-/-- Product `Γ^r_{φφ} Γ^φ_{rφ} = -f sin²θ`. -/
-lemma christoffelRPhiPhi_mul_christoffelPhiRPhi (S : SchwarzschildSpacetime) (r th : ℝ)
-    (hr : r ≠ 0) :
-    (-(r * Real.sin th ^ 2 * S.metricFn r)) * (1 / r)
-      = -Real.sin th ^ 2 * S.metricFn r := by
-  field_simp
-
-/-- By spherical symmetry, the `(r, φ, r, φ)` component multiplies the `(r, θ, r, θ)` formula
-`∂_r Γ^r_{φφ} + Γ^r_{rr} Γ^r_{φφ} - Γ^r_{φφ} Γ^φ_{rφ}` by `sin²θ` to yield `-(M / r) sin²θ`. -/
-lemma riemann_r_phirphi_from_metric (S : SchwarzschildSpacetime) (r th : ℝ) (hr : r ≠ 0)
-    (hf : S.metricFn r ≠ 0) :
-    (-(Real.sin th ^ 2) * (S.metricFn r + 2 * S.M / r))
-      + (-S.M / (r ^ 2 * S.metricFn r))
-          * (-(r * Real.sin th ^ 2 * S.metricFn r))
-      - (-(r * Real.sin th ^ 2 * S.metricFn r)) * (1 / r)
-      = -(S.M / r) * Real.sin th ^ 2 := by
-  rw [S.christoffelRrr_mul_christoffelRPhiPhi r th hr hf,
-    S.christoffelRPhiPhi_mul_christoffelPhiRPhi r th hr]
-  field_simp
-  ring
-
-/-- Evaluating `R^θ{}_{φθφ} = ∂_θ Γ^θ_{φφ} + Γ^θ_{rθ} Γ^r_{φφ} - Γ^θ_{φφ} Γ^φ_{θφ}` combines the
-angular curvature `1 - f(r)` of constant-`r` spheres with the radial metric function to give
-`(2M / r) sin²θ`. -/
-lemma riemann_theta_phitheta_from_metric (S : SchwarzschildSpacetime) (r th : ℝ) (hr : r ≠ 0)
-    (hsin : Real.sin th ≠ 0) :
-    (Real.sin th ^ 2 - Real.cos th ^ 2)
-      + (1 / r) * (-(r * Real.sin th ^ 2 * S.metricFn r))
-      - (-(Real.sin th * Real.cos th)) * (Real.cos th / Real.sin th)
-      = (2 * S.M / r) * Real.sin th ^ 2 := by
-  rw [metricFn_eq]
-  field_simp
-  ring
-
-/-- Lowering `R^t{}_{φtφ}` with `g_tt = -f` gives `(M f / r) sin²θ`. -/
-lemma rt_phitphi_lowered (S : SchwarzschildSpacetime) (r th : ℝ) :
-    -(S.metricFn r) * (-(S.M / r) * Real.sin th ^ 2)
-      = (S.M * S.metricFn r / r) * Real.sin th ^ 2 := by
-  ring
-
-/-!
-
-## D. Assembled curvature components and incompressible sphere match
-
-Collecting the off-axis coordinate Riemann components alongside the exterior matching to
-`IncompressibleSphere` connects the point-mass Schwarzschild geometry to uniform-density stellar
-interiors. The lemmas of Sections A-C postulate each Riemann component in terms of the metric
-components rather than deriving them from the general coordinate curvature formula; the components
-themselves are the textbook Schwarzschild values.
-
--/
-
-/-- The four angular and spatial independent Schwarzschild Riemann components, expanded in terms of
-the radial metric function `f` and `M` as postulated in Sections A-C. -/
-lemma riemann_components_from_metric (S : SchwarzschildSpacetime) (r th : ℝ) (hr : r ≠ 0)
-    (hf : S.metricFn r ≠ 0) (hsin : Real.sin th ≠ 0) :
-    ((S.M / (r ^ 2 * S.metricFn r))
-          * (-(r * Real.sin th ^ 2 * S.metricFn r))
-        = -(S.M / r) * Real.sin th ^ 2)
-      ∧ ((-(S.metricFn r) - 2 * S.M / r)
-          + (-S.M / (r ^ 2 * S.metricFn r))
-              * (-(r * S.metricFn r))
-          - (-(r * S.metricFn r)) * (1 / r) = -S.M / r)
-      ∧ ((-(Real.sin th ^ 2) * (S.metricFn r + 2 * S.M / r))
-          + (-S.M / (r ^ 2 * S.metricFn r))
-              * (-(r * Real.sin th ^ 2 * S.metricFn r))
-          - (-(r * Real.sin th ^ 2 * S.metricFn r)) * (1 / r)
-        = -(S.M / r) * Real.sin th ^ 2)
-      ∧ ((Real.sin th ^ 2 - Real.cos th ^ 2)
-          + (1 / r) * (-(r * Real.sin th ^ 2 * S.metricFn r))
-          - (-(Real.sin th * Real.cos th)) * (Real.cos th / Real.sin th)
-        = (2 * S.M / r) * Real.sin th ^ 2) :=
-  ⟨S.riemann_t_phitphi_from_metric r th hr hf,
-   S.riemann_r_thetar_from_metric r hr hf,
-   S.riemann_r_phirphi_from_metric r th hr hf,
-   S.riemann_theta_phitheta_from_metric r th hr hsin⟩
 
 /-- Exterior Schwarzschild spacetime matched to an `IncompressibleSphere` (`M = r_s / 2`). -/
 noncomputable def ofIncompressibleSphere (I : IncompressibleSphere) : SchwarzschildSpacetime :=

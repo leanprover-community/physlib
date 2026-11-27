@@ -34,8 +34,9 @@ Einstein–Maxwell scalar.
 
 ## ii. Key results
 
-- `GeneralRelativity.maxwellFieldInvariant`, `maxwellStressEnergy`,
-  `maxwellStressEnergy_trace_zero` : 4D Maxwell invariant, stress-energy tensor, and tracelessness.
+- `GeneralRelativity.maxwellFieldInvariant`, `GeneralRelativity.maxwellStressEnergy`,
+  `GeneralRelativity.maxwellStressEnergy_trace_zero` : 4D Maxwell invariant, stress-energy tensor,
+  and tracelessness.
 - `KaluzaKleinData.ricci44`, `KaluzaKleinData.ricci5DHorizontal`, `KaluzaKleinData.scalar5D`,
   `KaluzaKleinData.kaluza_miracle` : Kaluza miracle scalar reduction on `KaluzaKleinData`.
 - `KaluzaKleinData.einstein4D_eq_zero_iff` : equivalence of 5D vacuum and 4D Einstein–Maxwell
@@ -72,17 +73,6 @@ Evaluating the constant-dilaton Kaluza–Klein Ricci components of a `KaluzaKlei
 scalar curvature into the 4D Einstein–Hilbert term and the Maxwell gauge-field invariant.
 
 -/
-
-/-- Four-dimensional electromagnetic stress-energy tensor
-`T^{EM}_{ab} = g^{cd} F_{ac} F_{bd} - ¼ g_{ab} F_{cd} F^{cd}`. -/
-noncomputable def maxwellStressEnergy (M : MetricTensor 4) (F : Tensor2 4) (a b : Fin 4) : ℝ :=
-  GeneralRelativity.maxwellStressEnergy M F a b
-
-/-- In four spacetime dimensions (`d = 4`), the Maxwell stress-energy tensor is identically
-trace-free: `g^{ab} T^{EM}_{ab} = 0`. -/
-lemma maxwellStressEnergy_trace_zero (M : MetricTensor 4) (F : Tensor2 4) :
-    (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b * maxwellStressEnergy M F a b) = 0 :=
-  GeneralRelativity.maxwellStressEnergy_trace_zero M F
 
 -- Factored out to isolate the scalar dimensional-reduction step of the Kaluza miracle.
 /-- Fifth-dimension `(4, 4)` Kaluza–Klein Ricci component `R^{(5)}_{44} = ¼ F_{ab} F^{ab}` in
@@ -136,9 +126,9 @@ lemma KaluzaKleinData.einstein4D_eq_zero_iff (D : KaluzaKleinData) (R4 : Tensor2
     (F : Tensor2 4) (a b : Fin 4) :
     D.ricci5DHorizontal R4 F a b - (1 / 2) * D.M.g a b * D.scalar5D R4 F = 0 ↔
       R4 a b - (1 / 2) * D.M.g a b * (∑ c : Fin 4, ∑ d : Fin 4, D.M.ginv c d * R4 c d) =
-        (1 / 2) * maxwellStressEnergy D.M F a b := by
+        (1 / 2) * GeneralRelativity.maxwellStressEnergy D.M F a b := by
   rw [D.kaluza_miracle]
-  simp only [KaluzaKleinData.ricci5DHorizontal, maxwellStressEnergy,
+  simp only [KaluzaKleinData.ricci5DHorizontal,
     GeneralRelativity.maxwellStressEnergy, GeneralRelativity.maxwellFieldInvariant]
   constructor <;> intro h <;> linarith
 

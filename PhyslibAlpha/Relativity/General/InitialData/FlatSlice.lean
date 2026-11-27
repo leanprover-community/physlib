@@ -76,14 +76,16 @@ lemma flatInitialData_hamiltonianConstraint_zero : flatInitialData.hamiltonianCo
   rw [InitialData.hamiltonianConstraint_eq_ricciScalar_of_K_zero flatInitialData rfl]
   exact ricciScalar_flat euclideanMetric3
 
-/-- Zero covariant derivative of zero extrinsic curvature satisfies the momentum constraint. -/
+/-- Zero extrinsic curvature has zero covariant derivative, so the flat slice satisfies the
+momentum constraint. -/
 lemma flatInitialData_momentumConstraint_zero :
-    ∀ i, flatInitialData.momentumConstraint (fun _ => 0) i = 0 :=
-  InitialData.momentumConstraint_zero_of_covariantDeriv_zero flatInitialData
-    (fun _ => 0) (fun _ => rfl)
+    ∀ i, flatInitialData.momentumConstraint 0 (fun _ => 0) i = 0 := by
+  apply InitialData.momentumConstraint_zero_of_covariantDeriv_zero
+  intro μ i j
+  simp [InitialData.covariantDerivTensor2, flatInitialData]
 
 /-- Minkowski's initial slice satisfies both vacuum constraints. -/
-lemma flatInitialData_isVacuum : flatInitialData.IsVacuumData (fun _ => 0) :=
+lemma flatInitialData_isVacuum : flatInitialData.IsVacuumData 0 (fun _ => 0) :=
   ⟨flatInitialData_hamiltonianConstraint_zero, flatInitialData_momentumConstraint_zero⟩
 
 end GeneralRelativity

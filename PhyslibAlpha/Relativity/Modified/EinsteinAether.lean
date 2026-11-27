@@ -5,6 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
+public import PhyslibAlpha.Relativity.General.GravitationalConstant
 public import PhyslibAlpha.Relativity.Metrics.Minkowski
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
@@ -239,18 +240,19 @@ lemma AetherCouplings.spin0SpeedSq_luminal_graviton (C : AetherCouplings) (hc13 
 
 /-- Renormalized Newtonian gravitational constant measured in weak-field static gravity:
 `G_N = G_bare / (1 - c₁₄ / 2)`. -/
-noncomputable def AetherCouplings.effectiveNewtonG (C : AetherCouplings) (Gbare : ℝ) : ℝ :=
-  Gbare / (1 - C.c14 / 2)
+noncomputable def AetherCouplings.effectiveNewtonG (C : AetherCouplings)
+    (G : GravitationalConstant) : ℝ :=
+  G.val / (1 - C.c14 / 2)
 
-/-- The effective Newtonian gravitational constant equals the bare action constant `G_bare ≠ 0`
+/-- The effective Newtonian gravitational constant equals the bare action constant `G ≠ 0`
 if and only if `c₁₄ = c₁ + c₄ = 0`. -/
-lemma AetherCouplings.effectiveNewtonG_eq_bare_iff (C : AetherCouplings) (Gbare : ℝ)
-    (hG : Gbare ≠ 0) (hd : 1 - C.c14 / 2 ≠ 0) :
-    C.effectiveNewtonG Gbare = Gbare ↔ C.c14 = 0 := by
+lemma AetherCouplings.effectiveNewtonG_eq_bare_iff (C : AetherCouplings)
+    (G : GravitationalConstant) (hG : G.val ≠ 0) (hd : 1 - C.c14 / 2 ≠ 0) :
+    C.effectiveNewtonG G = G.val ↔ C.c14 = 0 := by
   simp only [AetherCouplings.effectiveNewtonG, div_eq_iff hd]
   constructor
   · intro h
-    have h1 : Gbare * (1 - C.c14 / 2) = Gbare * 1 := by linarith
+    have h1 : G.val * (1 - C.c14 / 2) = G.val * 1 := by linarith
     have h2 := mul_left_cancel₀ hG h1
     linarith
   · intro h

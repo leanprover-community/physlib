@@ -5,6 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
+public import PhyslibAlpha.Relativity.Metrics.CoordDeriv
 public import PhyslibAlpha.Relativity.Metrics.Minkowski
 public import PhyslibAlpha.Relativity.Tensors.EinsteinTensor
 import Mathlib.Tactic.Linarith
@@ -34,6 +35,7 @@ hypothesis in locally inertial (Riemann normal) coordinates at a point (`g = gin
 - `CurvatureDerivatives` : the pointwise partial derivatives of `Ric` and `R` in locally inertial
   coordinates.
 - `CurvatureDerivatives.einsteinDeriv` : pointwise derivative of the Einstein tensor.
+- `CurvatureDerivatives.ofCoordinate` : curvature derivatives read from `coordDeriv`.
 - `inertialDivergence` : divergence `∇^a T_ab = ∑ a, η^{aa} ∂_a T_ab` in locally inertial
   coordinates.
 - `inertialDivergence_combination` : divergence of `α Ric + β R g`.
@@ -70,13 +72,33 @@ stored in `CurvatureDerivatives`, separately from `coordDeriv`.
 -/
 
 /-- First partial derivatives of the Ricci tensor and scalar curvature at a point in locally
-inertial (Riemann normal) coordinates (`dRic e i j = ∂_e Ric_ij`, `dS e = ∂_e R`), stated separately
-from `coordDeriv` to give the pointwise contracted Bianchi identity algebraically. -/
+inertial (Riemann normal) coordinates (`dRic e i j = ∂_e Ric_ij`, `dS e = ∂_e R`), kept as explicit
+data so the pointwise contracted Bianchi identity can be proved algebraically. -/
 structure CurvatureDerivatives where
   /-- Coordinate derivatives `∂_e Ric_ij` of the Ricci tensor. -/
   dRic : Fin 4 → Tensor2 4
   /-- Coordinate derivatives `∂_e R` of the scalar curvature. -/
   dS : Fin 4 → ℝ
+
+/-- Curvature derivatives of a Ricci tensor field `Ric` and scalar curvature field `R`, read from
+their coordinate partial derivatives via `coordDeriv`. In locally inertial coordinates these are
+the partial derivatives appearing in the contracted Bianchi identity. -/
+noncomputable def CurvatureDerivatives.ofCoordinate
+    (Ric : (Fin 4 → ℝ) → Tensor2 4) (R : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) :
+    CurvatureDerivatives where
+  dRic := fun e i j => CoordinateCurvature.coordDeriv e (fun y => Ric y i j) x
+  dS := fun e => CoordinateCurvature.coordDeriv e R x
+
+@[simp] lemma CurvatureDerivatives.ofCoordinate_dRic
+    (Ric : (Fin 4 → ℝ) → Tensor2 4) (R : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ)
+    (e : Fin 4) (i j : Fin 4) :
+    (CurvatureDerivatives.ofCoordinate Ric R x).dRic e i j =
+      CoordinateCurvature.coordDeriv e (fun y => Ric y i j) x := rfl
+
+@[simp] lemma CurvatureDerivatives.ofCoordinate_dS
+    (Ric : (Fin 4 → ℝ) → Tensor2 4) (R : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) (e : Fin 4) :
+    (CurvatureDerivatives.ofCoordinate Ric R x).dS e =
+      CoordinateCurvature.coordDeriv e R x := rfl
 
 /-- Pointwise derivative of the Einstein tensor in locally inertial coordinates:
 `∂_e G_ij = ∂_e Ric_ij - (1/2) ∂_e R η_ij` (since `g = η` and `∂g = 0` at the origin of locally
