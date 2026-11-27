@@ -135,10 +135,10 @@ total-divergence boundary term B [63], while non-linear f(T) = T + F(T) models (
 the Friedmann expansion equation [64]. Lovelock higher-curvature gravity constructs the generalized
 Kronecker delta `generalizedKroneckerDelta` and proves dimensional pigeonhole vanishing alongside antisymmetric
 permutation-sum coset splits [65], defines `AlgebraicCurvature`, the quadratic Gauss-Bonnet scalar
-𝒢 = R² - 4 R^a_b R^b_a + R^{cd}_{ab} R^{ab}_{cd}, and Lanczos variation tensor H^i_j, proves via
+𝒢 = R² - 4 R^a_b R^b_a + R^{cd}_{ab} R^{ab}_{cd}, and Lanczos variation tensor H^i_j [66], proves via
 `lovelockContract5 = -8 H^i_j` that H^i_j vanishes identically in dimension n ≤ 4 (the 4D
-Bach-Lanczos theorem), and contrasts the 4D topological invariant with non-zero 5D dynamics on
-`constantCurvature` spaces [66]. Five-dimensional Kaluza-Klein theory (`KaluzaKleinData`) unifies
+Bach-Lanczos theorem) [88], and contrasts the 4D topological invariant with non-zero 5D dynamics on
+`constantCurvature` spaces [89]. Five-dimensional Kaluza-Klein theory (`KaluzaKleinData`) unifies
 4D General Relativity and Maxwell electromagnetism inside a 5D metric G_{AB} built from M,
 four-potential A_μ, and dilaton φ, establishing the exact 5D inverse metric and `MetricTensor 5`
 [67], unit-determinant upper-unitriangular vielbein factorization [68], diffeomorphism-to-U(1)
@@ -411,11 +411,8 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `generalizedKroneckerDelta_eq_zero_of_lt`, `generalizedKroneckerDelta_five_eq_sum_perm`, `perm_fin5_fiber_split`
 66. PhyslibAlpha/Relativity/Modified/Lovelock/Basic.lean — `AlgebraicCurvature`,
     `AlgebraicCurvature.ricciMixed`, `AlgebraicCurvature.ricciScalar`, `AlgebraicCurvature.ricciSq`,
-    `AlgebraicCurvature.riemannSq`, `AlgebraicCurvature.gaussBonnetScalar`, `AlgebraicCurvature.lanczosTensor`,
-    `lovelockContract5`, `lovelockContract5_eq_kronecker_sum`, `lovelockContract5_eq_zero_of_lt`,
-    `lovelockContract5_eq_neg_eight_lanczos`, `bach_lanczos_lt_five`, `bach_lanczos_four`,
-    `constantCurvature`, `gaussBonnetScalar_constantCurvature_four`,
-    `lanczosTensor_constantCurvature_five`
+    `AlgebraicCurvature.riemannSq`, `AlgebraicCurvature.gaussBonnetScalar`,
+    `AlgebraicCurvature.lanczosTensor`
 67. PhyslibAlpha/Relativity/Modified/KaluzaKlein/Basic.lean — `KaluzaKleinData`,
     `KaluzaKleinData.metric`, `KaluzaKleinData.metric_symm`, `KaluzaKleinData.metricInv`,
     `KaluzaKleinData.metricInv_symm`, `KaluzaKleinData.gaugeShift`,
@@ -505,6 +502,11 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `contorsion_antisymm_outer`, `contorsion_torsion`, `connection_unique`
 87. PhyslibAlpha/Relativity/Modified/EinsteinCartan/ModifiedTorsion.lean — `modifiedTorsion`,
     `invertModifiedTorsion`
+88. PhyslibAlpha/Relativity/Modified/Lovelock/Contract5.lean — `lovelockContract5`,
+    `lovelockContract5_eq_kronecker_sum`, `lovelockContract5_eq_zero_of_lt`,
+    `lovelockContract5_eq_neg_eight_lanczos`, `bach_lanczos_lt_five`, `bach_lanczos_four`
+89. PhyslibAlpha/Relativity/Modified/Lovelock/ConstantCurvature.lean — `constantCurvature`,
+    `gaussBonnetScalar_constantCurvature_four`, `lanczosTensor_constantCurvature_five`
 
 ## References
 

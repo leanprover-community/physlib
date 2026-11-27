@@ -97,15 +97,6 @@ namespace SchwarzschildSpacetime
 /-- The Schwarzschild radial metric function `f(r) = 1 - 2M / r`. -/
 noncomputable def metricFn (S : SchwarzschildSpacetime) (r : ℝ) : ℝ := 1 - 2 * S.M / r
 
-/-- Equational form of `SchwarzschildSpacetime.metricFn`. -/
-lemma metricFn_eq (S : SchwarzschildSpacetime) (r : ℝ) : S.metricFn r = 1 - 2 * S.M / r := rfl
-
-/-- Clearing the radial denominator gives `r * S.metricFn r = r - 2 S.M`. -/
-lemma r_mul_metricFn (S : SchwarzschildSpacetime) (r : ℝ) (hr : r ≠ 0) :
-    r * S.metricFn r = r - 2 * S.M := by
-  rw [metricFn_eq]
-  field_simp
-
 /-- View a Schwarzschild spacetime as a `Metric` with profile `S.metricFn`. -/
 noncomputable def toStaticSpherical (S : SchwarzschildSpacetime) :
     StaticSpherical.Metric :=
@@ -128,6 +119,15 @@ noncomputable def metric (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) : Tens
 /-- The inverse of the Schwarzschild metric in `(t, r, θ, φ)` coordinates. -/
 noncomputable def metricInv (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
   S.toStaticSpherical.metricInv x
+
+/-- Equational form of `SchwarzschildSpacetime.metricFn`. -/
+lemma metricFn_eq (S : SchwarzschildSpacetime) (r : ℝ) : S.metricFn r = 1 - 2 * S.M / r := rfl
+
+/-- Clearing the radial denominator gives `r * S.metricFn r = r - 2 S.M`. -/
+lemma r_mul_metricFn (S : SchwarzschildSpacetime) (r : ℝ) (hr : r ≠ 0) :
+    r * S.metricFn r = r - 2 * S.M := by
+  rw [metricFn_eq]
+  field_simp
 
 /-- The covariant field of `S.toCoordinateMetric` is `S.metric`. -/
 @[simp] lemma toCoordinateMetric_g (S : SchwarzschildSpacetime) :

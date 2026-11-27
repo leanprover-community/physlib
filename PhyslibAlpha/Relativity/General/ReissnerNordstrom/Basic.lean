@@ -128,11 +128,6 @@ noncomputable def metricFn (S : ReissnerNordstromSpacetime) (r : ℝ) : ℝ :=
 noncomputable def toStaticSpherical (S : ReissnerNordstromSpacetime) : Metric :=
   ⟨S.metricFn⟩
 
-/-- The underlying radial metric function of `S.toStaticSpherical` is `S.metricFn`. -/
-@[simp]
-lemma toStaticSpherical_metricFn (S : ReissnerNordstromSpacetime) :
-    S.toStaticSpherical.metricFn = S.metricFn := rfl
-
 /-- The Reissner–Nordström metric as a `CoordinateMetric 4` on its regular chart, where the radial
 metric function and `sin θ` are nonzero. -/
 noncomputable def toCoordinateMetric (S : ReissnerNordstromSpacetime) : CoordinateMetric 4 :=
@@ -145,6 +140,11 @@ noncomputable def metric (S : ReissnerNordstromSpacetime) : (Fin 4 → ℝ) → 
 /-- The inverse of the Reissner–Nordström metric in `(t, r, θ, φ)` coordinates. -/
 noncomputable def metricInv (S : ReissnerNordstromSpacetime) : (Fin 4 → ℝ) → Tensor2 4 :=
   S.toStaticSpherical.metricInv
+
+/-- The underlying radial metric function of `S.toStaticSpherical` is `S.metricFn`. -/
+@[simp]
+lemma toStaticSpherical_metricFn (S : ReissnerNordstromSpacetime) :
+    S.toStaticSpherical.metricFn = S.metricFn := rfl
 
 /-- The covariant field of `S.toCoordinateMetric` is `S.metric`. -/
 @[simp] lemma toCoordinateMetric_g (S : ReissnerNordstromSpacetime) :

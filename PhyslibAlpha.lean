@@ -887,6 +887,8 @@ public import PhyslibAlpha.Relativity.Modified.KaluzaKlein.GaugeTransform
 public import PhyslibAlpha.Relativity.Modified.KaluzaKlein.KaluzaMiracle
 public import PhyslibAlpha.Relativity.Modified.KaluzaKlein.TriangularFactorization
 public import PhyslibAlpha.Relativity.Modified.Lovelock.Basic
+public import PhyslibAlpha.Relativity.Modified.Lovelock.ConstantCurvature
+public import PhyslibAlpha.Relativity.Modified.Lovelock.Contract5
 public import PhyslibAlpha.Relativity.Modified.MassiveGravity.Basic
 public import PhyslibAlpha.Relativity.Modified.MassiveGravity.DRGT
 public import PhyslibAlpha.Relativity.Modified.MassiveGravity.FierzPauli

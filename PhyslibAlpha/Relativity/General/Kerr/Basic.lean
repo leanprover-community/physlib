@@ -98,24 +98,6 @@ Misner–Thorne–Wheeler and Chandrasekhar), factored out because it governs bo
 noncomputable def axialFactor (K : KerrSpacetime) (r θ : ℝ) : ℝ :=
   (r ^ 2 + K.a ^ 2) ^ 2 - K.a ^ 2 * K.delta r * Real.sin θ ^ 2
 
-/-- Alternative expansion of the Boyer–Lindquist axial metric factor:
-`axialFactor = Σ (r² + a²) + 2 M a² r sin² θ`. -/
-lemma axialFactor_eq_sigma (K : KerrSpacetime) (r θ : ℝ) :
-    K.axialFactor r θ
-      = K.sigma r θ * (r ^ 2 + K.a ^ 2) + 2 * K.M * K.a ^ 2 * r * Real.sin θ ^ 2 := by
-  simp only [axialFactor, sigma, delta]
-  rw [Real.sin_sq θ]
-  ring
-
-/-- Algebraic identity governing the determinant of the `(t, φ)` metric block:
-`(Σ - 2 M r) axialFactor + 4 M² a² r² sin² θ = Σ² Δ`. -/
-lemma tphi_det_id (K : KerrSpacetime) (r θ : ℝ) :
-    (K.sigma r θ - 2 * K.M * r) * K.axialFactor r θ + 4 * K.M ^ 2 * K.a ^ 2 * r ^ 2 * Real.sin θ ^ 2
-      = K.sigma r θ ^ 2 * K.delta r := by
-  simp only [sigma, delta, axialFactor]
-  rw [Real.sin_sq θ]
-  ring
-
 /-- Kerr spacetime metric in Boyer–Lindquist coordinates `x = (t, r, θ, φ)` with signature
 `(-, +, +, +)` and geometrized units `G = c = 1`. -/
 noncomputable def metric (K : KerrSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
@@ -144,6 +126,24 @@ noncomputable def metricInv (K : KerrSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 
     else if i = 2 ∧ j = 2 then 1 / sig
     else if i = 3 ∧ j = 3 then (sig - 2 * K.M * x 1) / (sig * del * s2)
     else 0
+
+/-- Alternative expansion of the Boyer–Lindquist axial metric factor:
+`axialFactor = Σ (r² + a²) + 2 M a² r sin² θ`. -/
+lemma axialFactor_eq_sigma (K : KerrSpacetime) (r θ : ℝ) :
+    K.axialFactor r θ
+      = K.sigma r θ * (r ^ 2 + K.a ^ 2) + 2 * K.M * K.a ^ 2 * r * Real.sin θ ^ 2 := by
+  simp only [axialFactor, sigma, delta]
+  rw [Real.sin_sq θ]
+  ring
+
+/-- Algebraic identity governing the determinant of the `(t, φ)` metric block:
+`(Σ - 2 M r) axialFactor + 4 M² a² r² sin² θ = Σ² Δ`. -/
+lemma tphi_det_id (K : KerrSpacetime) (r θ : ℝ) :
+    (K.sigma r θ - 2 * K.M * r) * K.axialFactor r θ + 4 * K.M ^ 2 * K.a ^ 2 * r ^ 2 * Real.sin θ ^ 2
+      = K.sigma r θ ^ 2 * K.delta r := by
+  simp only [sigma, delta, axialFactor]
+  rw [Real.sin_sq θ]
+  ring
 
 /-- Symmetry of the Boyer–Lindquist Kerr metric `K.metric`. -/
 lemma metric_symm (K : KerrSpacetime) (x : Fin 4 → ℝ) : IsSymm (K.metric x) :=
