@@ -132,13 +132,13 @@ lemma isExtrema_iff_tensors {𝓕 : FreeSpace}
     (A : ElectromagneticPotential d)
     (hA : ContDiff ℝ ∞ A) (J : LorentzCurrentDensity d) (hJ : ContDiff ℝ ∞ J) :
     IsExtrema 𝓕 A J ↔ ∀ x,
-    {((1/ 𝓕.μ₀ : ℝ) • tensorDeriv A.toFieldStrength x | κ κ ν') + - (J x | ν')}ᵀ = 0 := by
+    {((1/ 𝓕.μ₀ : ℝ) • derivOfTensor A.toFieldStrength x | κ κ ν') + - (J x | ν')}ᵀ = 0 := by
   apply Iff.intro
   · intro h
     simp only [IsExtrema] at h
     intro x
     have h1 : ((Tensorial.toTensor (M := Lorentz.Vector d)).symm
-        (permT id (IsReindexing.auto) {((1/ 𝓕.μ₀ : ℝ) • tensorDeriv A.toFieldStrength x | κ κ ν') +
+        (permT id (IsReindexing.auto) {((1/ 𝓕.μ₀ : ℝ) • derivOfTensor A.toFieldStrength x | κ κ ν') +
         - (J x | ν')}ᵀ)) = 0 := by
       funext ν
       have h2 : gradLagrangian 𝓕 A J x ν = 0 := by simp [h]
@@ -150,7 +150,7 @@ lemma isExtrema_iff_tensors {𝓕 : FreeSpace}
       simp_all only [false_or, ne_eq, one_div, map_smul,
         map_neg, map_add, permT_permT, CompTriple.comp_eq, apply_add, apply_smul,
         Lorentz.Vector.neg_apply, Lorentz.Vector.zero_apply]
-    generalize {((1/ 𝓕.μ₀ : ℝ) • tensorDeriv A.toFieldStrength x | κ κ ν') +
+    generalize {((1/ 𝓕.μ₀ : ℝ) • derivOfTensor A.toFieldStrength x | κ κ ν') +
         - (J x | ν')}ᵀ = V at *
     simp only [EmbeddingLike.map_eq_zero_iff] at h1
     rw [permT_eq_zero_iff] at h1
@@ -183,12 +183,12 @@ lemma isExtrema_lorentzGroup_apply_iff {𝓕 : FreeSpace}
   rw [isExtrema_iff_tensors]
   conv_lhs =>
     enter [x, 1, 1, 2, 2, 2]
-    change tensorDeriv (fun x => toFieldStrength (Λ • A) x) x
+    change derivOfTensor (fun x => toFieldStrength (Λ • A) x) x
     enter [1,x]
     rw [toFieldStrength_equivariant _ _ (hA.differentiable (by simp))]
   conv_lhs =>
     enter [x]
-    rw [tensorDeriv_equivariant _ _ _ (differentiable_toFieldStrength_of_smooth hA)]
+    rw [derivOfTensor_equivariant _ _ _ (differentiable_toFieldStrength_of_smooth hA)]
     rw [smul_comm]
     rw [Tensorial.toTensor_smul, Tensorial.toTensor_smul]
     simp only [one_div, map_smul, actionT_smul,

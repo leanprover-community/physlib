@@ -65,8 +65,8 @@ noncomputable def gradKineticTerm {d} (𝓕 : FreeSpace) :
     TempDistElectromagneticPotential d →ₗ[ℝ] (SpaceTime d) →d[ℝ] Lorentz.Vector d where
   toFun A := {
     toFun ε := ∑ ν, ∑ μ,
-      (1 / (𝓕.μ₀) * (η μ μ * η ν ν * distDeriv μ (distDeriv μ A) ε ν -
-      distDeriv μ (distDeriv ν A) ε μ)) • Lorentz.Vector.basis ν
+      (1 / (𝓕.μ₀) * (η μ μ * η ν ν * derivOfDist μ (derivOfDist μ A) ε ν -
+      derivOfDist μ (derivOfDist ν A) ε μ)) • Lorentz.Vector.basis ν
     map_add' ε1 ε2 := by
       simp only [← Finset.sum_add_distrib]
       refine Finset.sum_congr rfl fun ν _ => Finset.sum_congr rfl fun μ _ => ?_
@@ -95,14 +95,14 @@ noncomputable def gradKineticTerm {d} (𝓕 : FreeSpace) :
 lemma gradKineticTerm_eq_sum_sum {d} {𝓕 : FreeSpace}
     (A : TempDistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
     A.gradKineticTerm 𝓕 ε = ∑ ν, ∑ μ,
-        (1 / (𝓕.μ₀) * (η μ μ * η ν ν * distDeriv μ (distDeriv μ A) ε ν -
-        distDeriv μ (distDeriv ν A) ε μ)) • Lorentz.Vector.basis ν := rfl
+        (1 / (𝓕.μ₀) * (η μ μ * η ν ν * derivOfDist μ (derivOfDist μ A) ε ν -
+        derivOfDist μ (derivOfDist ν A) ε μ)) • Lorentz.Vector.basis ν := rfl
 
 lemma gradKineticTerm_eq_fieldStrength {d} {𝓕 : FreeSpace} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) :
     A.gradKineticTerm 𝓕 ε = ∑ ν, (1/𝓕.μ₀ * η ν ν) •
     (∑ μ, ((Vector.basis.tensorProduct Vector.basis).repr
-      (distDeriv μ (A.fieldStrength) ε) (μ, ν))) • Lorentz.Vector.basis ν := by
+      (derivOfDist μ (A.fieldStrength) ε) (μ, ν))) • Lorentz.Vector.basis ν := by
   rw [gradKineticTerm_eq_sum_sum A]
   apply Finset.sum_congr rfl (fun ν _ => ?_)
   rw [smul_smul, ← Finset.sum_smul, ← Finset.mul_sum, mul_assoc]
@@ -110,7 +110,7 @@ lemma gradKineticTerm_eq_fieldStrength {d} {𝓕 : FreeSpace} (A : TempDistElect
   rw [Finset.mul_sum]
   apply Finset.sum_congr rfl (fun μ _ => ?_)
   conv_rhs =>
-    rw [distDeriv_apply, Distribution.fderivD_apply, map_neg]
+    rw [derivOfDist_apply, Distribution.fderivD_apply, map_neg]
     simp only [Finsupp.coe_neg, Pi.neg_apply, mul_neg]
     rw [fieldStrength_basis_repr_eq_single]
     simp only
@@ -178,10 +178,10 @@ lemma gradKineticTerm_eq_distTensorDeriv {d} {𝓕 : FreeSpace}
     (A : TempDistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) (ν : Fin 1 ⊕ Fin d) :
     A.gradKineticTerm 𝓕 ε ν = η ν ν * ((Tensorial.toTensor (M := Lorentz.Vector d)).symm
     (permT id (IsReindexing.auto) {(1/ 𝓕.μ₀ : ℝ) •
-    distTensorDeriv A.fieldStrength ε | κ κ ν'}ᵀ)) ν := by
+    derivOfDistTensor A.fieldStrength ε | κ κ ν'}ᵀ)) ν := by
   trans η ν ν * (Lorentz.Vector.basis.repr
     ((Tensorial.toTensor (M := Lorentz.Vector d)).symm
-    (permT id (IsReindexing.auto) {(1/ 𝓕.μ₀ : ℝ) • distTensorDeriv A.fieldStrength ε | κ κ ν'}ᵀ))) ν
+    (permT id (IsReindexing.auto) {(1/ 𝓕.μ₀ : ℝ) • derivOfDistTensor A.fieldStrength ε | κ κ ν'}ᵀ))) ν
   swap
   · rfl
   simp [Lorentz.Vector.basis_eq_map_tensor_basis]
@@ -192,10 +192,10 @@ lemma gradKineticTerm_eq_distTensorDeriv {d} {𝓕 : FreeSpace}
   ring_nf
   congr 1
   refine Finset.sum_congr rfl fun μ _ => ?_
-  rw [distTensorDeriv_toTensor_basis_repr]
-  trans (Tensor.basis _).repr (Tensorial.toTensor (distDeriv μ (A.fieldStrength) ε))
+  rw [derivOfDistTensor_toTensor_basis_repr]
+  trans (Tensor.basis _).repr (Tensorial.toTensor (derivOfDist μ (A.fieldStrength) ε))
       (fun | 0 => μ | 1 => ν)
-  · generalize (distDeriv μ (A.fieldStrength) ε) = t at *
+  · generalize (derivOfDist μ (A.fieldStrength) ε) = t at *
     rw [Tensorial.basis_toTensor_apply, Tensorial.basis_map_prod]
     simp only [Basis.repr_reindex]
     rw [Lorentz.Vector.tensor_basis_map_eq_basis_reindex]

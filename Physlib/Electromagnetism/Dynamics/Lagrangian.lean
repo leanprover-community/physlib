@@ -360,7 +360,7 @@ lemma gradLagrangian_eq_tensor {𝓕 : FreeSpace}
     (hJ : ContDiff ℝ ∞ J) (x : SpaceTime d) (ν : Fin 1 ⊕ Fin d) :
     A.gradLagrangian 𝓕 J x ν =
     η ν ν * ((Tensorial.toTensor (M := Lorentz.Vector d)).symm
-    (permT id (IsReindexing.auto) {((1/ 𝓕.μ₀ : ℝ) • tensorDeriv A.toFieldStrength x | κ κ ν') +
+    (permT id (IsReindexing.auto) {((1/ 𝓕.μ₀ : ℝ) • derivOfTensor A.toFieldStrength x | κ κ ν') +
     - (J x | ν')}ᵀ)) ν := by
   rw [gradLagrangian_eq_kineticTerm_sub _ hA _ hJ]
   simp only [Pi.sub_apply, apply_sub, one_div, map_smul,
