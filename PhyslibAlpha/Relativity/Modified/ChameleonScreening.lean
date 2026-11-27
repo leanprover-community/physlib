@@ -86,6 +86,8 @@ exponentially damping fifth forces via `yukawaSuppression`.
 structure ChameleonModel where
   /-- Ambient density-to-mass-squared coupling constant `c`. -/
   c : ℝ
+  /-- The coupling is non-negative, so denser matter increases the scalar mass. -/
+  nonneg : 0 ≤ c
 
 /-- Environment-dependent mass squared `m² = ρ M.c` of a `ChameleonModel`. -/
 def ChameleonModel.massSq (M : ChameleonModel) (ρ : ℝ) : ℝ := ρ * M.c
@@ -95,9 +97,9 @@ noncomputable def ChameleonModel.mass (M : ChameleonModel) (ρ : ℝ) : ℝ :=
   Real.sqrt (M.massSq ρ)
 
 /-- A denser environment produces a heavier chameleon scalar. -/
-lemma ChameleonModel.mass_mono (M : ChameleonModel) {ρ₁ ρ₂ : ℝ} (hc : 0 ≤ M.c)
-    (h : ρ₁ ≤ ρ₂) : M.mass ρ₁ ≤ M.mass ρ₂ :=
-  Real.sqrt_le_sqrt (mul_le_mul_of_nonneg_right h hc)
+lemma ChameleonModel.mass_mono (M : ChameleonModel) {ρ₁ ρ₂ : ℝ} (h : ρ₁ ≤ ρ₂) :
+    M.mass ρ₁ ≤ M.mass ρ₂ :=
+  Real.sqrt_le_sqrt (mul_le_mul_of_nonneg_right h M.nonneg)
 
 /-- Compton wavelength `λ = 1 / m` of a scalar of mass `m`. -/
 noncomputable def comptonRange (m : ℝ) : ℝ := 1 / m
@@ -109,9 +111,9 @@ lemma comptonRange_antitone {m₁ m₂ : ℝ} (h₁ : 0 < m₁) (h : m₁ ≤ m�
 
 /-- In a denser environment, the chameleon Compton range shrinks. -/
 lemma ChameleonModel.range_shrinks (M : ChameleonModel) {ρ₁ ρ₂ : ℝ} (hpos : 0 < M.mass ρ₁)
-    (hc : 0 ≤ M.c) (h : ρ₁ ≤ ρ₂) :
+    (h : ρ₁ ≤ ρ₂) :
     comptonRange (M.mass ρ₂) ≤ comptonRange (M.mass ρ₁) :=
-  comptonRange_antitone hpos (M.mass_mono hc h)
+  comptonRange_antitone hpos (M.mass_mono h)
 
 /-- Yukawa suppression factor `e^{-x}` at dimensionless distance `x = r / λ`. -/
 noncomputable def yukawaSuppression (x : ℝ) : ℝ := Real.exp (-x)

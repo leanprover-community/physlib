@@ -80,6 +80,20 @@ structure FLRWSpacetime where
 
 namespace FLRWSpacetime
 
+/-- A regular chart point of an FLRW metric: the scale factor, `r`, `1 - k r²`, and `sin θ` are
+all nonzero, so the metric and its inverse are both defined. -/
+structure RegularPoint (S : FLRWSpacetime) where
+  /-- Comoving coordinate point `(t, r, θ, φ)`. -/
+  x : Fin 4 → ℝ
+  /-- The scale factor does not vanish at the time. -/
+  ha : S.a (x 0) ≠ 0
+  /-- The radial coordinate is nonzero. -/
+  hr : x 1 ≠ 0
+  /-- The spatial curvature factor `1 - k r²` is nonzero. -/
+  hkr : 1 - S.k * (x 1) ^ 2 ≠ 0
+  /-- The polar angle is away from the axis. -/
+  hsin : Real.sin (x 2) ≠ 0
+
 /-- The FLRW metric in comoving coordinates `(t, r, θ, φ)` with scale factor `S.a(t)` and spatial
 curvature parameter `S.k`. -/
 noncomputable def metric (S : FLRWSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
@@ -138,6 +152,11 @@ noncomputable def metricTensor (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a
   symm := S.metric_symm x
   inv_left := S.metric_mul_inv x ha hr hkr hsin
   inv_right := S.metricInv_mul x ha hr hkr hsin
+
+/-- The FLRW metric at a bundled regular chart point. -/
+noncomputable def RegularPoint.metricTensor {S : FLRWSpacetime} (p : S.RegularPoint) :
+    MetricTensor 4 :=
+  S.metricTensor p.x p.ha p.hr p.hkr p.hsin
 
 /-- The FLRW metric as a `CoordinateMetric 4` on its regular comoving chart where
 `a(t) ≠ 0`, `r ≠ 0`, `1 - k r² ≠ 0`, `sin θ ≠ 0`. -/

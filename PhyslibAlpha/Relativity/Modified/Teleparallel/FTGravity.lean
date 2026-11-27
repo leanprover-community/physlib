@@ -5,6 +5,9 @@ Authors: Alex Vergara Gil
 -/
 module
 
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Basic.Real.Basic
 import Mathlib.Tactic.Ring
 
@@ -69,16 +72,24 @@ structure FTTheory where
   F : ℝ → ℝ
   /-- First derivative `F'(T)`. -/
   dF : ℝ → ℝ
+  /-- The stored derivative agrees with the derivative of `F` at every torsion scalar. -/
+  deriv_eq : ∀ T, HasDerivAt F (dF T) T
 
 /-- The Teleparallel Equivalent of General Relativity (`F = 0`, `dF = 0`). -/
 def FTTheory.tegr : FTTheory where
   F _ := 0
   dF _ := 0
+  deriv_eq T := by
+    simpa using (hasDerivAt_const (x := T) (c := 0))
 
 /-- Quadratic modified teleparallel model `F(T) = α T²`, `dF(T) = 2 α T`. -/
 def FTTheory.quadratic (α : ℝ) : FTTheory where
   F T := α * T ^ 2
   dF T := 2 * α * T
+  deriv_eq T := by
+    have h := (hasDerivAt_pow 2 T).const_mul α
+    convert h using 1
+    ring
 
 /-- Modified first Friedmann equation left-hand side for an `FTTheory` evaluated at `T = 6 H²`:
 `3 H² + ½ T.F(6 H²) - 6 H² T.dF(6 H²)`. -/

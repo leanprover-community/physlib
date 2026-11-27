@@ -82,6 +82,18 @@ structure StaticSphericalMetric where
 
 namespace StaticSphericalMetric
 
+/-- A regular chart point of a static spherically symmetric metric: `r ≠ 0`, `f(r) ≠ 0`, and
+`sin θ ≠ 0`, so the metric and its inverse are both defined. -/
+structure RegularPoint (S : StaticSphericalMetric) where
+  /-- Coordinate point `(t, r, θ, φ)`. -/
+  x : Fin 4 → ℝ
+  /-- The radial coordinate is nonzero. -/
+  hr : x 1 ≠ 0
+  /-- The metric function is nonzero at the radius. -/
+  hf : S.metricFn (x 1) ≠ 0
+  /-- The polar angle is away from the axis. -/
+  hsin : Real.sin (x 2) ≠ 0
+
 /-- General static spherically symmetric metric `diag(-f(r), f(r)⁻¹, r², r² sin²θ)` in
 coordinates `(t, r, θ, φ)`. -/
 noncomputable def metric (S : StaticSphericalMetric) (x : Fin 4 → ℝ) : Tensor2 4 :=
@@ -144,6 +156,11 @@ noncomputable def metricTensor (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (
   symm := S.metric_symm x
   inv_left := S.metric_mul_inv x hr hf hsin
   inv_right := S.metricInv_mul x hr hf hsin
+
+/-- The metric at a bundled regular chart point. -/
+noncomputable def RegularPoint.metricTensor {S : StaticSphericalMetric} (p : S.RegularPoint) :
+    MetricTensor 4 :=
+  S.metricTensor p.x p.hr p.hf p.hsin
 
 /-- The metric as a `CoordinateMetric 4` on its regular chart where
 `r ≠ 0`, `f(r) ≠ 0`, `sin θ ≠ 0`. -/

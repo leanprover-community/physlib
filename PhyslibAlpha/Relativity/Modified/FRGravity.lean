@@ -5,6 +5,10 @@ Authors: Alex Vergara Gil
 -/
 module
 
+public import Mathlib.Analysis.Calculus.Deriv.Add
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Order.Filter.AtTopBot.Defs
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import PhyslibAlpha.Relativity.Tensors.EinsteinTensor
@@ -95,16 +99,26 @@ structure FRTheory where
   f : ℝ → ℝ
   /-- First derivative `f'(R)` entering the field equations. -/
   df : ℝ → ℝ
+  /-- The stored derivative agrees with the derivative of `f` at every curvature. -/
+  deriv_eq : ∀ R, HasDerivAt f (df R) R
 
 /-- General Relativity with cosmological constant `Λ`, realized as `f(R) = R - 2 Λ`. -/
 def FRTheory.generalRelativity (Λ : ℝ) : FRTheory where
   f S := S - 2 * Λ
   df _ := 1
+  deriv_eq R := by
+    simpa using (hasDerivAt_id R).sub_const (2 * Λ)
 
 /-- Starobinsky quadratic gravity `f(R) = R + α R²`. -/
 def FRTheory.starobinsky (α : ℝ) : FRTheory where
   f S := S + α * S ^ 2
   df S := 1 + 2 * α * S
+  deriv_eq R := by
+    have h := (hasDerivAt_id R).add ((hasDerivAt_pow 2 R).const_mul α)
+    convert h using 1
+    · ext S
+      simp only [Pi.add_apply, id]
+    · ring
 
 /-- The algebraic metric-formalism `f(R)` field equation tensor
 `f'(R) Ric_{ij} - (1/2) f(R) g_{ij}` evaluated on a spacetime metric and Riemann curvature tensor
