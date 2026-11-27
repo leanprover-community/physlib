@@ -27,9 +27,9 @@ Lorentzian signature `(-, +, +, +)` standard in general relativity (Wald / Misne
 whereas `Physlib.Relativity.MinkowskiMatrix.minkowskiMatrix` (and `realLorentzTensor.coMetric 3`)
 uses the particle-physics mostly-minus convention `(+, -, -, -)`.
 
-We define `minkowskiMetric4` directly as the negation of `minkowskiMatrix (d := 3)` transported along
-`finSumFinEquiv : Fin 1 ⊕ Fin 3 ≃ Fin 4`, inherit its symmetry and self-inverse property from
-`minkowskiMatrix.eq_transpose` and `minkowskiMatrix.sq`, and bridge it to
+We define `minkowskiMetric4` directly as the negation of `minkowskiMatrix (d := 3)` transported
+along `finSumFinEquiv : Fin 1 ⊕ Fin 3 ≃ Fin 4`. It inherits its symmetry and self-inverse
+property from `minkowskiMatrix.eq_transpose` and `minkowskiMatrix.sq`, and is bridged to
 `realLorentzTensor.coMetric 3`.
 
 ## ii. Key results

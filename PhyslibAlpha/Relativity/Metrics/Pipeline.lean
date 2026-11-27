@@ -128,8 +128,8 @@ lemma riemann_eq_riemannFromData {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2
         x ρ σ μ ν :=
   rfl
 
-/-- Transport `CoordinateCurvature.riemann` to `riemannFromData` using local agreement of Christoffel
-symbols around a point and matching coordinate partial derivatives at that point. -/
+/-- Transport `CoordinateCurvature.riemann` to `riemannFromData` using local agreement of
+Christoffel symbols around a point and matching coordinate partial derivatives at that point. -/
 lemma riemann_eq_riemannFromData_of_eventuallyEq {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     (G : (Fin n → ℝ) → Fin n → Fin n → Fin n → ℝ)
     (dG : Fin n → (Fin n → ℝ) → Fin n → Fin n → Fin n → ℝ) (x : Fin n → ℝ)

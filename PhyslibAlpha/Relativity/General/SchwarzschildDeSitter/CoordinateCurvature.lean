@@ -274,10 +274,12 @@ lemma riemann_components_from_metric (S : SchwarzschildDeSitterSpacetime) (x : F
     (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     (CoordinateCurvature.riemann S.metric S.metricInv x 0 1 0 1
         = (2 * S.M / (x 1) ^ 3 + S.Λ / 3) / S.metricFn (x 1))
-      ∧ (CoordinateCurvature.riemann S.metric S.metricInv x 0 2 0 2 = S.Λ * (x 1) ^ 2 / 3 - S.M / (x 1))
+      ∧ (CoordinateCurvature.riemann S.metric S.metricInv x 0 2 0 2
+          = S.Λ * (x 1) ^ 2 / 3 - S.M / (x 1))
       ∧ (CoordinateCurvature.riemann S.metric S.metricInv x 0 3 0 3
           = (S.Λ * (x 1) ^ 2 / 3 - S.M / (x 1)) * Real.sin (x 2) ^ 2)
-      ∧ (CoordinateCurvature.riemann S.metric S.metricInv x 1 2 1 2 = S.Λ * (x 1) ^ 2 / 3 - S.M / (x 1))
+      ∧ (CoordinateCurvature.riemann S.metric S.metricInv x 1 2 1 2
+          = S.Λ * (x 1) ^ 2 / 3 - S.M / (x 1))
       ∧ (CoordinateCurvature.riemann S.metric S.metricInv x 1 3 1 3
           = (S.Λ * (x 1) ^ 2 / 3 - S.M / (x 1)) * Real.sin (x 2) ^ 2)
       ∧ (CoordinateCurvature.riemann S.metric S.metricInv x 2 3 2 3

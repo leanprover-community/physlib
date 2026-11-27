@@ -15,7 +15,8 @@ import Mathlib.Tactic.Tauto
 # Boyer–Lindquist Kerr Christoffel symbols
 
 All 20 independent Christoffel connection coefficients `KerrSpacetime.christoffel`, their
-agreement with `CoordinateCurvature.christoffel`, and the contracted trace `KerrSpacetime.christoffelTrace`.
+agreement with `CoordinateCurvature.christoffel`, and the contracted trace
+`KerrSpacetime.christoffelTrace`.
 
 ## i. Overview
 
@@ -150,8 +151,9 @@ lemma pd_christoffel_const_03 (K : KerrSpacetime) (x : Fin 4 → ℝ) (μ : Fin 
 
 ## B. Agreement with the Levi-Civita formula and trace identity
 
-Evaluating `CoordinateCurvature.christoffel` confirms the 20 closed-form Christoffel symbols across all 64
-components and yields the logarithmic divergence formula `∑ ρ, Γ^ρ_{ρ μ} = ∂_μ ln(Σ sin θ)`.
+Evaluating `CoordinateCurvature.christoffel` confirms the 20 closed-form Christoffel symbols
+across all 64 components and yields the logarithmic divergence formula
+`∑ ρ, Γ^ρ_{ρ μ} = ∂_μ ln(Σ sin θ)`.
 
 -/
 
@@ -217,7 +219,8 @@ lemma christoffel_eq (K : KerrSpacetime) (x : Fin 4 → ℝ)
   · exact christoffel_2 K x hsig hdel hs i j
   · exact christoffel_3 K x hsig hdel hs i j
 
-/-- Continuity-neighborhood equality between `CoordinateCurvature.christoffel` and `K.christoffel`. -/
+/-- Continuity-neighborhood equality between `CoordinateCurvature.christoffel` and
+`K.christoffel`. -/
 lemma eventually_christoffel_eq (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (k i j : Fin 4) :

@@ -564,8 +564,8 @@ private lemma ricciOf_eq_sum (K : KerrSpacetime) (x : Fin 4 → ℝ)
   have hsumG : ∀ lam, (∑ ρ : Fin 4, K.christoffel x ρ ρ lam) = K.christoffelTrace x lam :=
     K.sum_christoffel_trace x hsig hdel hs
   have htr_pd := sum_pd_christoffel_diag K x hsig hdel hs σ ν
-  simp only [CoordinateCurvature.ricciTensor, CoordinateCurvature.riemann, hpd, hpt, Finset.sum_sub_distrib,
-    Finset.sum_add_distrib]
+  simp only [CoordinateCurvature.ricciTensor, CoordinateCurvature.riemann, hpd, hpt,
+    Finset.sum_sub_distrib, Finset.sum_add_distrib]
   have h1 : (∑ ρ : Fin 4, coordDeriv ρ (fun y => K.christoffel y ρ ν σ) x)
       = coordDeriv 1 (fun y => K.christoffel y 1 ν σ) x
         + coordDeriv 2 (fun y => K.christoffel y 2 ν σ) x := by
@@ -729,8 +729,8 @@ lemma ricciScalar_eq_zero (K : KerrSpacetime) (x : Fin 4 → ℝ)
     CoordinateCurvature.ricciScalar K.metric K.metricInv x = 0 := by
   simp [CoordinateCurvature.ricciScalar, K.ricciTensor_eq_zero x hsig hdel hs]
 
-/-- Vacuum Einstein equations for the Kerr black hole through `GeneralRelativity.CoordinateCurvature`:
-`G_{i j} = 0` for all `i, j : Fin 4`. -/
+/-- Vacuum Einstein equations for the Kerr black hole through
+`GeneralRelativity.CoordinateCurvature`: `G_{i j} = 0` for all `i, j : Fin 4`. -/
 lemma einsteinTensor_eq_zero (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (i j : Fin 4) :

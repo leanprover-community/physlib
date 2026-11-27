@@ -306,7 +306,8 @@ lemma einsteinTensor_eq_maxwell (S : ReissnerNordstromSpacetime) (x : Fin 4 → 
           * maxwellStressEnergy (S.toStaticSpherical.metricTensor x hr hf hsin)
               (S.coulombFieldStrength (x 1)) i j := by
   have hpi : Real.pi ≠ 0 := Real.pi_ne_zero
-  simp only [CoordinateCurvature.einsteinTensor, S.ricciTensor x hr hf hsin, S.ricciScalar x hr hf hsin]
+  simp only [CoordinateCurvature.einsteinTensor, S.ricciTensor x hr hf hsin,
+    S.ricciScalar x hr hf hsin]
   simp only [maxwellStressEnergy, GeneralRelativity.maxwellStressEnergy, maxwellFieldInvariant,
     StaticSphericalMetric.metricTensor, StaticSphericalMetric.metric,
     StaticSphericalMetric.metricInv, toStaticSpherical, coulombFieldStrength, Matrix.of_apply,

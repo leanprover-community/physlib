@@ -36,11 +36,13 @@ kinetic term.
 
 ## ii. Key results
 
-- `HigherDerivativeOscillator` : benchmark higher-derivative harmonic oscillator model with mass `m`.
-- `oscillatorKineticHessian`, `oscillatorKineticHessian_degenerate` : singular kinetic Hessian `diag(0, 1)` in `(q̇, q̈)`
-  with `Matrix.det oscillatorKineticHessian = 0`.
+- `HigherDerivativeOscillator` : benchmark higher-derivative harmonic oscillator model with
+  mass `m`.
+- `oscillatorKineticHessian`, `oscillatorKineticHessian_degenerate` : singular kinetic Hessian
+  `diag(0, 1)` in `(q̇, q̈)` with `Matrix.det oscillatorKineticHessian = 0`.
 - `HigherDerivativeOscillator.hamiltonian`, `HigherDerivativeOscillator.hamiltonian_add`,
-  `HigherDerivativeOscillator.ostrogradsky_unbounded_below` : linearity in `p₁` and unboundedness below
+  `HigherDerivativeOscillator.ostrogradsky_unbounded_below` : linearity in `p₁` and
+  unboundedness below
   whenever `v ≠ 0`.
 - `kinetic_nonneg`, `kinetic_zero_iff` : positivity and non-degeneracy of a standard first-order
   quadratic kinetic term.
@@ -89,13 +91,13 @@ structure HigherDerivativeOscillator where
   m : ℝ
 
 /-- The kinetic Hessian matrix `diag(0, 1)` of `L = (1/2) q̈² + V(q)` with respect to `(q̇, q̈)`. -/
-def kineticHessian : Tensor2 2 :=
+def oscillatorKineticHessian : Tensor2 2 :=
   fun i j => if i = 1 ∧ j = 1 then 1 else 0
 
 /-- The kinetic Hessian matrix of `L = (1/2) q̈² + V(q)` is singular
-(`det kineticHessian = 0`). -/
-lemma kineticHessian_degenerate : Matrix.det kineticHessian = 0 := by
-  simp [kineticHessian, Matrix.det_fin_two]
+(`det oscillatorKineticHessian = 0`). -/
+lemma oscillatorKineticHessian_degenerate : Matrix.det oscillatorKineticHessian = 0 := by
+  simp [oscillatorKineticHessian, Matrix.det_fin_two]
 
 /-- Canonical Ostrogradsky Hamiltonian for `L = (1/2) q̈² - (1/2) m² q²`, with canonical pairs
 `(q, p₁)` and `(q̇, p₂)` where `p₁` is conjugate to position `q` and `p₂ = q̈` is conjugate to
@@ -105,7 +107,8 @@ noncomputable def HigherDerivativeOscillator.hamiltonian (H : HigherDerivativeOs
   p₁ * v + p₂ * a - a ^ 2 / 2 + H.m ^ 2 * q ^ 2 / 2
 
 /-- Shifting `p₁` by `t` translates the Ostrogradsky Hamiltonian linearly by `t * v`. -/
-lemma HigherDerivativeOscillator.hamiltonian_add (H : HigherDerivativeOscillator) (v a p₁ p₂ q t : ℝ) :
+lemma HigherDerivativeOscillator.hamiltonian_add (H : HigherDerivativeOscillator)
+    (v a p₁ p₂ q t : ℝ) :
     H.hamiltonian v a (p₁ + t) p₂ q = H.hamiltonian v a p₁ p₂ q + t * v := by
   simp only [HigherDerivativeOscillator.hamiltonian]
   ring

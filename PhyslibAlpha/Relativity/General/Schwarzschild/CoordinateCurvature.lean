@@ -28,8 +28,8 @@ Specializing `S.toDeSitter` (`⟨S.M, 0⟩ : SchwarzschildDeSitterSpacetime`) to
 - `SchwarzschildSpacetime.toDeSitter_M`, `SchwarzschildSpacetime.toDeSitter_Λ`,
   `SchwarzschildSpacetime.toDeSitter_metricFn`, `SchwarzschildSpacetime.toDeSitter_metric`,
   `SchwarzschildSpacetime.toDeSitter_metricInv` : reduction from `toDeSitter` at `Λ = 0`.
-- `SchwarzschildSpacetime.riemann_components` : all six independent Schwarzschild Riemann
-  components.
+- `SchwarzschildSpacetime.riemann_components_from_coordinateMetric` : all six independent
+  Schwarzschild Riemann components computed from the coordinate metric.
 - `SchwarzschildSpacetime.ricciTensor`, `SchwarzschildSpacetime.ricciScalar`,
   `SchwarzschildSpacetime.einsteinTensor` : vacuum Einstein solution theorems.
 
@@ -99,7 +99,8 @@ lemma toDeSitter_metricInv (S : SchwarzschildSpacetime) :
 
 /-- All six independent Schwarzschild Riemann components computed from the coordinate metric,
 specialized from `SchwarzschildDeSitterSpacetime.riemann_components_from_metric` at `Λ = 0`. -/
-lemma riemann_components_from_metric (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma riemann_components_from_coordinateMetric (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ)
+    (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     (CoordinateCurvature.riemann S.metric S.metricInv x 0 1 0 1
         = 2 * S.M / ((x 1) ^ 3 * S.metricFn (x 1)))

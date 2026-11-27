@@ -81,8 +81,8 @@ Hubble-rate terms `a' / a`, spatial curvature factor `1 - k r²`, and angular fa
 
 -/
 
--- Factored out separately from `CoordinateCurvature.christoffel` so symbolic time derivatives of `S.a(t)`
--- remain isolated from metric-inverse index sums.
+-- Factored out separately from `CoordinateCurvature.christoffel` so symbolic time derivatives
+-- of `S.a(t)` remain isolated from metric-inverse index sums.
 /-- Closed-form Levi-Civita Christoffel symbols `Γ^m_{ij}` of an FLRW spacetime in comoving
 coordinates `(t, r, θ, φ)`. -/
 noncomputable def christoffel (S : FLRWSpacetime) (x : Fin 4 → ℝ) (m i j : Fin 4) : ℝ :=
@@ -286,7 +286,8 @@ private lemma pd_theta (S : FLRWSpacetime) (x : Fin 4 → ℝ) (c d : Fin 4) :
 lemma christoffel_eq (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : DifferentiableAt ℝ S.a (x 0)) :
-    ∀ m i j, CoordinateCurvature.christoffel S.metric S.metricInv x m i j = S.christoffel x m i j := by
+    ∀ m i j, CoordinateCurvature.christoffel S.metric S.metricInv x m i j =
+      S.christoffel x m i j := by
   intro m i j
   fin_cases m
   · fin_cases i <;> fin_cases j <;>
@@ -666,7 +667,8 @@ private lemma ricci_00 (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) �
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
     CoordinateCurvature.ricciTensor S.metric S.metricInv x 0 0
       = -3 * deriv (deriv S.a) (x 0) / S.a (x 0) := by
-  simp [CoordinateCurvature.ricciTensor, Fin.sum_univ_four, S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
+  simp [CoordinateCurvature.ricciTensor, Fin.sum_univ_four,
+    S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
     riemannFromData, christoffel, christoffelDeriv]
   field_simp [ha]
   ring
@@ -678,7 +680,8 @@ private lemma ricci_11 (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) �
     CoordinateCurvature.ricciTensor S.metric S.metricInv x 1 1
       = (S.a (x 0) * deriv (deriv S.a) (x 0) + 2 * (deriv S.a (x 0)) ^ 2 + 2 * S.k)
           / (1 - S.k * (x 1) ^ 2) := by
-  simp [CoordinateCurvature.ricciTensor, Fin.sum_univ_four, S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
+  simp [CoordinateCurvature.ricciTensor, Fin.sum_univ_four,
+    S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
     riemannFromData, christoffel, christoffelDeriv]
   field_simp [ha, hr, hkr]
   ring
@@ -691,7 +694,8 @@ private lemma ricci_22 (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) �
       = (S.a (x 0) * deriv (deriv S.a) (x 0) + 2 * (deriv S.a (x 0)) ^ 2 + 2 * S.k)
           * (x 1) ^ 2 := by
   have hkr' : 1 - (x 1) ^ 2 * S.k ≠ 0 := by rwa [mul_comm]
-  simp [CoordinateCurvature.ricciTensor, Fin.sum_univ_four, S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
+  simp [CoordinateCurvature.ricciTensor, Fin.sum_univ_four,
+    S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
     riemannFromData, christoffel, christoffelDeriv]
   field_simp [ha, hr, hkr, hkr', hsin]
   rw [Real.sin_sq (x 2)]
@@ -705,7 +709,8 @@ private lemma ricci_33 (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) �
       = (S.a (x 0) * deriv (deriv S.a) (x 0) + 2 * (deriv S.a (x 0)) ^ 2 + 2 * S.k) * (x 1) ^ 2
           * Real.sin (x 2) ^ 2 := by
   have hkr' : 1 - (x 1) ^ 2 * S.k ≠ 0 := by rwa [mul_comm]
-  simp [CoordinateCurvature.ricciTensor, Fin.sum_univ_four, S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
+  simp [CoordinateCurvature.ricciTensor, Fin.sum_univ_four,
+    S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
     riemannFromData, christoffel, christoffelDeriv]
   field_simp [ha, hr, hkr, hkr', hsin]
   ring
@@ -717,7 +722,8 @@ private lemma ricci_offdiag (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x
     CoordinateCurvature.ricciTensor S.metric S.metricInv x σ ν = 0 := by
   fin_cases σ <;> fin_cases ν <;> try exact absurd rfl h
   all_goals
-    simp [CoordinateCurvature.ricciTensor, Fin.sum_univ_four, S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
+    simp [CoordinateCurvature.ricciTensor, Fin.sum_univ_four,
+      S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
       riemannFromData, christoffel, christoffelDeriv]
   all_goals ring
 

@@ -29,8 +29,8 @@ underlies the proof of the four-dimensional Bach–Lanczos identity in `Lovelock
 
 ## ii. Key results
 
-- `generalizedKroneckerDelta`, `generalizedKroneckerDelta_eq_zero_of_lt` : `k`-index generalized Kronecker delta and
-  dimensional pigeonhole vanishing.
+- `generalizedKroneckerDelta`, `generalizedKroneckerDelta_eq_zero_of_lt` : `k`-index generalized
+  Kronecker delta and dimensional pigeonhole vanishing.
 - `perm_fin5_fiber_split` : antisymmetric permutation-sum coset split on `S_5`.
 
 ## iii. Table of contents

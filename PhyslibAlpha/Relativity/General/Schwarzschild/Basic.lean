@@ -31,8 +31,8 @@ Starting from the line element `g = diag(-f, f⁻¹, r², r² sin²θ)` with rad
 `f = 1 - 2M/r`, where `M` is the mass of `S : SchwarzschildSpacetime`, this module views the metric
 as a `StaticSphericalMetric`, computes radial derivatives of the metric and its static Newtonian
 potential `Φ = -M/r`, evaluates the radial Christoffel symbols
-(`Γ^t_{tr}`, `Γ^r_{rr}`, `Γ^r_{θθ}`, `Γ^r_{φφ}`), and computes all six independent Riemann components
-directly from the metric components.
+(`Γ^t_{tr}`, `Γ^r_{rr}`, `Γ^r_{θθ}`, `Γ^r_{φφ}`), and computes all six independent Riemann
+components directly from the metric components.
 
 Note that this module uses the `(-, +, +, +)` signature (`g_tt = -f`), whereas
 `IncompressibleSphere.gttOut` stores the positive factor `f = 1 - r_s / r` directly.

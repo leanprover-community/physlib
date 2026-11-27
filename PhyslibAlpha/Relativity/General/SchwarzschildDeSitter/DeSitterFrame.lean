@@ -33,9 +33,12 @@ contracted Bianchi identity holds without being assumed (`frame_einstein_conserv
 
 - `deSitterPart` : constant-curvature trace part `(Λ / 3) (η_{ik} η_{jl} - η_{il} η_{jk})`
   with its Riemann symmetries.
-- `SchwarzschildDeSitterSpacetime.frameSumOfSquares`, `SchwarzschildDeSitterSpacetime.frameSumOfSquares_eq`,
-  `SchwarzschildDeSitterSpacetime.kretschmann` : frame Kretschmann scalar `48 M² / r⁶ + 8 Λ² / 3`.
-- `SchwarzschildDeSitterSpacetime.frameRicciTensor_eq`, `SchwarzschildDeSitterSpacetime.frameScalar_eq`,
+- `SchwarzschildDeSitterSpacetime.frameSumOfSquares`,
+  `SchwarzschildDeSitterSpacetime.frameSumOfSquares_eq`,
+  `SchwarzschildDeSitterSpacetime.kretschmann` : frame Kretschmann scalar
+  `48 M² / r⁶ + 8 Λ² / 3`.
+- `SchwarzschildDeSitterSpacetime.frameRicciTensor_eq`,
+  `SchwarzschildDeSitterSpacetime.frameScalar_eq`,
   `SchwarzschildDeSitterSpacetime.frameEinstein_eq` : `Ric = Λ η`, `R = 4 Λ`, `G = -Λ η`.
 - `SchwarzschildDeSitterSpacetime.vacuum_ricci_zero`,
   `SchwarzschildDeSitterSpacetime.vacuum_scalar_zero`,
@@ -171,7 +174,8 @@ private lemma deSitterPart_sq_sum (Λ : ℝ) :
 
 private lemma weyl_deSitter_cross_zero (M Λ r : ℝ) :
     (∑ i, ∑ j, ∑ k, ∑ l,
-      (Schwarzschild.electricWeylRiemann (M / r ^ 3)).comp i j k l * deSitterPart Λ i j k l) = 0 := by
+      (Schwarzschild.electricWeylRiemann (M / r ^ 3)).comp i j k l *
+        deSitterPart Λ i j k l) = 0 := by
   simp_rw [sum_kl_mul_deSitterPart, Fin.sum_univ_four, minkowskiMetric4_apply,
     Schwarzschild.electricWeylRiemann, Schwarzschild.electricPart]
   norm_num
@@ -189,13 +193,17 @@ lemma frameSumOfSquares_eq (S : SchwarzschildDeSitterSpacetime) (r : ℝ) :
   have hA := deSitterPart_sq_sum S.Λ
   have hX := weyl_deSitter_cross_zero S.M S.Λ r
   have hpt : ∀ i j k l : Fin 4,
-      ((Schwarzschild.electricWeylRiemann (S.M / r ^ 3)).comp i j k l + deSitterPart S.Λ i j k l) *
-          ((Schwarzschild.electricWeylRiemann (S.M / r ^ 3)).comp i j k l + deSitterPart S.Λ i j k l)
-        = ((Schwarzschild.electricWeylRiemann (S.M / r ^ 3)).comp i j k l *
-              (Schwarzschild.electricWeylRiemann (S.M / r ^ 3)).comp i j k l
-            + (Schwarzschild.electricWeylRiemann (S.M / r ^ 3)).comp i j k l * deSitterPart S.Λ i j k l)
-          + ((Schwarzschild.electricWeylRiemann (S.M / r ^ 3)).comp i j k l * deSitterPart S.Λ i j k l
-            + deSitterPart S.Λ i j k l * deSitterPart S.Λ i j k l) := by
+      ((Schwarzschild.electricWeylRiemann (S.M / r ^ 3)).comp i j k l +
+          deSitterPart S.Λ i j k l) *
+        ((Schwarzschild.electricWeylRiemann (S.M / r ^ 3)).comp i j k l +
+          deSitterPart S.Λ i j k l)
+      = ((Schwarzschild.electricWeylRiemann (S.M / r ^ 3)).comp i j k l *
+            (Schwarzschild.electricWeylRiemann (S.M / r ^ 3)).comp i j k l
+          + (Schwarzschild.electricWeylRiemann (S.M / r ^ 3)).comp i j k l *
+            deSitterPart S.Λ i j k l)
+        + ((Schwarzschild.electricWeylRiemann (S.M / r ^ 3)).comp i j k l *
+            deSitterPart S.Λ i j k l
+          + deSitterPart S.Λ i j k l * deSitterPart S.Λ i j k l) := by
     intro i j k l
     ring
   simp only [frameSumOfSquares, frameCurvatureComponent, hpt, Finset.sum_add_distrib]
@@ -227,7 +235,8 @@ noncomputable def frameRicciTensor (S : SchwarzschildDeSitterSpacetime) (r : ℝ
 
 /-- The Weyl part is trace free and contributes nothing to the Ricci tensor. -/
 lemma weylRic_zero (M r : ℝ) (σ ν : Fin 4) :
-    (∑ ρ, ∑ ρ', minkowskiMetric4 ρ ρ' * (Schwarzschild.electricWeylRiemann (M / r ^ 3)).comp ρ' σ ρ ν)
+    (∑ ρ, ∑ ρ', minkowskiMetric4 ρ ρ' *
+      (Schwarzschild.electricWeylRiemann (M / r ^ 3)).comp ρ' σ ρ ν)
       = 0 := by
   fin_cases σ <;> fin_cases ν <;>
     simp [Fin.sum_univ_four, Schwarzschild.electricWeylRiemann, Schwarzschild.electricPart] <;>
@@ -352,7 +361,7 @@ lemma frame_bianchi :
 /-- The frame Einstein tensor of Schwarzschild–de Sitter is conserved (`∇ · G = 0`), proved
 from `frame_bianchi`. -/
 lemma frame_einstein_conserved (b : Fin 4) :
-    divergence (CurvatureDerivatives.einsteinDeriv frameCurvatureDerivatives) b = 0 :=
+    inertialDivergence (CurvatureDerivatives.einsteinDeriv frameCurvatureDerivatives) b = 0 :=
   inertialDivergence_einstein_eq_zero frameCurvatureDerivatives frame_bianchi b
 
 end SchwarzschildDeSitterSpacetime

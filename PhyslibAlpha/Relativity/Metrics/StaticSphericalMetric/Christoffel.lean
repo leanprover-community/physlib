@@ -210,15 +210,16 @@ regular point where the radial metric function is differentiable. -/
 lemma christoffel_eq (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : DifferentiableAt ℝ S.metricFn (x 1)) :
-    ∀ k i j, CoordinateCurvature.christoffel S.metric S.metricInv x k i j = S.christoffel x k i j := by
+    ∀ k i j, CoordinateCurvature.christoffel S.metric S.metricInv x k i j =
+      S.christoffel x k i j := by
   intro k i j
   fin_cases k <;> fin_cases i <;> fin_cases j <;>
     simp [CoordinateCurvature.christoffel, christoffel, metricInv,
       metricDeriv_theta, metricDeriv_r S x hf_diff hf] <;>
     field_simp [hr, hf, hsin]
 
-/-- Neighbourhood equality between `CoordinateCurvature.christoffel` and the closed-form static spherical
-Christoffel table around any regular point. -/
+/-- Neighbourhood equality between `CoordinateCurvature.christoffel` and the closed-form static
+spherical Christoffel table around any regular point. -/
 lemma eventually_christoffel_eq (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ S.metricFn s) (a b c : Fin 4) :

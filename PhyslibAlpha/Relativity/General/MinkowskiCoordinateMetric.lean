@@ -97,8 +97,8 @@ lemma minkowskiCoordinateMetric_ricciScalar (x : Fin 4 → ℝ) :
 /-- Minkowski spacetime satisfies the vacuum Einstein equations (`G_{ij} = 0`). -/
 lemma minkowskiCoordinateMetric_einsteinTensor (x : Fin 4 → ℝ) (i j : Fin 4) :
     minkowskiCoordinateMetric.einsteinTensor x i j = 0 :=
-  CoordinateCurvature.einsteinTensor_const minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv
-    minkowskiMetric4 (fun _ => rfl) x i j
+  CoordinateCurvature.einsteinTensor_const minkowskiCoordinateMetric.g
+    minkowskiCoordinateMetric.ginv minkowskiMetric4 (fun _ => rfl) x i j
 
 /-- Explicit Christoffel-data evaluation of the Riemann tensor vanishes identically on
 `minkowskiCoordinateMetric`. -/

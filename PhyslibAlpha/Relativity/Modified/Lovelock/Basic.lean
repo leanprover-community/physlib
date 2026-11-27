@@ -27,8 +27,9 @@ dimensions while contrasting with non-zero 5D dynamics on constant-curvature spa
 
 ## ii. Key results
 
-- `AlgebraicCurvature`, `AlgebraicCurvature.gaussBonnetScalar`, `AlgebraicCurvature.lanczosTensor` : algebraic
-  `(2,2)` curvature structure, quadratic Gauss–Bonnet invariant, and Lanczos tensor `H^i_j`.
+- `AlgebraicCurvature`, `AlgebraicCurvature.gaussBonnetScalar`,
+  `AlgebraicCurvature.lanczosTensor` : algebraic `(2,2)` curvature structure, quadratic
+  Gauss–Bonnet invariant, and Lanczos tensor `H^i_j`.
 - `lovelockContract5`, `lovelockContract5_eq_zero_of_lt`,
   `lovelockContract5_eq_neg_eight_lanczos` : 5-index contraction and `L^i_j = -8 H^i_j`.
 - `bach_lanczos_lt_five`, `bach_lanczos_four` : 4D Bach–Lanczos
@@ -112,7 +113,8 @@ def AlgebraicCurvature.gaussBonnetScalar {n : ℕ} (C : AlgebraicCurvature n) : 
 /-- Mixed `(1,1)` Lanczos–Bach–Gauss–Bonnet variation tensor
 `H^i_j = -½ δ^i_j 𝒢 + 2 R R^i_j - 4 R^i_c R^c_j - 4 R^{ic}_{jb} R^b_c + 2 R^{cd}_{jb} R^{ib}_{cd}`.
 -/
-noncomputable def AlgebraicCurvature.lanczosTensor {n : ℕ} (C : AlgebraicCurvature n) (i j : Fin n) : ℝ :=
+noncomputable def AlgebraicCurvature.lanczosTensor {n : ℕ} (C : AlgebraicCurvature n)
+    (i j : Fin n) : ℝ :=
   -(1 / 2) * (if i = j then C.gaussBonnetScalar else 0)
     + 2 * C.ricciScalar * C.ricciMixed i j
     - 4 * (∑ c : Fin n, C.ricciMixed i c * C.ricciMixed c j)
@@ -153,7 +155,8 @@ private lemma sum4_ite_eq_mul {n : ℕ} (a₁ a₂ a₃ a₄ : Fin n)
 lemma lovelockContract5_eq_kronecker_sum {n : ℕ} (C : AlgebraicCurvature n) (i j : Fin n) :
     (∑ a : Fin n, ∑ b : Fin n, ∑ c : Fin n, ∑ d : Fin n,
       ∑ e : Fin n, ∑ f : Fin n, ∑ g : Fin n, ∑ h : Fin n,
-        generalizedKroneckerDelta 5 ![i, a, b, c, d] ![j, e, f, g, h] * C.rUp e f a b * C.rUp g h c d)
+        generalizedKroneckerDelta 5 ![i, a, b, c, d] ![j, e, f, g, h] *
+          C.rUp e f a b * C.rUp g h c d)
       = lovelockContract5 C i j := by
   simp only [lovelockContract5]
   refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ =>
@@ -195,7 +198,8 @@ lemma lovelockContract5_eq_kronecker_sum {n : ℕ} (C : AlgebraicCurvature n) (i
       C.rUp e f a b * C.rUp g h c d)
 
 /-- In dimension `n < 5`, the 5-index Lovelock contraction vanishes identically. -/
-lemma lovelockContract5_eq_zero_of_lt {n : ℕ} (hn : n < 5) (C : AlgebraicCurvature n) (i j : Fin n) :
+lemma lovelockContract5_eq_zero_of_lt {n : ℕ} (hn : n < 5) (C : AlgebraicCurvature n)
+    (i j : Fin n) :
     lovelockContract5 C i j = 0 := by
   rw [← lovelockContract5_eq_kronecker_sum]
   refine Finset.sum_eq_zero fun a _ => Finset.sum_eq_zero fun b _ =>
@@ -555,8 +559,9 @@ def constantCurvature (n : ℕ) (κ : ℝ) : AlgebraicCurvature n where
 topological density `𝒢 = 24 κ²`, even though its metric variation `H^i_j` vanishes identically. -/
 lemma gaussBonnetScalar_constantCurvature_four (κ : ℝ) :
     (constantCurvature 4 κ).gaussBonnetScalar = 24 * κ ^ 2 := by
-  simp only [AlgebraicCurvature.gaussBonnetScalar, AlgebraicCurvature.ricciScalar, AlgebraicCurvature.ricciSq,
-    AlgebraicCurvature.riemannSq, AlgebraicCurvature.ricciMixed, constantCurvature,
+  simp only [AlgebraicCurvature.gaussBonnetScalar, AlgebraicCurvature.ricciScalar,
+    AlgebraicCurvature.ricciSq, AlgebraicCurvature.riemannSq, AlgebraicCurvature.ricciMixed,
+    constantCurvature,
     Fin.sum_univ_four, Fin.isValue, Fin.reduceEq, ↓reduceIte]
   ring
 
@@ -578,7 +583,8 @@ private lemma ricciScalar_constantCurvature_five (κ : ℝ) :
 
 private lemma gaussBonnetScalar_constantCurvature_five (κ : ℝ) :
     (constantCurvature 5 κ).gaussBonnetScalar = 120 * κ ^ 2 := by
-  simp only [AlgebraicCurvature.gaussBonnetScalar, AlgebraicCurvature.ricciSq, AlgebraicCurvature.riemannSq]
+  simp only [AlgebraicCurvature.gaussBonnetScalar, AlgebraicCurvature.ricciSq,
+    AlgebraicCurvature.riemannSq]
   rw [ricciScalar_constantCurvature_five]
   simp only [ricciMixed_constantCurvature_five]
   simp only [constantCurvature, Fin.sum_univ_five, Fin.isValue, Fin.reduceEq, ↓reduceIte]

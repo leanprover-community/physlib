@@ -16,8 +16,8 @@ Concrete vacuum ADM Cauchy data (`flatInitialData`) on flat Euclidean `ℝ³` (`
 ## i. Overview
 
 On flat Euclidean 3-space `euclideanMetric3`, taking zero extrinsic curvature (`K = 0`) gives
-Minkowski's `t = 0` slice `flatInitialData`, which satisfies both the Hamiltonian and momentum vacuum
-constraints identically.
+Minkowski's `t = 0` slice `flatInitialData`, which satisfies both the Hamiltonian and momentum
+vacuum constraints identically.
 
 ## ii. Key results
 
@@ -79,7 +79,8 @@ lemma flatInitialData_hamiltonianConstraint_zero : flatInitialData.hamiltonianCo
 /-- Zero covariant derivative of zero extrinsic curvature satisfies the momentum constraint. -/
 lemma flatInitialData_momentumConstraint_zero :
     ∀ i, flatInitialData.momentumConstraint (fun _ => 0) i = 0 :=
-  InitialData.momentumConstraint_zero_of_covariantDeriv_zero flatInitialData (fun _ => 0) (fun _ => rfl)
+  InitialData.momentumConstraint_zero_of_covariantDeriv_zero flatInitialData
+    (fun _ => 0) (fun _ => rfl)
 
 /-- Minkowski's initial slice satisfies both vacuum constraints. -/
 lemma flatInitialData_isVacuum : flatInitialData.IsVacuumData (fun _ => 0) :=

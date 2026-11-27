@@ -110,7 +110,7 @@ Relativity with Λ via `FRTheory.generalRelativity Λ`, deriving the `n`-dimensi
 trace identities, and supplying Starobinsky's `R + α R²` Legendre potential `(φ - 1)² / (8 α)` and
 normalized Einstein-frame slow-roll plateau `V(φ) / φ² → 1 / (8 α)` [57]. By Ostrogradsky's
 theorem (`HigherDerivativeOscillator`), a second-order higher-derivative benchmark Lagrangian
-`L = ½ q̈² - ½ m² q²` has a degenerate kinetic Hessian matrix `Matrix.det kineticHessian = 0` in
+`L = ½ q̈² - ½ m² q²` has a degenerate kinetic Hessian matrix `Matrix.det oscillatorKineticHessian = 0` in
 `(q̇, q̈)` and a canonical Hamiltonian linear in the position-conjugate momentum `p₁`, making it
 unbounded below for any `v ≠ 0` in contrast to positive-definite first-order kinetic energy [58].
 Cubic Galileon scalar-tensor theories (`CubicGalileon`) achieve second-order equations of motion
@@ -289,7 +289,8 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78].
     `SchwarzschildSpacetime.riemann_components_from_metric`
 41. PhyslibAlpha/Relativity/General/Schwarzschild/CoordinateCurvature.lean —
     `SchwarzschildSpacetime.toDeSitter`, `SchwarzschildSpacetime.toDeSitter_metric`,
-    `SchwarzschildSpacetime.riemann_components`, `SchwarzschildSpacetime.ricciTensor`,
+    `SchwarzschildSpacetime.riemann_components_from_coordinateMetric`,
+    `SchwarzschildSpacetime.ricciTensor`,
     `SchwarzschildSpacetime.ricciScalar`, `SchwarzschildSpacetime.einsteinTensor`
 42. PhyslibAlpha/Relativity/General/Schwarzschild/IncompressibleSphere.lean —
     `IncompressibleSphere`, `rs`, `chia`, `cosChia`, `cosChia_sq`, `cosChia_pos`,
@@ -375,7 +376,8 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78].
     `starobinsky_nonconstant_deriv`, `einsteinFramePotential`, `starobinsky_einsteinFrame`,
     `starobinsky_plateau`
 58. PhyslibAlpha/Relativity/Modified/Ostrogradsky.lean — `HigherDerivativeOscillator`,
-    `kineticHessian`, `kineticHessian_degenerate`, `HigherDerivativeOscillator.hamiltonian`,
+    `oscillatorKineticHessian`, `oscillatorKineticHessian_degenerate`,
+    `HigherDerivativeOscillator.hamiltonian`,
     `HigherDerivativeOscillator.hamiltonian_add`, `HigherDerivativeOscillator.ostrogradsky_unbounded_below`,
     `kinetic_nonneg`, `kinetic_zero_iff`
 59. PhyslibAlpha/Relativity/Modified/Galileon.lean — `CubicGalileon`,
