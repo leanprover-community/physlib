@@ -20,8 +20,8 @@ An import class of operators in NRQM are those which are both densely defined an
 which we refer to as _unbounded_. When `H = H'` operators may also be symmetric, self-adjoint or
 essentially self-adjoint (closure is self-adjoint).
 
-In this module we collect results on how the properties `HasDenseDomain`, `IsUnbounded` and
-`IsSymmetric` interact with the basic algebraic
+In this module we collect results on how the properties `HasDenseDomain` and `IsUnbounded`
+interact with the basic algebraic
 operations, closure, adjoints, unitary conjugation and each other.
 
 **Notes**
@@ -42,8 +42,6 @@ operations, closure, adjoints, unitary conjugation and each other.
 Definitions
 - `HasDenseDomain` : An operator `U : H →ₗ.[ℂ] H'` has dense domain if `U.domain` is dense in `H`.
 - `IsUnbounded` : An operator is unbounded if it is both densely defined and closable.
-- `IsSymmetric` : An operator `T : H →ₗ.[ℂ] H` is symmetric if `⟪T x, y⟫_ℂ = ⟪x, T y⟫_ℂ` holds
-    for all `x y : T.domain`.
 
 Results
 - `adjoint_add_le_add_adjoint` : The inequality `U₁† + U₂† ≤ (U₁ + U₂)†` when `U₁ + U₂` has
@@ -72,7 +70,7 @@ Results
   - B.5. Unitary conjugation
 - C. Classes of operators
   - C.1. Unbounded operators
-  - C.2. Symmetric operators
+- D. Polarization identities
 
 ## iv. References
 
@@ -706,7 +704,7 @@ lemma IsUnbounded.orthogonal_closure_ker [CompleteSpace H] [CompleteSpace H'] (h
   h.adjoint_adjoint_eq_closure ▸ h.adjoint.hasDenseDomain.orthogonal_adjoint_ker
 
 /-!
-### C.2. Symmetric operators
+## D. Polarization identities
 -/
 
 /-- The analogue of `inner_map_polarization` for LinearPMap. -/
