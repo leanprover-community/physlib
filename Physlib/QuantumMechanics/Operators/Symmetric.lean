@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gregory J. Loges
+Authors: Adam Bornemann, Gregory J. Loges
 -/
 module
 
@@ -38,7 +38,7 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] {T T₂ : 
 ## A. Definition of symmetric operator
 -/
 
-/-- A LinearPMap `T` is symmetric iff `⟪T x, y⟫_ℂ = ⟪x, T y⟫_ℂ` for all `x y : T.domain`. -/
+/-- An operator `T` is symmetric if `⟪T x, y⟫_ℂ = ⟪x, T y⟫_ℂ` for all `x y : T.domain`. -/
 def IsSymmetric (T : H →ₗ.[ℂ] H) : Prop := T.IsFormalAdjoint T
 
 lemma isSymmetric_def : T.IsSymmetric ↔ T.IsFormalAdjoint T := Iff.rfl
@@ -56,12 +56,15 @@ lemma isSymmetric_iff_inner_map_self_real :
   rw [inner_map_polarization']
   simp [sub_eq_add_neg]
 
+/-- A densely-defined operator on a Hilbert space is symmetric *if and only if*
+it has its adjoint as an extension. -/
 lemma isSymmetric_iff_le_adjoint [CompleteSpace H] (h : T.HasDenseDomain) :
     T.IsSymmetric ↔ T ≤ T† := by
   refine ⟨fun h_symm ↦ h_symm.le_adjoint h, fun h_le x y ↦ ?_⟩
   have h_eq : T x = T† ⟨x, h_le.1 x.2⟩ := @h_le.2 x ⟨x, h_le.1 x.2⟩ rfl
   exact h_eq ▸ adjoint_isFormalAdjoint h _ _
 
+/-- For a densely-defined operator `T` on a Hilbert space, `T + T†` is symmetric. -/
 lemma add_adjoint_isSymmetric [CompleteSpace H] (h : T.HasDenseDomain) :
     (T + T.adjoint).IsSymmetric := by
   intro x y
@@ -81,12 +84,16 @@ variable (h : T.IsSymmetric)
 
 include h
 
+/-- A densely-defined symmetric operator on a Hilbert space is closable. -/
 lemma isClosable [CompleteSpace H] (h' : T.HasDenseDomain) : T.IsClosable :=
   isClosable_iff_exists_closed_extension.mpr ⟨T†, adjoint_isClosed h', h.le_adjoint h'⟩
 
+/-- A symmetric operator on a Hilbert space is unbounded (densely defined and closed)
+*if and only if* it is densely defined. -/
 lemma isUnbounded_iff_hasDenseDomain [CompleteSpace H] : T.IsUnbounded ↔ T.HasDenseDomain :=
   and_iff_left_of_imp h.isClosable
 
+/-- The adjoint of a densely-defined symmetric operator is an extension of its closure. -/
 lemma closure_le_adjoint [CompleteSpace H] (h' : T.HasDenseDomain) : T.closure ≤ T† := by
   have h_adj : T†.IsClosed := adjoint_isClosed h'
   exact h_adj.closure_eq ▸ h_adj.isClosable.closure_mono (h.le_adjoint h')
