@@ -17,7 +17,7 @@ import Mathlib.Tactic.Ring
 # Flat FLRW teleparallel torsion and the boundary equivalence `R_LC = -T + B`
 
 Diagonal comoving flat FLRW tetrad, Weitzenböck Hubble connection, torsion scalar `T = 6 H²`,
-and exact equivalence `R_LC = -T + B` with `FLRWSpacetime.ricciScalarOf`.
+and exact equivalence `R_LC = -T + B` with `FLRWSpacetime.ricciScalar`.
 
 ## i. Overview
 
@@ -31,9 +31,9 @@ computed from the coordinate metric satisfies `R_LC = -T + B`.
   comoving tetrad and `Tetrad 4` structure.
 - `flrwWeitzenbock_hubble` : spatial Weitzenböck connection equals Hubble parameter `a'/a`.
 - `flrwTorsionScalar`, `torsionScalar_flrw_eq_flrwTorsionScalar`, `flrwBoundaryTerm`,
-  `ricciScalarOf_flrw_flat_eq_neg_torsion_add_boundary` : reconciliation of `torsionScalar` with
+  `ricciScalar_flrw_flat_eq_neg_torsion_add_boundary` : reconciliation of `torsionScalar` with
   `flrwTorsionScalar = 6 H²` and exact equivalence `R_LC = -T + B` bridged to
-  `FLRWSpacetime.ricciScalarOf`.
+  `FLRWSpacetime.ricciScalar`.
 
 ## iii. Table of contents
 
@@ -61,7 +61,7 @@ namespace Modified
 
 namespace Teleparallel
 
-open GeneralRelativity.Pipeline
+open GeneralRelativity.CoordinateCurvature
 open GeneralRelativity.FLRW
 open GeneralRelativity.Modified.EinsteinCartan
 
@@ -70,7 +70,7 @@ open GeneralRelativity.Modified.EinsteinCartan
 ## A. Flat FLRW teleparallel cosmology and `R_LC = -T + B`
 
 Instantiating the diagonal flat FLRW comoving tetrad yields the Hubble connection, `T = 6 H²`,
-and exact agreement with `FLRWSpacetime.ricciScalarOf` up to the boundary divergence `B`.
+and exact agreement with `FLRWSpacetime.ricciScalar` up to the boundary divergence `B`.
 
 -/
 
@@ -246,15 +246,15 @@ lemma torsionScalar_flrw_eq_flrwTorsionScalar (a : ℝ → ℝ) (x : Fin 4 → �
   ring
 
 /-- Exact teleparallel-to-Levi-Civita scalar curvature equivalence on flat FLRW spacetime (`k = 0`):
-`FLRWSpacetime.ricciScalarOf ⟨a, 0⟩ x = -T + B`. -/
-lemma ricciScalarOf_flrw_flat_eq_neg_torsion_add_boundary (a : ℝ → ℝ) (x : Fin 4 → ℝ)
+`FLRWSpacetime.ricciScalar ⟨a, 0⟩ x = -T + B`. -/
+lemma ricciScalar_flrw_flat_eq_neg_torsion_add_boundary (a : ℝ → ℝ) (x : Fin 4 → ℝ)
     (ha : a (x 0) ≠ 0) (hr : x 1 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ a t)
     (ha2 : DifferentiableAt ℝ (deriv a) (x 0)) :
-    ricciScalarOf (FLRWSpacetime.mk a 0).metric (FLRWSpacetime.mk a 0).metricInv x =
+    CoordinateCurvature.ricciScalar (FLRWSpacetime.mk a 0).metric (FLRWSpacetime.mk a 0).metricInv x =
       -flrwTorsionScalar a (x 0) + flrwBoundaryTerm a (x 0) := by
   have hkr : 1 - (0 : ℝ) * (x 1) ^ 2 ≠ 0 := by norm_num
-  rw [FLRWSpacetime.ricciScalarOf ⟨a, 0⟩ x ha hr hkr hsin ha_diff ha2]
+  rw [FLRWSpacetime.ricciScalar ⟨a, 0⟩ x ha hr hkr hsin ha_diff ha2]
   simp only [flrwTorsionScalar, flrwBoundaryTerm]
   ring
 

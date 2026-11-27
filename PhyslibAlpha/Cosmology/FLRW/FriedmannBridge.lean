@@ -37,7 +37,7 @@ of light. Reparametrizing cosmic time `t` by the length-dimensioned coordinate `
 - `hasDerivAt_flrwScaleFactorOfReal`, `eventually_differentiableAt_flrwScaleFactorOfReal`,
   `deriv_flrwScaleFactorOfReal_eq`, `hasDerivAt_deriv_flrwScaleFactorOfReal` : first- and
   second-derivative relations between cosmic-time derivatives and `τ = c t` derivatives.
-- `einsteinTensorOf_ofCosmology_iff_friedmann`, `friedmannSolution_of_einsteinTensorOf` :
+- `einsteinTensor_ofCosmology_iff_friedmann`, `friedmannSolution_of_einsteinTensor` :
   equivalence between the FLRW Einstein field equations and `FirstOrderFriedmann` /
   `SecondOrderFriedmann`, constructing a `Cosmology.FLRW.FriedmannSolution`.
 
@@ -60,7 +60,7 @@ namespace GeneralRelativity
 
 namespace FLRW
 
-open GeneralRelativity.Pipeline
+open GeneralRelativity.CoordinateCurvature
 
 /-!
 
@@ -165,11 +165,11 @@ lemma hasDerivAt_deriv_flrwScaleFactorOfReal (c : SpeedOfLight) (U : Cosmology.F
 /-- The FLRW Einstein field equations for a comoving cosmic fluid with speed of light `c` and
 gravitational constant `G` are equivalent to the first- and second-order Friedmann equations of
 `Physlib.Cosmology.FLRW`. -/
-lemma einsteinTensorOf_ofCosmology_iff_friedmann (c : SpeedOfLight) (U : Cosmology.FLRW)
+lemma einsteinTensor_ofCosmology_iff_friedmann (c : SpeedOfLight) (U : Cosmology.FLRW)
     (F : Cosmology.CosmicFluid) (Λ : ℝ) (G : GravitationalConstant) {t : Time} (ht : t ∈ U.I)
     (x : Fin 4 → ℝ) (hx0 : x 0 = (c : ℝ) * t.val) (hr : x 1 ≠ 0)
     (hkr : 1 - U.geometry.curvature * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
-    (∀ i j, Pipeline.einsteinTensorOf (FLRWSpacetime.ofCosmology c U).metric
+    (∀ i j, CoordinateCurvature.einsteinTensor (FLRWSpacetime.ofCosmology c U).metric
           (FLRWSpacetime.ofCosmology c U).metricInv x i j
           + Λ * (FLRWSpacetime.ofCosmology c U).metric x i j
         = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * perfectFluidStressEnergy c (F.ρ t) (F.p t)
@@ -198,7 +198,7 @@ lemma einsteinTensorOf_ofCosmology_iff_friedmann (c : SpeedOfLight) (U : Cosmolo
       = Time.deriv (Time.deriv U.a) t / (c : ℝ) ^ 2 := by
     rw [hx0]
     exact hd2.deriv
-  rw [(FLRWSpacetime.ofCosmology c U).einsteinTensorOf_iff_friedmann c Λ G (F.ρ t) (F.p t) x
+  rw [(FLRWSpacetime.ofCosmology c U).einsteinTensor_iff_friedmann c Λ G (F.ρ t) (F.p t) x
     ha hr hkr hsin ha_diff ha2]
   simp only [Cosmology.FLRW.FriedmannEquation.FirstOrderFriedmann,
     Cosmology.FLRW.FriedmannEquation.SecondOrderFriedmann, FLRWSpacetime.ofCosmology,
@@ -234,21 +234,21 @@ lemma einsteinTensorOf_ofCosmology_iff_friedmann (c : SpeedOfLight) (U : Cosmolo
 /-- If the FLRW Einstein equations hold across the model's open time interval at a regular spatial
 chart point, then the model and cosmic fluid form a `Cosmology.FLRW.FriedmannSolution` (and hence
 automatically satisfy the fluid continuity equation). -/
-lemma friedmannSolution_of_einsteinTensorOf (c : SpeedOfLight) (U : Cosmology.FLRW)
+lemma friedmannSolution_of_einsteinTensor (c : SpeedOfLight) (U : Cosmology.FLRW)
     (F : Cosmology.CosmicFluid) (Λ : ℝ) (G : GravitationalConstant) (r₀ θ₀ : ℝ) (hr : r₀ ≠ 0)
     (hkr : 1 - U.geometry.curvature * r₀ ^ 2 ≠ 0) (hsin : Real.sin θ₀ ≠ 0)
     (heinst : ∀ t ∈ U.I, ∀ i j,
       let x : Fin 4 → ℝ := ![(c : ℝ) * t.val, r₀, θ₀, 0]
-      Pipeline.einsteinTensorOf (FLRWSpacetime.ofCosmology c U).metric
+      CoordinateCurvature.einsteinTensor (FLRWSpacetime.ofCosmology c U).metric
           (FLRWSpacetime.ofCosmology c U).metricInv x i j
           + Λ * (FLRWSpacetime.ofCosmology c U).metric x i j
         = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * perfectFluidStressEnergy c (F.ρ t) (F.p t)
             ((FLRWSpacetime.ofCosmology c U).metric x) i j) :
     U.FriedmannSolution F Λ G.val c := by
   refine ⟨fun t ht => ?_, fun t ht => ?_⟩
-  · exact ((einsteinTensorOf_ofCosmology_iff_friedmann c U F Λ G ht ![(c : ℝ) * t.val, r₀, θ₀, 0]
+  · exact ((einsteinTensor_ofCosmology_iff_friedmann c U F Λ G ht ![(c : ℝ) * t.val, r₀, θ₀, 0]
       rfl hr hkr hsin).mp (heinst t ht)).1
-  · exact ((einsteinTensorOf_ofCosmology_iff_friedmann c U F Λ G ht ![(c : ℝ) * t.val, r₀, θ₀, 0]
+  · exact ((einsteinTensor_ofCosmology_iff_friedmann c U F Λ G ht ![(c : ℝ) * t.val, r₀, θ₀, 0]
       rfl hr hkr hsin).mp (heinst t ht)).2
 
 end FLRW

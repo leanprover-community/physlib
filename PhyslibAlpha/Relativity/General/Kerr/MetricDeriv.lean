@@ -58,7 +58,7 @@ namespace GeneralRelativity
 
 namespace Kerr
 
-open Pipeline
+open CoordinateCurvature
 
 namespace KerrSpacetime
 

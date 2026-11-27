@@ -18,15 +18,16 @@ and coordinate derivative table `dG`.
 ## i. Overview
 
 Given closed-form Levi-Civita connection coefficients `G` and their partial derivatives
-`dG μ x ρ ν σ = ∂_μ Γ^ρ_{νσ}`, `Pipeline.riemannFromData G dG x ρ σ μ ν` evaluates
+`dG μ x ρ ν σ = ∂_μ Γ^ρ_{νσ}`, the function `CoordinateCurvature.riemannFromData G dG x ρ σ μ ν`
+evaluates
 `R^ρ_{σμν} = ∂_μ Γ^ρ_{νσ} - ∂_ν Γ^ρ_{μσ} + Γ^ρ_{μλ} Γ^λ_{νσ} - Γ^ρ_{νλ} Γ^λ_{μσ}`
 directly without nested inverse-metric differentiation, and `riemannFromData_congr` records its
 local dependence on the derivative components `(μ, ρ, ν, σ)` and `(ν, ρ, μ, σ)`.
 
 ## ii. Key results
 
-- `Pipeline.riemannFromData` : data-parameterised Riemann curvature evaluator.
-- `Pipeline.riemannFromData_congr` : local congruence with respect to derivative arguments.
+- `CoordinateCurvature.riemannFromData` : data-parameterised Riemann curvature evaluator.
+- `CoordinateCurvature.riemannFromData_congr` : local congruence in the derivative arguments.
 
 ## iii. Table of contents
 
@@ -47,7 +48,7 @@ local dependence on the derivative components `(μ, ρ, ν, σ)` and `(ν, ρ, �
 
 namespace GeneralRelativity
 
-namespace Pipeline
+namespace CoordinateCurvature
 
 /-!
 
@@ -59,8 +60,8 @@ symbol by symbol, while isolating the algebraic curvature contractions.
 
 -/
 
--- Decoupled from the derivative-based `Pipeline.riemann` so closed-form Christoffel tables avoid
--- re-differentiation.
+-- Decoupled from the derivative-based `CoordinateCurvature.riemann` so closed-form Christoffel
+-- tables avoid re-differentiation.
 /-- The Riemann curvature tensor evaluated from supplied Christoffel symbols and their coordinate
 partial derivatives:
 `R^ρ_{σμν} = ∂_μ Γ^ρ_{νσ} - ∂_ν Γ^ρ_{μσ} + Γ^ρ_{μλ} Γ^λ_{νσ} - Γ^ρ_{νλ} Γ^λ_{μσ}`. -/
@@ -80,6 +81,6 @@ lemma riemannFromData_congr {n : ℕ} (G : (Fin n → ℝ) → Fin n → Fin n �
     riemannFromData G dG x ρ σ μ ν = riemannFromData G dG' x ρ σ μ ν := by
   simp only [riemannFromData, h1, h2]
 
-end Pipeline
+end CoordinateCurvature
 
 end GeneralRelativity

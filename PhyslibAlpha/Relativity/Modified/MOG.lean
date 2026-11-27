@@ -72,7 +72,11 @@ namespace MOG
 ## A. The MOG enhancement factor and potential
 
 In `MOGTheory`, a repulsive massive vector field shifts the effective Newtonian attraction by the
-exponential Yukawa factor `1 + α (1 - e^{-μ r})`.
+exponential Yukawa factor `1 + α (1 - e^{-μ r})`. This module formalises only the
+one-parameter Yukawa form (coupling `α`, inverse range `μ`); it does not derive
+`α` or `μ` from the STVG action, and MOG remains a phenomenological alternative to dark matter
+whose standing is assessed empirically (e.g. galaxy rotation curves and cluster lensing), not by
+these algebraic identities alone.
 
 -/
 

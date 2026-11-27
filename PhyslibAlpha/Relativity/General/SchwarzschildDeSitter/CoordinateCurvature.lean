@@ -30,11 +30,11 @@ formulas in `GeneralRelativity.StaticSpherical`:
 
 1. Equates `S.christoffel` and `S.christoffelDeriv` with `S.toStaticSpherical.christoffel` and
    `S.toStaticSpherical.christoffelDeriv`.
-2. Delegates `christoffel_eq`, `pd_christoffel_eq`, `pd_christoffel_eq_deriv`, `ricciTensorOf`, and
-   `ricciScalarOf` directly to `GeneralRelativity.StaticSpherical`.
+2. Delegates `christoffel_eq`, `pd_christoffel_eq`, `pd_christoffel_eq_deriv`, `ricciTensor`, and
+   `ricciScalar` directly to `GeneralRelativity.StaticSpherical`.
 3. Obtains `riemann_eq_data`, all six independent Riemann components
-   `riemann_components_pipeline`, `G_{ij} = -Λ g_{ij}` (`einsteinTensorOf`), and frame agreement
-   `frameScale * Ric = Λ η` (`ricciTensorOf_frame`).
+   `riemann_components_from_metric`, `G_{ij} = -Λ g_{ij}` (`einsteinTensor`), and frame agreement
+   `frameScale * Ric = Λ η` (`ricciTensor_frame`).
 
 ## ii. Key results
 
@@ -45,10 +45,10 @@ formulas in `GeneralRelativity.StaticSpherical`:
   `SchwarzschildDeSitterSpacetime.pd_christoffel_eq_deriv`,
   `SchwarzschildDeSitterSpacetime.riemann_eq_data` : metric-to-Riemann bridge via
   `StaticSpherical`.
-- `SchwarzschildDeSitterSpacetime.riemann_components_pipeline`,
-  `SchwarzschildDeSitterSpacetime.ricciTensorOf`, `SchwarzschildDeSitterSpacetime.ricciScalarOf`,
-  `SchwarzschildDeSitterSpacetime.einsteinTensorOf`,
-  `SchwarzschildDeSitterSpacetime.ricciTensorOf_frame` : general-`Λ` metric-level solution
+- `SchwarzschildDeSitterSpacetime.riemann_components_from_metric`,
+  `SchwarzschildDeSitterSpacetime.ricciTensor`, `SchwarzschildDeSitterSpacetime.ricciScalar`,
+  `SchwarzschildDeSitterSpacetime.einsteinTensor`,
+  `SchwarzschildDeSitterSpacetime.ricciTensor_frame` : general-`Λ` metric-level solution
   theorems.
 
 ## iii. Table of contents
@@ -73,7 +73,7 @@ namespace GeneralRelativity
 
 namespace SchwarzschildDeSitter
 
-open GeneralRelativity.Pipeline
+open GeneralRelativity.CoordinateCurvature
 open GeneralRelativity.StaticSpherical
 
 namespace SchwarzschildDeSitterSpacetime
@@ -195,7 +195,7 @@ private lemma christoffelDeriv_eq_staticSpherical (S : SchwarzschildDeSitterSpac
 `SchwarzschildDeSitterSpacetime.christoffel`, for every `Λ`. -/
 lemma christoffel_eq (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
-    ∀ k i j, Pipeline.christoffel S.metric S.metricInv x k i j
+    ∀ k i j, CoordinateCurvature.christoffel S.metric S.metricInv x k i j
       = S.christoffel x k i j := by
   intro k i j
   have hm : S.metric = S.toStaticSpherical.metric := rfl
@@ -210,7 +210,7 @@ Christoffel symbols and `S.christoffel` agree, so their coordinate partial deriv
 along every axis. -/
 lemma pd_christoffel_eq (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (μ a b c : Fin 4) :
-    coordDeriv μ (fun y => Pipeline.christoffel S.metric S.metricInv y a b c) x
+    coordDeriv μ (fun y => CoordinateCurvature.christoffel S.metric S.metricInv y a b c) x
       = coordDeriv μ (fun y => S.christoffel y a b c) x := by
   have hm : S.metric = S.toStaticSpherical.metric := rfl
   have hmi : S.metricInv = S.toStaticSpherical.metricInv := rfl
@@ -245,7 +245,7 @@ lemma pd_christoffel_eq_deriv (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 �
 
 ## C. Metric-level Riemann, Ricci, scalar, and Einstein tensors
 
-Evaluating `riemann`, `ricciTensorOf`, `ricciScalarOf`, and `einsteinTensorOf` in the regular region
+Evaluating `riemann`, `ricciTensor`, `ricciScalar`, and `einsteinTensor` in the regular region
 verifies the cosmological Einstein-space equations `Ric_{ij} = Λ g_{ij}` and `G_{ij} = -Λ g_{ij}`.
 
 -/
@@ -255,14 +255,14 @@ verifies the cosmological Einstein-space equations `Ric_{ij} = Λ g_{ij}` and `G
 `Λ`. -/
 lemma riemann_eq_data (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (ρ σ μ ν : Fin 4) :
-    Pipeline.riemann S.metric S.metricInv x ρ σ μ ν
+    CoordinateCurvature.riemann S.metric S.metricInv x ρ σ μ ν
       = riemannFromData S.christoffel S.christoffelDeriv x ρ σ μ ν := by
   rw [riemann_eq_riemannFromData]
-  have h1 : coordDeriv μ (fun z => Pipeline.christoffel S.metric S.metricInv z ρ ν σ) x
+  have h1 : coordDeriv μ (fun z => CoordinateCurvature.christoffel S.metric S.metricInv z ρ ν σ) x
       = S.christoffelDeriv μ x ρ ν σ :=
     (S.pd_christoffel_eq x hr hf hsin μ ρ ν σ).trans
       (S.pd_christoffel_eq_deriv x hr hf hsin μ ρ ν σ)
-  have h2 : coordDeriv ν (fun z => Pipeline.christoffel S.metric S.metricInv z ρ μ σ) x
+  have h2 : coordDeriv ν (fun z => CoordinateCurvature.christoffel S.metric S.metricInv z ρ μ σ) x
       = S.christoffelDeriv ν x ρ μ σ :=
     (S.pd_christoffel_eq x hr hf hsin ν ρ μ σ).trans
       (S.pd_christoffel_eq_deriv x hr hf hsin ν ρ μ σ)
@@ -270,17 +270,17 @@ lemma riemann_eq_data (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (
 
 /-- All six independent Schwarzschild–de Sitter Riemann components computed directly from the
 coordinate metric, for general `Λ`. -/
-lemma riemann_components_pipeline (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ)
+lemma riemann_components_from_metric (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ)
     (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
-    (Pipeline.riemann S.metric S.metricInv x 0 1 0 1
+    (CoordinateCurvature.riemann S.metric S.metricInv x 0 1 0 1
         = (2 * S.M / (x 1) ^ 3 + S.Λ / 3) / S.metricFn (x 1))
-      ∧ (Pipeline.riemann S.metric S.metricInv x 0 2 0 2 = S.Λ * (x 1) ^ 2 / 3 - S.M / (x 1))
-      ∧ (Pipeline.riemann S.metric S.metricInv x 0 3 0 3
+      ∧ (CoordinateCurvature.riemann S.metric S.metricInv x 0 2 0 2 = S.Λ * (x 1) ^ 2 / 3 - S.M / (x 1))
+      ∧ (CoordinateCurvature.riemann S.metric S.metricInv x 0 3 0 3
           = (S.Λ * (x 1) ^ 2 / 3 - S.M / (x 1)) * Real.sin (x 2) ^ 2)
-      ∧ (Pipeline.riemann S.metric S.metricInv x 1 2 1 2 = S.Λ * (x 1) ^ 2 / 3 - S.M / (x 1))
-      ∧ (Pipeline.riemann S.metric S.metricInv x 1 3 1 3
+      ∧ (CoordinateCurvature.riemann S.metric S.metricInv x 1 2 1 2 = S.Λ * (x 1) ^ 2 / 3 - S.M / (x 1))
+      ∧ (CoordinateCurvature.riemann S.metric S.metricInv x 1 3 1 3
           = (S.Λ * (x 1) ^ 2 / 3 - S.M / (x 1)) * Real.sin (x 2) ^ 2)
-      ∧ (Pipeline.riemann S.metric S.metricInv x 2 3 2 3
+      ∧ (CoordinateCurvature.riemann S.metric S.metricInv x 2 3 2 3
           = (2 * S.M / (x 1) + S.Λ * (x 1) ^ 2 / 3) * Real.sin (x 2) ^ 2) := by
   have hd := S.deriv_metricFnHalfDeriv_div_metricFn (x 1) hr hf
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
@@ -308,16 +308,16 @@ lemma riemann_components_pipeline (S : SchwarzschildDeSitterSpacetime) (x : Fin 
 
 /-- Metric-level Ricci tensor for Schwarzschild–de Sitter: `Ric_{σν} = Λ g_{σν}`, computed directly
 from the coordinate metric. -/
-lemma ricciTensorOf (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma ricciTensor (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
-    Pipeline.ricciTensorOf S.metric S.metricInv x σ ν = S.Λ * S.metric x σ ν := by
+    CoordinateCurvature.ricciTensor S.metric S.metricInv x σ ν = S.Λ * S.metric x σ ν := by
   have hm : S.metric = S.toStaticSpherical.metric := rfl
   have hmi : S.metricInv = S.toStaticSpherical.metricInv := rfl
   have hf1 := S.deriv_metricFn (x 1) hr
   have hf2 := (S.hasDerivAt_deriv_metricFn (x 1) hr).deriv
   have hfdiff := S.eventually_differentiableAt_metricFn (x 1) hr
   have hf2diff := (S.hasDerivAt_deriv_metricFn (x 1) hr).differentiableAt
-  rw [hm, hmi, S.toStaticSpherical.ricciTensorOf x hr hf hsin hfdiff hf2diff σ ν]
+  rw [hm, hmi, S.toStaticSpherical.ricciTensor x hr hf hsin hfdiff hf2diff σ ν]
   simp only [toStaticSpherical_metricFn] at *
   rw [hf1, hf2]
   fin_cases σ <;> fin_cases ν <;>
@@ -328,16 +328,16 @@ lemma ricciTensorOf (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr
   · field_simp [hr]; ring
 
 /-- Metric-level scalar curvature for Schwarzschild–de Sitter: `R = 4 Λ`. -/
-lemma ricciScalarOf (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma ricciScalar (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
-    Pipeline.ricciScalarOf S.metric S.metricInv x = 4 * S.Λ := by
+    CoordinateCurvature.ricciScalar S.metric S.metricInv x = 4 * S.Λ := by
   have hm : S.metric = S.toStaticSpherical.metric := rfl
   have hmi : S.metricInv = S.toStaticSpherical.metricInv := rfl
   have hf1 := S.deriv_metricFn (x 1) hr
   have hf2 := (S.hasDerivAt_deriv_metricFn (x 1) hr).deriv
   have hfdiff := S.eventually_differentiableAt_metricFn (x 1) hr
   have hf2diff := (S.hasDerivAt_deriv_metricFn (x 1) hr).differentiableAt
-  rw [hm, hmi, S.toStaticSpherical.ricciScalarOf x hr hf hsin hfdiff hf2diff]
+  rw [hm, hmi, S.toStaticSpherical.ricciScalar x hr hf hsin hfdiff hf2diff]
   simp only [toStaticSpherical_metricFn] at *
   rw [hf1, hf2]
   simp only [metricFn, metricFnHalfDeriv]
@@ -346,11 +346,11 @@ lemma ricciScalarOf (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr
 
 /-- Metric-level Einstein tensor for Schwarzschild–de Sitter: `G_{ij} = -Λ g_{ij}`, so
 `G_{ij} + Λ g_{ij} = 0`. -/
-lemma einsteinTensorOf (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma einsteinTensor (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
-    Pipeline.einsteinTensorOf S.metric S.metricInv x i j = -(S.Λ * S.metric x i j) := by
-  simp only [Pipeline.einsteinTensorOf, S.ricciTensorOf x hr hf hsin,
-    S.ricciScalarOf x hr hf hsin]
+    CoordinateCurvature.einsteinTensor S.metric S.metricInv x i j = -(S.Λ * S.metric x i j) := by
+  simp only [CoordinateCurvature.einsteinTensor, S.ricciTensor x hr hf hsin,
+    S.ricciScalar x hr hf hsin]
   ring
 
 /-- The inverse diagonal scale `|g_{aa}|⁻¹` relating coordinate Ricci components of `S.metric`
@@ -362,12 +362,12 @@ noncomputable def frameScale (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 →
   else if a = 2 then ((x 1) ^ 2)⁻¹
   else ((x 1) ^ 2 * Real.sin (x 2) ^ 2)⁻¹
 
-/-- Scaling `S.ricciTensorOf` by `S.frameScale` reproduces `Λ η` in the orthonormal frame. -/
-lemma ricciTensorOf_frame (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+/-- Scaling `S.ricciTensor` by `S.frameScale` reproduces `Λ η` in the orthonormal frame. -/
+lemma ricciTensor_frame (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
-    S.frameScale x σ * Pipeline.ricciTensorOf S.metric S.metricInv x σ ν
+    S.frameScale x σ * CoordinateCurvature.ricciTensor S.metric S.metricInv x σ ν
       = S.Λ * minkowskiMetric4 σ ν := by
-  rw [S.ricciTensorOf x hr hf hsin]
+  rw [S.ricciTensor x hr hf hsin]
   fin_cases σ <;> fin_cases ν <;>
     simp [frameScale, metric, toStaticSpherical, StaticSphericalMetric.metric]
   · field_simp [hf]

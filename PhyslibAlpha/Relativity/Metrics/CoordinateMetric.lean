@@ -20,15 +20,15 @@ curvature operators.
 A `CoordinateMetric n` pairs a coordinate-dependent symmetric metric field `g_{ij}(x)` with its
 inverse `g^{ij}(x)` and the regular chart domain on which they are two-sided inverses. At any
 regular point in the domain, `CoordinateMetric.metricTensor` restricts it to a pointwise
-`MetricTensor n`, while `christoffel`, `riemann`, `ricciTensorOf`, `ricciScalarOf`, and
-`einsteinTensorOf` evaluate the Levi-Civita connection and curvature tensors on the chart.
+`MetricTensor n`, while `christoffel`, `riemann`, `ricciTensor`, `ricciScalar`, and
+`einsteinTensor` evaluate the Levi-Civita connection and curvature tensors on the chart.
 
 ## ii. Key results
 
 - `CoordinateMetric`, `CoordinateMetric.metricTensor` : coordinate metric field with its regular
   domain and pointwise `MetricTensor` restriction.
-- `CoordinateMetric.christoffel`, `CoordinateMetric.riemann`, `CoordinateMetric.ricciTensorOf`,
-  `CoordinateMetric.ricciScalarOf`, `CoordinateMetric.einsteinTensorOf` : the Levi-Civita
+- `CoordinateMetric.christoffel`, `CoordinateMetric.riemann`, `CoordinateMetric.ricciTensor`,
+  `CoordinateMetric.ricciScalar`, `CoordinateMetric.einsteinTensor` : the Levi-Civita
   connection and curvature tensors of a `CoordinateMetric`.
 
 ## iii. Table of contents
@@ -87,26 +87,26 @@ def CoordinateMetric.metricTensor {n : ℕ} (C : CoordinateMetric n) (x : Fin n 
 /-- Christoffel symbols of a `CoordinateMetric`. -/
 noncomputable def CoordinateMetric.christoffel {n : ℕ} (C : CoordinateMetric n)
     (x : Fin n → ℝ) (k i j : Fin n) : ℝ :=
-  Pipeline.christoffel C.g C.ginv x k i j
+  CoordinateCurvature.christoffel C.g C.ginv x k i j
 
 /-- Riemann curvature tensor of a `CoordinateMetric`. -/
 noncomputable def CoordinateMetric.riemann {n : ℕ} (C : CoordinateMetric n)
     (x : Fin n → ℝ) (ρ σ μ ν : Fin n) : ℝ :=
-  Pipeline.riemann C.g C.ginv x ρ σ μ ν
+  CoordinateCurvature.riemann C.g C.ginv x ρ σ μ ν
 
 /-- Ricci tensor of a `CoordinateMetric`. -/
-noncomputable def CoordinateMetric.ricciTensorOf {n : ℕ} (C : CoordinateMetric n)
+noncomputable def CoordinateMetric.ricciTensor {n : ℕ} (C : CoordinateMetric n)
     (x : Fin n → ℝ) (σ ν : Fin n) : ℝ :=
-  Pipeline.ricciTensorOf C.g C.ginv x σ ν
+  CoordinateCurvature.ricciTensor C.g C.ginv x σ ν
 
 /-- Scalar curvature of a `CoordinateMetric`. -/
-noncomputable def CoordinateMetric.ricciScalarOf {n : ℕ} (C : CoordinateMetric n)
+noncomputable def CoordinateMetric.ricciScalar {n : ℕ} (C : CoordinateMetric n)
     (x : Fin n → ℝ) : ℝ :=
-  Pipeline.ricciScalarOf C.g C.ginv x
+  CoordinateCurvature.ricciScalar C.g C.ginv x
 
 /-- Einstein tensor of a `CoordinateMetric`. -/
-noncomputable def CoordinateMetric.einsteinTensorOf {n : ℕ} (C : CoordinateMetric n)
+noncomputable def CoordinateMetric.einsteinTensor {n : ℕ} (C : CoordinateMetric n)
     (x : Fin n → ℝ) (i j : Fin n) : ℝ :=
-  Pipeline.einsteinTensorOf C.g C.ginv x i j
+  CoordinateCurvature.einsteinTensor C.g C.ginv x i j
 
 end GeneralRelativity

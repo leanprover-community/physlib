@@ -11,19 +11,19 @@ public import PhyslibAlpha.Relativity.General.InitialData.Basic
 
 # Flat ADM initial slice
 
-Concrete vacuum ADM Cauchy data (`flatData`) on flat Euclidean `ℝ³` (`euclideanMetric3`).
+Concrete vacuum ADM Cauchy data (`flatInitialData`) on flat Euclidean `ℝ³` (`euclideanMetric3`).
 
 ## i. Overview
 
 On flat Euclidean 3-space `euclideanMetric3`, taking zero extrinsic curvature (`K = 0`) gives
-Minkowski's `t = 0` slice `flatData`, which satisfies both the Hamiltonian and momentum vacuum
+Minkowski's `t = 0` slice `flatInitialData`, which satisfies both the Hamiltonian and momentum vacuum
 constraints identically.
 
 ## ii. Key results
 
-- `euclideanMetric3`, `flatData` : Euclidean 3-metric and Minkowski `t = 0` Cauchy data.
-- `flatData_hamiltonianConstraint_zero`, `flatData_momentumConstraint_zero`,
-  `flatData_isVacuum` : verification that flat `ℝ³` with `K = 0` satisfies both vacuum
+- `euclideanMetric3`, `flatInitialData` : Euclidean 3-metric and Minkowski `t = 0` Cauchy data.
+- `flatInitialData_hamiltonianConstraint_zero`, `flatInitialData_momentumConstraint_zero`,
+  `flatInitialData_isVacuum` : verification that flat `ℝ³` with `K = 0` satisfies both vacuum
   constraints.
 
 ## iii. Table of contents
@@ -65,24 +65,24 @@ def euclideanMetric3 : MetricTensor 3 where
 
 /-- Flat space `ℝ³` with vanishing extrinsic curvature: the `t = 0` slice of Minkowski
 spacetime. -/
-def flatData : InitialData where
+def flatInitialData : InitialData where
   h := euclideanMetric3
   R3 := RiemannTensor.flat 3
   K := 0
   Ksymm := Matrix.isSymm_zero
 
 /-- The flat initial slice has vanishing Hamiltonian constraint. -/
-lemma flatData_hamiltonianConstraint_zero : flatData.hamiltonianConstraint = 0 := by
-  rw [InitialData.hamiltonianConstraint_eq_ricciScalar_of_K_zero flatData rfl]
+lemma flatInitialData_hamiltonianConstraint_zero : flatInitialData.hamiltonianConstraint = 0 := by
+  rw [InitialData.hamiltonianConstraint_eq_ricciScalar_of_K_zero flatInitialData rfl]
   exact ricciScalar_flat euclideanMetric3
 
 /-- Zero covariant derivative of zero extrinsic curvature satisfies the momentum constraint. -/
-lemma flatData_momentumConstraint_zero :
-    ∀ i, flatData.momentumConstraint (fun _ => 0) i = 0 :=
-  InitialData.momentumConstraint_zero_of_covariantDeriv_zero flatData (fun _ => 0) (fun _ => rfl)
+lemma flatInitialData_momentumConstraint_zero :
+    ∀ i, flatInitialData.momentumConstraint (fun _ => 0) i = 0 :=
+  InitialData.momentumConstraint_zero_of_covariantDeriv_zero flatInitialData (fun _ => 0) (fun _ => rfl)
 
 /-- Minkowski's initial slice satisfies both vacuum constraints. -/
-lemma flatData_isVacuum : flatData.IsVacuumData (fun _ => 0) :=
-  ⟨flatData_hamiltonianConstraint_zero, flatData_momentumConstraint_zero⟩
+lemma flatInitialData_isVacuum : flatInitialData.IsVacuumData (fun _ => 0) :=
+  ⟨flatInitialData_hamiltonianConstraint_zero, flatInitialData_momentumConstraint_zero⟩
 
 end GeneralRelativity

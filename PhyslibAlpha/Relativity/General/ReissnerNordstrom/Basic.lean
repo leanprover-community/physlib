@@ -37,9 +37,9 @@ element `ds² = -f(r) dt² + f(r)⁻¹ dr² + r² dΩ²` with radial metric func
 Using the static spherically symmetric curvature formulas in `GeneralRelativity.StaticSpherical`,
 this module proves:
 
-- `ReissnerNordstromSpacetime.ricciScalarOf` : vanishing Ricci scalar `R = 0`, matching
+- `ReissnerNordstromSpacetime.ricciScalar` : vanishing Ricci scalar `R = 0`, matching
   `ReissnerNordstromSpacetime.maxwellStressEnergy_trace_zero` (`g^{ij} T^{EM}_{ij} = 0` in 4D);
-- `ReissnerNordstromSpacetime.einsteinTensorOf_eq_maxwell` : the full 4D electrovacuum
+- `ReissnerNordstromSpacetime.einsteinTensor_eq_maxwell` : the full 4D electrovacuum
   Einstein–Maxwell field equations `G_{ij} = 8 π T^{EM}_{ij}` at every index pair `(i, j)`;
 - horizon theorems (`ReissnerNordstromSpacetime.metricFn_horizonPlus`,
   `ReissnerNordstromSpacetime.metricFn_horizonMinus`, extremal double root when `Q² = M²`, and
@@ -53,9 +53,9 @@ this module proves:
   and coordinate metric.
 - `ReissnerNordstromSpacetime.coulombFieldStrength`, `maxwellStressEnergy` : radial electric field
   strength and Maxwell stress-energy.
-- `ReissnerNordstromSpacetime.ricciTensorOf`, `ReissnerNordstromSpacetime.ricciScalarOf`,
+- `ReissnerNordstromSpacetime.ricciTensor`, `ReissnerNordstromSpacetime.ricciScalar`,
   `ReissnerNordstromSpacetime.maxwellStressEnergy_trace_zero`,
-  `ReissnerNordstromSpacetime.einsteinTensorOf_eq_maxwell` : coordinate-metric verification of the
+  `ReissnerNordstromSpacetime.einsteinTensor_eq_maxwell` : coordinate-metric verification of the
   Einstein–Maxwell solution.
 - `ReissnerNordstromSpacetime.horizonPlus`, `ReissnerNordstromSpacetime.horizonMinus`,
   `ReissnerNordstromSpacetime.metricFn_horizonPlus`,
@@ -86,7 +86,7 @@ namespace GeneralRelativity
 
 namespace ReissnerNordstrom
 
-open GeneralRelativity.Pipeline GeneralRelativity.StaticSpherical
+open GeneralRelativity.CoordinateCurvature GeneralRelativity.StaticSpherical
 
 /-!
 
@@ -249,9 +249,9 @@ Einstein–Maxwell equation `G_{ij} = 8 π T^{EM}_{ij}`.
 -/
 
 /-- Coordinate Ricci tensor of a Reissner–Nordström spacetime. -/
-lemma ricciTensorOf (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma ricciTensor (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
-    Pipeline.ricciTensorOf S.metric S.metricInv x σ ν
+    CoordinateCurvature.ricciTensor S.metric S.metricInv x σ ν
       = if σ = ν then
           if σ = 0 then S.metricFn (x 1) * S.Q ^ 2 / (x 1) ^ 4
           else if σ = 1 then -(S.Q ^ 2 / ((x 1) ^ 4 * S.metricFn (x 1)))
@@ -261,7 +261,7 @@ lemma ricciTensorOf (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ) (hr : x
   have hfdiff := S.eventually_differentiableAt_metricFn (x 1) hr
   have hf2diff := (S.hasDerivAt_deriv_metricFn (x 1) hr).differentiableAt
   rw [S.metric_eq_staticSpherical, S.metricInv_eq_staticSpherical,
-    S.toStaticSpherical.ricciTensorOf x hr hf hsin hfdiff hf2diff σ ν]
+    S.toStaticSpherical.ricciTensor x hr hf hsin hfdiff hf2diff σ ν]
   simp only [toStaticSpherical_metricFn]
   rw [S.deriv_metricFn (x 1) hr, S.deriv_deriv_metricFn (x 1) hr]
   fin_cases σ <;> fin_cases ν <;> simp
@@ -272,13 +272,13 @@ lemma ricciTensorOf (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ) (hr : x
 
 /-- The Reissner–Nordström spacetime has identically vanishing scalar curvature (`R = 0`),
 reflecting conformal invariance of 4D Maxwell electromagnetism. -/
-lemma ricciScalarOf (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+lemma ricciScalar (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
-    Pipeline.ricciScalarOf S.metric S.metricInv x = 0 := by
+    CoordinateCurvature.ricciScalar S.metric S.metricInv x = 0 := by
   have hfdiff := S.eventually_differentiableAt_metricFn (x 1) hr
   have hf2diff := (S.hasDerivAt_deriv_metricFn (x 1) hr).differentiableAt
   rw [S.metric_eq_staticSpherical, S.metricInv_eq_staticSpherical,
-    S.toStaticSpherical.ricciScalarOf x hr hf hsin hfdiff hf2diff]
+    S.toStaticSpherical.ricciScalar x hr hf hsin hfdiff hf2diff]
   simp only [toStaticSpherical_metricFn]
   rw [S.deriv_metricFn (x 1) hr, S.deriv_deriv_metricFn (x 1) hr, metricFn]
   field_simp [hr]
@@ -299,14 +299,14 @@ lemma maxwellStressEnergy_trace_zero (S : ReissnerNordstromSpacetime) (x : Fin 4
 
 /-- Field equations of the electrovacuum Reissner–Nordström solution, obtained from the coordinate
 curvature of `S.metric`: `G_{ij} = 8 π T^{EM}_{ij}` at every coordinate index `(i, j)`. -/
-lemma einsteinTensorOf_eq_maxwell (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ)
+lemma einsteinTensor_eq_maxwell (S : ReissnerNordstromSpacetime) (x : Fin 4 → ℝ)
     (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
-    Pipeline.einsteinTensorOf S.metric S.metricInv x i j
+    CoordinateCurvature.einsteinTensor S.metric S.metricInv x i j
       = 8 * Real.pi
           * maxwellStressEnergy (S.toStaticSpherical.metricTensor x hr hf hsin)
               (S.coulombFieldStrength (x 1)) i j := by
   have hpi : Real.pi ≠ 0 := Real.pi_ne_zero
-  simp only [Pipeline.einsteinTensorOf, S.ricciTensorOf x hr hf hsin, S.ricciScalarOf x hr hf hsin]
+  simp only [CoordinateCurvature.einsteinTensor, S.ricciTensor x hr hf hsin, S.ricciScalar x hr hf hsin]
   simp only [maxwellStressEnergy, GeneralRelativity.maxwellStressEnergy, maxwellFieldInvariant,
     StaticSphericalMetric.metricTensor, StaticSphericalMetric.metric,
     StaticSphericalMetric.metricInv, toStaticSpherical, coulombFieldStrength, Matrix.of_apply,

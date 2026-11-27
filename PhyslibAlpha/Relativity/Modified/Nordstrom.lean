@@ -43,7 +43,7 @@ Einstein–Fokker equation `R = 24 π T` and Nordström's nonlinear scalar wave 
 - `NordstromSpacetime.light_deflection_zero` : null cones coincide with Minkowski space via
   `nullVector_conformal_iff` (zero light bending).
 - `NordstromSpacetime.christoffel_eq` : exact conformal Christoffel symbols.
-- `NordstromSpacetime.ricciScalarOf` : exact 4D Einstein–Fokker identity `R = -6 □φ / φ³`.
+- `NordstromSpacetime.ricciScalar` : exact 4D Einstein–Fokker identity `R = -6 □φ / φ³`.
 - `NordstromSpacetime.einsteinFokker_iff` : equivalence between `R = 24 π T` and `□φ = -4 π φ³ T`.
 
 ## iii. Table of contents
@@ -74,7 +74,7 @@ namespace Modified
 
 namespace Nordstrom
 
-open Pipeline Linearized
+open CoordinateCurvature Linearized
 
 /-!
 
@@ -161,8 +161,8 @@ private lemma pd_conformal_eta (N : NordstromSpacetime) (x : Fin 4 → ℝ)
 point where `N.φ x ≠ 0` and `N.φ` is differentiable. -/
 lemma NordstromSpacetime.christoffel_eq (N : NordstromSpacetime) (x : Fin 4 → ℝ)
     (hφ : N.φ x ≠ 0) (hd : DifferentiableAt ℝ N.φ x) (k i j : Fin 4) :
-    Pipeline.christoffel N.metric N.metricInv x k i j = N.christoffel x k i j := by
-  simp only [Pipeline.christoffel, pd_conformal_eta N x hd, NordstromSpacetime.metricInv,
+    CoordinateCurvature.christoffel N.metric N.metricInv x k i j = N.christoffel x k i j := by
+  simp only [CoordinateCurvature.christoffel, pd_conformal_eta N x hd, NordstromSpacetime.metricInv,
     conformalRescaleMetricInv, NordstromSpacetime.christoffel, Fin.sum_univ_four]
   fin_cases k <;> fin_cases i <;> fin_cases j <;>
     simp only [minkowskiMetric4_apply] <;> norm_num <;> field_simp [hφ]
@@ -245,9 +245,9 @@ private lemma pd_nordstromChristoffel (N : NordstromSpacetime) (x : Fin 4 → �
     coordDeriv_ite_div_phi N.φ x hφ h1 h2 (k = j) μ i,
     pd_div_phi N.φ x hφ h1 h2 μ k]
 
-private lemma ricciTensorOf_nordstrom_diag (N : NordstromSpacetime) (x : Fin 4 → ℝ)
+private lemma ricciTensor_nordstrom_diag (N : NordstromSpacetime) (x : Fin 4 → ℝ)
     (hφ : N.φ x ≠ 0) (hc2 : ContDiffAt ℝ 2 N.φ x) (s : Fin 4) :
-    Pipeline.ricciTensorOf N.metric N.metricInv x s s =
+    CoordinateCurvature.ricciTensor N.metric N.metricInv x s s =
       (-(2 : ℝ) * (coordDeriv s (coordDeriv s N.φ) x * N.φ x - 2 * coordDeriv s N.φ x ^ 2) /
           N.φ x ^ 2
         - minkowskiMetric4 s s * (∑ ρ : Fin 4, minkowskiMetric4 ρ ρ *
@@ -255,19 +255,19 @@ private lemma ricciTensorOf_nordstrom_diag (N : NordstromSpacetime) (x : Fin 4 �
   have nh : ∀ᶠ y in nhds x, ContDiffAt ℝ 2 N.φ y := hc2.eventually (by simp)
   have hne : ∀ᶠ y in nhds x, N.φ y ≠ 0 := hc2.continuousAt.eventually_ne hφ
   have hev : ∀ k i j,
-      (fun y => Pipeline.christoffel N.metric N.metricInv y k i j)
+      (fun y => CoordinateCurvature.christoffel N.metric N.metricInv y k i j)
         =ᶠ[nhds x] fun y => N.christoffel y k i j := by
     intro k i j
     filter_upwards [nh, hne] with y hy hyne
     exact N.christoffel_eq y hyne (hy.differentiableAt (by norm_num)) k i j
   have hpt : ∀ k i j,
-      Pipeline.christoffel N.metric N.metricInv x k i j = N.christoffel x k i j :=
+      CoordinateCurvature.christoffel N.metric N.metricInv x k i j = N.christoffel x k i j :=
     fun k i j => N.christoffel_eq x hφ (hc2.differentiableAt (by norm_num)) k i j
   have hpd : ∀ μ k i j,
-      coordDeriv μ (fun y => Pipeline.christoffel N.metric N.metricInv y k i j) x
+      coordDeriv μ (fun y => CoordinateCurvature.christoffel N.metric N.metricInv y k i j) x
         = coordDeriv μ (fun y => N.christoffel y k i j) x :=
     fun μ k i j => coordDeriv_congr_nhds μ x (hev k i j)
-  simp only [Pipeline.ricciTensorOf, riemann, hpd, hpt, Fin.sum_univ_four]
+  simp only [CoordinateCurvature.ricciTensor, riemann, hpd, hpt, Fin.sum_univ_four]
   simp only [pd_nordstromChristoffel N x hφ hc2]
   simp only [NordstromSpacetime.christoffel]
   fin_cases s
@@ -277,14 +277,14 @@ private lemma ricciTensorOf_nordstrom_diag (N : NordstromSpacetime) (x : Fin 4 �
 
 /-- Exact 4D Einstein–Fokker scalar curvature identity `R = -6 □φ / φ³` for a `NordstromSpacetime`,
 obtained from the coordinate metric `N.metric`. -/
-lemma NordstromSpacetime.ricciScalarOf (N : NordstromSpacetime) (x : Fin 4 → ℝ) (hφ : N.φ x ≠ 0)
+lemma NordstromSpacetime.ricciScalar (N : NordstromSpacetime) (x : Fin 4 → ℝ) (hφ : N.φ x ≠ 0)
     (hc2 : ContDiffAt ℝ 2 N.φ x) :
-    Pipeline.ricciScalarOf N.metric N.metricInv x
+    CoordinateCurvature.ricciScalar N.metric N.metricInv x
       = -6 * minkowskiDalembertian N.φ x / N.φ x ^ 3 := by
-  simp only [Pipeline.ricciScalarOf, Fin.sum_univ_four, NordstromSpacetime.metricInv,
+  simp only [CoordinateCurvature.ricciScalar, Fin.sum_univ_four, NordstromSpacetime.metricInv,
     conformalRescaleMetricInv, minkowskiMetric4_apply]
   norm_num
-  simp only [ricciTensorOf_nordstrom_diag N x hφ hc2, minkowskiDalembertian, Fin.sum_univ_four,
+  simp only [ricciTensor_nordstrom_diag N x hφ hc2, minkowskiDalembertian, Fin.sum_univ_four,
     minkowskiMetric4_apply]
   norm_num
   field_simp [hφ]
@@ -294,9 +294,9 @@ lemma NordstromSpacetime.ricciScalarOf (N : NordstromSpacetime) (x : Fin 4 → �
 scalar wave equation `□φ = -4 π φ³ T`. -/
 lemma NordstromSpacetime.einsteinFokker_iff (N : NordstromSpacetime) (x : Fin 4 → ℝ)
     (hφ : N.φ x ≠ 0) (hc2 : ContDiffAt ℝ 2 N.φ x) (T : ℝ) :
-    Pipeline.ricciScalarOf N.metric N.metricInv x = 24 * Real.pi * T
+    CoordinateCurvature.ricciScalar N.metric N.metricInv x = 24 * Real.pi * T
       ↔ minkowskiDalembertian N.φ x = -4 * Real.pi * N.φ x ^ 3 * T := by
-  rw [N.ricciScalarOf x hφ hc2]
+  rw [N.ricciScalar x hφ hc2]
   have h3 : N.φ x ^ 3 ≠ 0 := pow_ne_zero 3 hφ
   constructor <;> intro h
   · field_simp [h3] at h; linarith

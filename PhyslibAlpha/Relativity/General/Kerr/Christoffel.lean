@@ -15,7 +15,7 @@ import Mathlib.Tactic.Tauto
 # Boyer–Lindquist Kerr Christoffel symbols
 
 All 20 independent Christoffel connection coefficients `KerrSpacetime.christoffel`, their
-agreement with `Pipeline.christoffel`, and the contracted trace `KerrSpacetime.christoffelTrace`.
+agreement with `CoordinateCurvature.christoffel`, and the contracted trace `KerrSpacetime.christoffelTrace`.
 
 ## i. Overview
 
@@ -23,7 +23,7 @@ Using the coordinate partial derivatives `KerrSpacetime.metricCoordDeriv` from `
 this module defines the analytical closed-form Christoffel symbol table `KerrSpacetime.christoffel`
 (20 non-zero symmetric components) and its contracted trace `KerrSpacetime.christoffelTrace`
 (`tr_r = 2 r / Σ`, `tr_θ = cot θ - 2 a² cos θ sin θ / Σ`), and establishes that
-`Pipeline.christoffel K.metric K.metricInv` equals `K.christoffel` everywhere on regular
+`CoordinateCurvature.christoffel K.metric K.metricInv` equals `K.christoffel` everywhere on regular
 coordinates (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`) and on a neighborhood thereof.
 
 ## ii. Key results
@@ -31,7 +31,7 @@ coordinates (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`) and on a neighborhood there
 - `KerrSpacetime.christoffel`, `KerrSpacetime.christoffel_symm` : explicit Christoffel symbols of
   Boyer–Lindquist Kerr spacetime and lower-index symmetry.
 - `KerrSpacetime.christoffel_eq`, `KerrSpacetime.eventually_christoffel_eq` : agreement with
-  `Pipeline.christoffel`.
+  `CoordinateCurvature.christoffel`.
 - `KerrSpacetime.christoffelTrace`, `KerrSpacetime.sum_christoffel_trace` : contracted Christoffel
   trace `∑ ρ, Γ^ρ_{ρ μ}`.
 
@@ -56,7 +56,7 @@ namespace GeneralRelativity
 
 namespace Kerr
 
-open Pipeline
+open CoordinateCurvature
 
 namespace KerrSpacetime
 
@@ -150,7 +150,7 @@ lemma pd_christoffel_const_03 (K : KerrSpacetime) (x : Fin 4 → ℝ) (μ : Fin 
 
 ## B. Agreement with the Levi-Civita formula and trace identity
 
-Evaluating `Pipeline.christoffel` confirms the 20 closed-form Christoffel symbols across all 64
+Evaluating `CoordinateCurvature.christoffel` confirms the 20 closed-form Christoffel symbols across all 64
 components and yields the logarithmic divergence formula `∑ ρ, Γ^ρ_{ρ μ} = ∂_μ ln(Σ sin θ)`.
 
 -/
@@ -158,9 +158,9 @@ components and yields the logarithmic divergence formula `∑ ρ, Γ^ρ_{ρ μ} 
 private lemma christoffel_0 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (i j : Fin 4) :
-    Pipeline.christoffel K.metric K.metricInv x 0 i j = K.christoffel x 0 i j := by
+    CoordinateCurvature.christoffel K.metric K.metricInv x 0 i j = K.christoffel x 0 i j := by
   have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  simp only [Pipeline.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel]
+  simp only [CoordinateCurvature.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel]
   fin_cases i <;> fin_cases j <;>
     simp only [metricInv, metricCoordDeriv, christoffel, Matrix.of_apply] <;> norm_num
   all_goals
@@ -171,9 +171,9 @@ private lemma christoffel_0 (K : KerrSpacetime) (x : Fin 4 → ℝ)
 private lemma christoffel_1 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (i j : Fin 4) :
-    Pipeline.christoffel K.metric K.metricInv x 1 i j = K.christoffel x 1 i j := by
+    CoordinateCurvature.christoffel K.metric K.metricInv x 1 i j = K.christoffel x 1 i j := by
   have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  simp only [Pipeline.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel]
+  simp only [CoordinateCurvature.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel]
   fin_cases i <;> fin_cases j <;>
     simp only [metricInv, metricCoordDeriv, christoffel, Matrix.of_apply] <;> norm_num
   all_goals field_simp [hsig, hdel, hs]
@@ -183,9 +183,9 @@ private lemma christoffel_1 (K : KerrSpacetime) (x : Fin 4 → ℝ)
 private lemma christoffel_2 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (i j : Fin 4) :
-    Pipeline.christoffel K.metric K.metricInv x 2 i j = K.christoffel x 2 i j := by
+    CoordinateCurvature.christoffel K.metric K.metricInv x 2 i j = K.christoffel x 2 i j := by
   have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  simp only [Pipeline.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel]
+  simp only [CoordinateCurvature.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel]
   fin_cases i <;> fin_cases j <;>
     simp only [metricInv, metricCoordDeriv, christoffel, Matrix.of_apply] <;> norm_num
   all_goals field_simp [hsig, hdel, hs]
@@ -195,9 +195,9 @@ private lemma christoffel_2 (K : KerrSpacetime) (x : Fin 4 → ℝ)
 private lemma christoffel_3 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (i j : Fin 4) :
-    Pipeline.christoffel K.metric K.metricInv x 3 i j = K.christoffel x 3 i j := by
+    CoordinateCurvature.christoffel K.metric K.metricInv x 3 i j = K.christoffel x 3 i j := by
   have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  simp only [Pipeline.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel]
+  simp only [CoordinateCurvature.christoffel, Fin.sum_univ_four, K.pd_metric_eq _ x hsig hdel]
   fin_cases i <;> fin_cases j <;>
     simp only [metricInv, metricCoordDeriv, christoffel, Matrix.of_apply] <;> norm_num
   all_goals
@@ -210,18 +210,18 @@ every regular coordinate point (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`). -/
 lemma christoffel_eq (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (k i j : Fin 4) :
-    Pipeline.christoffel K.metric K.metricInv x k i j = K.christoffel x k i j := by
+    CoordinateCurvature.christoffel K.metric K.metricInv x k i j = K.christoffel x k i j := by
   fin_cases k
   · exact christoffel_0 K x hsig hdel hs i j
   · exact christoffel_1 K x hsig hdel hs i j
   · exact christoffel_2 K x hsig hdel hs i j
   · exact christoffel_3 K x hsig hdel hs i j
 
-/-- Continuity-neighborhood equality between `Pipeline.christoffel` and `K.christoffel`. -/
+/-- Continuity-neighborhood equality between `CoordinateCurvature.christoffel` and `K.christoffel`. -/
 lemma eventually_christoffel_eq (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (k i j : Fin 4) :
-    (fun y => Pipeline.christoffel K.metric K.metricInv y k i j)
+    (fun y => CoordinateCurvature.christoffel K.metric K.metricInv y k i j)
       =ᶠ[nhds x] fun y => K.christoffel y k i j := by
   have hcSig : Continuous (fun y : Fin 4 → ℝ => K.sigma (y 1) (y 2)) := by
     simp only [sigma]; fun_prop

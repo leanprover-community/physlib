@@ -28,8 +28,8 @@ and Minkowski spacetime solves the vacuum Einstein equations `G_{ij} = 0`.
 
 - `minkowskiCoordinateMetric` : four-dimensional Minkowski spacetime as a `CoordinateMetric 4`.
 - `minkowskiCoordinateMetric_christoffel`, `minkowskiCoordinateMetric_riemann`,
-  `minkowskiCoordinateMetric_ricciTensorOf`, `minkowskiCoordinateMetric_ricciScalarOf`,
-  `minkowskiCoordinateMetric_einsteinTensorOf`, `minkowskiCoordinateMetric_riemannFromData` :
+  `minkowskiCoordinateMetric_ricciTensor`, `minkowskiCoordinateMetric_ricciScalar`,
+  `minkowskiCoordinateMetric_einsteinTensor`, `minkowskiCoordinateMetric_riemannFromData` :
   vanishing coordinate connection and curvature tensors of Minkowski spacetime.
 - `minkowskiFlatRiemann`, `minkowski_ricci_eq_zero`, `minkowski_ricciScalar_eq_zero`,
   `minkowski_einstein_eq_zero`, `minkowski_vacuum_iff_ricci_flat` : algebraic vacuum properties.
@@ -73,43 +73,44 @@ noncomputable def minkowskiCoordinateMetric : CoordinateMetric 4 where
 /-- In inertial coordinates, all Christoffel symbols of Minkowski spacetime vanish. -/
 lemma minkowskiCoordinateMetric_christoffel (x : Fin 4 → ℝ) (k i j : Fin 4) :
     minkowskiCoordinateMetric.christoffel x k i j = 0 :=
-  Pipeline.christoffel_const minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv
+  CoordinateCurvature.christoffel_const minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv
     minkowskiMetric4 (fun _ => rfl) x k i j
 
 /-- All coordinate Riemann curvature components of Minkowski spacetime vanish. -/
 lemma minkowskiCoordinateMetric_riemann (x : Fin 4 → ℝ) (ρ σ μ ν : Fin 4) :
     minkowskiCoordinateMetric.riemann x ρ σ μ ν = 0 :=
-  Pipeline.riemann_const minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv
+  CoordinateCurvature.riemann_const minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv
     minkowskiMetric4 (fun _ => rfl) x ρ σ μ ν
 
 /-- Minkowski spacetime is Ricci flat in global inertial coordinates. -/
-lemma minkowskiCoordinateMetric_ricciTensorOf (x : Fin 4 → ℝ) (σ ν : Fin 4) :
-    minkowskiCoordinateMetric.ricciTensorOf x σ ν = 0 :=
-  Pipeline.ricciTensorOf_const minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv
+lemma minkowskiCoordinateMetric_ricciTensor (x : Fin 4 → ℝ) (σ ν : Fin 4) :
+    minkowskiCoordinateMetric.ricciTensor x σ ν = 0 :=
+  CoordinateCurvature.ricciTensor_const minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv
     minkowskiMetric4 (fun _ => rfl) x σ ν
 
 /-- Minkowski spacetime has vanishing scalar curvature in global inertial coordinates. -/
-lemma minkowskiCoordinateMetric_ricciScalarOf (x : Fin 4 → ℝ) :
-    minkowskiCoordinateMetric.ricciScalarOf x = 0 :=
-  Pipeline.ricciScalarOf_const minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv
+lemma minkowskiCoordinateMetric_ricciScalar (x : Fin 4 → ℝ) :
+    minkowskiCoordinateMetric.ricciScalar x = 0 :=
+  CoordinateCurvature.ricciScalar_const minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv
     minkowskiMetric4 (fun _ => rfl) x
 
 /-- Minkowski spacetime satisfies the vacuum Einstein equations (`G_{ij} = 0`). -/
-lemma minkowskiCoordinateMetric_einsteinTensorOf (x : Fin 4 → ℝ) (i j : Fin 4) :
-    minkowskiCoordinateMetric.einsteinTensorOf x i j = 0 :=
-  Pipeline.einsteinTensorOf_const minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv
+lemma minkowskiCoordinateMetric_einsteinTensor (x : Fin 4 → ℝ) (i j : Fin 4) :
+    minkowskiCoordinateMetric.einsteinTensor x i j = 0 :=
+  CoordinateCurvature.einsteinTensor_const minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv
     minkowskiMetric4 (fun _ => rfl) x i j
 
 /-- Explicit Christoffel-data evaluation of the Riemann tensor vanishes identically on
 `minkowskiCoordinateMetric`. -/
 lemma minkowskiCoordinateMetric_riemannFromData (x : Fin 4 → ℝ) (ρ σ μ ν : Fin 4) :
-    Pipeline.riemannFromData
-      (Pipeline.christoffel minkowskiCoordinateMetric.g minkowskiCoordinateMetric.ginv)
-      (fun μ y a b c => Pipeline.coordDeriv μ
-        (fun z => Pipeline.christoffel minkowskiCoordinateMetric.g
+    CoordinateCurvature.riemannFromData
+      (CoordinateCurvature.christoffel minkowskiCoordinateMetric.g
+        minkowskiCoordinateMetric.ginv)
+      (fun μ y a b c => CoordinateCurvature.coordDeriv μ
+        (fun z => CoordinateCurvature.christoffel minkowskiCoordinateMetric.g
           minkowskiCoordinateMetric.ginv z a b c) y)
       x ρ σ μ ν = 0 := by
-  rw [← Pipeline.riemann_eq_riemannFromData]
+  rw [← CoordinateCurvature.riemann_eq_riemannFromData]
   exact minkowskiCoordinateMetric_riemann x ρ σ μ ν
 
 /-!

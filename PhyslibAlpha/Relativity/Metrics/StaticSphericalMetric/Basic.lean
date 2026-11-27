@@ -71,8 +71,11 @@ origin (`r = 0`), Killing horizons (`f = 0`), and polar coordinate axis (`sin θ
 
 -/
 
-/-- A static spherically symmetric four-dimensional spacetime metric determined by a radial
-metric function `f(r)` in coordinates `(t, r, θ, φ)`. -/
+/-- A static spherically symmetric four-dimensional metric determined by a single radial metric
+function `f(r)` in coordinates `(t, r, θ, φ)`: the restricted ansatz `g_tt = -f(r)`,
+`g_rr = f(r)⁻¹`, `g_{θθ} = r²`, `g_{φφ} = r² sin²θ`, which automatically satisfies
+`g_tt g_rr = -1`. Metrics without this pairing of the `tt` and `rr` components are not
+representable. -/
 structure StaticSphericalMetric where
   /-- The radial metric function `f(r)` entering `g_tt = -f(r)` and `g_rr = f(r)⁻¹`. -/
   metricFn : ℝ → ℝ

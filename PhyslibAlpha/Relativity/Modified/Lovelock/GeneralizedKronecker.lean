@@ -29,7 +29,7 @@ underlies the proof of the four-dimensional Bach–Lanczos identity in `Lovelock
 
 ## ii. Key results
 
-- `genKronecker`, `genKronecker_eq_zero_of_lt` : `k`-index generalized Kronecker delta and
+- `generalizedKroneckerDelta`, `generalizedKroneckerDelta_eq_zero_of_lt` : `k`-index generalized Kronecker delta and
   dimensional pigeonhole vanishing.
 - `perm_fin5_fiber_split` : antisymmetric permutation-sum coset split on `S_5`.
 
@@ -72,13 +72,13 @@ The antisymmetrized `k`-index generalized Kronecker delta encodes total antisymm
 
 /-- Generalized `k`-index Kronecker delta `δ^{a_0 … a_{k-1}}_{b_0 … b_{k-1}}` in `n` dimensions,
 defined as the signed sum over all permutations `σ ∈ S_k`. -/
-noncomputable def genKronecker {n : ℕ} (k : ℕ) (a b : Fin k → Fin n) : ℝ :=
+noncomputable def generalizedKroneckerDelta {n : ℕ} (k : ℕ) (a b : Fin k → Fin n) : ℝ :=
   ∑ σ : Perm (Fin k), ((Perm.sign σ : ℤ) : ℝ) * ∏ t : Fin k, if a t = b (σ t) then 1 else 0
 
 /-- Pigeonhole vanishing of the generalized Kronecker delta: in dimension `n < k`, any `k`-index
 generalized Kronecker delta vanishes identically. -/
-lemma genKronecker_eq_zero_of_lt {n k : ℕ} (h : n < k) (a b : Fin k → Fin n) :
-    genKronecker k a b = 0 := by
+lemma generalizedKroneckerDelta_eq_zero_of_lt {n k : ℕ} (h : n < k) (a b : Fin k → Fin n) :
+    generalizedKroneckerDelta k a b = 0 := by
   have hcard : Fintype.card (Fin n) < Fintype.card (Fin k) := by
     simpa [Fintype.card_fin] using h
   obtain ⟨s₁, s₂, hne, heq⟩ := Fintype.exists_ne_map_eq_of_card_lt a hcard
@@ -99,8 +99,8 @@ lemma genKronecker_eq_zero_of_lt {n k : ℕ} (h : n < k) (a b : Fin k → Fin n)
     rw [← Equiv.prod_comp τ (fun t => if a t = b (σ t) then (1 : ℝ) else 0)]
     refine Finset.prod_congr rfl fun t _ => ?_
     rw [Perm.mul_apply, hτ_a t]
-  have hsum : genKronecker k a b = -genKronecker k a b := by
-    simp only [genKronecker]
+  have hsum : generalizedKroneckerDelta k a b = -generalizedKroneckerDelta k a b := by
+    simp only [generalizedKroneckerDelta]
     conv_lhs => rw [← Equiv.sum_comp (Equiv.mulRight τ)]
     rw [← Finset.sum_neg_distrib]
     refine Finset.sum_congr rfl fun σ _ => ?_
@@ -111,15 +111,15 @@ lemma genKronecker_eq_zero_of_lt {n k : ℕ} (h : n < k) (a b : Fin k → Fin n)
 
 /-- Reindexing a 5-index generalized Kronecker delta `δ^{i a b c d}_{j e f g h}` by permutation
 inversion isolates the fiber condition `p 0 ↦ j` from the four tensor contraction indices. -/
-lemma genKronecker_five_eq_sum_perm {n : ℕ} (i j a b c d e f g h : Fin n) :
-    genKronecker 5 ![i, a, b, c, d] ![j, e, f, g, h] =
+lemma generalizedKroneckerDelta_five_eq_sum_perm {n : ℕ} (i j a b c d e f g h : Fin n) :
+    generalizedKroneckerDelta 5 ![i, a, b, c, d] ![j, e, f, g, h] =
       ∑ p : Perm (Fin 5), ((Perm.sign p : ℤ) : ℝ) *
         (if ![i, a, b, c, d] (p 0) = j then (1 : ℝ) else 0) *
         ((if ![i, a, b, c, d] (p 1) = e then (1 : ℝ) else 0) *
          (if ![i, a, b, c, d] (p 2) = f then (1 : ℝ) else 0) *
          (if ![i, a, b, c, d] (p 3) = g then (1 : ℝ) else 0) *
          (if ![i, a, b, c, d] (p 4) = h then (1 : ℝ) else 0)) := by
-  simp only [genKronecker]
+  simp only [generalizedKroneckerDelta]
   rw [← Equiv.sum_comp (Equiv.inv (Perm (Fin 5)))]
   refine Finset.sum_congr rfl fun p _ => ?_
   have hinv : Equiv.inv (Perm (Fin 5)) p = p⁻¹ := rfl

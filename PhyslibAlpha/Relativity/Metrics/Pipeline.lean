@@ -20,8 +20,9 @@ tensor computed from a coordinate metric and its inverse.
 
 ## i. Overview
 
-From a coordinate-dependent metric field `g` and its inverse `ginv`, the `GeneralRelativity.Pipeline`
-namespace evaluates the standard coordinate curvature tensors
+From a coordinate-dependent metric field `g` and its inverse `ginv`, the
+`GeneralRelativity.CoordinateCurvature` namespace evaluates the standard coordinate curvature
+tensors
 
 `g ↦ ∂g ↦ Γ^k_{ij} ↦ ∂Γ ↦ R^ρ_{σμν} ↦ Ric_{σν} ↦ R ↦ G_{ij}`
 
@@ -30,14 +31,17 @@ Einstein curvature, while identifying `riemann` definitionally with `riemannFrom
 
 ## ii. Key results
 
-- `Pipeline.christoffel`, `Pipeline.christoffel_diag`, `Pipeline.riemann`,
-  `Pipeline.ricciTensorOf`, `Pipeline.ricciScalarOf`, `Pipeline.einsteinTensorOf` : Levi-Civita
-  connection and curvature tensors computed from a coordinate metric and its inverse.
-- `Pipeline.christoffel_const`, `Pipeline.riemann_const`, `Pipeline.ricciTensorOf_const`,
-  `Pipeline.ricciScalarOf_const`, `Pipeline.einsteinTensorOf_const` : vanishing connection and
-  curvature for any constant metric.
-- `Pipeline.riemann_eq_riemannFromData`, `Pipeline.riemann_eq_riemannFromData_of_eventuallyEq` :
-  identification of `riemann` with `riemannFromData`.
+- `CoordinateCurvature.christoffel`, `CoordinateCurvature.christoffel_diag`,
+  `CoordinateCurvature.riemann`, `CoordinateCurvature.ricciTensor`,
+  `CoordinateCurvature.ricciScalar`, `CoordinateCurvature.einsteinTensor` : Levi-Civita connection
+  and curvature tensors computed from a coordinate metric and its inverse.
+- `CoordinateCurvature.christoffel_const`, `CoordinateCurvature.riemann_const`,
+  `CoordinateCurvature.ricciTensor_const`, `CoordinateCurvature.ricciScalar_const`,
+  `CoordinateCurvature.einsteinTensor_const` : vanishing connection and curvature for any constant
+  metric.
+- `CoordinateCurvature.riemann_eq_riemannFromData`,
+  `CoordinateCurvature.riemann_eq_riemannFromData_of_eventuallyEq` : identification of `riemann`
+  with `riemannFromData`.
 
 ## iii. Table of contents
 
@@ -59,7 +63,7 @@ Einstein curvature, while identifying `riemann` definitionally with `riemannFrom
 
 namespace GeneralRelativity
 
-namespace Pipeline
+namespace CoordinateCurvature
 
 /-!
 
@@ -100,19 +104,19 @@ noncomputable def riemann {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
           - christoffel g ginv x ρ ν l * christoffel g ginv x l μ σ)
 
 /-- The coordinate Ricci tensor `Ric_{σν} = ∑ ρ, R^ρ_{σρν}`. -/
-noncomputable def ricciTensorOf {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
+noncomputable def ricciTensor {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     (x : Fin n → ℝ) (σ ν : Fin n) : ℝ :=
   ∑ ρ, riemann g ginv x ρ σ ρ ν
 
 /-- The coordinate scalar curvature `R = ∑ σ ν, g^{σν} Ric_{σν}`. -/
-noncomputable def ricciScalarOf {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
+noncomputable def ricciScalar {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     (x : Fin n → ℝ) : ℝ :=
-  ∑ σ, ∑ ν, ginv x σ ν * ricciTensorOf g ginv x σ ν
+  ∑ σ, ∑ ν, ginv x σ ν * ricciTensor g ginv x σ ν
 
 /-- The coordinate Einstein tensor `G_{ij} = Ric_{ij} - (1/2) R g_{ij}`. -/
-noncomputable def einsteinTensorOf {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
+noncomputable def einsteinTensor {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     (x : Fin n → ℝ) (i j : Fin n) : ℝ :=
-  ricciTensorOf g ginv x i j - (1 / 2) * ricciScalarOf g ginv x * g x i j
+  ricciTensor g ginv x i j - (1 / 2) * ricciScalar g ginv x * g x i j
 
 /-- Feeding `riemannFromData` the metric's actual partial derivatives of `christoffel` reproduces
 `riemann` definitionally. -/
@@ -124,7 +128,7 @@ lemma riemann_eq_riemannFromData {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2
         x ρ σ μ ν :=
   rfl
 
-/-- Transport `Pipeline.riemann` to `riemannFromData` using local agreement of Christoffel
+/-- Transport `CoordinateCurvature.riemann` to `riemannFromData` using local agreement of Christoffel
 symbols around a point and matching coordinate partial derivatives at that point. -/
 lemma riemann_eq_riemannFromData_of_eventuallyEq {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     (G : (Fin n → ℝ) → Fin n → Fin n → Fin n → ℝ)
@@ -179,33 +183,33 @@ lemma riemann_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tens
   ring
 
 /-- A constant metric is Ricci flat. -/
-lemma ricciTensorOf_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
+lemma ricciTensor_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
     (hg : ∀ x, g x = G) (x : Fin n → ℝ) (σ ν : Fin n) :
-    ricciTensorOf g ginv x σ ν = 0 := by
-  simp only [ricciTensorOf]
+    ricciTensor g ginv x σ ν = 0 := by
+  simp only [ricciTensor]
   apply Finset.sum_eq_zero
   intro ρ _
   exact riemann_const g ginv G hg x ρ σ ρ ν
 
 /-- A constant metric has zero scalar curvature. -/
-lemma ricciScalarOf_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
-    (hg : ∀ x, g x = G) (x : Fin n → ℝ) : ricciScalarOf g ginv x = 0 := by
-  simp only [ricciScalarOf]
+lemma ricciScalar_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
+    (hg : ∀ x, g x = G) (x : Fin n → ℝ) : ricciScalar g ginv x = 0 := by
+  simp only [ricciScalar]
   apply Finset.sum_eq_zero
   intro σ _
   apply Finset.sum_eq_zero
   intro ν _
-  rw [ricciTensorOf_const g ginv G hg x σ ν]
+  rw [ricciTensor_const g ginv G hg x σ ν]
   ring
 
 /-- A constant metric satisfies the vacuum Einstein equations (`G_{ij} = 0`). -/
-lemma einsteinTensorOf_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
+lemma einsteinTensor_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
     (hg : ∀ x, g x = G) (x : Fin n → ℝ) (i j : Fin n) :
-    einsteinTensorOf g ginv x i j = 0 := by
-  simp only [einsteinTensorOf]
-  rw [ricciTensorOf_const g ginv G hg x i j, ricciScalarOf_const g ginv G hg x]
+    einsteinTensor g ginv x i j = 0 := by
+  simp only [einsteinTensor]
+  rw [ricciTensor_const g ginv G hg x i j, ricciScalar_const g ginv G hg x]
   ring
 
-end Pipeline
+end CoordinateCurvature
 
 end GeneralRelativity

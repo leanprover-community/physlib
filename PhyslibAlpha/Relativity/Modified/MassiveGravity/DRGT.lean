@@ -28,7 +28,8 @@ evaluation, and the cubic dRGT potential `DRGTTheory.potential T K = e₂(K) + T
 ## ii. Key results
 
 - `DRGTTheory` : cubic dRGT massive gravity model parameterized by coupling `α₃`.
-- `trK1`, `trK2`, `trK3`, `elemSymm0`, `elemSymm1`, `elemSymm2`, `elemSymm3` : matrix power traces
+- `traceK`, `traceKSq`, `traceKCube`, `elemSymm0`, `elemSymm1`, `elemSymm2`, `elemSymm3` : matrix
+  power traces
   via `Matrix.trace` and elementary symmetric polynomials.
 - `elemSymm_isotropic3`, `DRGTTheory.potential`, `DRGTTheory.potential_vacuum_zero` : isotropic
   evaluation and vanishing Minkowski vacuum potential.
@@ -75,26 +76,26 @@ structure DRGTTheory where
   α3 : ℝ
 
 /-- Linear trace `tr(K)` of the dRGT building-block tensor `K^a_b = δ^a_b - (√(g⁻¹ f))^a_b`. -/
-def trK1 (K : Tensor2 4) : ℝ := Matrix.trace K
+def traceK (K : Tensor2 4) : ℝ := Matrix.trace K
 
 /-- Quadratic power trace `tr(K²) = Matrix.trace (K * K)`. -/
-def trK2 (K : Tensor2 4) : ℝ := Matrix.trace (K * K)
+def traceKSq (K : Tensor2 4) : ℝ := Matrix.trace (K * K)
 
 /-- Cubic power trace `tr(K³) = Matrix.trace (K * K * K)`. -/
-def trK3 (K : Tensor2 4) : ℝ := Matrix.trace (K * K * K)
+def traceKCube (K : Tensor2 4) : ℝ := Matrix.trace (K * K * K)
 
 /-- Zeroth dRGT elementary symmetric polynomial `e₀(K) = 1`. -/
 def elemSymm0 (_K : Tensor2 4) : ℝ := 1
 
 /-- First dRGT elementary symmetric polynomial `e₁(K) = [K] = tr(K)`. -/
-def elemSymm1 (K : Tensor2 4) : ℝ := trK1 K
+def elemSymm1 (K : Tensor2 4) : ℝ := traceK K
 
 /-- Second dRGT elementary symmetric polynomial `e₂(K) = ½ ([K]² - [K²])`. -/
-noncomputable def elemSymm2 (K : Tensor2 4) : ℝ := (1 / 2) * (trK1 K ^ 2 - trK2 K)
+noncomputable def elemSymm2 (K : Tensor2 4) : ℝ := (1 / 2) * (traceK K ^ 2 - traceKSq K)
 
 /-- Third dRGT elementary symmetric polynomial `e₃(K) = ⅙ ([K]³ - 3 [K] [K²] + 2 [K³])`. -/
 noncomputable def elemSymm3 (K : Tensor2 4) : ℝ :=
-  (1 / 6) * (trK1 K ^ 3 - 3 * trK1 K * trK2 K + 2 * trK3 K)
+  (1 / 6) * (traceK K ^ 3 - 3 * traceK K * traceKSq K + 2 * traceKCube K)
 
 /-- On an isotropic spatial deformation `K = diag(0, λ, λ, λ)`, the elementary symmetric
 polynomials evaluate to the binomial values `e₁ = 3 λ`, `e₂ = 3 λ²`, `e₃ = λ³`. -/
@@ -107,7 +108,7 @@ lemma elemSymm_isotropic3 (lam : ℝ) :
   have h2 : K 2 2 = lam := rfl
   have h3 : K 3 3 = lam := rfl
   have hoff : ∀ i j : Fin 4, i ≠ j → K i j = 0 := fun i j hij => Matrix.diagonal_apply_ne _ hij
-  simp only [elemSymm1, elemSymm2, elemSymm3, trK1, trK2, trK3,
+  simp only [elemSymm1, elemSymm2, elemSymm3, traceK, traceKSq, traceKCube,
     Matrix.trace, Matrix.diag_apply, Matrix.mul_apply,
     Fin.sum_univ_four, h0, h1, h2, h3, hoff, ne_eq, Fin.reduceEq, not_false_eq_true]
   refine ⟨by ring, by ring, by ring⟩
@@ -121,7 +122,7 @@ noncomputable def DRGTTheory.potential (T : DRGTTheory) (K : Tensor2 4) : ℝ :=
 identically (zero cosmological constant / tadpole-free vacuum). -/
 lemma DRGTTheory.potential_vacuum_zero (T : DRGTTheory) :
     T.potential 0 = 0 := by
-  simp [potential, elemSymm2, elemSymm3, trK1, trK2, trK3]
+  simp [potential, elemSymm2, elemSymm3, traceK, traceKSq, traceKCube]
 
 end MassiveGravity
 

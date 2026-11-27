@@ -52,7 +52,7 @@ namespace GeneralRelativity
 
 namespace Linearized
 
-open Pipeline
+open CoordinateCurvature
 
 /-!
 

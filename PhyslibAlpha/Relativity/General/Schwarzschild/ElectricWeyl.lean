@@ -39,7 +39,7 @@ Hessian of `Φ`, not the frame Riemann tensor.)
 
 - `electricPart`, `electricPart_symm`, `electricPart_trace` : trace-free static Weyl electric
   matrix `diag(0, -2k, k, k)`.
-- `schwarzschild`, `ricci_eq_zero`, `schwarzschild_frameKretschmannScalar_eq` : Schwarzschild
+- `electricWeylRiemann`, `ricci_eq_zero`, `electricWeyl_frameKretschmannScalar_eq` : Schwarzschild
   frame curvature `RiemannTensor 4`, Ricci flatness, and frame sum of squares `48 k²`.
 - `weyl_purely_electric` : every component with one temporal index vanishes.
 - `SchwarzschildSpacetime.frameRiemann`, `SchwarzschildSpacetime.kretschmann_scalar`,
@@ -94,7 +94,7 @@ lemma electricPart_trace (k : ℝ) : (∑ i, electricPart k i i) = 0 := by
 
 /-- The Schwarzschild curvature in the orthonormal frame, with `k = M / r³` at a point: the
 static Weyl tensor of electric part `E = diag(0, -2k, k, k)`. -/
-noncomputable def schwarzschild (k : ℝ) : RiemannTensor 4 where
+noncomputable def electricWeylRiemann (k : ℝ) : RiemannTensor 4 where
   comp := fun i j l m =>
     (if i = l then electricPart k j m else 0)
       - (if i = m then electricPart k j l else 0)
@@ -122,23 +122,23 @@ noncomputable def schwarzschild (k : ℝ) : RiemannTensor 4 where
 
 ## B. Ricci flatness, Kretschmann scalar, and purely electric property
 
-Contracting `schwarzschild k` with the Minkowski frame metric yields zero Ricci tensor, while
+Contracting `electricWeylRiemann k` with the Minkowski frame metric yields zero Ricci tensor, while
 squaring all 256 frame components yields `48 k²`.
 
 -/
 
 /-- Schwarzschild frame curvature is Ricci flat for every tidal-scale parameter `k`. -/
-lemma ricci_eq_zero (k : ℝ) : ricci minkowski (schwarzschild k) = 0 := by
+lemma ricci_eq_zero (k : ℝ) : ricci minkowski (electricWeylRiemann k) = 0 := by
   ext i j
-  rw [ricci_of_diag minkowski (schwarzschild k) (fun _ _ h => minkowski_ginv_offdiag h) i j]
+  rw [ricci_of_diag minkowski (electricWeylRiemann k) (fun _ _ h => minkowski_ginv_offdiag h) i j]
   fin_cases i <;> fin_cases j
-  all_goals simp [minkowski, schwarzschild, electricPart, Fin.sum_univ_four,
+  all_goals simp [minkowski, electricWeylRiemann, electricPart, Fin.sum_univ_four,
     two_mul, add_assoc]
 
-/-- The frame Kretschmann sum of squares of `schwarzschild k` equals `48 k²`. -/
-lemma schwarzschild_frameKretschmannScalar_eq (k : ℝ) :
-    (schwarzschild k).frameKretschmannScalar = 48 * k ^ 2 := by
-  simp [RiemannTensor.frameKretschmannScalar, schwarzschild, electricPart, Fin.sum_univ_four,
+/-- The frame Kretschmann sum of squares of `electricWeylRiemann k` equals `48 k²`. -/
+lemma electricWeyl_frameKretschmannScalar_eq (k : ℝ) :
+    (electricWeylRiemann k).frameKretschmannScalar = 48 * k ^ 2 := by
+  simp [RiemannTensor.frameKretschmannScalar, electricWeylRiemann, electricPart, Fin.sum_univ_four,
     two_mul, add_assoc]
   ring
 
@@ -146,12 +146,12 @@ lemma schwarzschild_frameKretschmannScalar_eq (k : ℝ) :
 component carrying exactly one temporal index vanishes. -/
 lemma weyl_purely_electric (k : ℝ) (j l m : Fin 4) (hj : j ≠ 0) (hl : l ≠ 0)
     (hm : m ≠ 0) :
-    (schwarzschild k).comp 0 j l m = 0 ∧ (schwarzschild k).comp j 0 l m = 0 ∧
-      (schwarzschild k).comp j l 0 m = 0 ∧ (schwarzschild k).comp j l m 0 = 0 := by
+    (electricWeylRiemann k).comp 0 j l m = 0 ∧ (electricWeylRiemann k).comp j 0 l m = 0 ∧
+      (electricWeylRiemann k).comp j l 0 m = 0 ∧ (electricWeylRiemann k).comp j l m 0 = 0 := by
   have h0j : (0 : Fin 4) ≠ j := fun h => hj h.symm
   have h0l : (0 : Fin 4) ≠ l := fun h => hl h.symm
   have h0m : (0 : Fin 4) ≠ m := fun h => hm h.symm
-  refine ⟨?_, ?_, ?_, ?_⟩ <;> simp_all [schwarzschild, electricPart]
+  refine ⟨?_, ?_, ?_, ?_⟩ <;> simp_all [electricWeylRiemann, electricPart]
 
 /-!
 
@@ -172,12 +172,12 @@ namespace SchwarzschildSpacetime
 
 /-- Orthonormal-frame Schwarzschild Weyl curvature tensor at radius `r`. -/
 noncomputable def frameRiemann (S : SchwarzschildSpacetime) (r : ℝ) : RiemannTensor 4 :=
-  schwarzschild (S.M / r ^ 3)
+  electricWeylRiemann (S.M / r ^ 3)
 
 /-- The Schwarzschild Kretschmann scalar `48 M² / r⁶` in the orthonormal frame at radius `r`. -/
 lemma kretschmann_scalar (S : SchwarzschildSpacetime) (r : ℝ) (hr : r ≠ 0) :
     (S.frameRiemann r).frameKretschmannScalar = 48 * S.M ^ 2 / r ^ 6 := by
-  rw [frameRiemann, schwarzschild_frameKretschmannScalar_eq]
+  rw [frameRiemann, electricWeyl_frameKretschmannScalar_eq]
   have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
   field_simp
 

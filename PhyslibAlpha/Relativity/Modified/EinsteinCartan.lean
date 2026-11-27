@@ -39,7 +39,7 @@ corollary `S = 0 → T = 0`.
 - `contorsion_torsion`, `leviCivita_add_contorsion_compatible`,
   `EinsteinCartanData.connection_unique` : existence and uniqueness `Γ = Γ_LC + K` for arbitrary
   metric signature and dimension `n`.
-- `palatiniTensor`, `cartan_algebraic_inversion`, `cartan_vacuum_torsion_zero` : 4D Cartan
+- `modifiedTorsion`, `cartan_algebraic_inversion`, `cartan_vacuum_torsion_zero` : 4D Cartan
   algebraic spin-torsion equation inversion and spinless GR reduction.
 
 ## iii. Table of contents
@@ -359,74 +359,74 @@ def torsionTrace (T : AffineConnection 4) (i : Fin 4) : ℝ := ∑ m : Fin 4, T 
 
 /-- Modified torsion tensor entering the 4D Palatini variation of Einstein–Cartan theory:
 `T̃^k_{ij} = T^k_{ij} + δ^k_i T^m_{jm} - δ^k_j T^m_{im}`. -/
-def palatiniTensor (T : AffineConnection 4) : AffineConnection 4 :=
+def modifiedTorsion (T : AffineConnection 4) : AffineConnection 4 :=
   fun k i j => T k i j
     + (if k = i then torsionTrace T j else 0)
     - (if k = j then torsionTrace T i else 0)
 
-/-- Antisymmetry of `palatiniTensor` in its lower indices when `T` is antisymmetric. -/
-lemma palatiniTensor_antisymm (T : AffineConnection 4)
+/-- Antisymmetry of `modifiedTorsion` in its lower indices when `T` is antisymmetric. -/
+lemma modifiedTorsion_antisymm (T : AffineConnection 4)
     (hT : ∀ k i j, T k i j = -T k j i) (k i j : Fin 4) :
-    palatiniTensor T k i j = -palatiniTensor T k j i := by
-  simp only [palatiniTensor, hT k i j]
+    modifiedTorsion T k i j = -modifiedTorsion T k j i := by
+  simp only [modifiedTorsion, hT k i j]
   ring
 
 /-- In four dimensions, contracting the modified torsion gives `-2` times the torsion trace:
 `∑ k, T̃^k_{ik} = -2 T^m_{im}`. -/
-lemma torsionTrace_palatiniTensor (T : AffineConnection 4) (i : Fin 4) :
-    torsionTrace (palatiniTensor T) i = -2 * torsionTrace T i := by
-  simp only [torsionTrace, palatiniTensor, Fin.sum_univ_four]
+lemma torsionTrace_modifiedTorsion (T : AffineConnection 4) (i : Fin 4) :
+    torsionTrace (modifiedTorsion T) i = -2 * torsionTrace T i := by
+  simp only [torsionTrace, modifiedTorsion, Fin.sum_univ_four]
   fin_cases i <;> simp <;> ring
 
-/-- Algebraic inverse helper for `palatiniTensor`: recovers torsion `T` from the Palatini source
+/-- Algebraic inverse helper for `modifiedTorsion`: recovers torsion `T` from the Palatini source
 `S = κ Σ` in 4D via `T^k_{ij} = S^k_{ij} + ½ (δ^k_i S^m_{jm} - δ^k_j S^m_{im})`, needed to
 isolate the algebraic inversion of Cartan's spin-torsion field equation cleanly. -/
-noncomputable def invertPalatiniTensor (S : AffineConnection 4) : AffineConnection 4 :=
+noncomputable def invertModifiedTorsion (S : AffineConnection 4) : AffineConnection 4 :=
   fun k i j => S k i j
     + (1 / 2) * ((if k = i then torsionTrace S j else 0)
       - (if k = j then torsionTrace S i else 0))
 
-/-- Applying `invertPalatiniTensor` to `palatiniTensor T` recovers `T` identically. -/
-lemma invertPalatiniTensor_palatiniTensor (T : AffineConnection 4) :
-    invertPalatiniTensor (palatiniTensor T) = T := by
+/-- Applying `invertModifiedTorsion` to `modifiedTorsion T` recovers `T` identically. -/
+lemma invertModifiedTorsion_modifiedTorsion (T : AffineConnection 4) :
+    invertModifiedTorsion (modifiedTorsion T) = T := by
   ext k i j
-  simp only [invertPalatiniTensor, torsionTrace_palatiniTensor, palatiniTensor]
+  simp only [invertModifiedTorsion, torsionTrace_modifiedTorsion, modifiedTorsion]
   split_ifs <;> ring
 
-/-- Applying `palatiniTensor` to `invertPalatiniTensor S` recovers `S` identically. -/
-lemma palatiniTensor_invertPalatiniTensor (S : AffineConnection 4) :
-    palatiniTensor (invertPalatiniTensor S) = S := by
+/-- Applying `modifiedTorsion` to `invertModifiedTorsion S` recovers `S` identically. -/
+lemma modifiedTorsion_invertModifiedTorsion (S : AffineConnection 4) :
+    modifiedTorsion (invertModifiedTorsion S) = S := by
   have htr : ∀ j : Fin 4,
-      torsionTrace (invertPalatiniTensor S) j = -(1 / 2) * torsionTrace S j := by
+      torsionTrace (invertModifiedTorsion S) j = -(1 / 2) * torsionTrace S j := by
     intro j
-    simp only [torsionTrace, invertPalatiniTensor, Fin.sum_univ_four]
+    simp only [torsionTrace, invertModifiedTorsion, Fin.sum_univ_four]
     fin_cases j <;> simp <;> ring
   ext k i j
-  simp only [palatiniTensor, htr, invertPalatiniTensor]
+  simp only [modifiedTorsion, htr, invertModifiedTorsion]
   split_ifs <;> ring
 
 /-- Cartan's algebraic spin-torsion field equation `T̃^k_{ij} = κ spin^k_{ij}` uniquely determines
 spacetime torsion linearly in the spin density. -/
 lemma cartan_algebraic_inversion (κ : ℝ) (T spin : AffineConnection 4)
-    (hcartan : ∀ k i j, palatiniTensor T k i j = κ * spin k i j) (k i j : Fin 4) :
-    T k i j = κ * invertPalatiniTensor spin k i j := by
-  have htr : torsionTrace (palatiniTensor T) = fun m => κ * torsionTrace spin m := by
+    (hcartan : ∀ k i j, modifiedTorsion T k i j = κ * spin k i j) (k i j : Fin 4) :
+    T k i j = κ * invertModifiedTorsion spin k i j := by
+  have htr : torsionTrace (modifiedTorsion T) = fun m => κ * torsionTrace spin m := by
     ext m
     simp only [torsionTrace, hcartan]
     rw [Finset.mul_sum]
-  have hinv := congrFun (congrFun (congrFun (invertPalatiniTensor_palatiniTensor T) k) i) j
+  have hinv := congrFun (congrFun (congrFun (invertModifiedTorsion_modifiedTorsion T) k) i) j
   rw [← hinv]
-  simp only [invertPalatiniTensor, hcartan, htr]
+  simp only [invertModifiedTorsion, hcartan, htr]
   split_ifs <;> ring
 
 /-- In spinless vacuum (`spin = 0`), Cartan's field equation forces torsion to vanish identically,
 reducing Einstein–Cartan theory to torsion-free General Relativity. -/
 lemma cartan_vacuum_torsion_zero (κ : ℝ) (T spin : AffineConnection 4)
-    (hcartan : ∀ k i j, palatiniTensor T k i j = κ * spin k i j)
+    (hcartan : ∀ k i j, modifiedTorsion T k i j = κ * spin k i j)
     (hvac : ∀ k i j, spin k i j = 0) : T = 0 := by
   ext k i j
   rw [cartan_algebraic_inversion κ T spin hcartan k i j]
-  simp [invertPalatiniTensor, torsionTrace, hvac]
+  simp [invertModifiedTorsion, torsionTrace, hvac]
 
 end EinsteinCartan
 

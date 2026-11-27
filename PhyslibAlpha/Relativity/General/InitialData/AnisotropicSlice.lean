@@ -69,7 +69,10 @@ lemma anisotropicExtrinsicCurvature_symm : IsSymm anisotropicExtrinsicCurvature 
   fin_cases i <;> fin_cases j <;> simp [anisotropicExtrinsicCurvature]
 
 /-- Non-vacuum ADM test slice on flat Euclidean `ℝ³` with anisotropic extrinsic curvature
-`K = diag(1, 1, 0)`. -/
+`K = diag(1, 1, 0)`, modelling a slice that is contracting (or expanding) along two spatial axes
+and momentarily static along the third. This is a testing device, not a solution of the full
+vacuum equations: only the Hamiltonian constraint is evaluated, and it is violated (`H = 2`), while
+the momentum constraint is not imposed. -/
 def anisotropicSliceData : InitialData where
   h := euclideanMetric3
   R3 := RiemannTensor.flat 3

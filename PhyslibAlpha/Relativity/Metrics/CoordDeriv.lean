@@ -24,25 +24,27 @@ API, Schwarz mixed-derivative symmetry, and bridge to `SpaceTime.deriv`.
 
 ## i. Overview
 
-On a coordinate chart `Fin n → ℝ`, `Pipeline.coordDeriv μ f x` differentiates the single-variable
-slice `s ↦ f (Function.update x μ s)` at `x μ`. This module supplies linearity, quotient rule,
-neighborhood congruence, `C²` differentiability, Schwarz symmetry (`coordDeriv_comm`), and the
-identification `coordDeriv_eq_spaceTime_deriv` with Physlib's coordinate-free spacetime derivative
-`SpaceTime.deriv`.
+On a coordinate chart `Fin n → ℝ`, `CoordinateCurvature.coordDeriv μ f x` differentiates the
+single-variable slice `s ↦ f (Function.update x μ s)` at `x μ`. This module supplies linearity,
+quotient rule, neighborhood congruence, `C²` differentiability, Schwarz symmetry
+(`coordDeriv_comm`), and the identification `coordDeriv_eq_spaceTime_deriv` with Physlib's
+coordinate-free spacetime derivative `SpaceTime.deriv`.
 
 ## ii. Key results
 
-- `Pipeline.coordDeriv` : coordinate partial derivative `∂_μ f(x)`.
-- `Pipeline.coordDeriv_of_hasDerivAt`, `Pipeline.coordDeriv_const_slice`,
-  `Pipeline.coordDeriv_const`, `Pipeline.coordDeriv_congr`,
-  `Pipeline.coordDeriv_congr_nhds` : basic evaluation and congruence API.
-- `Pipeline.coordDeriv_add`, `Pipeline.coordDeriv_sub`, `Pipeline.coordDeriv_const_mul`,
-  `Pipeline.coordDeriv_div`, `Pipeline.coordDeriv_sum` : algebraic derivative rules.
-- `Pipeline.coordDeriv_eq_fderiv`, `Pipeline.coordDeriv_eq_spaceTime_deriv` : Fréchet and
-  `SpaceTime.deriv` bridges.
-- `Pipeline.coordDeriv_comm`, `Pipeline.contDiffAt_coordDeriv`,
-  `Pipeline.coordDeriv_differentiableAt`, `Pipeline.hasDerivAt_update_slice`,
-  `Pipeline.slice_differentiableAt` : Schwarz symmetry and regularity.
+- `CoordinateCurvature.coordDeriv` : coordinate partial derivative `∂_μ f(x)`.
+- `CoordinateCurvature.coordDeriv_of_hasDerivAt`, `CoordinateCurvature.coordDeriv_const_slice`,
+  `CoordinateCurvature.coordDeriv_const`, `CoordinateCurvature.coordDeriv_congr`,
+  `CoordinateCurvature.coordDeriv_congr_nhds` : basic evaluation and congruence API.
+- `CoordinateCurvature.coordDeriv_add`, `CoordinateCurvature.coordDeriv_sub`,
+  `CoordinateCurvature.coordDeriv_const_mul`, `CoordinateCurvature.coordDeriv_div`,
+  `CoordinateCurvature.coordDeriv_sum` : algebraic derivative rules.
+- `CoordinateCurvature.coordDeriv_eq_fderiv`, `CoordinateCurvature.coordDeriv_eq_spaceTime_deriv` :
+  bridges to the Fréchet derivative and to `SpaceTime.deriv`.
+- `CoordinateCurvature.coordDeriv_comm`, `CoordinateCurvature.contDiffAt_coordDeriv`,
+  `CoordinateCurvature.coordDeriv_differentiableAt`,
+  `CoordinateCurvature.hasDerivAt_update_slice`, `CoordinateCurvature.slice_differentiableAt` :
+  Schwarz symmetry and regularity.
 
 ## iii. Table of contents
 
@@ -63,7 +65,7 @@ identification `coordDeriv_eq_spaceTime_deriv` with Physlib's coordinate-free sp
 
 namespace GeneralRelativity
 
-namespace Pipeline
+namespace CoordinateCurvature
 
 /-!
 
@@ -278,6 +280,6 @@ lemma slice_differentiableAt {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n 
     DifferentiableAt ℝ (fun s => f (Function.update x μ s)) (x μ) :=
   (hasDerivAt_update_slice μ hf).differentiableAt
 
-end Pipeline
+end CoordinateCurvature
 
 end GeneralRelativity

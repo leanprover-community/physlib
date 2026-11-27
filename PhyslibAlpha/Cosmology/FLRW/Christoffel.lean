@@ -44,8 +44,8 @@ connection and curvature tensors directly from the metric components:
   partial-derivative tables.
 - `FLRWSpacetime.christoffel_eq`, `FLRWSpacetime.eventually_christoffel_eq`,
   `FLRWSpacetime.pd_christoffel_eq_deriv` : coordinate-metric connection identities.
-- `FLRWSpacetime.riemann_eq_data`, `FLRWSpacetime.ricciTensorOf`, `FLRWSpacetime.ricciScalarOf`,
-  `FLRWSpacetime.einsteinTensorOf` : curvature tensors computed from the FLRW metric.
+- `FLRWSpacetime.riemann_eq_data`, `FLRWSpacetime.ricciTensor`, `FLRWSpacetime.ricciScalar`,
+  `FLRWSpacetime.einsteinTensor` : curvature tensors computed from the FLRW metric.
 
 ## iii. Table of contents
 
@@ -67,7 +67,7 @@ namespace GeneralRelativity
 
 namespace FLRW
 
-open GeneralRelativity.Pipeline
+open GeneralRelativity.CoordinateCurvature
 
 namespace FLRWSpacetime
 
@@ -81,7 +81,7 @@ Hubble-rate terms `a' / a`, spatial curvature factor `1 - k r²`, and angular fa
 
 -/
 
--- Factored out separately from `Pipeline.christoffel` so symbolic time derivatives of `S.a(t)`
+-- Factored out separately from `CoordinateCurvature.christoffel` so symbolic time derivatives of `S.a(t)`
 -- remain isolated from metric-inverse index sums.
 /-- Closed-form Levi-Civita Christoffel symbols `Γ^m_{ij}` of an FLRW spacetime in comoving
 coordinates `(t, r, θ, φ)`. -/
@@ -108,7 +108,7 @@ noncomputable def christoffel (S : FLRWSpacetime) (x : Fin 4 → ℝ) (m i j : F
      else if (i = 2 ∧ j = 3) ∨ (i = 3 ∧ j = 2) then Real.cos (x 2) / Real.sin (x 2)
      else 0)
 
--- Decouples scalar derivative evaluation from `Pipeline.riemann` assembly.
+-- Decouples scalar derivative evaluation from `CoordinateCurvature.riemann` assembly.
 /-- Complete partial-derivative table `∂_μ Γ^m_{ij}` of the FLRW Christoffel symbols across all
 256 coordinate and connection index tuples. -/
 noncomputable def christoffelDeriv (S : FLRWSpacetime) (μ : Fin 4) (x : Fin 4 → ℝ)
@@ -286,23 +286,23 @@ private lemma pd_theta (S : FLRWSpacetime) (x : Fin 4 → ℝ) (c d : Fin 4) :
 lemma christoffel_eq (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : DifferentiableAt ℝ S.a (x 0)) :
-    ∀ m i j, Pipeline.christoffel S.metric S.metricInv x m i j = S.christoffel x m i j := by
+    ∀ m i j, CoordinateCurvature.christoffel S.metric S.metricInv x m i j = S.christoffel x m i j := by
   intro m i j
   fin_cases m
   · fin_cases i <;> fin_cases j <;>
-      simp [Pipeline.christoffel, christoffel, metricInv, pd_t S x ha_diff,
+      simp [CoordinateCurvature.christoffel, christoffel, metricInv, pd_t S x ha_diff,
         pd_r S x hkr, pd_theta S x]
     all_goals field_simp [ha, hr, hkr, hsin]
   · fin_cases i <;> fin_cases j <;>
-      simp [Pipeline.christoffel, christoffel, metricInv, pd_t S x ha_diff,
+      simp [CoordinateCurvature.christoffel, christoffel, metricInv, pd_t S x ha_diff,
         pd_r S x hkr, pd_theta S x]
     all_goals field_simp [ha, hr, hkr, hsin]
   · fin_cases i <;> fin_cases j <;>
-      simp [Pipeline.christoffel, christoffel, metricInv, pd_t S x ha_diff,
+      simp [CoordinateCurvature.christoffel, christoffel, metricInv, pd_t S x ha_diff,
         pd_r S x hkr, pd_theta S x]
     all_goals field_simp [ha, hr, hkr, hsin]
   · fin_cases i <;> fin_cases j <;>
-      simp [Pipeline.christoffel, christoffel, metricInv, pd_t S x ha_diff,
+      simp [CoordinateCurvature.christoffel, christoffel, metricInv, pd_t S x ha_diff,
         pd_r S x hkr, pd_theta S x]
     all_goals field_simp [ha, hr, hkr, hsin]
 
@@ -312,7 +312,7 @@ lemma eventually_christoffel_eq (S : FLRWSpacetime) (x : Fin 4 → ℝ)
     (ha : S.a (x 0) ≠ 0) (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0)
     (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t) (m i j : Fin 4) :
-    (fun y => Pipeline.christoffel S.metric S.metricInv y m i j)
+    (fun y => CoordinateCurvature.christoffel S.metric S.metricInv y m i j)
       =ᶠ[nhds x] fun y => S.christoffel y m i j := by
   have hc0 : Continuous (fun y : Fin 4 → ℝ => y 0) := continuous_apply 0
   have hc1 : Continuous (fun y : Fin 4 → ℝ => y 1) := continuous_apply 1
@@ -337,7 +337,7 @@ axis `μ`. -/
 lemma pd_christoffel_eq (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t) (μ m i j : Fin 4) :
-    coordDeriv μ (fun y => Pipeline.christoffel S.metric S.metricInv y m i j) x
+    coordDeriv μ (fun y => CoordinateCurvature.christoffel S.metric S.metricInv y m i j) x
       = coordDeriv μ (fun y => S.christoffel y m i j) x :=
   coordDeriv_congr_nhds μ x (S.eventually_christoffel_eq x ha hr hkr hsin ha_diff m i j)
 
@@ -641,7 +641,7 @@ lemma riemann_eq_data (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) �
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) (ρ σ μ ν : Fin 4) :
-    Pipeline.riemann S.metric S.metricInv x ρ σ μ ν
+    CoordinateCurvature.riemann S.metric S.metricInv x ρ σ μ ν
       = riemannFromData S.christoffel S.christoffelDeriv x ρ σ μ ν := by
   rw [riemann_eq_riemannFromData]
   have ha1 := ha_diff.self_of_nhds
@@ -664,9 +664,9 @@ private lemma ricci_00 (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) �
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
-    Pipeline.ricciTensorOf S.metric S.metricInv x 0 0
+    CoordinateCurvature.ricciTensor S.metric S.metricInv x 0 0
       = -3 * deriv (deriv S.a) (x 0) / S.a (x 0) := by
-  simp [Pipeline.ricciTensorOf, Fin.sum_univ_four, S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
+  simp [CoordinateCurvature.ricciTensor, Fin.sum_univ_four, S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
     riemannFromData, christoffel, christoffelDeriv]
   field_simp [ha]
   ring
@@ -675,10 +675,10 @@ private lemma ricci_11 (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) �
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
-    Pipeline.ricciTensorOf S.metric S.metricInv x 1 1
+    CoordinateCurvature.ricciTensor S.metric S.metricInv x 1 1
       = (S.a (x 0) * deriv (deriv S.a) (x 0) + 2 * (deriv S.a (x 0)) ^ 2 + 2 * S.k)
           / (1 - S.k * (x 1) ^ 2) := by
-  simp [Pipeline.ricciTensorOf, Fin.sum_univ_four, S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
+  simp [CoordinateCurvature.ricciTensor, Fin.sum_univ_four, S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
     riemannFromData, christoffel, christoffelDeriv]
   field_simp [ha, hr, hkr]
   ring
@@ -687,11 +687,11 @@ private lemma ricci_22 (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) �
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
-    Pipeline.ricciTensorOf S.metric S.metricInv x 2 2
+    CoordinateCurvature.ricciTensor S.metric S.metricInv x 2 2
       = (S.a (x 0) * deriv (deriv S.a) (x 0) + 2 * (deriv S.a (x 0)) ^ 2 + 2 * S.k)
           * (x 1) ^ 2 := by
   have hkr' : 1 - (x 1) ^ 2 * S.k ≠ 0 := by rwa [mul_comm]
-  simp [Pipeline.ricciTensorOf, Fin.sum_univ_four, S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
+  simp [CoordinateCurvature.ricciTensor, Fin.sum_univ_four, S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
     riemannFromData, christoffel, christoffelDeriv]
   field_simp [ha, hr, hkr, hkr', hsin]
   rw [Real.sin_sq (x 2)]
@@ -701,11 +701,11 @@ private lemma ricci_33 (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) �
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
-    Pipeline.ricciTensorOf S.metric S.metricInv x 3 3
+    CoordinateCurvature.ricciTensor S.metric S.metricInv x 3 3
       = (S.a (x 0) * deriv (deriv S.a) (x 0) + 2 * (deriv S.a (x 0)) ^ 2 + 2 * S.k) * (x 1) ^ 2
           * Real.sin (x 2) ^ 2 := by
   have hkr' : 1 - (x 1) ^ 2 * S.k ≠ 0 := by rwa [mul_comm]
-  simp [Pipeline.ricciTensorOf, Fin.sum_univ_four, S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
+  simp [CoordinateCurvature.ricciTensor, Fin.sum_univ_four, S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
     riemannFromData, christoffel, christoffelDeriv]
   field_simp [ha, hr, hkr, hkr', hsin]
   ring
@@ -714,19 +714,19 @@ private lemma ricci_offdiag (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) {σ ν : Fin 4} (h : σ ≠ ν) :
-    Pipeline.ricciTensorOf S.metric S.metricInv x σ ν = 0 := by
+    CoordinateCurvature.ricciTensor S.metric S.metricInv x σ ν = 0 := by
   fin_cases σ <;> fin_cases ν <;> try exact absurd rfl h
   all_goals
-    simp [Pipeline.ricciTensorOf, Fin.sum_univ_four, S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
+    simp [CoordinateCurvature.ricciTensor, Fin.sum_univ_four, S.riemann_eq_data x ha hr hkr hsin ha_diff ha2,
       riemannFromData, christoffel, christoffelDeriv]
   all_goals ring
 
 /-- Complete coordinate Ricci tensor of an FLRW spacetime. -/
-lemma ricciTensorOf (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
+lemma ricciTensor (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) (σ ν : Fin 4) :
-    Pipeline.ricciTensorOf S.metric S.metricInv x σ ν
+    CoordinateCurvature.ricciTensor S.metric S.metricInv x σ ν
       = if σ = ν then
           if σ = 0 then -3 * deriv (deriv S.a) (x 0) / S.a (x 0)
           else if σ = 1 then
@@ -749,14 +749,14 @@ lemma ricciTensorOf (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 
   · simp [h, ricci_offdiag S x ha hr hkr hsin ha_diff ha2 h]
 
 /-- FLRW scalar curvature `R = 6 (a'' / a + (a' / a)² + k / a²)`. -/
-lemma ricciScalarOf (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
+lemma ricciScalar (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
-    Pipeline.ricciScalarOf S.metric S.metricInv x
+    CoordinateCurvature.ricciScalar S.metric S.metricInv x
       = 6 * (deriv (deriv S.a) (x 0) / S.a (x 0) + (deriv S.a (x 0) / S.a (x 0)) ^ 2
           + S.k / (S.a (x 0)) ^ 2) := by
-  simp only [Pipeline.ricciScalarOf, S.ricciTensorOf x ha hr hkr hsin ha_diff ha2]
+  simp only [CoordinateCurvature.ricciScalar, S.ricciTensor x ha hr hkr hsin ha_diff ha2]
   simp only [Fin.sum_univ_four, metricInv, Matrix.of_apply, Fin.reduceEq, ↓reduceIte,
     Fin.isValue, mul_zero, add_zero, zero_add]
   field_simp [ha, hr, hkr, hsin]
@@ -764,18 +764,18 @@ lemma ricciScalarOf (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 
 
 /-- Complete FLRW Einstein tensor: `G_{00} = 3 ((a'/a)² + k/a²)` and
 `G_{ii} = -(2 a''/a + (a'/a)² + k/a²) g_{ii}` for spatial indices `i = 1, 2, 3`. -/
-lemma einsteinTensorOf (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
+lemma einsteinTensor (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) (i j : Fin 4) :
-    Pipeline.einsteinTensorOf S.metric S.metricInv x i j
+    CoordinateCurvature.einsteinTensor S.metric S.metricInv x i j
       = if i = j then
           if i = 0 then 3 * ((deriv S.a (x 0) / S.a (x 0)) ^ 2 + S.k / (S.a (x 0)) ^ 2)
           else -(2 * (deriv (deriv S.a) (x 0) / S.a (x 0))
             + (deriv S.a (x 0) / S.a (x 0)) ^ 2 + S.k / (S.a (x 0)) ^ 2) * S.metric x i j
         else 0 := by
-  simp only [Pipeline.einsteinTensorOf, S.ricciTensorOf x ha hr hkr hsin ha_diff ha2,
-    S.ricciScalarOf x ha hr hkr hsin ha_diff ha2, metric]
+  simp only [CoordinateCurvature.einsteinTensor, S.ricciTensor x ha hr hkr hsin ha_diff ha2,
+    S.ricciScalar x ha hr hkr hsin ha_diff ha2, metric]
   fin_cases i <;> fin_cases j <;> simp
   · field_simp [ha]; ring
   · field_simp [ha, hkr]; ring

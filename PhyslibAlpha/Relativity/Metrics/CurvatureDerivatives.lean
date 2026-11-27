@@ -24,8 +24,8 @@ the second Bianchi identity together with metric compatibility. Taking it as an 
 hypothesis in locally inertial (Riemann normal) coordinates at a point (`g = ginv = η` and
 `∂g = 0`, so covariant and coordinate derivatives coincide there), this module derives:
 
-- `divergence_combination` : `∇^a (α Ric + β R g)_b = (α / 2 + β) ∇_b R`;
-- `divergence_einstein_eq_zero` : `∇^a G_ab = 0`;
+- `inertialDivergence_combination` : `∇^a (α Ric + β R g)_b = (α / 2 + β) ∇_b R`;
+- `inertialDivergence_einstein_eq_zero` : `∇^a G_ab = 0`;
 - `combination_conserved_iff` : if `∇R ≠ 0` somewhere, `α Ric + β R g` is conserved only when
   `α = -2β`, isolating the Einstein tensor up to an overall constant.
 
@@ -34,9 +34,10 @@ hypothesis in locally inertial (Riemann normal) coordinates at a point (`g = gin
 - `CurvatureDerivatives` : the pointwise partial derivatives of `Ric` and `R` in locally inertial
   coordinates.
 - `CurvatureDerivatives.einsteinDeriv` : pointwise derivative of the Einstein tensor.
-- `divergence` : divergence `∇^a T_ab = ∑ a, η^{aa} ∂_a T_ab` in locally inertial coordinates.
-- `divergence_combination` : divergence of `α Ric + β R g`.
-- `divergence_einstein_eq_zero` : conservation of the Einstein tensor from the contracted
+- `inertialDivergence` : divergence `∇^a T_ab = ∑ a, η^{aa} ∂_a T_ab` in locally inertial
+  coordinates.
+- `inertialDivergence_combination` : divergence of `α Ric + β R g`.
+- `inertialDivergence_einstein_eq_zero` : conservation of the Einstein tensor from the contracted
   Bianchi hypothesis.
 - `combination_conserved_iff` : uniqueness of the Einstein combination `α = -2β`.
 
@@ -86,7 +87,7 @@ noncomputable def CurvatureDerivatives.einsteinDeriv (D : CurvatureDerivatives) 
 
 /-- Divergence of a rank-2 tensor derivative family in locally inertial coordinates:
 `∇^a T_ab = ∑ a, η^{aa} ∂_a T_ab`. -/
-noncomputable def divergence (T : Fin 4 → Tensor2 4) (b : Fin 4) : ℝ :=
+noncomputable def inertialDivergence (T : Fin 4 → Tensor2 4) (b : Fin 4) : ℝ :=
   ∑ a, minkowskiMetric4 a a * T a a b
 
 /-!
@@ -100,10 +101,10 @@ divergence free and singles out `α = -2 β` uniquely.
 
 /-- The divergence of a linear combination `α Ric + β R g`: the contracted Bianchi identity
 collapses `∇Ric` to `(1/2) ∇R`, leaving `(α/2 + β) ∇_b R`. -/
-lemma divergence_combination (D : CurvatureDerivatives)
+lemma inertialDivergence_combination (D : CurvatureDerivatives)
     (hB : ∀ b, (∑ a, minkowskiMetric4 a a * D.dRic a a b) = (1 / 2) * D.dS b)
     (α β : ℝ) (b : Fin 4) :
-    divergence (fun e i j => α * D.dRic e i j + β * D.dS e * minkowskiMetric4 i j) b
+    inertialDivergence (fun e i j => α * D.dRic e i j + β * D.dS e * minkowskiMetric4 i j) b
       = (α / 2 + β) * D.dS b := by
   have hterm : ∀ a,
       minkowskiMetric4 a a * (α * D.dRic a a b + β * D.dS a * minkowskiMetric4 a b)
@@ -111,16 +112,16 @@ lemma divergence_combination (D : CurvatureDerivatives)
           + β * (D.dS a * (minkowskiMetric4 a a * minkowskiMetric4 a b)) := by
     intro a
     ring
-  simp only [divergence]
+  simp only [inertialDivergence]
   rw [Finset.sum_congr rfl (fun a _ => hterm a), Finset.sum_add_distrib,
     ← Finset.mul_sum, ← Finset.mul_sum, hB b, sum_minkowskiMetric4_mul (fun a => D.dS a) b]
   ring
 
 /-- The Einstein tensor is conserved (`∇^a G_ab = 0`) under the contracted Bianchi identity. -/
-lemma divergence_einstein_eq_zero (D : CurvatureDerivatives)
+lemma inertialDivergence_einstein_eq_zero (D : CurvatureDerivatives)
     (hB : ∀ b, (∑ a, minkowskiMetric4 a a * D.dRic a a b) = (1 / 2) * D.dS b) (b : Fin 4) :
-    divergence D.einsteinDeriv b = 0 := by
-  have h := divergence_combination D hB 1 (-(1 / 2)) b
+    inertialDivergence D.einsteinDeriv b = 0 := by
+  have h := inertialDivergence_combination D hB 1 (-(1 / 2)) b
   have heq : D.einsteinDeriv
       = fun e i j => 1 * D.dRic e i j + (-(1 / 2)) * D.dS e * minkowskiMetric4 i j := by
     funext e i j
@@ -134,12 +135,13 @@ divergence free only when `α = -2β`, i.e. a multiple of `G = Ric - (1/2) R g`.
 lemma combination_conserved_iff (D : CurvatureDerivatives)
     (hB : ∀ b, (∑ a, minkowskiMetric4 a a * D.dRic a a b) = (1 / 2) * D.dS b)
     (α β : ℝ) (hne : ∃ b, D.dS b ≠ 0)
-    (h : ∀ b, divergence (fun e i j => α * D.dRic e i j + β * D.dS e * minkowskiMetric4 i j) b
-      = 0) :
+    (h : ∀ b,
+      inertialDivergence (fun e i j => α * D.dRic e i j + β * D.dS e * minkowskiMetric4 i j) b
+        = 0) :
     α = -2 * β := by
   obtain ⟨b, hb⟩ := hne
   have h0 : (α / 2 + β) * D.dS b = 0 := by
-    rw [← divergence_combination D hB α β b]
+    rw [← inertialDivergence_combination D hB α β b]
     exact h b
   have hc : α / 2 + β = 0 := by
     rcases mul_eq_zero.mp h0 with h1 | h2

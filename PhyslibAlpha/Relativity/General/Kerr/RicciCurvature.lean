@@ -39,9 +39,9 @@ tensor vanish identically.
 - `KerrSpacetime.christoffelTraceDeriv_rr`, `KerrSpacetime.christoffelTraceDeriv_rtheta`,
   `KerrSpacetime.christoffelTraceDeriv_thetar`, `KerrSpacetime.christoffelTraceDeriv_thetatheta` :
   partial derivatives of `KerrSpacetime.christoffelTrace`.
-- `KerrSpacetime.ricciTensorOf_eq_zero` : vacuum Ricci flatness `Ric_{σ ν} = 0`.
-- `KerrSpacetime.ricciScalarOf_eq_zero` : vanishing scalar curvature `R = 0`.
-- `KerrSpacetime.einsteinTensorOf_eq_zero` : vacuum Einstein equations `G_{i j} = 0`.
+- `KerrSpacetime.ricciTensor_eq_zero` : vacuum Ricci flatness `Ric_{σ ν} = 0`.
+- `KerrSpacetime.ricciScalar_eq_zero` : vanishing scalar curvature `R = 0`.
+- `KerrSpacetime.einsteinTensor_eq_zero` : vacuum Einstein equations `G_{i j} = 0`.
 
 ## iii. Table of contents
 
@@ -65,7 +65,7 @@ namespace GeneralRelativity
 
 namespace Kerr
 
-open Pipeline
+open CoordinateCurvature
 
 namespace KerrSpacetime
 
@@ -81,11 +81,11 @@ Ricci tensor components.
 
 /-- Boyer–Lindquist Kerr Ricci tensor computed from the coordinate metric `K.metric`. -/
 noncomputable def ricci (K : KerrSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
-  Pipeline.ricciTensorOf K.metric K.metricInv x
+  CoordinateCurvature.ricciTensor K.metric K.metricInv x
 
 /-- Boyer–Lindquist Kerr Einstein tensor computed from the coordinate metric `K.metric`. -/
 noncomputable def einstein (K : KerrSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
-  Pipeline.einsteinTensorOf K.metric K.metricInv x
+  CoordinateCurvature.einsteinTensor K.metric K.metricInv x
 
 private lemma hasDerivAt_sigmaPow3_r (K : KerrSpacetime) (r θ : ℝ) :
     HasDerivAt (fun s => K.sigma s θ ^ 3) (3 * K.sigma r θ ^ 2 * (2 * r)) r :=
@@ -543,7 +543,7 @@ private lemma sum_pd_christoffel_diag (K : KerrSpacetime) (x : Fin 4 → ℝ)
 private lemma ricciOf_eq_sum (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (σ ν : Fin 4) :
-    Pipeline.ricciTensorOf K.metric K.metricInv x σ ν
+    CoordinateCurvature.ricciTensor K.metric K.metricInv x σ ν
       = coordDeriv 1 (fun y => K.christoffel y 1 ν σ) x
         + coordDeriv 2 (fun y => K.christoffel y 2 ν σ) x
         - (if ν = 1 ∨ ν = 2 then coordDeriv ν (fun y => K.christoffelTrace y σ) x else 0)
@@ -551,20 +551,20 @@ private lemma ricciOf_eq_sum (K : KerrSpacetime) (x : Fin 4 → ℝ)
         - ∑ ρ : Fin 4, ∑ lam : Fin 4,
           K.christoffel x ρ ν lam * K.christoffel x lam ρ σ := by
   have hev : ∀ k i j,
-      (fun y => Pipeline.christoffel K.metric K.metricInv y k i j)
+      (fun y => CoordinateCurvature.christoffel K.metric K.metricInv y k i j)
         =ᶠ[nhds x] fun y => K.christoffel y k i j :=
     K.eventually_christoffel_eq x hsig hdel hs
   have hpt : ∀ k i j,
-      Pipeline.christoffel K.metric K.metricInv x k i j = K.christoffel x k i j :=
+      CoordinateCurvature.christoffel K.metric K.metricInv x k i j = K.christoffel x k i j :=
     K.christoffel_eq x hsig hdel hs
   have hpd : ∀ μ k i j,
-      coordDeriv μ (fun y => Pipeline.christoffel K.metric K.metricInv y k i j) x
+      coordDeriv μ (fun y => CoordinateCurvature.christoffel K.metric K.metricInv y k i j) x
         = coordDeriv μ (fun y => K.christoffel y k i j) x :=
     fun μ k i j => coordDeriv_congr_nhds μ x (hev k i j)
   have hsumG : ∀ lam, (∑ ρ : Fin 4, K.christoffel x ρ ρ lam) = K.christoffelTrace x lam :=
     K.sum_christoffel_trace x hsig hdel hs
   have htr_pd := sum_pd_christoffel_diag K x hsig hdel hs σ ν
-  simp only [Pipeline.ricciTensorOf, Pipeline.riemann, hpd, hpt, Finset.sum_sub_distrib,
+  simp only [CoordinateCurvature.ricciTensor, CoordinateCurvature.riemann, hpd, hpt, Finset.sum_sub_distrib,
     Finset.sum_add_distrib]
   have h1 : (∑ ρ : Fin 4, coordDeriv ρ (fun y => K.christoffel y ρ ν σ) x)
       = coordDeriv 1 (fun y => K.christoffel y 1 ν σ) x
@@ -600,14 +600,14 @@ local macro "kerr_ricci_clear" : tactic =>
 
 private lemma ricciOf_00 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
-    Pipeline.ricciTensorOf K.metric K.metricInv x 0 0 = 0 := by
+    CoordinateCurvature.ricciTensor K.metric K.metricInv x 0 0 = 0 := by
   rw [ricciOf_eq_sum K x hsig hdel hs 0 0, christoffelDeriv_r_00 K x hsig hdel,
     christoffelDeriv_theta_00 K x hsig]
   kerr_ricci_clear
 
 private lemma ricciOf_03 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
-    Pipeline.ricciTensorOf K.metric K.metricInv x 0 3 = 0 := by
+    CoordinateCurvature.ricciTensor K.metric K.metricInv x 0 3 = 0 := by
   rw [ricciOf_eq_sum K x hsig hdel hs 0 3,
     christoffel_swap_slice K 1 3 0, christoffel_swap_slice K 2 3 0,
     christoffelDeriv_r_03 K x hsig, christoffelDeriv_theta_03 K x hsig]
@@ -615,14 +615,14 @@ private lemma ricciOf_03 (K : KerrSpacetime) (x : Fin 4 → ℝ)
 
 private lemma ricciOf_30 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
-    Pipeline.ricciTensorOf K.metric K.metricInv x 3 0 = 0 := by
+    CoordinateCurvature.ricciTensor K.metric K.metricInv x 3 0 = 0 := by
   rw [ricciOf_eq_sum K x hsig hdel hs 3 0, christoffelDeriv_r_03 K x hsig,
     christoffelDeriv_theta_03 K x hsig]
   kerr_ricci_clear
 
 private lemma ricciOf_11 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
-    Pipeline.ricciTensorOf K.metric K.metricInv x 1 1 = 0 := by
+    CoordinateCurvature.ricciTensor K.metric K.metricInv x 1 1 = 0 := by
   rw [ricciOf_eq_sum K x hsig hdel hs 1 1, christoffelDeriv_r_11 K x hsig hdel,
     christoffelDeriv_theta_11 K x hsig hdel]
   simp only [Fin.isValue, ↓reduceIte, true_or]
@@ -631,7 +631,7 @@ private lemma ricciOf_11 (K : KerrSpacetime) (x : Fin 4 → ℝ)
 
 private lemma ricciOf_12 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
-    Pipeline.ricciTensorOf K.metric K.metricInv x 1 2 = 0 := by
+    CoordinateCurvature.ricciTensor K.metric K.metricInv x 1 2 = 0 := by
   rw [ricciOf_eq_sum K x hsig hdel hs 1 2,
     christoffel_swap_slice K 1 2 1, christoffel_swap_slice K 2 2 1,
     christoffelDeriv_r_12 K x hsig, christoffelDeriv_theta_12 K x hsig]
@@ -641,7 +641,7 @@ private lemma ricciOf_12 (K : KerrSpacetime) (x : Fin 4 → ℝ)
 
 private lemma ricciOf_21 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
-    Pipeline.ricciTensorOf K.metric K.metricInv x 2 1 = 0 := by
+    CoordinateCurvature.ricciTensor K.metric K.metricInv x 2 1 = 0 := by
   rw [ricciOf_eq_sum K x hsig hdel hs 2 1, christoffelDeriv_r_12 K x hsig,
     christoffelDeriv_theta_12 K x hsig]
   simp only [Fin.isValue, ↓reduceIte, true_or]
@@ -650,7 +650,7 @@ private lemma ricciOf_21 (K : KerrSpacetime) (x : Fin 4 → ℝ)
 
 private lemma ricciOf_22 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
-    Pipeline.ricciTensorOf K.metric K.metricInv x 2 2 = 0 := by
+    CoordinateCurvature.ricciTensor K.metric K.metricInv x 2 2 = 0 := by
   rw [ricciOf_eq_sum K x hsig hdel hs 2 2, christoffelDeriv_r_22 K x hsig,
     christoffelDeriv_theta_22 K x hsig]
   simp only [Fin.isValue, ↓reduceIte, or_true]
@@ -659,7 +659,7 @@ private lemma ricciOf_22 (K : KerrSpacetime) (x : Fin 4 → ℝ)
 
 private lemma ricciOf_33 (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
-    Pipeline.ricciTensorOf K.metric K.metricInv x 3 3 = 0 := by
+    CoordinateCurvature.ricciTensor K.metric K.metricInv x 3 3 = 0 := by
   rw [ricciOf_eq_sum K x hsig hdel hs 3 3, christoffelDeriv_r_33 K x hsig,
     christoffelDeriv_theta_33 K x hsig]
   kerr_ricci_clear
@@ -679,7 +679,7 @@ private lemma ricciOf_offblock (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (σ ν : Fin 4)
     (hoff : (σ = 0 ∧ (ν = 1 ∨ ν = 2)) ∨ ((σ = 1 ∨ σ = 2) ∧ (ν = 0 ∨ ν = 3))
       ∨ (σ = 3 ∧ (ν = 1 ∨ ν = 2))) :
-    Pipeline.ricciTensorOf K.metric K.metricInv x σ ν = 0 := by
+    CoordinateCurvature.ricciTensor K.metric K.metricInv x σ ν = 0 := by
   rw [ricciOf_eq_sum K x hsig hdel hs σ ν]
   rcases hoff with ⟨rfl, rfl | rfl⟩ | ⟨rfl | rfl, rfl | rfl⟩ | ⟨rfl, rfl | rfl⟩
   all_goals
@@ -691,11 +691,11 @@ private lemma ricciOf_offblock (K : KerrSpacetime) (x : Fin 4 → ℝ)
     norm_num
 
 /-- The Boyer–Lindquist Kerr metric has identically vanishing Ricci tensor at every regular
-coordinate point (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`) through `GeneralRelativity.Pipeline`. -/
-lemma ricciTensorOf_eq_zero (K : KerrSpacetime) (x : Fin 4 → ℝ)
+coordinate point (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`) through `GeneralRelativity.CoordinateCurvature`. -/
+lemma ricciTensor_eq_zero (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (σ ν : Fin 4) :
-    Pipeline.ricciTensorOf K.metric K.metricInv x σ ν = 0 := by
+    CoordinateCurvature.ricciTensor K.metric K.metricInv x σ ν = 0 := by
   fin_cases σ <;> fin_cases ν
   · exact ricciOf_00 K x hsig hdel hs
   · exact ricciOf_offblock K x hsig hdel hs 0 1 (by simp)
@@ -724,19 +724,19 @@ equations `G = 0`.
 -/
 
 /-- The Boyer–Lindquist Kerr metric has identically vanishing scalar curvature `R = 0`. -/
-lemma ricciScalarOf_eq_zero (K : KerrSpacetime) (x : Fin 4 → ℝ)
+lemma ricciScalar_eq_zero (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
-    Pipeline.ricciScalarOf K.metric K.metricInv x = 0 := by
-  simp [Pipeline.ricciScalarOf, K.ricciTensorOf_eq_zero x hsig hdel hs]
+    CoordinateCurvature.ricciScalar K.metric K.metricInv x = 0 := by
+  simp [CoordinateCurvature.ricciScalar, K.ricciTensor_eq_zero x hsig hdel hs]
 
-/-- Vacuum Einstein equations for the Kerr black hole through `GeneralRelativity.Pipeline`:
+/-- Vacuum Einstein equations for the Kerr black hole through `GeneralRelativity.CoordinateCurvature`:
 `G_{i j} = 0` for all `i, j : Fin 4`. -/
-lemma einsteinTensorOf_eq_zero (K : KerrSpacetime) (x : Fin 4 → ℝ)
+lemma einsteinTensor_eq_zero (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)
     (i j : Fin 4) :
-    Pipeline.einsteinTensorOf K.metric K.metricInv x i j = 0 := by
-  simp [Pipeline.einsteinTensorOf, K.ricciTensorOf_eq_zero x hsig hdel hs,
-    K.ricciScalarOf_eq_zero x hsig hdel hs]
+    CoordinateCurvature.einsteinTensor K.metric K.metricInv x i j = 0 := by
+  simp [CoordinateCurvature.einsteinTensor, K.ricciTensor_eq_zero x hsig hdel hs,
+    K.ricciScalar_eq_zero x hsig hdel hs]
 
 end KerrSpacetime
 

@@ -41,7 +41,7 @@ coordinate Christoffel symbols with the closed-form table `S.christoffel` and id
   Christoffel and partial-derivative tables.
 - `StaticSphericalMetric.christoffel_eq`, `StaticSphericalMetric.eventually_christoffel_eq`,
   `StaticSphericalMetric.pd_christoffel_eq`, `StaticSphericalMetric.pd_christoffel_eq_deriv` :
-  agreement with `Pipeline.christoffel` and its partial derivatives.
+  agreement with `CoordinateCurvature.christoffel` and its partial derivatives.
 
 ## iii. Table of contents
 
@@ -63,7 +63,7 @@ namespace GeneralRelativity
 
 namespace StaticSpherical
 
-open GeneralRelativity.Pipeline
+open GeneralRelativity.CoordinateCurvature
 
 /-!
 
@@ -210,19 +210,19 @@ regular point where the radial metric function is differentiable. -/
 lemma christoffel_eq (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : DifferentiableAt ℝ S.metricFn (x 1)) :
-    ∀ k i j, Pipeline.christoffel S.metric S.metricInv x k i j = S.christoffel x k i j := by
+    ∀ k i j, CoordinateCurvature.christoffel S.metric S.metricInv x k i j = S.christoffel x k i j := by
   intro k i j
   fin_cases k <;> fin_cases i <;> fin_cases j <;>
-    simp [Pipeline.christoffel, christoffel, metricInv,
+    simp [CoordinateCurvature.christoffel, christoffel, metricInv,
       metricDeriv_theta, metricDeriv_r S x hf_diff hf] <;>
     field_simp [hr, hf, hsin]
 
-/-- Neighbourhood equality between `Pipeline.christoffel` and the closed-form static spherical
+/-- Neighbourhood equality between `CoordinateCurvature.christoffel` and the closed-form static spherical
 Christoffel table around any regular point. -/
 lemma eventually_christoffel_eq (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ S.metricFn s) (a b c : Fin 4) :
-    (fun y => Pipeline.christoffel S.metric S.metricInv y a b c)
+    (fun y => CoordinateCurvature.christoffel S.metric S.metricInv y a b c)
       =ᶠ[nhds x] fun y => S.christoffel y a b c := by
   have hc1 : Continuous (fun y : Fin 4 → ℝ => y 1) := continuous_apply 1
   have hc2 : Continuous (fun y : Fin 4 → ℝ => y 2) := continuous_apply 2
@@ -243,7 +243,7 @@ closed-form static spherical Christoffel table along every coordinate axis. -/
 lemma pd_christoffel_eq (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ S.metricFn s) (μ a b c : Fin 4) :
-    coordDeriv μ (fun y => Pipeline.christoffel S.metric S.metricInv y a b c) x
+    coordDeriv μ (fun y => CoordinateCurvature.christoffel S.metric S.metricInv y a b c) x
       = coordDeriv μ (fun y => S.christoffel y a b c) x :=
   coordDeriv_congr_nhds μ x (S.eventually_christoffel_eq x hr hf hsin hf_diff a b c)
 
