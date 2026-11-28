@@ -5,10 +5,15 @@ Authors: Raunak Chhatwal
 -/
 module
 
+public import Mathlib.Analysis.Calculus.Deriv.Add
+public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Physlib.ClassicalMechanics.Force
 public import Physlib.ClassicalMechanics.PointParticle.Basic
 /-!
 # Newtonian point-particle systems
+Particles and their forces in an inertial reference frame.
+
+## i. Overview
 
 This module defines `NewtonianSystem`, consisting of an inertial reference frame, a finite
 collection of point particles, and the internal and external forces acting on
@@ -33,6 +38,23 @@ existence proof establishes that a satisfying system exists for given parameters
 and initial conditions; choice can then be used to select one. Explicit formulas
 for the positions and forces are not required to state the conditions or to
 reason about systems satisfying them.
+
+## ii. Key results
+
+- `internalForce_sum_zero` gives the cancellation of all internal forces.
+- `hasDerivAt_momentum` gives the net external force as the derivative of total momentum.
+
+## iii. Table of contents
+
+- A. Systems
+- B. System particles
+- C. System forces
+- D. Aggregate quantities
+  - D.1. Net external force
+
+## iv. References
+
+* [ref: goldstein_classicalmechanics], Chapter 1.
 -/
 
 @[expose] public noncomputable section
@@ -192,23 +214,6 @@ lemma internalForce_sum_zero (t : ℝ) :
   rw [smul_zero, two_smul, ← eq_neg_iff_add_eq_zero]
   exact h
 
-/-- With no external forces, the sum of mass times acceleration vanishes. -/
-lemma sum_mass_acceleration_eq_zero (hExt : system.externalForces = 0) (t : ℝ) :
-    ∑ p : system.Particle, p.mass.val • p.acceleration t = 0 := by
-  classical
-  simp_rw [show ∀ p : system.Particle, p.mass.val • p.acceleration t =
-      netForce p system.internalForces system.externalForces t from
-    fun p => (congrFun (system.newton_second_law p) t).symm]
-  simp only [netForce, Finset.sum_filter]
-  rw [Finset.sum_comm]
-  simp only [Finset.sum_ite_eq, Finset.mem_univ, ite_true]
-  let forces := system.internalForces.map InternalForce.toForce + system.externalForces
-  let value := fun f : system.frame.Force system.Particle => f.value t
-  change ((Finset.univ : Finset forces).val.map (fun f => value f.1)).sum = 0
-  rw [Multiset.map_univ forces value]
-  simpa only [forces, hExt, add_zero, Multiset.map_map, value, Function.comp_def] using
-    system.internalForce_sum_zero t
-
 /-!
 ## D. Aggregate quantities
 -/
@@ -223,12 +228,59 @@ def mass : ℝ :=
 def momentum : system.Vector :=
   ∑ particle : system.Particle, particle.momentum t
 
+/-- Total kinetic energy at `t`. -/
+def kineticEnergy : ℝ :=
+  ∑ particle : system.Particle, particle.kineticEnergy t
+
+/-!
+### D.1. Net external force
+-/
+
 /-- Net external force at `t`. -/
 def netExternalForce : system.Vector :=
   ∑ force : system.Force with force.External, force t
 
-/-- Total kinetic energy at `t`. -/
-def kineticEnergy : ℝ :=
-  ∑ particle : system.Particle, particle.kineticEnergy t
+/-- The net external force is the sum over the multiset of external forces. -/
+lemma netExternalForce_eq_sum :
+    system.netExternalForce t = (system.externalForces.map (fun f => f.value t)).sum := by
+  classical
+  unfold netExternalForce
+  rw [Finset.sum_filter, Fintype.sum_sum_type]
+  simp [Force.External]
+  exact congrArg Multiset.sum (Multiset.map_univ system.externalForces (fun f => f.value t))
+
+/-- If there are no external forces, their resultant vanishes. -/
+lemma netExternalForce_eq_zero_of_externalForces_eq_zero (hExt : system.externalForces = 0) :
+    system.netExternalForce = 0 := by
+  funext u
+  simp only [system.netExternalForce_eq_sum, hExt, Multiset.map_zero, Multiset.sum_zero,
+    Pi.zero_apply]
+
+/-- The sum of mass times acceleration equals the net external force. -/
+lemma sum_mass_acceleration_eq_netExternalForce :
+    ∑ p : system.Particle, p.mass.val • p.acceleration t = system.netExternalForce t := by
+  classical
+  let forces := system.internalForces.map InternalForce.toForce + system.externalForces
+  calc
+    _ = _ := Finset.sum_congr rfl fun p _ => (congrFun (system.newton_second_law p) t).symm
+    _ = ∑ f : forces, f.1.value t := Finset.sum_fiberwise _ (fun f : forces => f.1.target) _
+    _ = (forces.map (·.value t)).sum := congrArg Multiset.sum (Multiset.map_univ forces (·.value t))
+    _ = _ := by simp [forces, Multiset.map_map, system.internalForce_sum_zero,
+      system.netExternalForce_eq_sum]
+
+/-- With no external forces, the sum of mass times acceleration vanishes. -/
+lemma sum_mass_acceleration_eq_zero_of_externalForces_eq_zero
+    (hExt : system.externalForces = 0) (t : ℝ) :
+    ∑ p : system.Particle, p.mass.val • p.acceleration t = 0 := by
+  simpa only [system.netExternalForce_eq_zero_of_externalForces_eq_zero hExt, Pi.zero_apply] using
+    system.sum_mass_acceleration_eq_netExternalForce t
+
+/-- The time derivative of total momentum is the net external force. -/
+lemma hasDerivAt_momentum : HasDerivAt system.momentum (system.netExternalForce t) t := by
+  rw [← system.sum_mass_acceleration_eq_netExternalForce]
+  unfold momentum
+  apply HasDerivAt.fun_sum
+  intro p _
+  exact p.1.pos_twice_differentiable.2 t |>.hasDerivAt.const_smul p.mass.val
 
 end ClassicalMechanics.PointParticle.NewtonianSystem
