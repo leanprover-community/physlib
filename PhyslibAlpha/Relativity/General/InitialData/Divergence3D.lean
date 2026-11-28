@@ -27,7 +27,8 @@ tool.
 
 ## ii. Key results
 
-- `Space3` : the coordinate model `Fin 3 → ℝ` on which the box integrals are taken.
+- `SpaceChart` : the coordinate model `Fin 3 → ℝ` on which the box integrals are taken,
+  the spatial analogue of `SpacetimeChart`.
 - `integral_divergence_box_eq_zero` : the divergence theorem on a box, for a field whose
   boundary flux vanishes.
 
@@ -47,15 +48,16 @@ open Set MeasureTheory BoxIntegral
 
 namespace GeneralRelativity
 
-/-- Three-dimensional coordinate space for the spatial box. -/
-abbrev Space3 : Type := Fin 3 → ℝ
+/-- The coordinate model for a three-dimensional spatial chart: `Fin 3 → ℝ`, the spatial
+analogue of the four-dimensional `SpacetimeChart`. -/
+abbrev SpaceChart : Type := Fin 3 → ℝ
 
 /-- **Divergence theorem with vanishing boundary flux.**  If `F` is continuous
 on the closed box, differentiable in its interior with derivative `F'`, and each
 face integral of the normal component of `F` vanishes, then the integral of the
 divergence of `F` is zero. -/
 lemma integral_divergence_box_eq_zero
-    (I : Box (Fin 3)) (F : Space3 → Space3) (F' : Space3 → Space3 →L[ℝ] Space3)
+    (I : Box (Fin 3)) (F : SpaceChart → SpaceChart) (F' : SpaceChart → SpaceChart →L[ℝ] SpaceChart)
     (hF_cont : ContinuousOn F (Box.Icc I))
     (hF_deriv : ∀ x ∈ Box.Ioo I, HasFDerivAt F (F' x) x)
     (hdiv_int : IntegrableOn (fun x => ∑ i, F' x (Pi.single i 1) i) (Box.Icc I))

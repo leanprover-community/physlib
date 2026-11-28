@@ -270,11 +270,11 @@ lemma trace_estimate_1D (u u' : ℝ → ℝ)
 
 /-- Squared `H¹` norm on a closed 3D box `I`: `∫_I (u² + ∑ᵢ (∂ᵢu)²) dx`. -/
 noncomputable def sobolevH1NormSq3D
-    (u : Space3 → ℝ) (grad : Space3 → Space3) (I : BoxIntegral.Box (Fin 3)) : ℝ :=
+    (u : SpaceChart → ℝ) (grad : SpaceChart → SpaceChart) (I : BoxIntegral.Box (Fin 3)) : ℝ :=
   ∫ x in BoxIntegral.Box.Icc I, waveEnergy3DIntegrand u grad x
 
 lemma sobolevH1NormSq3D_nonneg
-    (u : Space3 → ℝ) (grad : Space3 → Space3) (I : BoxIntegral.Box (Fin 3)) :
+    (u : SpaceChart → ℝ) (grad : SpaceChart → SpaceChart) (I : BoxIntegral.Box (Fin 3)) :
     0 ≤ sobolevH1NormSq3D u grad I := by
   unfold sobolevH1NormSq3D
   apply setIntegral_nonneg measurableSet_Icc
@@ -283,7 +283,7 @@ lemma sobolevH1NormSq3D_nonneg
   exact add_nonneg (sq_nonneg _) (Finset.sum_nonneg fun i _ => sq_nonneg _)
 
 lemma l2_le_sobolevH1_3D
-    (u : Space3 → ℝ) (grad : Space3 → Space3) (I : BoxIntegral.Box (Fin 3))
+    (u : SpaceChart → ℝ) (grad : SpaceChart → SpaceChart) (I : BoxIntegral.Box (Fin 3))
     (hu : IntegrableOn (fun x => u x ^ 2) (BoxIntegral.Box.Icc I))
     (hg : IntegrableOn (fun x => ∑ i : Fin 3, grad x i ^ 2) (BoxIntegral.Box.Icc I)) :
     (∫ x in BoxIntegral.Box.Icc I, u x ^ 2) ≤ sobolevH1NormSq3D u grad I := by
@@ -296,7 +296,7 @@ lemma l2_le_sobolevH1_3D
   linarith
 
 lemma grad_le_sobolevH1_3D
-    (u : Space3 → ℝ) (grad : Space3 → Space3) (I : BoxIntegral.Box (Fin 3))
+    (u : SpaceChart → ℝ) (grad : SpaceChart → SpaceChart) (I : BoxIntegral.Box (Fin 3))
     (hu : IntegrableOn (fun x => u x ^ 2) (BoxIntegral.Box.Icc I))
     (hg : IntegrableOn (fun x => ∑ i : Fin 3, grad x i ^ 2) (BoxIntegral.Box.Icc I)) :
     (∫ x in BoxIntegral.Box.Icc I, ∑ i : Fin 3, grad x i ^ 2) ≤
@@ -312,25 +312,25 @@ lemma grad_le_sobolevH1_3D
 /-! ## C. Derived 3D spatial curvature and ADM constraint operators -/
 
 /-- Spatial Riemann curvature tensor `³R^a_{bcd}` computed from a 3-metric field. -/
-noncomputable def spatialRiemannOf (h hinv : Space3 → Tensor2 3)
-    (x : Space3) (a b c d : Fin 3) : ℝ :=
+noncomputable def spatialRiemannOf (h hinv : SpaceChart → Tensor2 3)
+    (x : SpaceChart) (a b c d : Fin 3) : ℝ :=
   CoordinateCurvature.riemann h hinv x a b c d
 
 /-- Spatial Ricci tensor `³Ric_{ab}` computed from a 3-metric field. -/
-noncomputable def spatialRicciOf (h hinv : Space3 → Tensor2 3)
-    (x : Space3) (a b : Fin 3) : ℝ :=
+noncomputable def spatialRicciOf (h hinv : SpaceChart → Tensor2 3)
+    (x : SpaceChart) (a b : Fin 3) : ℝ :=
   CoordinateCurvature.ricciTensor h hinv x a b
 
 /-- Spatial scalar curvature `³R` computed from a 3-metric field. -/
-noncomputable def spatialScalarCurvOf (h hinv : Space3 → Tensor2 3)
-    (x : Space3) : ℝ :=
+noncomputable def spatialScalarCurvOf (h hinv : SpaceChart → Tensor2 3)
+    (x : SpaceChart) : ℝ :=
   CoordinateCurvature.ricciScalar h hinv x
 
 /-- ADM Hamiltonian constraint functional
 `H(h, K) = ³R(h) + (tr K)² - K_{ij} K^{ij}`, with `³R(h)` derived from the
 3-metric field `h`. -/
-noncomputable def hamiltonianConstraintOf (h hinv K : Space3 → Tensor2 3)
-    (x : Space3) : ℝ :=
+noncomputable def hamiltonianConstraintOf (h hinv K : SpaceChart → Tensor2 3)
+    (x : SpaceChart) : ℝ :=
   spatialScalarCurvOf h hinv x
     + (∑ i : Fin 3, ∑ j : Fin 3, hinv x i j * K x i j) ^ 2
     - ∑ i : Fin 3, ∑ j : Fin 3, ∑ a : Fin 3, ∑ b : Fin 3,
@@ -339,21 +339,21 @@ noncomputable def hamiltonianConstraintOf (h hinv K : Space3 → Tensor2 3)
 /-- ADM momentum constraint functional
 `M_i(h, K) = ∂_j (h^{jk} K_{ik}) - ∂_i (tr K)`, with `tr K` and `∂K` derived
 directly from the fields `hinv` and `K`. -/
-noncomputable def momentumConstraintOf (hinv K : Space3 → Tensor2 3)
-    (x : Space3) (i : Fin 3) : ℝ :=
+noncomputable def momentumConstraintOf (hinv K : SpaceChart → Tensor2 3)
+    (x : SpaceChart) (i : Fin 3) : ℝ :=
   (∑ j : Fin 3, ∑ k : Fin 3,
       CoordinateCurvature.coordDeriv j (fun y => hinv y j k * K y i k) x)
     - CoordinateCurvature.coordDeriv i (fun y => ∑ j : Fin 3, ∑ k : Fin 3, hinv y j k * K y j k) x
 
 /-- Flat Minkowski slice data with zero extrinsic curvature satisfy both
 derived ADM constraints identically. -/
-lemma minkowskiChart_spatial_constraints_zero (x : Space3) :
+lemma minkowskiChart_spatial_constraints_zero (x : SpaceChart) :
     hamiltonianConstraintOf minkowskiChart.spatialMetricField
         (fun _ => euclideanMetric3.ginv) (fun _ => 0) x = 0 ∧
       ∀ i : Fin 3, momentumConstraintOf (fun _ => euclideanMetric3.ginv)
         (fun _ => 0) x i = 0 := by
   constructor
-  · have hconst : ∀ y : Space3, minkowskiChart.spatialMetricField y = euclideanMetric3.g := by
+  · have hconst : ∀ y : SpaceChart, minkowskiChart.spatialMetricField y = euclideanMetric3.g := by
       intro y
       ext a b
       fin_cases a <;> fin_cases b <;>
@@ -370,17 +370,17 @@ lemma minkowskiChart_spatial_constraints_zero (x : Space3) :
 /-! ## D. Solving the nonlinear constraints -/
 
 /-- Squared Euclidean radius `r² = x₀² + x₁² + x₂²` in 3D space. -/
-noncomputable def norm3Sq (x : Space3) : ℝ :=
+noncomputable def norm3Sq (x : SpaceChart) : ℝ :=
   x 0 ^ 2 + x 1 ^ 2 + x 2 ^ 2
 
-lemma norm3Sq_nonneg (x : Space3) : 0 ≤ norm3Sq x := by
+lemma norm3Sq_nonneg (x : SpaceChart) : 0 ≤ norm3Sq x := by
   unfold norm3Sq
   positivity
 
-lemma norm3Sq_pos {x : Space3} (hx : norm3Sq x ≠ 0) : 0 < norm3Sq x :=
+lemma norm3Sq_pos {x : SpaceChart} (hx : norm3Sq x ≠ 0) : 0 < norm3Sq x :=
   lt_of_le_of_ne (norm3Sq_nonneg x) hx.symm
 
-lemma norm3Sq_update_hasDerivAt (x : Space3) (i : Fin 3) :
+lemma norm3Sq_update_hasDerivAt (x : SpaceChart) (i : Fin 3) :
     HasDerivAt (fun s : ℝ => norm3Sq (Function.update x i s)) (2 * x i) (x i) := by
   fin_cases i
   · change HasDerivAt (fun s : ℝ => norm3Sq (Function.update x 0 s)) (2 * x 0) (x 0)
@@ -402,7 +402,7 @@ lemma norm3Sq_update_hasDerivAt (x : Space3) (i : Fin 3) :
     rw [hfun]
     simpa using ((hasDerivAt_pow 2 (x 2)).add_const (x 0 ^ 2 + x 1 ^ 2))
 
-lemma norm3Sq_update_ne_zero {x : Space3} (hx : norm3Sq x ≠ 0) (i : Fin 3) :
+lemma norm3Sq_update_ne_zero {x : SpaceChart} (hx : norm3Sq x ≠ 0) (i : Fin 3) :
     ∃ ε > 0, ∀ s ∈ Metric.ball (x i) ε, norm3Sq (Function.update x i s) ≠ 0 := by
   have hcont : ContinuousAt (fun s : ℝ => norm3Sq (Function.update x i s)) (x i) :=
     (norm3Sq_update_hasDerivAt x i).continuousAt
@@ -415,10 +415,10 @@ lemma norm3Sq_update_ne_zero {x : Space3} (hx : norm3Sq x ≠ 0) (i : Fin 3) :
 `φ(x) = 1 + M / (2 √(x₀² + x₁² + x₂²))`.  Solving the Lichnerowicz vacuum
 constraint `Δ φ = 0` yields conformally flat time-symmetric initial data
 `h_{ij} = φ⁴ δ_{ij}` with vanishing scalar curvature. -/
-noncomputable def brillLindquistPhi (M : ℝ) (x : Space3) : ℝ :=
+noncomputable def brillLindquistPhi (M : ℝ) (x : SpaceChart) : ℝ :=
   1 + M / (2 * Real.sqrt (norm3Sq x))
 
-lemma coordDeriv_brillLindquistPhi (M : ℝ) {x : Space3} (hx : norm3Sq x ≠ 0) (i : Fin 3) :
+lemma coordDeriv_brillLindquistPhi (M : ℝ) {x : SpaceChart} (hx : norm3Sq x ≠ 0) (i : Fin 3) :
     coordDeriv (brillLindquistPhi M) i x =
       -(M / 2) * x i / Real.sqrt (norm3Sq x) ^ 3 := by
   have hrpos : 0 < norm3Sq x := norm3Sq_pos hx
@@ -455,7 +455,7 @@ lemma coordDeriv_brillLindquistPhi (M : ℝ) {x : Space3} (hx : norm3Sq x ≠ 0)
 
 /-- **Solution of the Lichnerowicz–Brill–Lindquist vacuum constraint PDE**:
 `Δ φ = 0` everywhere on `ℝ³ \ {0}`. -/
-lemma spatialLaplacian3D_brillLindquistPhi (M : ℝ) {x : Space3} (hx : norm3Sq x ≠ 0) :
+lemma spatialLaplacian3D_brillLindquistPhi (M : ℝ) {x : SpaceChart} (hx : norm3Sq x ≠ 0) :
     spatialLaplacian3D (brillLindquistPhi M) x = 0 := by
   have hrpos : 0 < norm3Sq x := norm3Sq_pos hx
   have hsqrt : Real.sqrt (norm3Sq x) ≠ 0 := (Real.sqrt_pos.mpr hrpos).ne'
@@ -504,7 +504,7 @@ lemma spatialLaplacian3D_brillLindquistPhi (M : ℝ) {x : Space3} (hx : norm3Sq 
 
 /-- Curved 3D Schwarzschild–de Sitter spatial slice `ds² = dr²/f + r² dθ² + r² sin²θ dφ²`
 in coordinates `(r, θ, φ)` (`x 0 = r`, `x 1 = θ`, `x 2 = φ`). -/
-noncomputable def sdsSpatialMetric (M Λ : ℝ) (x : Space3) : Tensor2 3 :=
+noncomputable def sdsSpatialMetric (M Λ : ℝ) (x : SpaceChart) : Tensor2 3 :=
   fun i j =>
     if i = j then
       if i = 0 then ((sdsSpacetime M Λ).metricFn (x 0))⁻¹
@@ -513,7 +513,7 @@ noncomputable def sdsSpatialMetric (M Λ : ℝ) (x : Space3) : Tensor2 3 :=
     else 0
 
 /-- Inverse of `sdsSpatialMetric`. -/
-noncomputable def sdsSpatialMetricInv (M Λ : ℝ) (x : Space3) : Tensor2 3 :=
+noncomputable def sdsSpatialMetricInv (M Λ : ℝ) (x : SpaceChart) : Tensor2 3 :=
   fun i j =>
     if i = j then
       if i = 0 then (sdsSpacetime M Λ).metricFn (x 0)
@@ -522,7 +522,7 @@ noncomputable def sdsSpatialMetricInv (M Λ : ℝ) (x : Space3) : Tensor2 3 :=
     else 0
 
 /-- Closed-form 3D Christoffel symbols of `sdsSpatialMetric`. -/
-noncomputable def sdsSpatialG (M Λ : ℝ) (x : Space3) (k i j : Fin 3) : ℝ :=
+noncomputable def sdsSpatialG (M Λ : ℝ) (x : SpaceChart) (k i j : Fin 3) : ℝ :=
   if k = 0 then
     if i = 0 ∧ j = 0 then
       -((sdsSpacetime M Λ).metricFnHalfDeriv (x 0) / (sdsSpacetime M Λ).metricFn (x 0))
@@ -538,7 +538,7 @@ noncomputable def sdsSpatialG (M Λ : ℝ) (x : Space3) (k i j : Fin 3) : ℝ :=
     else if (i = 1 ∧ j = 2) ∨ (i = 2 ∧ j = 1) then Real.cos (x 1) / Real.sin (x 1)
     else 0
 
-lemma pd_sdsSpatial_00 (M Λ : ℝ) (x : Space3) (hr : x 0 ≠ 0)
+lemma pd_sdsSpatial_00 (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
     (hf : (sdsSpacetime M Λ).metricFn (x 0) ≠ 0) :
     CoordinateCurvature.coordDeriv 0 (fun y => ((sdsSpacetime M Λ).metricFn (y 0))⁻¹) x =
       -(2 * (sdsSpacetime M Λ).metricFnHalfDeriv (x 0)) /
@@ -550,20 +550,20 @@ lemma pd_sdsSpatial_00 (M Λ : ℝ) (x : Space3) (hr : x 0 ≠ 0)
   unfold CoordinateCurvature.coordDeriv
   rw [hfun, hd.deriv]
 
-lemma christoffel_eq_sdsSpatialG (M Λ : ℝ) (x : Space3) (hr : x 0 ≠ 0)
+lemma christoffel_eq_sdsSpatialG (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
     (hf : (sdsSpacetime M Λ).metricFn (x 0) ≠ 0) (hsin : Real.sin (x 1) ≠ 0)
     (k i j : Fin 3) :
     CoordinateCurvature.christoffel (sdsSpatialMetric M Λ) (sdsSpatialMetricInv M Λ) x k i j =
       sdsSpatialG M Λ x k i j := by
   have h0_00 := pd_sdsSpatial_00 M Λ x hr hf
-  have h0_11 : CoordinateCurvature.coordDeriv 0 (fun y : Space3 => y 0 ^ 2) x = 2 * x 0 := by
+  have h0_11 : CoordinateCurvature.coordDeriv 0 (fun y : SpaceChart => y 0 ^ 2) x = 2 * x 0 := by
     have hfun : (fun s : ℝ => Function.update x 0 s 0 ^ 2) = fun s => s ^ 2 := by
       funext s; simp
     unfold CoordinateCurvature.coordDeriv; rw [hfun]
     have hd := hasDerivAt_pow 2 (x 0)
     convert hd.deriv using 1
     ring
-  have h0_22 : CoordinateCurvature.coordDeriv 0 (fun y : Space3 => y 0 ^ 2 * Real.sin (y 1) ^ 2) x =
+  have h0_22 : CoordinateCurvature.coordDeriv 0 (fun y : SpaceChart => y 0 ^ 2 * Real.sin (y 1) ^ 2) x =
       2 * x 0 * Real.sin (x 1) ^ 2 := by
     have hfun : (fun s : ℝ => Function.update x 0 s 0 ^ 2 *
         Real.sin (Function.update x 0 s 1) ^ 2) = fun s => s ^ 2 * Real.sin (x 1) ^ 2 := by
@@ -572,7 +572,7 @@ lemma christoffel_eq_sdsSpatialG (M Λ : ℝ) (x : Space3) (hr : x 0 ≠ 0)
     have hd := (hasDerivAt_pow 2 (x 0)).mul_const (Real.sin (x 1) ^ 2)
     convert hd.deriv using 1
     ring
-  have h1_22 : CoordinateCurvature.coordDeriv 1 (fun y : Space3 => y 0 ^ 2 * Real.sin (y 1) ^ 2) x =
+  have h1_22 : CoordinateCurvature.coordDeriv 1 (fun y : SpaceChart => y 0 ^ 2 * Real.sin (y 1) ^ 2) x =
       2 * x 0 ^ 2 * Real.sin (x 1) * Real.cos (x 1) := by
     have hfun : (fun s : ℝ => Function.update x 1 s 0 ^ 2 *
         Real.sin (Function.update x 1 s 1) ^ 2) = fun s => x 0 ^ 2 * Real.sin s ^ 2 := by
@@ -582,7 +582,7 @@ lemma christoffel_eq_sdsSpatialG (M Λ : ℝ) (x : Space3) (hr : x 0 ≠ 0)
       (CoordinateCurvature.hasDerivAt_sin_sq (x 1)).const_mul (x 0 ^ 2)
     convert hd.deriv using 1
     ring
-  have h2_22 : CoordinateCurvature.coordDeriv 2 (fun y : Space3 => y 0 ^ 2 * Real.sin (y 1) ^ 2) x = 0 := by
+  have h2_22 : CoordinateCurvature.coordDeriv 2 (fun y : SpaceChart => y 0 ^ 2 * Real.sin (y 1) ^ 2) x = 0 := by
     have hfun : (fun s : ℝ => Function.update x 2 s 0 ^ 2 *
         Real.sin (Function.update x 2 s 1) ^ 2) = fun _ => x 0 ^ 2 * Real.sin (x 1) ^ 2 := by
       funext s; simp
@@ -593,7 +593,7 @@ lemma christoffel_eq_sdsSpatialG (M Λ : ℝ) (x : Space3) (hr : x 0 ≠ 0)
     (try simp [CoordinateCurvature.coordDeriv]) <;>
     field_simp [hr, hf, hsin]
 
-lemma pd_christoffel_eq_pd_sdsSpatialG (M Λ : ℝ) (x : Space3) (hr : x 0 ≠ 0)
+lemma pd_christoffel_eq_pd_sdsSpatialG (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
     (hf : (sdsSpacetime M Λ).metricFn (x 0) ≠ 0) (hsin : Real.sin (x 1) ≠ 0)
     (μ k i j : Fin 3) :
     CoordinateCurvature.coordDeriv μ (fun y => CoordinateCurvature.christoffel (sdsSpatialMetric M Λ)
@@ -606,7 +606,7 @@ lemma pd_christoffel_eq_pd_sdsSpatialG (M Λ : ℝ) (x : Space3) (hr : x 0 ≠ 0
     exact h1.and h2
   have hev_th : ∀ᶠ th in 𝓝 (x 1), Real.sin th ≠ 0 :=
     Real.continuous_sin.continuousAt.eventually_ne hsin
-  have hcont : ∀ p : Fin 3, ContinuousAt (fun y : Space3 => y p) x := fun p => continuousAt_apply p x
+  have hcont : ∀ p : Fin 3, ContinuousAt (fun y : SpaceChart => y p) x := fun p => continuousAt_apply p x
   have hev_y : ∀ᶠ y in 𝓝 x,
       y 0 ≠ 0 ∧ (sdsSpacetime M Λ).metricFn (y 0) ≠ 0 ∧ Real.sin (y 1) ≠ 0 := by
     have hr' := (hcont 0).eventually hev_r
@@ -618,7 +618,7 @@ lemma pd_christoffel_eq_pd_sdsSpatialG (M Λ : ℝ) (x : Space3) (hr : x 0 ≠ 0
   exact christoffel_eq_sdsSpatialG M Λ y hy.1 hy.2.1 hy.2.2 k i j
 
 /-- Complete closed-form derivative table `∂_μ sdsSpatialG^k_{ij}` for `μ, k, i, j : Fin 3`. -/
-noncomputable def sdsSpatialDG (M Λ : ℝ) (μ : Fin 3) (x : Space3)
+noncomputable def sdsSpatialDG (M Λ : ℝ) (μ : Fin 3) (x : SpaceChart)
     (k i j : Fin 3) : ℝ :=
   if μ = 0 then
     if k = 0 then
@@ -649,7 +649,7 @@ noncomputable def sdsSpatialDG (M Λ : ℝ) (μ : Fin 3) (x : Space3)
       if (i = 1 ∧ j = 2) ∨ (i = 2 ∧ j = 1) then -(1 / Real.sin (x 1) ^ 2) else 0
   else 0
 
-lemma pd_sdsSpatialG_eq_sdsSpatialDG_0 (M Λ : ℝ) (x : Space3) (hr : x 0 ≠ 0)
+lemma pd_sdsSpatialG_eq_sdsSpatialDG_0 (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
     (hf : (sdsSpacetime M Λ).metricFn (x 0) ≠ 0) (k i j : Fin 3) :
     CoordinateCurvature.coordDeriv 0 (fun y => sdsSpatialG M Λ y k i j) x =
       sdsSpatialDG M Λ 0 x k i j := by
@@ -700,7 +700,7 @@ lemma pd_sdsSpatialG_eq_sdsSpatialDG_0 (M Λ : ℝ) (x : Space3) (hr : x 0 ≠ 0
     | exact h101
     | simp [CoordinateCurvature.coordDeriv, sdsSpatialG, sdsSpatialDG]
 
-lemma pd_sdsSpatialG_eq_sdsSpatialDG_1 (M Λ : ℝ) (x : Space3)
+lemma pd_sdsSpatialG_eq_sdsSpatialDG_1 (M Λ : ℝ) (x : SpaceChart)
     (hsin : Real.sin (x 1) ≠ 0) (k i j : Fin 3) :
     CoordinateCurvature.coordDeriv 1 (fun y => sdsSpatialG M Λ y k i j) x =
       sdsSpatialDG M Λ 1 x k i j := by
@@ -741,13 +741,13 @@ lemma pd_sdsSpatialG_eq_sdsSpatialDG_1 (M Λ : ℝ) (x : Space3)
     | exact h022 | exact h122 | exact h212
     | simp [CoordinateCurvature.coordDeriv, sdsSpatialG, sdsSpatialDG]
 
-lemma pd_sdsSpatialG_eq_sdsSpatialDG_2 (M Λ : ℝ) (x : Space3) (k i j : Fin 3) :
+lemma pd_sdsSpatialG_eq_sdsSpatialDG_2 (M Λ : ℝ) (x : SpaceChart) (k i j : Fin 3) :
     CoordinateCurvature.coordDeriv 2 (fun y => sdsSpatialG M Λ y k i j) x =
       sdsSpatialDG M Λ 2 x k i j := by
   fin_cases k <;> fin_cases i <;> fin_cases j <;>
     simp [CoordinateCurvature.coordDeriv, sdsSpatialG, sdsSpatialDG]
 
-lemma pd_sdsSpatialG_eq_sdsSpatialDG (M Λ : ℝ) (x : Space3) (hr : x 0 ≠ 0)
+lemma pd_sdsSpatialG_eq_sdsSpatialDG (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
     (hf : (sdsSpacetime M Λ).metricFn (x 0) ≠ 0) (hsin : Real.sin (x 1) ≠ 0)
     (μ k i j : Fin 3) :
     CoordinateCurvature.coordDeriv μ (fun y => sdsSpatialG M Λ y k i j) x =
@@ -761,7 +761,7 @@ lemma pd_sdsSpatialG_eq_sdsSpatialDG (M Λ : ℝ) (x : Space3) (hr : x 0 ≠ 0)
 `³R = 2 Λ` directly from `sdsSpatialMetric`.  In particular, at `Λ = 0` it gives
 nontrivial curved 3D vacuum initial data (`³R = 0` while `³Ric_{00} ≠ 0` for
 `M ≠ 0`). -/
-lemma spatialScalarCurvOf_sdsSpatial (M Λ : ℝ) (x : Space3) (hr : x 0 ≠ 0)
+lemma spatialScalarCurvOf_sdsSpatial (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
     (hf : (sdsSpacetime M Λ).metricFn (x 0) ≠ 0) (hsin : Real.sin (x 1) ≠ 0) :
     spatialScalarCurvOf (sdsSpatialMetric M Λ) (sdsSpatialMetricInv M Λ) x = 2 * Λ := by
   have hG : ∀ k i j,
@@ -830,7 +830,7 @@ lemma spatialScalarCurvOf_sdsSpatial (M Λ : ℝ) (x : Space3) (hr : x 0 ≠ 0)
 
 /-- Time-symmetric curved Schwarzschild spatial slice (`K = 0`, `Λ = 0`) solves
 the derived nonlinear Hamiltonian constraint identically. -/
-lemma schwarzschild_spatial_hamiltonian_zero (M : ℝ) (x : Space3) (hr : x 0 ≠ 0)
+lemma schwarzschild_spatial_hamiltonian_zero (M : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
     (hf : (schwarzschildSpacetime M).metricFn (x 0) ≠ 0) (hsin : Real.sin (x 1) ≠ 0) :
     hamiltonianConstraintOf (sdsSpatialMetric M 0) (sdsSpatialMetricInv M 0)
       (fun _ => 0) x = 0 := by
@@ -842,7 +842,7 @@ lemma schwarzschild_spatial_hamiltonian_zero (M : ℝ) (x : Space3) (hr : x 0 �
 /-- Flat FLRW initial data `(h_{ij} = a₀² δ_{ij}, K_{ij} = H a₀² δ_{ij})`
 satisfy the derived momentum constraint identically and yield Hamiltonian
 value `6 H²` (vanishing when `3 H² = Λ`). -/
-lemma flrw_initial_constraints (a₀ H : ℝ) (ha : a₀ ≠ 0) (x : Space3) :
+lemma flrw_initial_constraints (a₀ H : ℝ) (ha : a₀ ≠ 0) (x : SpaceChart) :
     hamiltonianConstraintOf (fun _ => a₀ ^ 2 • (1 : Tensor2 3))
         (fun _ => (a₀ ^ 2)⁻¹ • (1 : Tensor2 3))
         (fun _ => (H * a₀ ^ 2) • (1 : Tensor2 3)) x = 6 * H ^ 2 ∧

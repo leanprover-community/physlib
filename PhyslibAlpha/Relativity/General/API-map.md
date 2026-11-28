@@ -562,7 +562,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `KruskalSzekeres.horizonTensor_regular`, `KruskalSzekeres.partialChart`,
     `KruskalSzekeres.partialChartDomain`, `KruskalSzekeres.partialChart_isSmooth`,
     `KruskalSzekeres.horizonPoint_mem_partialChartDomain`
-92. PhyslibAlpha/Relativity/Modified/DiracCounting.lean — `DiracCount`, `DiracCount.dof`,
+92. PhyslibAlpha/Relativity/Modified/DiracCounting.lean — `ConstraintCount`, `ConstraintCount.dof`,
     `procaCount_dof`, `unitVectorCount_dof`, `realScalarCount_dof`, `gravitonCount_dof`,
     `stvgCount_dof`, `tevesCount_dof`, `procaDiracMatrix_det`,
     `proca_constraints_second_class`, `smearedBracket_primary_gauss`,
@@ -589,7 +589,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `Cosmology.FLRW.energyEquation`, `Cosmology.FLRW.momentumEquation`,
     `Cosmology.FLRW.pressureEquation`, `Cosmology.FLRW.PerturbedFieldEq`,
     `Cosmology.FLRW.perturbedFieldEq_gauge`
-97. PhyslibAlpha/Relativity/General/InitialData/Divergence3D.lean — `Space3`,
+97. PhyslibAlpha/Relativity/General/InitialData/Divergence3D.lean — `SpaceChart`,
     `integral_divergence_box_eq_zero`
 98. PhyslibAlpha/Relativity/General/InitialData/WaveCauchy.lean — `dAlembert`,
     `dAlembert_wave_equation`, `dAlembert_cauchy_data`, `hasDerivAt_dAlembert_t`

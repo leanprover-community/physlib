@@ -59,29 +59,29 @@ namespace GeneralRelativity
 
 /-- The energy density `u_t² + ∑ᵢ (∂ᵢu)²` on a spatial box. -/
 noncomputable def waveEnergy3DIntegrand
-    (ut : Space3 → ℝ) (grad : Space3 → Space3) (x : Space3) : ℝ :=
+    (ut : SpaceChart → ℝ) (grad : SpaceChart → SpaceChart) (x : SpaceChart) : ℝ :=
   ut x ^ 2 + ∑ i : Fin 3, grad x i ^ 2
 
 /-- The energy on a spatial box. -/
 noncomputable def waveEnergy3D
-    (ut : ℝ → Space3 → ℝ) (grad : ℝ → Space3 → Space3)
+    (ut : ℝ → SpaceChart → ℝ) (grad : ℝ → SpaceChart → SpaceChart)
     (I : Box (Fin 3)) (t : ℝ) : ℝ :=
   (1 / 2) * ∫ x in Box.Icc I, waveEnergy3DIntegrand (ut t) (grad t) x
 
 /-- The time derivative of the energy density. -/
 noncomputable def waveEnergy3DDerivIntegrand
-    (ut utt : ℝ → Space3 → ℝ) (grad gradt : ℝ → Space3 → Space3)
-    (t : ℝ) (x : Space3) : ℝ :=
+    (ut utt : ℝ → SpaceChart → ℝ) (grad gradt : ℝ → SpaceChart → SpaceChart)
+    (t : ℝ) (x : SpaceChart) : ℝ :=
   2 * ut t x * utt t x + ∑ i : Fin 3, 2 * (grad t x i * gradt t x i)
 
 lemma continuous_waveEnergy3DIntegrand_section
-    (ut : ℝ → Space3 → ℝ) (grad : ℝ → Space3 → Space3)
+    (ut : ℝ → SpaceChart → ℝ) (grad : ℝ → SpaceChart → SpaceChart)
     (hut : Continuous (Function.uncurry ut))
     (hgrad : Continuous (Function.uncurry grad)) (t : ℝ) :
-    Continuous (fun x : Space3 => waveEnergy3DIntegrand (ut t) (grad t) x) := by
-  have h1 : Continuous (fun x : Space3 => ut t x) :=
+    Continuous (fun x : SpaceChart => waveEnergy3DIntegrand (ut t) (grad t) x) := by
+  have h1 : Continuous (fun x : SpaceChart => ut t x) :=
     hut.comp (continuous_const.prodMk continuous_id)
-  have h2 : Continuous (fun x : Space3 => grad t x) :=
+  have h2 : Continuous (fun x : SpaceChart => grad t x) :=
     hgrad.comp (continuous_const.prodMk continuous_id)
   unfold waveEnergy3DIntegrand
   exact (h1.pow 2).add
@@ -89,19 +89,19 @@ lemma continuous_waveEnergy3DIntegrand_section
       ((continuous_apply i).comp h2).pow 2)
 
 lemma continuous_waveEnergy3DDerivIntegrand_section
-    (ut utt : ℝ → Space3 → ℝ) (grad gradt : ℝ → Space3 → Space3)
+    (ut utt : ℝ → SpaceChart → ℝ) (grad gradt : ℝ → SpaceChart → SpaceChart)
     (hut : Continuous (Function.uncurry ut))
     (hutt : Continuous (Function.uncurry utt))
     (hgrad : Continuous (Function.uncurry grad))
     (hgradt : Continuous (Function.uncurry gradt)) (t : ℝ) :
-    Continuous (fun x : Space3 => waveEnergy3DDerivIntegrand ut utt grad gradt t x) := by
-  have h1 : Continuous (fun x : Space3 => ut t x) :=
+    Continuous (fun x : SpaceChart => waveEnergy3DDerivIntegrand ut utt grad gradt t x) := by
+  have h1 : Continuous (fun x : SpaceChart => ut t x) :=
     hut.comp (continuous_const.prodMk continuous_id)
-  have h2 : Continuous (fun x : Space3 => utt t x) :=
+  have h2 : Continuous (fun x : SpaceChart => utt t x) :=
     hutt.comp (continuous_const.prodMk continuous_id)
-  have h3 : Continuous (fun x : Space3 => grad t x) :=
+  have h3 : Continuous (fun x : SpaceChart => grad t x) :=
     hgrad.comp (continuous_const.prodMk continuous_id)
-  have h4 : Continuous (fun x : Space3 => gradt t x) :=
+  have h4 : Continuous (fun x : SpaceChart => gradt t x) :=
     hgradt.comp (continuous_const.prodMk continuous_id)
   unfold waveEnergy3DDerivIntegrand
   refine ((continuous_const.mul h1).mul h2).add ?_
@@ -109,10 +109,10 @@ lemma continuous_waveEnergy3DDerivIntegrand_section
     continuous_const.mul (((continuous_apply i).comp h3).mul ((continuous_apply i).comp h4))
 
 lemma hasDerivAt_waveEnergy3DIntegrand
-    (ut utt : ℝ → Space3 → ℝ) (grad gradt : ℝ → Space3 → Space3)
+    (ut utt : ℝ → SpaceChart → ℝ) (grad gradt : ℝ → SpaceChart → SpaceChart)
     (hut : ∀ t x, HasDerivAt (fun s : ℝ => ut s x) (utt t x) t)
     (hgrad : ∀ t x, HasDerivAt (fun s : ℝ => grad s x) (gradt t x) t)
-    (t : ℝ) (x : Space3) :
+    (t : ℝ) (x : SpaceChart) :
     HasDerivAt (fun s : ℝ => waveEnergy3DIntegrand (ut s) (grad s) x)
       (waveEnergy3DDerivIntegrand ut utt grad gradt t x) t := by
   unfold waveEnergy3DIntegrand waveEnergy3DDerivIntegrand
@@ -139,7 +139,7 @@ lemma hasDerivAt_waveEnergy3DIntegrand
 /-- Differentiation of the 3D wave energy under the box integral.  The bound
 `M` is a global bound on the differentiated energy density. -/
 lemma hasDerivAt_waveEnergy3D
-    (ut utt : ℝ → Space3 → ℝ) (grad gradt : ℝ → Space3 → Space3)
+    (ut utt : ℝ → SpaceChart → ℝ) (grad gradt : ℝ → SpaceChart → SpaceChart)
     (I : Box (Fin 3)) (t M : ℝ)
     (hut : ∀ s x, HasDerivAt (fun s : ℝ => ut s x) (utt s x) s)
     (hgrad : ∀ s x, HasDerivAt (fun s : ℝ => grad s x) (gradt s x) s)
@@ -152,28 +152,28 @@ lemma hasDerivAt_waveEnergy3D
       ((1 / 2) * ∫ x in Box.Icc I,
         waveEnergy3DDerivIntegrand ut utt grad gradt t x) t := by
   have hF_meas : ∀ᶠ s in 𝓝 t,
-      AEStronglyMeasurable (fun x : Space3 => waveEnergy3DIntegrand (ut s) (grad s) x)
+      AEStronglyMeasurable (fun x : SpaceChart => waveEnergy3DIntegrand (ut s) (grad s) x)
         (volume.restrict (Box.Icc I)) := by
     filter_upwards with s
     exact (continuous_waveEnergy3DIntegrand_section ut grad hut_cont hgrad_cont s)
       |>.aestronglyMeasurable
   have hF_int : Integrable
-      (fun x : Space3 => waveEnergy3DIntegrand (ut t) (grad t) x)
+      (fun x : SpaceChart => waveEnergy3DIntegrand (ut t) (grad t) x)
       (volume.restrict (Box.Icc I)) :=
     (continuous_waveEnergy3DIntegrand_section ut grad hut_cont hgrad_cont t)
       |>.continuousOn.integrableOn_compact I.isCompact_Icc
   have hF'_meas : AEStronglyMeasurable
-      (fun x : Space3 => waveEnergy3DDerivIntegrand ut utt grad gradt t x)
+      (fun x : SpaceChart => waveEnergy3DDerivIntegrand ut utt grad gradt t x)
       (volume.restrict (Box.Icc I)) :=
     (continuous_waveEnergy3DDerivIntegrand_section ut utt grad gradt
       hut_cont hutt_cont hgrad_cont hgradt_cont t)
       |>.aestronglyMeasurable
   have hbound_ae : ∀ᵐ x ∂(volume.restrict (Box.Icc I)),
       ∀ s : ℝ, s ∈ (Set.univ : Set ℝ) →
-        ‖waveEnergy3DDerivIntegrand ut utt grad gradt s x‖ ≤ (fun _ : Space3 => M) x := by
+        ‖waveEnergy3DDerivIntegrand ut utt grad gradt s x‖ ≤ (fun _ : SpaceChart => M) x := by
     filter_upwards with x s hs
     exact hbound s x
-  have hbound_int : Integrable (fun _ : Space3 => M) (volume.restrict (Box.Icc I)) :=
+  have hbound_int : Integrable (fun _ : SpaceChart => M) (volume.restrict (Box.Icc I)) :=
     integrableOn_const (μ := volume) (s := Box.Icc I) (C := M)
       I.isCompact_Icc.measure_lt_top.ne (by finiteness)
   have h_diff : ∀ᵐ x ∂(volume.restrict (Box.Icc I)),
@@ -186,7 +186,7 @@ lemma hasDerivAt_waveEnergy3D
   have h := (hasDerivAt_integral_of_dominated_loc_of_deriv_le
     (F := fun s x => waveEnergy3DIntegrand (ut s) (grad s) x)
     (F' := fun s x => waveEnergy3DDerivIntegrand ut utt grad gradt s x)
-    (x₀ := t) (s := Set.univ) (bound := fun _ : Space3 => M)
+    (x₀ := t) (s := Set.univ) (bound := fun _ : SpaceChart => M)
     (by simp) hF_meas hF_int hF'_meas hbound_ae hbound_int h_diff).2
   convert h.const_mul (1 / 2 : ℝ) using 1
   funext y
@@ -199,8 +199,8 @@ differentiated energy density is twice the divergence of `F`, and `F` has zero
 normal flux on every face, then the box energy is constant in time.  The
 divergence identity is an explicit hypothesis, not a consequence claimed here. -/
 lemma waveEnergy3D_eq_initial_of_divergence
-    (ut utt : ℝ → Space3 → ℝ) (grad gradt : ℝ → Space3 → Space3)
-    (F : ℝ → Space3 → Space3) (F' : ℝ → Space3 → Space3 →L[ℝ] Space3)
+    (ut utt : ℝ → SpaceChart → ℝ) (grad gradt : ℝ → SpaceChart → SpaceChart)
+    (F : ℝ → SpaceChart → SpaceChart) (F' : ℝ → SpaceChart → SpaceChart →L[ℝ] SpaceChart)
     (I : Box (Fin 3)) (M : ℝ)
     (hut : ∀ s x, HasDerivAt (fun s : ℝ => ut s x) (utt s x) s)
     (hgrad : ∀ s x, HasDerivAt (fun s : ℝ => grad s x) (gradt s x) s)
@@ -246,24 +246,24 @@ lemma waveEnergy3D_eq_initial_of_divergence
 
 /-- The energy flux `F = u_t ∇u`. -/
 noncomputable def waveFlux3D
-    (ut : ℝ → Space3 → ℝ) (grad : ℝ → Space3 → Space3)
-    (t : ℝ) (x : Space3) : Space3 :=
+    (ut : ℝ → SpaceChart → ℝ) (grad : ℝ → SpaceChart → SpaceChart)
+    (t : ℝ) (x : SpaceChart) : SpaceChart :=
   ut t x • grad t x
 
 /-- A derivative of the energy flux, built from the spatial derivatives of
 `u_t` and `∇u`. -/
 noncomputable def waveFlux3DDeriv
-    (ut : ℝ → Space3 → ℝ) (grad : ℝ → Space3 → Space3)
-    (Dut : ℝ → Space3 → Space3 →L[ℝ] ℝ)
-    (Dgrad : ℝ → Space3 → Space3 →L[ℝ] Space3)
-    (t : ℝ) (x : Space3) : Space3 →L[ℝ] Space3 :=
+    (ut : ℝ → SpaceChart → ℝ) (grad : ℝ → SpaceChart → SpaceChart)
+    (Dut : ℝ → SpaceChart → SpaceChart →L[ℝ] ℝ)
+    (Dgrad : ℝ → SpaceChart → SpaceChart →L[ℝ] SpaceChart)
+    (t : ℝ) (x : SpaceChart) : SpaceChart →L[ℝ] SpaceChart :=
   (ut t x) • Dgrad t x + (Dut t x).smulRight (grad t x)
 
 lemma hasFDerivAt_waveFlux3D
-    (ut : ℝ → Space3 → ℝ) (grad : ℝ → Space3 → Space3)
-    (Dut : ℝ → Space3 → Space3 →L[ℝ] ℝ)
-    (Dgrad : ℝ → Space3 → Space3 →L[ℝ] Space3)
-    (t : ℝ) (x : Space3)
+    (ut : ℝ → SpaceChart → ℝ) (grad : ℝ → SpaceChart → SpaceChart)
+    (Dut : ℝ → SpaceChart → SpaceChart →L[ℝ] ℝ)
+    (Dgrad : ℝ → SpaceChart → SpaceChart →L[ℝ] SpaceChart)
+    (t : ℝ) (x : SpaceChart)
     (hut : HasFDerivAt (ut t) (Dut t x) x)
     (hgrad : HasFDerivAt (grad t) (Dgrad t x) x) :
     HasFDerivAt (waveFlux3D ut grad t) (waveFlux3DDeriv ut grad Dut Dgrad t x) x := by
@@ -273,10 +273,10 @@ lemma hasFDerivAt_waveFlux3D
 `u_tt = Δu`, mixed-partial symmetry, homogeneous Dirichlet data and the stated
 regularity, the box energy is constant in time. -/
 lemma waveEnergy3D_eq_initial_of_wave
-    (ut utt : ℝ → Space3 → ℝ) (grad gradt : ℝ → Space3 → Space3)
-    (Dut : ℝ → Space3 → Space3 →L[ℝ] ℝ)
-    (Dgrad : ℝ → Space3 → Space3 →L[ℝ] Space3)
-    (lap : ℝ → Space3 → ℝ) (I : Box (Fin 3)) (M : ℝ)
+    (ut utt : ℝ → SpaceChart → ℝ) (grad gradt : ℝ → SpaceChart → SpaceChart)
+    (Dut : ℝ → SpaceChart → SpaceChart →L[ℝ] ℝ)
+    (Dgrad : ℝ → SpaceChart → SpaceChart →L[ℝ] SpaceChart)
+    (lap : ℝ → SpaceChart → ℝ) (I : Box (Fin 3)) (M : ℝ)
     (hut : ∀ s x, HasDerivAt (fun s : ℝ => ut s x) (utt s x) s)
     (hgrad : ∀ s x, HasDerivAt (fun s : ℝ => grad s x) (gradt s x) s)
     (hut_cont : Continuous (Function.uncurry ut))
@@ -287,7 +287,7 @@ lemma waveEnergy3D_eq_initial_of_wave
     (hut_spatial : ∀ t x, HasFDerivAt (ut t) (Dut t x) x)
     (hgrad_spatial : ∀ t x, HasFDerivAt (grad t) (Dgrad t x) x)
     (hlap : ∀ t x, (∑ i : Fin 3, Dgrad t x (Pi.single i 1) i) = lap t x)
-    (hgradut : ∀ (t : ℝ) (x : Space3) (i : Fin 3),
+    (hgradut : ∀ (t : ℝ) (x : SpaceChart) (i : Fin 3),
       Dut t x (Pi.single i 1) = gradt t x i)
     (hwave : ∀ t x, utt t x = lap t x)
     (hdiv_int : ∀ s, IntegrableOn
@@ -300,9 +300,9 @@ lemma waveEnergy3D_eq_initial_of_wave
     ∀ t, waveEnergy3D ut grad I t = waveEnergy3D ut grad I 0 := by
   have hF_cont : ∀ s, ContinuousOn (waveFlux3D ut grad s) (Box.Icc I) := by
     intro s
-    have h1 : Continuous (fun x : Space3 => ut s x) :=
+    have h1 : Continuous (fun x : SpaceChart => ut s x) :=
       hut_cont.comp (continuous_const.prodMk continuous_id)
-    have h2 : Continuous (fun x : Space3 => grad s x) :=
+    have h2 : Continuous (fun x : SpaceChart => grad s x) :=
       hgrad_cont.comp (continuous_const.prodMk continuous_id)
     exact (h1.smul h2).continuousOn
   have hF_deriv : ∀ s, ∀ x ∈ Box.Ioo I,
@@ -344,7 +344,7 @@ lemma waveEnergy3D_eq_initial_of_wave
 
 /-- The 3D energy density is nonnegative. -/
 lemma waveEnergy3DIntegrand_nonneg
-    (ut : Space3 → ℝ) (grad : Space3 → Space3) (x : Space3) :
+    (ut : SpaceChart → ℝ) (grad : SpaceChart → SpaceChart) (x : SpaceChart) :
     0 ≤ waveEnergy3DIntegrand ut grad x := by
   unfold waveEnergy3DIntegrand
   exact add_nonneg (sq_nonneg (ut x))
@@ -353,7 +353,7 @@ lemma waveEnergy3DIntegrand_nonneg
 /-- **Zero box energy gives zero pointwise data.**  If the energy on a box
 vanishes, then both `u_t` and `∇u` vanish at every interior point. -/
 lemma eq_zero_of_waveEnergy3D_eq_zero
-    (ut : ℝ → Space3 → ℝ) (grad : ℝ → Space3 → Space3)
+    (ut : ℝ → SpaceChart → ℝ) (grad : ℝ → SpaceChart → SpaceChart)
     {I : Box (Fin 3)} {t : ℝ}
     (hut_cont : Continuous (Function.uncurry ut))
     (hgrad_cont : Continuous (Function.uncurry grad))
@@ -365,26 +365,26 @@ lemma eq_zero_of_waveEnergy3D_eq_zero
     unfold waveEnergy3D at h
     exact (mul_eq_zero.mp h).resolve_left (by norm_num)
   have hcont : Continuous
-      (fun x : Space3 => waveEnergy3DIntegrand (ut t) (grad t) x) :=
+      (fun x : SpaceChart => waveEnergy3DIntegrand (ut t) (grad t) x) :=
     continuous_waveEnergy3DIntegrand_section ut grad hut_cont hgrad_cont t
   have hIntble : Integrable
-      (fun x : Space3 => waveEnergy3DIntegrand (ut t) (grad t) x)
+      (fun x : SpaceChart => waveEnergy3DIntegrand (ut t) (grad t) x)
       (volume.restrict (Box.Icc I)) :=
     hcont.continuousOn.integrableOn_compact I.isCompact_Icc
-  have hnonneg : ∀ x : Space3,
+  have hnonneg : ∀ x : SpaceChart,
       0 ≤ waveEnergy3DIntegrand (ut t) (grad t) x :=
     fun x => waveEnergy3DIntegrand_nonneg (ut t) (grad t) x
-  have hAE : (fun x : Space3 => waveEnergy3DIntegrand (ut t) (grad t) x)
+  have hAE : (fun x : SpaceChart => waveEnergy3DIntegrand (ut t) (grad t) x)
       =ᵐ[volume.restrict (Box.Icc I)] 0 :=
     (integral_eq_zero_iff_of_nonneg hnonneg hIntble).mp hInt
-  have hAEIoo : (fun x : Space3 => waveEnergy3DIntegrand (ut t) (grad t) x)
+  have hAEIoo : (fun x : SpaceChart => waveEnergy3DIntegrand (ut t) (grad t) x)
       =ᵐ[volume.restrict (Box.Ioo I)] 0 :=
     ae_restrict_of_ae_restrict_of_subset I.Ioo_subset_Icc hAE
   have hIoo_open : IsOpen (Box.Ioo I) := by
     change IsOpen (Set.univ.pi fun i : Fin 3 =>
       Set.Ioo (I.lower i) (I.upper i))
     exact isOpen_set_pi Set.finite_univ fun i (_ : i ∈ Set.univ) => isOpen_Ioo
-  have hEqOn : Set.EqOn (fun x : Space3 =>
+  have hEqOn : Set.EqOn (fun x : SpaceChart =>
       waveEnergy3DIntegrand (ut t) (grad t) x) 0 (Box.Ioo I) :=
     Measure.eqOn_open_of_ae_eq hAEIoo hIoo_open hcont.continuousOn
       continuousOn_const
@@ -409,7 +409,7 @@ lemma eq_zero_of_waveEnergy3D_eq_zero
 /-- The energy at time zero vanishes when the initial velocity and the initial
 spatial gradient vanish. -/
 lemma waveEnergy3D_eq_zero_initial
-    (ut : ℝ → Space3 → ℝ) (grad : ℝ → Space3 → Space3) (I : Box (Fin 3))
+    (ut : ℝ → SpaceChart → ℝ) (grad : ℝ → SpaceChart → SpaceChart) (I : Box (Fin 3))
     (hut0 : ∀ x, ut 0 x = 0) (hgrad0 : ∀ x i, grad 0 x i = 0) :
     waveEnergy3D ut grad I 0 = 0 := by
   unfold waveEnergy3D waveEnergy3DIntegrand

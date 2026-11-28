@@ -38,7 +38,9 @@ bracket is not formalised.
 
 ## ii. Key results
 
-- `DiracCount` and `DiracCount.dof` : the counting formula.
+- `ConstraintCount` and `ConstraintCount.dof` : the canonical components and the
+  numbers of first- and second-class constraints, and Dirac's formula for the
+  resulting number of degrees of freedom.
 - `procaCount_dof`, `unitVectorCount_dof`, `realScalarCount_dof`,
   `gravitonCount_dof` : `3`, `3`, `1` and `2` degrees of freedom.
 - `stvgCount_dof`, `tevesCount_dof` : `6` for both, with the sums made explicit.
@@ -74,9 +76,10 @@ namespace GeneralRelativity
 
 /-! ## A. The counting formula -/
 
-/-- A field content counted the Dirac way: canonical fields and the numbers of
-first- and second-class constraints. -/
-structure DiracCount where
+/-- A field content counted the Dirac way: the number of canonical components and
+the numbers of first- and second-class constraints.  Its degree-of-freedom count
+is `ConstraintCount.dof`. -/
+structure ConstraintCount where
   /-- Number of canonical field components. -/
   components : ℕ
   /-- Number of first-class constraints. -/
@@ -84,40 +87,43 @@ structure DiracCount where
   /-- Number of second-class constraints. -/
   secondClass : ℕ
 
-/-- Dirac's formula `(2N - 2N1 - N2) / 2` for the number of degrees of
-freedom.  The subtraction is truncated natural-number subtraction; all the
-instances below have `2N >= 2N1 + N2`. -/
-def DiracCount.dof (D : DiracCount) : ℕ :=
+/-- Dirac's formula `(2N - 2N1 - N2) / 2` for the number of degrees of freedom,
+where `N` counts the canonical components, `N1` the first-class constraints and
+`N2` the second-class ones: every component carries a coordinate and a momentum,
+a first-class constraint removes one conjugate pair and a second-class constraint
+a single degree of freedom.  The subtraction is truncated natural-number
+subtraction; all the instances below have `2N >= 2N1 + N2`. -/
+def ConstraintCount.dof (D : ConstraintCount) : ℕ :=
   (2 * D.components - 2 * D.firstClass - D.secondClass) / 2
 
 /-! ## B. Applications -/
 
 /-- A massive Proca vector: four components, two second-class constraints. -/
-def procaCount : DiracCount := ⟨4, 0, 2⟩
+def procaCount : ConstraintCount := ⟨4, 0, 2⟩
 
 /-- The Proca field has three degrees of freedom. -/
 lemma procaCount_dof : procaCount.dof = 3 := by decide
 
 /-- A unit timelike vector: four components, one first-class constraint. -/
-def unitVectorCount : DiracCount := ⟨4, 1, 0⟩
+def unitVectorCount : ConstraintCount := ⟨4, 1, 0⟩
 
 /-- The unit timelike vector has three degrees of freedom. -/
 lemma unitVectorCount_dof : unitVectorCount.dof = 3 := by decide
 
 /-- A real scalar field: one component, no constraints. -/
-def realScalarCount : DiracCount := ⟨1, 0, 0⟩
+def realScalarCount : ConstraintCount := ⟨1, 0, 0⟩
 
 /-- The real scalar has one degree of freedom. -/
 lemma realScalarCount_dof : realScalarCount.dof = 1 := by decide
 
 /-- The two metric modes: two components, no constraints. -/
-def gravitonCount : DiracCount := ⟨2, 0, 0⟩
+def gravitonCount : ConstraintCount := ⟨2, 0, 0⟩
 
 /-- The metric contributes two degrees of freedom. -/
 lemma gravitonCount_dof : gravitonCount.dof = 2 := by decide
 
 /-- STVG: two metric modes, a Proca vector and one scalar. -/
-def stvgCount : DiracCount := ⟨7, 0, 2⟩
+def stvgCount : ConstraintCount := ⟨7, 0, 2⟩
 
 /-- STVG has six degrees of freedom. -/
 lemma stvgCount_dof : stvgCount.dof = 6 := by decide
@@ -128,7 +134,7 @@ lemma stvgCount_dof_eq_sum :
   decide
 
 /-- TeVeS: two metric modes, a unit timelike vector and one scalar. -/
-def tevesCount : DiracCount := ⟨7, 1, 0⟩
+def tevesCount : ConstraintCount := ⟨7, 1, 0⟩
 
 /-- TeVeS has six degrees of freedom. -/
 lemma tevesCount_dof : tevesCount.dof = 6 := by decide

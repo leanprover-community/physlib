@@ -226,7 +226,7 @@ noncomputable def manifold (M : ℝ) (hM : 0 < M) : ManifoldSpacetime where
   metric_smooth := exteriorChart_isSmooth M hM
 
 /-- A regular point on the exterior `t = 0` slice: `r = 2M + 1`, `θ = π/2`. -/
-noncomputable def exteriorSpatialPoint (M : ℝ) : Space3 :=
+noncomputable def exteriorSpatialPoint (M : ℝ) : SpaceChart :=
   ![2 * M + 1, Real.pi / 2, 0]
 
 lemma exteriorSpatialPoint_radial_pos {M : ℝ} (hM : 0 < M) :
@@ -250,7 +250,7 @@ lemma exteriorSpatialPoint_sin_pos {M : ℝ} :
 
 /-- The Schwarzschild spatial metric at a regular point as a bundled
 `MetricTensor 3`. -/
-noncomputable def spatialMetricTensor (M : ℝ) (x : Space3)
+noncomputable def spatialMetricTensor (M : ℝ) (x : SpaceChart)
     (hr : x 0 ≠ 0) (hf : (sdsSpacetime M 0).metricFn (x 0) ≠ 0)
     (hsin : Real.sin (x 1) ≠ 0) : MetricTensor 3 where
   g := sdsSpatialMetric M 0 x
@@ -273,7 +273,7 @@ noncomputable def spatialMetricTensor (M : ℝ) (x : Space3)
 /-- The scalar curvature of the derived Riemann tensor agrees with the pipeline
 scalar curvature when the metric and inverse are those at the point. -/
 lemma ricciScalar_spatialRiemannTensorOf
-    (M : MetricTensor 3) (h hinv : Space3 → Tensor2 3) (x : Space3)
+    (M : MetricTensor 3) (h hinv : SpaceChart → Tensor2 3) (x : SpaceChart)
     (hMinv : hinv x = M.ginv)
     (hgSymm : ∀ᶠ y in 𝓝 x, ∀ i j, h y i j = h y j i)
     (hInv : ∀ᶠ y in 𝓝 x, ∀ m j, ∑ a, hinv y a m * h y a j = if m = j then 1 else 0)
@@ -318,7 +318,7 @@ lemma ricciScalar_spatialRiemannTensorOf
             exact absurd (Finset.mem_univ l) hnot
     _ = ∑ ρ, CoordinateCurvature.riemann h hinv x ρ i ρ j := rfl
 
-lemma sdsSpatialMetric_isSymm (M Λ : ℝ) (x : Space3) :
+lemma sdsSpatialMetric_isSymm (M Λ : ℝ) (x : SpaceChart) :
     IsSymm (sdsSpatialMetric M Λ x) := by
   ext i j
   fin_cases i <;> fin_cases j <;>
@@ -335,21 +335,21 @@ lemma contDiffAt_sdsLapse_zero (M : ℝ) {r : ℝ} (hr : r ≠ 0) :
   rw [h]
   fun_prop (disch := exact hr)
 
-lemma contDiffAt_sdsLapse_zero_comp (M : ℝ) (x : Space3) (hr : x 0 ≠ 0) :
-    ContDiffAt ℝ 2 (fun y : Space3 =>
+lemma contDiffAt_sdsLapse_zero_comp (M : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0) :
+    ContDiffAt ℝ 2 (fun y : SpaceChart =>
       (sdsSpacetime M 0).metricFn (y 0)) x := by
-  have h : (fun y : Space3 => (sdsSpacetime M 0).metricFn (y 0)) =
-      fun y : Space3 => 1 - 2 * M / (y 0) := by
+  have h : (fun y : SpaceChart => (sdsSpacetime M 0).metricFn (y 0)) =
+      fun y : SpaceChart => 1 - 2 * M / (y 0) := by
     funext y
     rw [SchwarzschildDeSitter.SchwarzschildDeSitterSpacetime.metricFn_zero_lambda]
     simp [Schwarzschild.SchwarzschildSpacetime.metricFn]
   rw [h]
   fun_prop (disch := exact hr)
 
-lemma contDiffAt_sdsSpatialMetric (M : ℝ) (x : Space3)
+lemma contDiffAt_sdsSpatialMetric (M : ℝ) (x : SpaceChart)
     (hr : x 0 ≠ 0) (hf : (sdsSpacetime M 0).metricFn (x 0) ≠ 0)
     (_hsin : Real.sin (x 1) ≠ 0) :
-    ∀ i j, ContDiffAt ℝ 2 (fun y : Space3 => sdsSpatialMetric M 0 y i j) x := by
+    ∀ i j, ContDiffAt ℝ 2 (fun y : SpaceChart => sdsSpatialMetric M 0 y i j) x := by
   intro i j
   fin_cases i <;> fin_cases j <;>
     simp [sdsSpatialMetric]
@@ -358,10 +358,10 @@ lemma contDiffAt_sdsSpatialMetric (M : ℝ) (x : Space3)
     | exact ContDiffAt.inv (contDiffAt_sdsLapse_zero_comp M x hr) hf
     | fun_prop
 
-lemma contDiffAt_sdsSpatialMetricInv (M : ℝ) (x : Space3)
+lemma contDiffAt_sdsSpatialMetricInv (M : ℝ) (x : SpaceChart)
     (hr : x 0 ≠ 0) (_hf : (sdsSpacetime M 0).metricFn (x 0) ≠ 0)
     (hsin : Real.sin (x 1) ≠ 0) :
-    ∀ i j, ContDiffAt ℝ 2 (fun y : Space3 => sdsSpatialMetricInv M 0 y i j) x := by
+    ∀ i j, ContDiffAt ℝ 2 (fun y : SpaceChart => sdsSpatialMetricInv M 0 y i j) x := by
   intro i j
   fin_cases i <;> fin_cases j <;>
     simp [sdsSpatialMetricInv]
@@ -384,10 +384,10 @@ noncomputable def exteriorSpatialMetricTensor (M : ℝ) (hM : 0 < M) : MetricTen
 slice point. -/
 noncomputable def chartInitialData (M : ℝ) (hM : 0 < M) :
     ChartInitialData (exteriorChart M hM) := by
-  let x : Space3 := exteriorSpatialPoint M
-  let h : Space3 → Tensor2 3 := fun y => sdsSpatialMetric M 0 y
-  let hinv : Space3 → Tensor2 3 := fun y => sdsSpatialMetricInv M 0 y
-  let K : Space3 → Tensor2 3 := fun _ => 0
+  let x : SpaceChart := exteriorSpatialPoint M
+  let h : SpaceChart → Tensor2 3 := fun y => sdsSpatialMetric M 0 y
+  let hinv : SpaceChart → Tensor2 3 := fun y => sdsSpatialMetricInv M 0 y
+  let K : SpaceChart → Tensor2 3 := fun _ => 0
   have hr : x 0 ≠ 0 := ne_of_gt (exteriorSpatialPoint_radial_pos hM)
   have hf : (sdsSpacetime M 0).metricFn (x 0) ≠ 0 :=
     ne_of_gt (exteriorSpatialPoint_lapse_pos hM)
@@ -399,13 +399,13 @@ noncomputable def chartInitialData (M : ℝ) (hM : 0 < M) :
   have hev : ∀ᶠ y in 𝓝 x,
       y 0 ≠ 0 ∧ (sdsSpacetime M 0).metricFn (y 0) ≠ 0 ∧
         Real.sin (y 1) ≠ 0 := by
-    have h0 : ∀ᶠ y : Space3 in 𝓝 x, y 0 ≠ 0 :=
+    have h0 : ∀ᶠ y : SpaceChart in 𝓝 x, y 0 ≠ 0 :=
       (continuousAt_apply 0 x).eventually_ne hr
-    have h1 : ∀ᶠ y : Space3 in 𝓝 x,
+    have h1 : ∀ᶠ y : SpaceChart in 𝓝 x,
         (sdsSpacetime M 0).metricFn (y 0) ≠ 0 :=
       (continuousAt_apply 0 x).eventually
         ((contDiffAt_sdsLapse_zero M hr).continuousAt.eventually_ne hf)
-    have h2 : ∀ᶠ y : Space3 in 𝓝 x, Real.sin (y 1) ≠ 0 :=
+    have h2 : ∀ᶠ y : SpaceChart in 𝓝 x, Real.sin (y 1) ≠ 0 :=
       (continuousAt_apply 1 x).eventually
         (Real.continuous_sin.continuousAt.eventually_ne hsin)
     exact h0.and (h1.and h2)
@@ -415,9 +415,9 @@ noncomputable def chartInitialData (M : ℝ) (hM : 0 < M) :
     fin_cases m <;> fin_cases j <;>
       simp [h, hinv, sdsSpatialMetric, sdsSpatialMetricInv] <;>
       field_simp [hy.1, hy.2.1, hy.2.2]
-  have hC2 : ∀ i j, ContDiffAt ℝ 2 (fun y : Space3 => h y i j) x :=
+  have hC2 : ∀ i j, ContDiffAt ℝ 2 (fun y : SpaceChart => h y i j) x :=
     contDiffAt_sdsSpatialMetric M x hr hf hsin
-  have hginvD : ∀ i j, DifferentiableAt ℝ (fun y : Space3 => hinv y i j) x :=
+  have hginvD : ∀ i j, DifferentiableAt ℝ (fun y : SpaceChart => hinv y i j) x :=
     fun i j => (contDiffAt_sdsSpatialMetricInv M x hr hf hsin i j).differentiableAt (by norm_num)
   have hΓD : ∀ k i j,
       DifferentiableAt ℝ (fun y => CoordinateCurvature.christoffel h hinv y k i j) x :=

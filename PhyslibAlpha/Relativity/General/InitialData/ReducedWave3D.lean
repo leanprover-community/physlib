@@ -50,27 +50,27 @@ claimed here.
 namespace GeneralRelativity
 
 /-- The derivative along one coordinate direction at a point. -/
-noncomputable def coordDeriv (u : Space3 → ℝ) (i : Fin 3) (x : Space3) : ℝ :=
+noncomputable def coordDeriv (u : SpaceChart → ℝ) (i : Fin 3) (x : SpaceChart) : ℝ :=
   deriv (fun s : ℝ => u (Function.update x i s)) (x i)
 
 /-- The second derivative along one coordinate direction. -/
-noncomputable def coordDeriv2 (u : Space3 → ℝ) (i : Fin 3) (x : Space3) : ℝ :=
+noncomputable def coordDeriv2 (u : SpaceChart → ℝ) (i : Fin 3) (x : SpaceChart) : ℝ :=
   coordDeriv (fun y => coordDeriv u i y) i x
 
-/-- The coordinate Laplacian on `Space3`, as the sum of second coordinate
+/-- The coordinate Laplacian on `SpaceChart`, as the sum of second coordinate
 derivatives. -/
-noncomputable def spatialLaplacian3D (u : Space3 → ℝ) (x : Space3) : ℝ :=
+noncomputable def spatialLaplacian3D (u : SpaceChart → ℝ) (x : SpaceChart) : ℝ :=
   ∑ i : Fin 3, coordDeriv2 u i x
 
 /-- The d'Alembert solution embedded in three dimensions, depending only on
 `x 0`. -/
-noncomputable def planeWave3D (f g : ℝ → ℝ) (t : ℝ) (x : Space3) : ℝ :=
+noncomputable def planeWave3D (f g : ℝ → ℝ) (t : ℝ) (x : SpaceChart) : ℝ :=
   dAlembert f g t (x 0)
 
 /-- The first coordinate derivative of the embedded d'Alembert field. -/
 lemma coordDeriv_planeWave3D_zero
     (f g f' : ℝ → ℝ) (hf : ∀ y, HasDerivAt f (f' y) y)
-    (hg : Continuous g) (t : ℝ) (x : Space3) :
+    (hg : Continuous g) (t : ℝ) (x : SpaceChart) :
     coordDeriv (planeWave3D f g t) 0 x =
       (f' (x 0 + t) + f' (x 0 - t)) / 2 +
         (g (x 0 + t) - g (x 0 - t)) / 2 := by
@@ -86,7 +86,7 @@ lemma coordDeriv_planeWave3D_zero
 /-- A transverse coordinate derivative of the embedded d'Alembert field
 vanishes. -/
 lemma coordDeriv_planeWave3D_succ
-    (f g : ℝ → ℝ) (t : ℝ) (x : Space3) (j : Fin 2) :
+    (f g : ℝ → ℝ) (t : ℝ) (x : SpaceChart) (j : Fin 2) :
     coordDeriv (planeWave3D f g t) (Fin.succ j) x = 0 := by
   unfold coordDeriv planeWave3D
   have h0 : (0 : Fin 3) ≠ Fin.succ j := by
@@ -99,13 +99,13 @@ lemma coordDeriv2_planeWave3D_zero
     (hf : ∀ y, HasDerivAt f (f' y) y)
     (hf' : ∀ y, HasDerivAt f' (f'' y) y)
     (hg : ∀ y, HasDerivAt g (g' y) y)
-    (hgc : Continuous g) (t : ℝ) (x : Space3) :
+    (hgc : Continuous g) (t : ℝ) (x : SpaceChart) :
     coordDeriv2 (planeWave3D f g t) 0 x =
       (f'' (x 0 + t) + f'' (x 0 - t)) / 2 +
         (g' (x 0 + t) - g' (x 0 - t)) / 2 := by
   unfold coordDeriv2
-  have hfun : (fun y : Space3 => coordDeriv (planeWave3D f g t) 0 y) =
-      fun y : Space3 =>
+  have hfun : (fun y : SpaceChart => coordDeriv (planeWave3D f g t) 0 y) =
+      fun y : SpaceChart =>
         (f' (y 0 + t) + f' (y 0 - t)) / 2 +
           (g (y 0 + t) - g (y 0 - t)) / 2 := by
     funext y
@@ -127,11 +127,11 @@ lemma coordDeriv2_planeWave3D_zero
 /-- A transverse second coordinate derivative of the embedded d'Alembert field
 vanishes. -/
 lemma coordDeriv2_planeWave3D_succ
-    (f g : ℝ → ℝ) (t : ℝ) (x : Space3) (j : Fin 2) :
+    (f g : ℝ → ℝ) (t : ℝ) (x : SpaceChart) (j : Fin 2) :
     coordDeriv2 (planeWave3D f g t) (Fin.succ j) x = 0 := by
   unfold coordDeriv2
-  have hfun : (fun y : Space3 => coordDeriv (planeWave3D f g t) (Fin.succ j) y) =
-      fun _ : Space3 => 0 := by
+  have hfun : (fun y : SpaceChart => coordDeriv (planeWave3D f g t) (Fin.succ j) y) =
+      fun _ : SpaceChart => 0 := by
     funext y
     exact coordDeriv_planeWave3D_succ f g t y j
   rw [hfun]
@@ -144,7 +144,7 @@ lemma spatialLaplacian3D_planeWave3D
     (hf : ∀ y, HasDerivAt f (f' y) y)
     (hf' : ∀ y, HasDerivAt f' (f'' y) y)
     (hg : ∀ y, HasDerivAt g (g' y) y)
-    (hgc : Continuous g) (t : ℝ) (x : Space3) :
+    (hgc : Continuous g) (t : ℝ) (x : SpaceChart) :
     spatialLaplacian3D (planeWave3D f g t) x =
       (f'' (x 0 + t) + f'' (x 0 - t)) / 2 +
         (g' (x 0 + t) - g' (x 0 - t)) / 2 := by
@@ -165,7 +165,7 @@ lemma planeWave3D_wave_equation
     (hf : ∀ y, HasDerivAt f (f' y) y)
     (hf' : ∀ y, HasDerivAt f' (f'' y) y)
     (hg : ∀ y, HasDerivAt g (g' y) y)
-    (hgc : Continuous g) (t : ℝ) (x : Space3) :
+    (hgc : Continuous g) (t : ℝ) (x : SpaceChart) :
     deriv (fun t : ℝ => deriv (fun t : ℝ => planeWave3D f g t x) t) t =
       spatialLaplacian3D (planeWave3D f g t) x := by
   rw [spatialLaplacian3D_planeWave3D f g f' f'' g' hf hf' hg hgc t x]
@@ -180,14 +180,14 @@ lemma planeWave3D_wave_equation
   rw [(hasDerivAt_waveT f' g f'' g' hf' hg t (x 0)).deriv]
 
 /-- The embedded field has the prescribed initial position. -/
-lemma planeWave3D_zero (f g : ℝ → ℝ) (x : Space3) :
+lemma planeWave3D_zero (f g : ℝ → ℝ) (x : SpaceChart) :
     planeWave3D f g 0 x = f (x 0) := by
   simp [planeWave3D, dAlembert_zero]
 
 /-- The embedded field has the prescribed initial velocity. -/
 lemma hasDerivAt_planeWave3D_zero
     (f g f' : ℝ → ℝ) (hf : ∀ y, HasDerivAt f (f' y) y)
-    (hg : Continuous g) (x : Space3) :
+    (hg : Continuous g) (x : SpaceChart) :
     HasDerivAt (fun t : ℝ => planeWave3D f g t x) (g (x 0)) 0 := by
   unfold planeWave3D
   exact hasDerivAt_dAlembert_zero f g f' hf hg (x 0)
@@ -195,7 +195,7 @@ lemma hasDerivAt_planeWave3D_zero
 /-- The scoped 3D model satisfies both prescribed Cauchy data. -/
 lemma planeWave3D_cauchy_data
     (f g f' : ℝ → ℝ) (hf : ∀ y, HasDerivAt f (f' y) y)
-    (hg : Continuous g) (x : Space3) :
+    (hg : Continuous g) (x : SpaceChart) :
     planeWave3D f g 0 x = f (x 0) ∧
       HasDerivAt (fun t : ℝ => planeWave3D f g t x) (g (x 0)) 0 :=
   ⟨planeWave3D_zero f g x, hasDerivAt_planeWave3D_zero f g f' hf hg x⟩

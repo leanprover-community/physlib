@@ -47,11 +47,11 @@ namespace GeneralRelativity
 derivative fields and boundary conditions used by the energy method.  `M` bounds
 the differentiated energy density. -/
 structure WaveSolution3D
-    (u ut : ℝ → Space3 → ℝ) (grad : ℝ → Space3 → Space3)
-    (utt : ℝ → Space3 → ℝ) (gradt : ℝ → Space3 → Space3)
-    (Dut : ℝ → Space3 → Space3 →L[ℝ] ℝ)
-    (Dgrad : ℝ → Space3 → Space3 →L[ℝ] Space3)
-    (lap : ℝ → Space3 → ℝ) (I : Box (Fin 3)) (M : ℝ) : Prop where
+    (u ut : ℝ → SpaceChart → ℝ) (grad : ℝ → SpaceChart → SpaceChart)
+    (utt : ℝ → SpaceChart → ℝ) (gradt : ℝ → SpaceChart → SpaceChart)
+    (Dut : ℝ → SpaceChart → SpaceChart →L[ℝ] ℝ)
+    (Dgrad : ℝ → SpaceChart → SpaceChart →L[ℝ] SpaceChart)
+    (lap : ℝ → SpaceChart → ℝ) (I : Box (Fin 3)) (M : ℝ) : Prop where
   hu_t : ∀ s x, HasDerivAt (fun s : ℝ => u s x) (ut s x) s
   hu_face_upper : ∀ (s : ℝ) (i : Fin 3) (y : Fin 2 → ℝ),
     u s (i.insertNth (I.upper i) y) = 0
@@ -67,7 +67,7 @@ structure WaveSolution3D
   hut_spatial : ∀ t x, HasFDerivAt (ut t) (Dut t x) x
   hgrad_spatial : ∀ t x, HasFDerivAt (grad t) (Dgrad t x) x
   hlap : ∀ t x, (∑ i : Fin 3, Dgrad t x (Pi.single i 1) i) = lap t x
-  hgradut : ∀ (t : ℝ) (x : Space3) (i : Fin 3),
+  hgradut : ∀ (t : ℝ) (x : SpaceChart) (i : Fin 3),
     Dut t x (Pi.single i 1) = gradt t x i
   hwave : ∀ t x, utt t x = lap t x
   hdiv_int : ∀ s, IntegrableOn
@@ -80,7 +80,7 @@ structure WaveSolution3D
 
 /-- If the time derivative vanishes at every time, the field is constant in
 time at that spatial point. -/
-lemma u_eq_initial_of_ut_zero3D (u ut : ℝ → Space3 → ℝ) (x : Space3)
+lemma u_eq_initial_of_ut_zero3D (u ut : ℝ → SpaceChart → ℝ) (x : SpaceChart)
     (hu_t : ∀ s, HasDerivAt (fun s : ℝ => u s x) (ut s x) s)
     (hut0 : ∀ s, ut s x = 0) :
     ∀ t, u t x = u 0 x := by
@@ -92,7 +92,7 @@ lemma u_eq_initial_of_ut_zero3D (u ut : ℝ → Space3 → ℝ) (x : Space3)
 
 /-- A point of the closed box that is not interior lies on a face. -/
 lemma exists_coord_eq_bound_of_mem_Icc_not_mem_Ioo
-    {I : Box (Fin 3)} {x : Space3}
+    {I : Box (Fin 3)} {x : SpaceChart}
     (hx : x ∈ Box.Icc I) (hxnot : x ∉ Box.Ioo I) :
     ∃ i : Fin 3, x i = I.lower i ∨ x i = I.upper i := by
   by_contra h
@@ -112,11 +112,11 @@ lemma exists_coord_eq_bound_of_mem_Icc_not_mem_Ioo
 position, velocity and gradient, and homogeneous Dirichlet data for the field,
 vanishes on the closed box. -/
 lemma wave_zero_of_zero_data3D
-    (u ut : ℝ → Space3 → ℝ) (grad : ℝ → Space3 → Space3)
-    (utt : ℝ → Space3 → ℝ) (gradt : ℝ → Space3 → Space3)
-    (Dut : ℝ → Space3 → Space3 →L[ℝ] ℝ)
-    (Dgrad : ℝ → Space3 → Space3 →L[ℝ] Space3)
-    (lap : ℝ → Space3 → ℝ) (I : Box (Fin 3)) (M : ℝ)
+    (u ut : ℝ → SpaceChart → ℝ) (grad : ℝ → SpaceChart → SpaceChart)
+    (utt : ℝ → SpaceChart → ℝ) (gradt : ℝ → SpaceChart → SpaceChart)
+    (Dut : ℝ → SpaceChart → SpaceChart →L[ℝ] ℝ)
+    (Dgrad : ℝ → SpaceChart → SpaceChart →L[ℝ] SpaceChart)
+    (lap : ℝ → SpaceChart → ℝ) (I : Box (Fin 3)) (M : ℝ)
     (S : WaveSolution3D u ut grad utt gradt Dut Dgrad lap I M)
     (hinit : ∀ x, u 0 x = 0)
     (hvel : ∀ x, ut 0 x = 0)
@@ -158,12 +158,12 @@ initial position, velocity and spatial gradient, and the same homogeneous
 Dirichlet data, agree on the closed box.  The proof applies the zero-data theorem
 to their difference. -/
 lemma wave_unique3D_of_same_data
-    (u v : ℝ → Space3 → ℝ) (ut vt : ℝ → Space3 → ℝ)
-    (grad vgrad : ℝ → Space3 → Space3)
-    (utt vtt : ℝ → Space3 → ℝ) (gradt vgradt : ℝ → Space3 → Space3)
-    (Dut vDut : ℝ → Space3 → Space3 →L[ℝ] ℝ)
-    (Dgrad vDgrad : ℝ → Space3 → Space3 →L[ℝ] Space3)
-    (lap vlap : ℝ → Space3 → ℝ) (I : Box (Fin 3)) (M N Mw : ℝ)
+    (u v : ℝ → SpaceChart → ℝ) (ut vt : ℝ → SpaceChart → ℝ)
+    (grad vgrad : ℝ → SpaceChart → SpaceChart)
+    (utt vtt : ℝ → SpaceChart → ℝ) (gradt vgradt : ℝ → SpaceChart → SpaceChart)
+    (Dut vDut : ℝ → SpaceChart → SpaceChart →L[ℝ] ℝ)
+    (Dgrad vDgrad : ℝ → SpaceChart → SpaceChart →L[ℝ] SpaceChart)
+    (lap vlap : ℝ → SpaceChart → ℝ) (I : Box (Fin 3)) (M N Mw : ℝ)
     (S : WaveSolution3D u ut grad utt gradt Dut Dgrad lap I M)
     (T : WaveSolution3D v vt vgrad vtt vgradt vDut vDgrad vlap I N)
     (hboundw : ∀ s x,
@@ -184,14 +184,14 @@ lemma wave_unique3D_of_same_data
     (hvel : ∀ x, ut 0 x = vt 0 x)
     (hgrad0 : ∀ x i, grad 0 x i = vgrad 0 x i) :
     ∀ t x, x ∈ Box.Icc I → u t x = v t x := by
-  let w : ℝ → Space3 → ℝ := fun s x => u s x - v s x
-  let wt : ℝ → Space3 → ℝ := fun s x => ut s x - vt s x
-  let wgrad : ℝ → Space3 → Space3 := fun s x => grad s x - vgrad s x
-  let wtt : ℝ → Space3 → ℝ := fun s x => utt s x - vtt s x
-  let wgradt : ℝ → Space3 → Space3 := fun s x => gradt s x - vgradt s x
-  let wDut : ℝ → Space3 → Space3 →L[ℝ] ℝ := fun s x => Dut s x - vDut s x
-  let wDgrad : ℝ → Space3 → Space3 →L[ℝ] Space3 := fun s x => Dgrad s x - vDgrad s x
-  let wlap : ℝ → Space3 → ℝ := fun s x => lap s x - vlap s x
+  let w : ℝ → SpaceChart → ℝ := fun s x => u s x - v s x
+  let wt : ℝ → SpaceChart → ℝ := fun s x => ut s x - vt s x
+  let wgrad : ℝ → SpaceChart → SpaceChart := fun s x => grad s x - vgrad s x
+  let wtt : ℝ → SpaceChart → ℝ := fun s x => utt s x - vtt s x
+  let wgradt : ℝ → SpaceChart → SpaceChart := fun s x => gradt s x - vgradt s x
+  let wDut : ℝ → SpaceChart → SpaceChart →L[ℝ] ℝ := fun s x => Dut s x - vDut s x
+  let wDgrad : ℝ → SpaceChart → SpaceChart →L[ℝ] SpaceChart := fun s x => Dgrad s x - vDgrad s x
+  let wlap : ℝ → SpaceChart → ℝ := fun s x => lap s x - vlap s x
 
   have hW : WaveSolution3D w wt wgrad wtt wgradt wDut wDgrad wlap I Mw := by
     refine {
