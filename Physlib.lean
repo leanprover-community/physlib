@@ -449,6 +449,7 @@ public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.PositionStates
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.SchwartzSubmodule
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.SobolevSubmodule
 public import Physlib.QuantumMechanics.HilbertSpaces.TensorProducts.CompleteTensorProduct
+public import Physlib.QuantumMechanics.HilbertSpaces.VectorState
 public import Physlib.QuantumMechanics.Hydrogen.Basic
 public import Physlib.QuantumMechanics.Hydrogen.LaplaceRungeLenzVector
 public import Physlib.QuantumMechanics.Hydrogen.Rydberg
