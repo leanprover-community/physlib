@@ -130,6 +130,16 @@ instance automorphismGroup : Group (Reversible P P) where
 
 /-! ### A.3. As channels -/
 
+/-- Two inverse channels define a reversible transformation. -/
+def ofChannels (f : Channel P Q) (g : Channel Q P)
+    (hgf : Function.LeftInverse g f) (hfg : Function.RightInverse g f) : Reversible P Q where
+  toLinearEquiv := { f.toLinearMap with invFun := g, left_inv := hgf, right_inv := hfg }
+  map_le_map_iff' {x y} := by
+    change f x ≤ f y ↔ x ≤ y
+    exact ⟨fun h ↦ by simpa only [hgf x, hgf y] using OrderHomClass.mono g h,
+      fun h ↦ OrderHomClass.mono f h⟩
+  map_one' := map_one f
+
 /-- A reversible transformation regarded as a channel. -/
 def toChannel (e : Reversible P Q) : Channel P Q :=
   .ofLinearMap e.toLinearEquiv.toLinearMap
