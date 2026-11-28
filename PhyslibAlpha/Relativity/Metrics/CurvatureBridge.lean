@@ -5,6 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
+public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
 public import PhyslibAlpha.Relativity.Metrics.Einstein
 public import PhyslibAlpha.Relativity.Tensors.EinsteinTensor
 

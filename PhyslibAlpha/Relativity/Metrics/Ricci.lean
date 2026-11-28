@@ -17,14 +17,15 @@ Ricci tensor and scalar curvature obtained by contracting the coordinate Riemann
 
 The Ricci tensor `Ric_{σν} = ∑ ρ, R^ρ_{σρν}` contracts the coordinate Riemann tensor, and the
 scalar curvature `R = ∑ σ ν, g^{σν} Ric_{σν}` contracts the Ricci tensor with the inverse metric.
-The chart-level API is `CoordinateMetric.ricciTensor` and `CoordinateMetric.ricciScalar`.
+The chart-level wrappers `CoordinateMetric.ricciTensor` and `CoordinateMetric.ricciScalar` live in
+`Metrics/CoordinateMetric.lean`.
 
 ## ii. Key results
 
 - `CoordinateCurvature.ricciTensor` : coordinate Ricci tensor.
 - `CoordinateCurvature.ricciScalar` : coordinate scalar curvature.
-- `CoordinateMetric.ricciTensor`, `CoordinateMetric.ricciScalar` : Ricci curvature of a
-  `CoordinateMetric`.
+- `CoordinateCurvature.ricciTensor_const`, `CoordinateCurvature.ricciScalar_const` : vanishing
+  Ricci curvature for a constant metric.
 
 ## iii. Table of contents
 
@@ -86,25 +87,5 @@ lemma ricciScalar_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : 
 
 end CoordinateCurvature
 
-/-- Ricci tensor of a `CoordinateMetric`. -/
-noncomputable def CoordinateMetric.ricciTensor {n : ℕ} (C : CoordinateMetric n)
-    (x : Fin n → ℝ) (σ ν : Fin n) : ℝ :=
-  CoordinateCurvature.ricciTensor C.g C.ginv x σ ν
-
-/-- The Ricci tensor of a coordinate metric is the Ricci tensor of its metric field and its
-inverse. -/
-@[simp] lemma CoordinateMetric.ricciTensor_apply {n : ℕ} (C : CoordinateMetric n)
-    (x : Fin n → ℝ) (σ ν : Fin n) :
-    C.ricciTensor x σ ν = CoordinateCurvature.ricciTensor C.g C.ginv x σ ν := rfl
-
-/-- Scalar curvature of a `CoordinateMetric`. -/
-noncomputable def CoordinateMetric.ricciScalar {n : ℕ} (C : CoordinateMetric n)
-    (x : Fin n → ℝ) : ℝ :=
-  CoordinateCurvature.ricciScalar C.g C.ginv x
-
-/-- The Ricci scalar of a coordinate metric is the Ricci scalar of its metric field and its
-inverse. -/
-@[simp] lemma CoordinateMetric.ricciScalar_apply {n : ℕ} (C : CoordinateMetric n)
-    (x : Fin n → ℝ) : C.ricciScalar x = CoordinateCurvature.ricciScalar C.g C.ginv x := rfl
 
 end GeneralRelativity

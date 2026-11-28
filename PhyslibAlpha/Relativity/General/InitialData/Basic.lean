@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import PhyslibAlpha.Relativity.Metrics.Basic
-public import PhyslibAlpha.Relativity.Metrics.CovariantDerivTensor2
+public import PhyslibAlpha.Relativity.General.InitialData.CovariantDerivTensor2
 public import PhyslibAlpha.Relativity.Metrics.RicciScalar
 import Mathlib.Tactic.Linarith
 

@@ -197,13 +197,15 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
 11. PhyslibAlpha/Relativity/Metrics/CoordinateMetric.lean — `CoordinateMetric`,
     `CoordinateMetric.metricTensor`, `CoordinateMetric.christoffel`, `CoordinateMetric.riemann`,
     `CoordinateMetric.ricciTensor`, `CoordinateMetric.ricciScalar`,
-    `CoordinateMetric.einsteinTensor`
+    `CoordinateMetric.einsteinTensor`, `CoordinateMetric.geodesicAccel`,
+    `CoordinateMetric.IsGeodesic`, `CoordinateMetric.isGeodesic_iff`
 12. PhyslibAlpha/Relativity/Metrics/RiemannFromData.lean — `riemannFromData`,
     `riemannFromData_congr`
 13. PhyslibAlpha/Relativity/Metrics/Christoffel.lean — namespace `CoordinateCurvature`:
-    `christoffel`, `christoffel_diag`, and `CoordinateMetric.christoffel`. The companion Riemann,
-    Ricci, and Einstein modules supply the remaining coordinate curvature operators and the
-    constant-metric vanishing lemmas.
+    `christoffel`, `christoffel_diag`, `christoffel_const`. The companion Riemann, Ricci, and
+    Einstein modules supply the remaining component-level curvature operators and the
+    constant-metric vanishing lemmas; the chart-level `CoordinateMetric` operators are in
+    `CoordinateMetric.lean`.
 14. PhyslibAlpha/Relativity/Tensors/EinsteinTensor.lean — `einstein`, `einstein_symm`,
     `einstein_flat`, `metricTrace_einstein`, `ricciScalar_eq_zero_of_einstein_eq_zero`,
     `vacuum_iff_ricci_flat`, `einsteinSpace_iff`
@@ -495,11 +497,11 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
 81. PhyslibAlpha/Relativity/Tensors/PerfectFluidStressEnergy.lean — `perfectFluidStressEnergy`
 82. PhyslibAlpha/Relativity/General/FrameKretschmann.lean —
     `RiemannTensor.frameSumOfSquares`
-83. PhyslibAlpha/Relativity/Metrics/CovariantDerivTensor2.lean —
+83. PhyslibAlpha/Relativity/General/InitialData/CovariantDerivTensor2.lean —
     `InitialData.covariantDerivTensor2`
 84. PhyslibAlpha/Cosmology/FLRW/Curvature.lean — `FLRWSpacetime.ricciTensor`,
     `FLRWSpacetime.ricciScalar`, `FLRWSpacetime.einsteinTensor`
-85. PhyslibAlpha/Relativity/Metrics/CoordDeriv.lean — `coordDeriv_eq_spaceTime_deriv`
+85. PhyslibAlpha/Relativity/Metrics/SpaceTimeDerivBridge.lean — `coordDeriv_eq_spaceTime_deriv`
 86. PhyslibAlpha/Relativity/Modified/EinsteinCartan/Contorsion.lean —
     `EinsteinCartanData.MetricCompatible`, `EinsteinCartanData.connection_unique`,
     `MetricCompatible`, `leviCivitaOfDeriv`, `leviCivitaOfDeriv_compatible`, `contorsion`,

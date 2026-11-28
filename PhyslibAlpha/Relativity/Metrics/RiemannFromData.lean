@@ -5,7 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
-public import PhyslibAlpha.Relativity.Metrics.CoordDeriv
+public import PhyslibAlpha.Relativity.Metrics.SpaceTimeDerivBridge
 public import PhyslibAlpha.Relativity.Tensors.Tensor2
 
 /-!

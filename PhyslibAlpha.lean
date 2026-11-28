@@ -821,6 +821,7 @@ public import PhyslibAlpha.Relativity.General.GeodesicSystem
 public import PhyslibAlpha.Relativity.General.GravitationalConstant
 public import PhyslibAlpha.Relativity.General.InitialData.AnisotropicSlice
 public import PhyslibAlpha.Relativity.General.InitialData.Basic
+public import PhyslibAlpha.Relativity.General.InitialData.CovariantDerivTensor2
 public import PhyslibAlpha.Relativity.General.InitialData.FlatSlice
 public import PhyslibAlpha.Relativity.General.Kerr.Basic
 public import PhyslibAlpha.Relativity.General.Kerr.Christoffel
@@ -857,9 +858,8 @@ public import PhyslibAlpha.Relativity.LorentzMix
 public import PhyslibAlpha.Relativity.Metrics.Basic
 public import PhyslibAlpha.Relativity.Metrics.Christoffel
 public import PhyslibAlpha.Relativity.Metrics.ConformalMetric
-public import PhyslibAlpha.Relativity.Metrics.CoordDeriv
+public import PhyslibAlpha.Relativity.Metrics.SpaceTimeDerivBridge
 public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
-public import PhyslibAlpha.Relativity.Metrics.CovariantDerivTensor2
 public import PhyslibAlpha.Relativity.Metrics.CurvatureBridge
 public import PhyslibAlpha.Relativity.Metrics.CurvatureDerivatives
 public import PhyslibAlpha.Relativity.Metrics.Einstein

@@ -10,7 +10,7 @@ public import PhyslibAlpha.Mathematics.Calculus.CoordDeriv
 
 /-!
 
-# Coordinate derivatives and spacetime derivatives
+# Coordinate and spacetime derivative bridge
 
 Bridge between coordinate partial derivatives on `Fin 4 → ℝ` and `SpaceTime.deriv`.
 

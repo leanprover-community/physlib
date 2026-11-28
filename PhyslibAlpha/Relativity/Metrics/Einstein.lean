@@ -19,12 +19,12 @@ metrics.
 The Einstein tensor `G_{ij} = Ric_{ij} - (1/2) R g_{ij}` combines the coordinate Ricci tensor and
 scalar curvature. When every metric component is constant, all coordinate partial derivatives
 vanish, so the Christoffel symbols, Riemann tensor, Ricci tensor, scalar curvature, and Einstein
-tensor vanish identically. The chart-level API is `CoordinateMetric.einsteinTensor`.
+tensor vanish identically. The chart-level wrapper `CoordinateMetric.einsteinTensor` lives in
+`Metrics/CoordinateMetric.lean`.
 
 ## ii. Key results
 
 - `CoordinateCurvature.einsteinTensor` : coordinate Einstein tensor.
-- `CoordinateMetric.einsteinTensor` : Einstein tensor of a `CoordinateMetric`.
 - `CoordinateCurvature.christoffel_const`, `CoordinateCurvature.riemann_const`,
   `CoordinateCurvature.ricciTensor_const`, `CoordinateCurvature.ricciScalar_const`,
   `CoordinateCurvature.einsteinTensor_const` : vanishing connection and curvature for any constant
@@ -85,15 +85,5 @@ lemma einsteinTensor_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G
 
 end CoordinateCurvature
 
-/-- Einstein tensor of a `CoordinateMetric`. -/
-noncomputable def CoordinateMetric.einsteinTensor {n : ℕ} (C : CoordinateMetric n)
-    (x : Fin n → ℝ) (i j : Fin n) : ℝ :=
-  CoordinateCurvature.einsteinTensor C.g C.ginv x i j
-
-/-- The Einstein tensor of a coordinate metric is the Einstein tensor of its metric field and its
-inverse. -/
-@[simp] lemma CoordinateMetric.einsteinTensor_apply {n : ℕ} (C : CoordinateMetric n)
-    (x : Fin n → ℝ) (i j : Fin n) :
-    C.einsteinTensor x i j = CoordinateCurvature.einsteinTensor C.g C.ginv x i j := rfl
 
 end GeneralRelativity
