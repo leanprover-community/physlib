@@ -65,15 +65,20 @@ noncomputable def conservedQuantities :
 in involution. -/
 lemma poissonBracket_conservedQuantities (i j : Fin 3) (p : EuclideanSpace ℝ (Fin 3))
     {q : EuclideanSpace ℝ (Fin 3)} (hq : q ≠ 0) :
-    poissonBracket (S.conservedQuantities i) (S.conservedQuantities j) p q = 0 := by
+    HamiltonianSystem.poissonBracketInHilbertCoords
+      (S.conservedQuantities i) (S.conservedQuantities j) p q = 0 := by
   have hSqH := S.poissonBracket_angularMomentumSq_hamiltonian p hq
   have hZH := S.poissonBracket_angularMomentumZ_hamiltonian p hq
   have hSqZ := poissonBracket_angularMomentumSq_angularMomentumZ p q
-  have hHSq : poissonBracket S.hamiltonian angularMomentumSq p q = 0 := by
+  have hHSq :
+      HamiltonianSystem.poissonBracketInHilbertCoords S.hamiltonian angularMomentumSq p q = 0 := by
     rw [poissonBracket_antisymm, hSqH, neg_zero]
-  have hHZ : poissonBracket S.hamiltonian angularMomentumZ p q = 0 := by
+  have hHZ :
+      HamiltonianSystem.poissonBracketInHilbertCoords S.hamiltonian angularMomentumZ p q = 0 := by
     rw [poissonBracket_antisymm, hZH, neg_zero]
-  have hZSq : poissonBracket angularMomentumZ angularMomentumSq p q = 0 := by
+  have hZSq :
+      HamiltonianSystem.poissonBracketInHilbertCoords
+        angularMomentumZ angularMomentumSq p q = 0 := by
     rw [poissonBracket_antisymm, hSqZ, neg_zero]
   fin_cases i <;> fin_cases j <;> simp [conservedQuantities, poissonBracket_self, *]
 
