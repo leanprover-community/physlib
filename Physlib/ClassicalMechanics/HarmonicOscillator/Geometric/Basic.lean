@@ -7,6 +7,8 @@ module
 
 public import Physlib.SpaceAndTime.Space.Basic
 public import Physlib.Meta.TODO.Basic
+import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
+import Mathlib.Geometry.Manifold.MFDeriv.Tangent
 
 /-!
 # Configuration space of the harmonic oscillator
@@ -38,6 +40,8 @@ tangent-coordinate infrastructure is used by later geometric constructions on th
   manifold modeled on `EuclideanSpace ℝ (Fin 1)`.
 - `tangentCoord` : the chart-induced continuous linear equivalence from the tangent space at a
   configuration to `EuclideanSpace ℝ (Fin 1)`.
+- `contMDiff_tangentCoord` : position and velocity coordinates are jointly smooth on the
+  tangent bundle.
 - `instNormedAddCommGroupTangent` and `instNormedSpaceTangent` : the normed real vector-space
   structure on tangent spaces, supplied through the global coordinate model.
 - `instFiniteDimensionalTangent` : finite-dimensionality of each tangent space, transported
@@ -245,6 +249,25 @@ def tangentCoord (q : ConfigurationSpace) :
   invFun v := v
   map_add' := by simp
   map_smul' := by simp
+
+open scoped ContDiff in
+/-- The global position and velocity coordinates are jointly smooth on the tangent bundle. -/
+lemma contMDiff_tangentCoord :
+    ContMDiff (𝓡 1).tangent 𝓘(ℝ, EuclideanSpace ℝ (Fin 1) × EuclideanSpace ℝ (Fin 1)) ∞
+      (fun p : TangentBundle (𝓡 1) ConfigurationSpace =>
+        (p.proj.val, tangentCoord p.proj p.snd)) := by
+  have hmap : ContMDiff (𝓡 1).tangent (𝓡 1).tangent ∞
+      (tangentMap (𝓡 1) (𝓡 1) ConfigurationSpace.valDiffeomorph) :=
+    ConfigurationSpace.valDiffeomorph.contMDiff_toFun.contMDiff_tangentMap (by simp)
+  have hprod := contMDiff_tangentBundleModelSpaceHomeomorph.comp hmap
+  rw [← modelWithCornersSelf_prod] at hprod
+  apply hprod.congr
+  intro p
+  apply Prod.ext
+  · rfl
+  change p.2 = mfderiv (𝓡 1) (𝓡 1) (chartAt (EuclideanSpace ℝ (Fin 1)) p.1) p.1 p.2
+  rw [mfderiv_chartAt_eq_tangentCoordChange (mem_chart_source _ _)]
+  exact (tangentCoordChange_self (I := 𝓡 1) (mem_extChartAt_source p.1)).symm
 
 /-- Each tangent space is finite-dimensional because it is linearly equivalent to
 `EuclideanSpace ℝ (Fin 1)` through `tangentCoord`. -/

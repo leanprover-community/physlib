@@ -9,7 +9,10 @@ that manifold, and the kinetic energy comes from the mass metric, the mass-scale
 product on tangent vectors. Treated geometrically rather than in coordinates, the configuration
 space carries a global chart onto the Euclidean model and a map into physical space; smoothness of a
 trajectory reduces to smoothness of its coordinate curve, the velocity is the derivative of that
-curve, and the geometric kinetic energy is the familiar mass-scaled expression.
+curve, and the geometric kinetic energy agrees with the kinetic energy of the coordinate curve.
+The spring potential energy depends on the distance from equilibrium and agrees with the
+quadratic potential in the global coordinate. Subtracting it from the kinetic energy gives a
+smooth Lagrangian on the tangent bundle.
 
 ## Content (Alpha)
 
@@ -28,7 +31,7 @@ normed real vector space, with a chart-induced continuous linear equivalence to 
 coordinate model. [4] The configuration space maps to the actual position of the particle in
 physical space {2}, by reading off the underlying coordinate. [5]
 
-### Trajectories and kinetic energy
+### Trajectories and energy
 
 A trajectory of the oscillator is a curve from time {3} into the configuration space, with its
 coordinate curve and its curve of positions in physical space. [6] A trajectory is smooth exactly
@@ -39,6 +42,21 @@ The configuration space carries the oscillator's mass Riemannian metric, the mas
 inner product in global tangent coordinates, which is positive definite and computable in
 coordinates. [8] The geometric kinetic energy of a tangent vector v is ½ g(v, v) for that metric g,
 and recovers the standard mass-scaled coordinate expression ½ m ‖v‖². [9]
+Along a trajectory γ, evaluating this metric energy at the velocity at time t gives the kinetic
+energy of the coordinate curve `γ.coord` at t. [10]
+
+For a configuration q, let r be the distance from its physical position `q.toSpace` to the
+equilibrium position at the origin. The spring potential energy is ½ k r², where k is the spring
+constant. Since r equals the norm of the global coordinate `q.val`, this energy agrees with the
+coordinate potential energy at `q.val`. [11]
+
+### The Lagrangian
+
+The map taking a tangent vector at q to its position and velocity coordinates is jointly smooth
+on the tangent bundle. [12] At each such vector the geometric Lagrangian is kinetic energy minus
+spring potential energy. In these coordinates it agrees with the oscillator's coordinate
+Lagrangian at every time. Composing the smooth coordinate Lagrangian at time zero with the
+position and velocity map gives smoothness of the geometric Lagrangian on the tangent bundle. [13]
 
 ## Lean References
 
@@ -61,6 +79,12 @@ and recovers the standard mass-scaled coordinate expression ½ m ‖v‖². [9]
    `massRiemannianMetric_pos`, `massRiemannianMetric_inner_apply`
 9. Physlib/ClassicalMechanics/HarmonicOscillator/Geometric/KineticEnergy.lean — `geometricKineticEnergy`,
    `geometricKineticEnergy_eq`, `geometricKineticEnergy_massMetric_eq`
+10. Physlib/ClassicalMechanics/HarmonicOscillator/Geometric/KineticEnergy.lean — `geometricKineticEnergy_eq_kineticEnergy`
+11. Physlib/ClassicalMechanics/HarmonicOscillator/Geometric/PotentialEnergy.lean — `geometricPotentialEnergy`,
+    `geometricPotentialEnergy_eq_potentialEnergy`
+12. Physlib/ClassicalMechanics/HarmonicOscillator/Geometric/Basic.lean — `contMDiff_tangentCoord`
+13. Physlib/ClassicalMechanics/HarmonicOscillator/Geometric/Lagrangian.lean — `geometricLagrangian`,
+    `geometricLagrangian_eq_lagrangian`, `contMDiff_geometricLagrangian`
 
 ## References
 
