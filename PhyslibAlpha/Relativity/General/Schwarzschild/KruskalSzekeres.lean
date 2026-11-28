@@ -227,7 +227,6 @@ lemma deriv_kruskalF (M r : ℝ) (hM : 0 < M) :
 /-- The Kruskal radial map sends `(0, ∞)` onto `(-1, ∞)`. -/
 lemma kruskalF_exists_pos (M : ℝ) (hM : 0 < M) (w : ℝ) (hw : -1 < w) :
     ∃ r : ℝ, 0 < r ∧ kruskalF M r = w := by
-  -- choose r1 with f(r1) < w
   let y1 : ℝ := if w < 0 then (w + 1) / 2 else (1 : ℝ) / 2
   let r1 : ℝ := 2 * M * y1
   have hy1pos : 0 < y1 := by
@@ -266,7 +265,6 @@ lemma kruskalF_exists_pos (M : ℝ) (hM : 0 < M) (w : ℝ) (hw : -1 < w) :
         rw [hval]
         linarith [le_of_not_gt hw0]
     exact lt_of_le_of_lt hle hy1ltw
-  -- choose r2 with f(r2) > w
   let y2 : ℝ := w + 2
   let r2 : ℝ := 2 * M * y2
   have hy2gt1 : 1 < y2 := by
