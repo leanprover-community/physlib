@@ -102,7 +102,9 @@ factor a(t) and spatial curvature k [50], evaluating all FLRW Christoffel symbol
 components, scalar curvature, and Einstein tensor from the coordinate metric [51][52], proving
 equivalence with the Friedmann equations for a comoving perfect fluid with arbitrary speed of
 light c and gravitational constant G [53][80], and bridging directly to Physlib's `Cosmology.FLRW`
-[53].
+[53]. On that background the scalar sector of a linear perturbation is fixed by two Bardeen
+potentials, which are proved gauge invariant, and the anisotropic, energy, momentum and pressure
+sectors of the perturbed field equations are stated and shown gauge invariant [96].
 
 ### Scalar-tensor, higher-curvature, and screening gravity theories
 
@@ -573,6 +575,14 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `Bianchi.riemann_lower_pair_symm`, `Bianchi.second_bianchi`,
     `Bianchi.contracted_bianchi`, `Bianchi.covDiv_einstein_eq_zero`,
     `Bianchi.chartSpacetime_second_bianchi`, `Bianchi.chartSpacetime_covDiv_einstein_eq_zero`
+96. PhyslibAlpha/Cosmology/FLRW/Perturbation.lean — `Cosmology.FLRW.ScalarPerturbation`,
+    `Cosmology.FLRW.perturbationMetric`, `Cosmology.FLRW.bardeenPhi`,
+    `Cosmology.FLRW.bardeenPsi`, `Cosmology.FLRW.bardeenPhi_invariant`,
+    `Cosmology.FLRW.bardeenPsi_invariant`, `Cosmology.FLRW.anisotropicSource`,
+    `Cosmology.FLRW.energyEquation`, `Cosmology.FLRW.momentumEquation`,
+    `Cosmology.FLRW.pressureEquation`, `Cosmology.FLRW.PerturbedFieldEq`,
+    `Cosmology.FLRW.perturbedFieldEq_gauge`
+
 ## References
 
 1. Units API map — Physlib/Units/API-map.md

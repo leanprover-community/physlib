@@ -268,6 +268,7 @@ public import PhyslibAlpha.Cosmology.FLRW.Basic
 public import PhyslibAlpha.Cosmology.FLRW.Christoffel
 public import PhyslibAlpha.Cosmology.FLRW.Curvature
 public import PhyslibAlpha.Cosmology.FLRW.FriedmannEquations
+public import PhyslibAlpha.Cosmology.FLRW.Perturbation
 public import PhyslibAlpha.Electromagnetism.BoxChargeConservation
 public import PhyslibAlpha.Electromagnetism.TemperedDistributional.WireJunction
 public import PhyslibAlpha.Mathematics.AlgebraGeneration
