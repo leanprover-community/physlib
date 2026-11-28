@@ -319,6 +319,8 @@ public import Physlib.ProbabilisticTheory.Channel.Norm
 public import Physlib.ProbabilisticTheory.Channel.Reversible
 public import Physlib.ProbabilisticTheory.Classical.Basic
 public import Physlib.ProbabilisticTheory.Classical.Dirac
+public import Physlib.ProbabilisticTheory.Classical.Effect
+public import Physlib.ProbabilisticTheory.Classical.Measurable
 public import Physlib.ProbabilisticTheory.Effect.Basic
 public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Physlib.ProbabilisticTheory.Effect.Convex

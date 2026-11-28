@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.CStarAlgebra.lpSpace
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Range
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 
 /-!
 # The pointwise star order on bounded functions
@@ -19,17 +21,20 @@ Bounded complex functions are ordered pointwise, and this order is their star or
 The bounded complex functions `lp (fun _ : X ↦ ℂ) ∞` on a type `X` form a commutative
 C⋆-algebra. Ordering them pointwise makes them a star-ordered ring: a bounded function is
 positive exactly when it is the square of the square root of its real part. Every closed
-star subalgebra is then a commutative C⋆-algebra with the same star order.
+star subalgebra is then a commutative C⋆-algebra with the same star order. On a measurable space
+the bounded measurable functions form such a closed star subalgebra.
 
 ## ii. Key results
 
 - `lp.instStarOrderedRing` : the pointwise order on bounded complex functions is the star order.
 - `lp.instStarOrderedSubalgebra` : a closed star subalgebra carries the pointwise star order.
+- `lp.measurableSubalgebra` : the closed star subalgebra of bounded measurable functions.
 
 ## iii. Table of contents
 
 - A. The pointwise order
 - B. Closed subalgebras
+- C. Bounded measurable functions
 
 ## iv. References
 
@@ -89,5 +94,25 @@ noncomputable instance instStarOrderedSubalgebra : StarOrderedRing S := by
   let : NonUnitalIsometricContinuousFunctionalCalculus ℝ (lp (fun _ : X ↦ ℂ) ∞) IsSelfAdjoint :=
     IsSelfAdjoint.instNonUnitalIsometricContinuousFunctionalCalculus
   exact Subtype.starOrderedRing (𝕜 := ℂ) S
+
+/-! ## C. Bounded measurable functions -/
+
+variable (X) [MeasurableSpace X]
+
+/-- The bounded measurable complex functions on `X`. -/
+noncomputable def measurableSubalgebra : StarSubalgebra ℂ (lp (fun _ : X ↦ ℂ) ∞) where
+  carrier := {f | Measurable (f : X → ℂ)}
+  zero_mem' := measurable_const
+  one_mem' := measurable_const
+  add_mem' := Measurable.add
+  mul_mem' := Measurable.mul
+  algebraMap_mem' _ := measurable_const
+  star_mem' hf := continuous_star.measurable.comp hf
+
+/-- A uniform limit of bounded measurable functions is measurable. -/
+instance isClosed_measurableSubalgebra :
+    IsClosed (measurableSubalgebra X : Set (lp (fun _ : X ↦ ℂ) ∞)) :=
+  IsSeqClosed.isClosed fun _ g hf hg ↦ measurable_of_tendsto_metrizable hf
+    (tendsto_pi_nhds.mpr fun x ↦ ((lp.evalCLM ℂ (fun _ : X ↦ ℂ) ∞ x).continuous.tendsto g).comp hg)
 
 end lp
