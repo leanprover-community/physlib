@@ -27,8 +27,9 @@ tool.
 
 ## ii. Key results
 
-- `divergence3D`
-- `integral_divergence_box_eq_zero`
+- `Space3` : the coordinate model `Fin 3 → ℝ` on which the box integrals are taken.
+- `integral_divergence_box_eq_zero` : the divergence theorem on a box, for a field whose
+  boundary flux vanishes.
 
 ## iii. Table of contents
 
