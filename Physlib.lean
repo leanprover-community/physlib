@@ -480,6 +480,7 @@ public import Physlib.QuantumMechanics.Operators.SpectralTheory.Symmetric
 public import Physlib.QuantumMechanics.Operators.StateObservables.ExpectedValue
 public import Physlib.QuantumMechanics.Operators.StateObservables.IsEigenvector
 public import Physlib.QuantumMechanics.Operators.StateObservables.Variance
+public import Physlib.QuantumMechanics.Operators.Symmetric
 public import Physlib.QuantumMechanics.Operators.Uncertainty
 public import Physlib.QuantumMechanics.PlanckConstant
 public import Physlib.QuantumMechanics.PoschlTeller.Basic

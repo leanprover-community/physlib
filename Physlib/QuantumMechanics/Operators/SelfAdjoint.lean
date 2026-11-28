@@ -5,7 +5,7 @@ Authors: Adam Bornemann, Gregory J. Loges
 -/
 module
 
-public import Physlib.QuantumMechanics.Operators.Basic
+public import Physlib.QuantumMechanics.Operators.Symmetric
 /-!
 
 # Self-adjoint operators
@@ -13,6 +13,8 @@ public import Physlib.QuantumMechanics.Operators.Basic
 ## i. Overview
 
 The purpose of this module is to collect basic properties of self-adjoint operators.
+For aspects of the spectral theory of self-adjoint operators
+see `Physlib.QuantumMechanics.Operators.SpectralTheory.SelfAdjoint`.
 
 See `LinearPMap.instStar` and `LinearPMap.isSelfAdjoint_def` for the definition of `IsSelfAdjoint`
 for `LinearPMap`s.

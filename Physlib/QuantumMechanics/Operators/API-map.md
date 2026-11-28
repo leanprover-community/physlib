@@ -117,9 +117,9 @@ Hall {1}. The uncertainty bounds go back to Robertson {9} and Schrödinger {10}.
 
 1. Physlib/QuantumMechanics/Operators/Basic.lean — `HasDenseDomain`, `IsUnbounded`,
    `isClosable_of_continuous`, `IsClosed.continuous_of_isClosed_domain`
-2. Physlib/QuantumMechanics/Operators/Basic.lean — `IsSymmetric`,
+2. Physlib/QuantumMechanics/Operators/Symmetric.lean — `IsSymmetric`,
    `isSymmetric_iff_inner_map_self_real`
-3. Physlib/QuantumMechanics/Operators/Basic.lean — `IsSymmetric.isClosable`,
+3. Physlib/QuantumMechanics/Operators/Symmetric.lean — `IsSymmetric.isClosable`,
    `IsSymmetric.closure`, `IsSymmetric.add`, `IsSymmetric.pow`
 4. Physlib/QuantumMechanics/Operators/SelfAdjoint.lean — `IsSelfAdjoint.isSymmetric`,
    `IsSelfAdjoint.isClosed`
