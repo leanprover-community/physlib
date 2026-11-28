@@ -170,7 +170,11 @@ bridges directly to Physlib's `pairGravityAcceleration` [74]{8}, by Bekenstein's
 Tensor-Vector-Scalar (`TeVeSMetric`) disformal physical metric and its exact analytical
 inverse [75], and by Moffat's Scalar-Tensor-Vector Gravity (`MOGTheory`) Yukawa-enhancement factor
 `1 + α (1 - e^{-μ r})` and Yukawa-enhanced gravitational potential
-`Φ(r) = -(G M / r) (1 + α (1 - e^{-μ r}))` [76]. Finally, the Will-Nordtvedt Parameterized
+`Φ(r) = -(G M / r) (1 + α (1 - e^{-μ r}))` [76]. The MOND interpolating function and the
+pointwise AQUAL field equation are stated separately [93], the Euler-Lagrange residual of the
+AQUAL action is derived with discrete and continuum first-variation steps [94], and Dirac's
+degree-of-freedom formula is applied to the STVG and TeVeS field content [92]. Finally, the
+Will-Nordtvedt Parameterized
 Post-Newtonian (PPN) formalism unifies solar-system tests across metric theories via ten
 dimensionless parameters (γ, β, ξ, α₁, α₂, α₃, ζ₁, ζ₂, ζ₃, ζ₄), classifying fully conservative and
 semiconservative theories, embedding General Relativity, `BransDickeTheory`, metric f(R), and
@@ -546,6 +550,21 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `KruskalSzekeres.horizonTensor_regular`, `KruskalSzekeres.partialChart`,
     `KruskalSzekeres.partialChartDomain`, `KruskalSzekeres.partialChart_isSmooth`,
     `KruskalSzekeres.horizonPoint_mem_partialChartDomain`
+92. PhyslibAlpha/Relativity/Modified/DiracCounting.lean — `DiracCount`, `DiracCount.dof`,
+    `procaCount_dof`, `unitVectorCount_dof`, `realScalarCount_dof`, `gravitonCount_dof`,
+    `stvgCount_dof`, `tevesCount_dof`, `procaDiracMatrix_det`,
+    `proca_constraints_second_class`, `smearedBracket_primary_gauss`,
+    `smeared_constraints_second_class`, `unitVectorPrimary_first_class`,
+    `smearedUnitVectorPrimary_first_class`
+93. PhyslibAlpha/Relativity/Modified/MondFieldTheory.lean — `mondMu`, `tendsto_mondMu_div_self`,
+    `mondMu_le_self`, `aqualActionDensity`, `aqualFieldResidual`, `IsAqualSolution`,
+    `aqualFieldResidual_eq_zero_iff`
+94. PhyslibAlpha/Relativity/Modified/AqualVariation.lean — `AqualFreeFunction`,
+    `aqualLagrangianDensity1D`, `aqualMomentumDensity`, `aqualDivergence1D`,
+    `aqualEulerLagrangeResidual_eq`, `aqual_euler_lagrange_iff`, `sum_link_mul_difference`,
+    `discrete_stationary_iff`, `quadraticProfile_stationary`,
+    `aqual_first_variation_eq_integral_residual`, `aqual_fundamental_lemma`
+
 ## References
 
 1. Units API map — Physlib/Units/API-map.md

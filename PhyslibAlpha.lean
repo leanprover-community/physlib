@@ -877,8 +877,10 @@ public import PhyslibAlpha.Relativity.Metrics.RiemannFromData
 public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric.Basic
 public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric.Christoffel
 public import PhyslibAlpha.Relativity.MinkowskiMatrix
+public import PhyslibAlpha.Relativity.Modified.AqualVariation
 public import PhyslibAlpha.Relativity.Modified.BransDicke
 public import PhyslibAlpha.Relativity.Modified.ChameleonScreening
+public import PhyslibAlpha.Relativity.Modified.DiracCounting
 public import PhyslibAlpha.Relativity.Modified.EinsteinAether
 public import PhyslibAlpha.Relativity.Modified.EinsteinCartan.Basic
 public import PhyslibAlpha.Relativity.Modified.EinsteinCartan.Contorsion
@@ -898,6 +900,7 @@ public import PhyslibAlpha.Relativity.Modified.MassiveGravity.FierzPauli
 public import PhyslibAlpha.Relativity.Modified.MassiveGravity.VDVZ
 public import PhyslibAlpha.Relativity.Modified.MOG
 public import PhyslibAlpha.Relativity.Modified.MOND
+public import PhyslibAlpha.Relativity.Modified.MondFieldTheory
 public import PhyslibAlpha.Relativity.Modified.Nordstrom
 public import PhyslibAlpha.Relativity.Modified.Ostrogradsky
 public import PhyslibAlpha.Relativity.Modified.PPNParameters
