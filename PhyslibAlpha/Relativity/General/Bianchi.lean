@@ -224,6 +224,22 @@ lemma coordDeriv_g_eq {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fi
   unfold covDeriv2 at h
   linarith
 
+/-- Neighborhood form of `coordDeriv_g_eq`: on a neighborhood of `x`, the coordinate
+derivative of the metric equals the Christoffel component expression. -/
+lemma coordDeriv_g_eq_nhds {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fin n → ℝ}
+    (hgSymm : ∀ᶠ y in 𝓝 x, ∀ i j, g y i j = g y j i)
+    (hInv : ∀ᶠ y in 𝓝 x, ∀ m j, ∑ a, ginv y a m * g y a j = if m = j then 1 else 0)
+    (a b c : Fin n) :
+    (fun y => CoordinateCurvature.coordDeriv c (fun z => g z a b) y) =ᶠ[𝓝 x]
+      fun y => (∑ β, christoffel g ginv y β c a * g y β b)
+        + ∑ β, christoffel g ginv y β c b * g y a β := by
+  have hS : ∀ᶠ y in 𝓝 x, ∀ᶠ z in 𝓝 y, ∀ i j, g z i j = g z j i :=
+    eventually_eventually_nhds.mpr hgSymm
+  filter_upwards [hS, hInv] with y hyS hyInv
+  have h := metric_compat g ginv hyS hyInv c a b
+  unfold covDeriv2 at h
+  linarith
+
 /-- The coordinate derivative of the inverse metric: differentiating `g * ginv = 1`
 and solving for `∂ ginv` gives `∂_l ginv^{ib} = -∑_{j,k} ginv^{ik} (∂_l g_{kj}) ginv^{jb}`. -/
 private lemma coordDeriv_ginv_eq {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fin n → ℝ}
@@ -372,6 +388,64 @@ lemma riemann_skew_last {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
   rw [hsum]
   ring
 
+/-- The second coordinate derivative of the metric, in component form: differentiating
+`∂_q g_{ασ} = ∑_β Γ^β_{qα} g_{βσ} + ∑_β Γ^β_{qσ} g_{αβ}` once more and applying the
+product rule gives `∂_p ∂_q g_{ασ}` as a sum of derivative-of-Christoffel and
+Christoffel-squared terms. -/
+lemma coordDeriv_coordDeriv_g {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fin n → ℝ}
+    (hgSymm : ∀ᶠ y in 𝓝 x, ∀ i j, g y i j = g y j i)
+    (hInv : ∀ᶠ y in 𝓝 x, ∀ m j, ∑ a, ginv y a m * g y a j = if m = j then 1 else 0)
+    (hgC2 : ∀ i j, ContDiffAt ℝ 2 (fun y => g y i j) x)
+    (hΓD : ∀ k i j, DifferentiableAt ℝ (fun y => christoffel g ginv y k i j) x)
+    (α σ p q : Fin n) :
+    CoordinateCurvature.coordDeriv p (CoordinateCurvature.coordDeriv q (fun z => g z α σ)) x =
+      (∑ β, CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q α) x * g x β σ)
+        + (∑ β, CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q σ) x * g x α β)
+        + (∑ β, ∑ γ, christoffel g ginv x β q α * christoffel g ginv x γ p β * g x γ σ)
+        + (∑ β, ∑ γ, christoffel g ginv x β q α * christoffel g ginv x γ p σ * g x β γ)
+        + (∑ β, ∑ γ, christoffel g ginv x β q σ * christoffel g ginv x γ p α * g x γ β)
+        + (∑ β, ∑ γ, christoffel g ginv x β q σ * christoffel g ginv x γ p β * g x α γ) := by
+  have hgD : ∀ i j, DifferentiableAt ℝ (fun y => g y i j) x :=
+    fun i j => (hgC2 i j).differentiableAt two_ne_zero
+  have hmc_nhds := coordDeriv_g_eq_nhds g ginv hgSymm hInv
+  rw [coordDeriv_congr_nhds p x (hmc_nhds α σ q)]
+  have h1 : DifferentiableAt ℝ (fun y => ∑ β, christoffel g ginv y β q α * g y β σ) x :=
+    DifferentiableAt.fun_sum fun β _ => (hΓD β q α).mul (hgD β σ)
+  have h2 : DifferentiableAt ℝ (fun y => ∑ β, christoffel g ginv y β q σ * g y α β) x :=
+    DifferentiableAt.fun_sum fun β _ => (hΓD β q σ).mul (hgD α β)
+  rw [coordDeriv_add p x (slice_differentiableAt p h1) (slice_differentiableAt p h2),
+    coordDeriv_sum p (fun β y => christoffel g ginv y β q α * g y β σ) x
+      (fun β => slice_differentiableAt p ((hΓD β q α).fun_mul (hgD β σ))),
+    coordDeriv_sum p (fun β y => christoffel g ginv y β q σ * g y α β) x
+      (fun β => slice_differentiableAt p ((hΓD β q σ).fun_mul (hgD α β)))]
+  have hm1 : ∀ β, CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q α
+    * g y β σ) x =
+      CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q α) x * g x β σ +
+        christoffel g ginv x β q α *
+          ((∑ γ, christoffel g ginv x γ p β * g x γ σ) +
+            ∑ γ, christoffel g ginv x γ p σ * g x β γ) := by
+    intro β
+    have hβ : CoordinateCurvature.coordDeriv p (fun y => g y β σ) x =
+        (∑ γ, christoffel g ginv x γ p β * g x γ σ) +
+          ∑ γ, christoffel g ginv x γ p σ * g x β γ := (hmc_nhds β σ p).self_of_nhds
+    rw [coordDeriv_mul p x (slice_differentiableAt p (hΓD β q α))
+      (slice_differentiableAt p (hgD β σ)), hβ]
+  have hm2 : ∀ β, CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q σ
+    * g y α β) x =
+      CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q σ) x * g x α β +
+        christoffel g ginv x β q σ *
+          ((∑ γ, christoffel g ginv x γ p α * g x γ β) +
+            ∑ γ, christoffel g ginv x γ p β * g x α γ) := by
+    intro β
+    have hβ : CoordinateCurvature.coordDeriv p (fun y => g y α β) x =
+        (∑ γ, christoffel g ginv x γ p α * g x γ β) +
+          ∑ γ, christoffel g ginv x γ p β * g x α γ := (hmc_nhds α β p).self_of_nhds
+    rw [coordDeriv_mul p x (slice_differentiableAt p (hΓD β q σ))
+      (slice_differentiableAt p (hgD α β)), hβ]
+  simp_rw [hm1, hm2, mul_add, Finset.mul_sum, Finset.sum_add_distrib]
+  simp_rw [mul_assoc]
+  ring
+
 /-- **Skew-symmetry of the lowered Riemann tensor in its first pair**:
 `R_{ασμν} + R_{σαμν} = 0`, derived from `∂_μ ∂_ν g_{ασ} = ∂_ν ∂_μ g_{ασ}` and
 metric compatibility.  See arXiv:gr-qc/9712019, p. 72. [ref: Carroll1997, p. 72] -/
@@ -384,65 +458,6 @@ lemma riemann_lower_skew_first {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n
     (α σ μ ν : Fin n) :
     (∑ β, g x α β * riemann g ginv x β σ μ ν) +
       (∑ β, g x σ β * riemann g ginv x β α μ ν) = 0 := by
-  have hgD : ∀ i j, DifferentiableAt ℝ (fun y => g y i j) x :=
-    fun i j => (hgC2 i j).differentiableAt two_ne_zero
-  have hmc_nhds : ∀ a b c : Fin n,
-      (fun y => CoordinateCurvature.coordDeriv c (fun z => g z a b) y) =ᶠ[𝓝 x]
-        fun y => (∑ β, christoffel g ginv y β c a * g y β b)
-          + ∑ β, christoffel g ginv y β c b * g y a β := by
-    intro a b c
-    have hS : ∀ᶠ y in 𝓝 x, ∀ᶠ z in 𝓝 y, ∀ i j, g z i j = g z j i :=
-      eventually_eventually_nhds.mpr hgSymm
-    filter_upwards [hS, hInv] with y hyS hyInv
-    have h := metric_compat g ginv hyS hyInv c a b
-    unfold covDeriv2 at h
-    linarith
-  have h2pd : ∀ p q : Fin n,
-      CoordinateCurvature.coordDeriv p (CoordinateCurvature.coordDeriv q (fun z => g z α σ)) x =
-        (∑ β, CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q α) x * g x β σ)
-        + (∑ β, CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q σ) x * g x α β)
-        + (∑ β, ∑ γ, christoffel g ginv x β q α * christoffel g ginv x γ p β * g x γ σ)
-        + (∑ β, ∑ γ, christoffel g ginv x β q α * christoffel g ginv x γ p σ * g x β γ)
-        + (∑ β, ∑ γ, christoffel g ginv x β q σ * christoffel g ginv x γ p α * g x γ β)
-        + (∑ β, ∑ γ, christoffel g ginv x β q σ * christoffel g ginv x γ p β * g x α γ) := by
-    intro p q
-    rw [coordDeriv_congr_nhds p x (hmc_nhds α σ q)]
-    have h1 : DifferentiableAt ℝ (fun y => ∑ β, christoffel g ginv y β q α * g y β σ) x :=
-      DifferentiableAt.fun_sum fun β _ => (hΓD β q α).mul (hgD β σ)
-    have h2 : DifferentiableAt ℝ (fun y => ∑ β, christoffel g ginv y β q σ * g y α β) x :=
-      DifferentiableAt.fun_sum fun β _ => (hΓD β q σ).mul (hgD α β)
-    rw [coordDeriv_add p x (slice_differentiableAt p h1) (slice_differentiableAt p h2),
-      coordDeriv_sum p (fun β y => christoffel g ginv y β q α * g y β σ) x
-        (fun β => slice_differentiableAt p ((hΓD β q α).fun_mul (hgD β σ))),
-      coordDeriv_sum p (fun β y => christoffel g ginv y β q σ * g y α β) x
-        (fun β => slice_differentiableAt p ((hΓD β q σ).fun_mul (hgD α β)))]
-    have hm1 : ∀ β, CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q α
-      * g y β σ) x =
-        CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q α) x * g x β σ +
-          christoffel g ginv x β q α *
-            ((∑ γ, christoffel g ginv x γ p β * g x γ σ) +
-              ∑ γ, christoffel g ginv x γ p σ * g x β γ) := by
-      intro β
-      have hβ : CoordinateCurvature.coordDeriv p (fun y => g y β σ) x =
-          (∑ γ, christoffel g ginv x γ p β * g x γ σ) +
-            ∑ γ, christoffel g ginv x γ p σ * g x β γ := (hmc_nhds β σ p).self_of_nhds
-      rw [coordDeriv_mul p x (slice_differentiableAt p (hΓD β q α))
-        (slice_differentiableAt p (hgD β σ)), hβ]
-    have hm2 : ∀ β, CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q σ
-      * g y α β) x =
-        CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q σ) x * g x α β +
-          christoffel g ginv x β q σ *
-            ((∑ γ, christoffel g ginv x γ p α * g x γ β) +
-              ∑ γ, christoffel g ginv x γ p β * g x α γ) := by
-      intro β
-      have hβ : CoordinateCurvature.coordDeriv p (fun y => g y α β) x =
-          (∑ γ, christoffel g ginv x γ p α * g x γ β) +
-            ∑ γ, christoffel g ginv x γ p β * g x α γ := (hmc_nhds α β p).self_of_nhds
-      rw [coordDeriv_mul p x (slice_differentiableAt p (hΓD β q σ))
-        (slice_differentiableAt p (hgD α β)), hβ]
-    simp_rw [hm1, hm2, mul_add, Finset.mul_sum, Finset.sum_add_distrib]
-    simp_rw [mul_assoc]
-    ring
   have hcomm : CoordinateCurvature.coordDeriv μ (CoordinateCurvature.coordDeriv ν (fun z => g z α
     σ)) x - CoordinateCurvature.coordDeriv ν (CoordinateCurvature.coordDeriv μ (fun z => g z α σ)) x
     = 0 := by
@@ -510,7 +525,9 @@ lemma riemann_lower_skew_first {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n
     apply Finset.sum_congr rfl
     intro γ _
     ring
-  rw [h2pd μ ν, h2pd ν μ, hcross1, hcross2, hswap1, hswap2, hswap3, hswap4] at hcomm
+  rw [coordDeriv_coordDeriv_g g ginv hgSymm hInv hgC2 hΓD α σ μ ν,
+    coordDeriv_coordDeriv_g g ginv hgSymm hInv hgC2 hΓD α σ ν μ,
+    hcross1, hcross2, hswap1, hswap2, hswap3, hswap4] at hcomm
   have htarget :
       (∑ β, g x α β * riemann g ginv x β σ μ ν) +
         (∑ β, g x σ β * riemann g ginv x β α μ ν) =
