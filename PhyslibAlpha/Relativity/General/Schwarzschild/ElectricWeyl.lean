@@ -153,7 +153,7 @@ lemma weyl_purely_electric (k : ℝ) (j l m : Fin 4) (hj : j ≠ 0) (hl : l ≠ 
   have h0j : (0 : Fin 4) ≠ j := fun h => hj h.symm
   have h0l : (0 : Fin 4) ≠ l := fun h => hl h.symm
   have h0m : (0 : Fin 4) ≠ m := fun h => hm h.symm
-  refine ⟨?_, ?_, ?_, ?_⟩ <;> simp [electricWeylRiemann, electricPart, hj, hl, hm, h0l, h0m]
+  refine ⟨?_, ?_, ?_, ?_⟩ <;> simp [electricWeylRiemann, electricPart, hj, hl, h0l, h0m]
 
 /-!
 
