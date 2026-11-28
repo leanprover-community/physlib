@@ -25,8 +25,10 @@ In a chart, the Lagrangian is a smooth function L(t, q, q̇) over the chart targ
 ### Equations of motion
 
 On a normed space, a smooth curve is a critical point of the action over [t₀, t₁] with
-t₀ ≠ t₁ if and only if the Euler–Lagrange equations hold. [5] A smooth curve is a critical point
-of the action if and only if the Euler–Lagrange equations hold in every chart {4}. [TODO]
+t₀ ≠ t₁ if and only if the Euler–Lagrange equations hold. [5] At interior times, a critical
+point of the action satisfies the Euler–Lagrange equations in the coordinates of a chart containing
+it, for any Lagrangian system on the model space equal to the chart Lagrangian nearby {4}. [7] A smooth curve
+satisfying the Euler–Lagrange equations in every chart is a critical point of the action. [TODO]
 Lagrangians L(q, q̇, t) written in generalised coordinates are Lagrangian systems {5}. [TODO]
 
 ### Symmetries and conservation laws
@@ -44,14 +46,19 @@ coming from a Riemannian metric on M. [TODO]
 ## Lean References
 
 1. Physlib/ClassicalMechanics/Lagrangian/Basic.lean — `LagrangianSystem`
-2. Physlib/ClassicalMechanics/ConfigurationSpace/Variation.lean — `Variation`
+2. Physlib/ClassicalMechanics/ConfigurationSpace/Variation.lean — `Variation`,
+   `Variation.exists_chart_bump`
 3. Physlib/ClassicalMechanics/Lagrangian/Basic.lean — `LagrangianSystem.action`
 4. Physlib/ClassicalMechanics/Lagrangian/Basic.lean —
    `LagrangianSystem.action_eq_integral_coord`
 5. Physlib/ClassicalMechanics/Lagrangian/CriticalPoint.lean —
    `LagrangianSystem.IsCriticalPoint`, `LagrangianSystem.isCriticalPoint_iff_eulerLagrange`
 6. Physlib/ClassicalMechanics/Lagrangian/Chart.lean —
-   `LagrangianSystem.chartLagrangian`, `LagrangianSystem.contDiffAt_chartLagrangian`
+   `LagrangianSystem.chartLagrangian`, `LagrangianSystem.contDiffAt_chartLagrangian`,
+   `LagrangianSystem.exists_lagrangianSystem_coord_eq`
+7. Physlib/ClassicalMechanics/Lagrangian/CriticalPoint.lean —
+   `LagrangianSystem.eulerLagrange_eq_zero_of_isCriticalPoint_chart`,
+   `LagrangianSystem.exists_eulerLagrange_eq_zero_of_isCriticalPoint_chart`
 
 ## References
 
