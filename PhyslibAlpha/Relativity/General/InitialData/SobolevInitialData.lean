@@ -550,8 +550,7 @@ lemma pd_sdsSpatial_00 (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
   have hfun : (fun s : ℝ => ((sdsSpacetime M Λ).metricFn (Function.update x 0 s 0))⁻¹) =
       fun s : ℝ => ((sdsSpacetime M Λ).metricFn s)⁻¹ := by
     funext s; simp
-  unfold CoordinateCurvature.coordDeriv
-  rw [hfun, hd.deriv]
+  rw [CoordinateCurvature.coordDeriv_eq_of_slice_eq hfun, hd.deriv]
 
 lemma christoffel_eq_sdsSpatialG (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
     (hf : (sdsSpacetime M Λ).metricFn (x 0) ≠ 0) (hsin : Real.sin (x 1) ≠ 0)
@@ -562,7 +561,7 @@ lemma christoffel_eq_sdsSpatialG (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
   have h0_11 : CoordinateCurvature.coordDeriv 0 (fun y : SpaceChart => y 0 ^ 2) x = 2 * x 0 := by
     have hfun : (fun s : ℝ => Function.update x 0 s 0 ^ 2) = fun s => s ^ 2 := by
       funext s; simp
-    unfold CoordinateCurvature.coordDeriv; rw [hfun]
+    rw [CoordinateCurvature.coordDeriv_eq_of_slice_eq hfun]
     have hd := hasDerivAt_pow 2 (x 0)
     convert hd.deriv using 1
     ring
@@ -572,7 +571,7 @@ lemma christoffel_eq_sdsSpatialG (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
     have hfun : (fun s : ℝ => Function.update x 0 s 0 ^ 2 *
         Real.sin (Function.update x 0 s 1) ^ 2) = fun s => s ^ 2 * Real.sin (x 1) ^ 2 := by
       funext s; simp
-    unfold CoordinateCurvature.coordDeriv; rw [hfun]
+    rw [CoordinateCurvature.coordDeriv_eq_of_slice_eq hfun]
     have hd := (hasDerivAt_pow 2 (x 0)).mul_const (Real.sin (x 1) ^ 2)
     convert hd.deriv using 1
     ring
@@ -582,7 +581,7 @@ lemma christoffel_eq_sdsSpatialG (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
     have hfun : (fun s : ℝ => Function.update x 1 s 0 ^ 2 *
         Real.sin (Function.update x 1 s 1) ^ 2) = fun s => x 0 ^ 2 * Real.sin s ^ 2 := by
       funext s; simp
-    unfold CoordinateCurvature.coordDeriv; rw [hfun]
+    rw [CoordinateCurvature.coordDeriv_eq_of_slice_eq hfun]
     have hd :=
       (CoordinateCurvature.hasDerivAt_sin_sq (x 1)).const_mul (x 0 ^ 2)
     convert hd.deriv using 1
@@ -592,7 +591,7 @@ lemma christoffel_eq_sdsSpatialG (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
     have hfun : (fun s : ℝ => Function.update x 2 s 0 ^ 2 *
         Real.sin (Function.update x 2 s 1) ^ 2) = fun _ => x 0 ^ 2 * Real.sin (x 1) ^ 2 := by
       funext s; simp
-    unfold CoordinateCurvature.coordDeriv; rw [hfun, deriv_const']
+    rw [CoordinateCurvature.coordDeriv_eq_of_slice_eq hfun, deriv_const']
   fin_cases k <;> fin_cases i <;> fin_cases j <;>
     simp [CoordinateCurvature.christoffel, sdsSpatialMetric, sdsSpatialMetricInv,
       sdsSpatialG, h0_00, h0_11, h0_22, h1_22, h2_22] <;>
@@ -667,7 +666,7 @@ lemma pd_sdsSpatialG_eq_sdsSpatialDG_0 (M Λ : ℝ) (x : SpaceChart) (hr : x 0 �
         fun s : ℝ => -((sdsSpacetime M Λ).metricFnHalfDeriv s /
           (sdsSpacetime M Λ).metricFn s) := by
       funext s; simp [sdsSpatialG]
-    unfold CoordinateCurvature.coordDeriv; rw [hfun]
+    rw [CoordinateCurvature.coordDeriv_eq_of_slice_eq hfun]
     have hd := (((sdsSpacetime M Λ).hasDerivAt_metricFnHalfDeriv (x 0) hr).fun_div
       ((sdsSpacetime M Λ).hasDerivAt_metricFn (x 0) hr) hf).fun_neg
     convert hd.deriv using 1
@@ -678,7 +677,7 @@ lemma pd_sdsSpatialG_eq_sdsSpatialDG_0 (M Λ : ℝ) (x : SpaceChart) (hr : x 0 �
     have hfun : (fun s : ℝ => sdsSpatialG M Λ (Function.update x 0 s) 0 1 1) =
         fun s : ℝ => -(s * (sdsSpacetime M Λ).metricFn s) := by
       funext s; simp [sdsSpatialG]
-    unfold CoordinateCurvature.coordDeriv; rw [hfun]
+    rw [CoordinateCurvature.coordDeriv_eq_of_slice_eq hfun]
     have hd := ((hasDerivAt_id' (x 0)).fun_mul
       ((sdsSpacetime M Λ).hasDerivAt_metricFn (x 0) hr)).fun_neg
     rw [hd.deriv]
@@ -689,7 +688,7 @@ lemma pd_sdsSpatialG_eq_sdsSpatialDG_0 (M Λ : ℝ) (x : SpaceChart) (hr : x 0 �
     have hfun : (fun s : ℝ => sdsSpatialG M Λ (Function.update x 0 s) 0 2 2) =
         fun s : ℝ => -(Real.sin (x 1) ^ 2 * (s * (sdsSpacetime M Λ).metricFn s)) := by
       funext s; simp [sdsSpatialG]; ring
-    unfold CoordinateCurvature.coordDeriv; rw [hfun]
+    rw [CoordinateCurvature.coordDeriv_eq_of_slice_eq hfun]
     have hd := (((hasDerivAt_id' (x 0)).fun_mul
       ((sdsSpacetime M Λ).hasDerivAt_metricFn (x 0) hr)).const_mul
         (Real.sin (x 1) ^ 2)).fun_neg
@@ -700,7 +699,7 @@ lemma pd_sdsSpatialG_eq_sdsSpatialDG_0 (M Λ : ℝ) (x : SpaceChart) (hr : x 0 �
       sdsSpatialDG M Λ 0 x 1 0 1 := by
     have hfun : (fun s : ℝ => sdsSpatialG M Λ (Function.update x 0 s) 1 0 1) =
         fun s : ℝ => s⁻¹ := by funext s; simp [sdsSpatialG]
-    unfold CoordinateCurvature.coordDeriv; rw [hfun, (hasDerivAt_inv hr).deriv]
+    rw [CoordinateCurvature.coordDeriv_eq_of_slice_eq hfun, (hasDerivAt_inv hr).deriv]
     simp [sdsSpatialDG, one_div]
   fin_cases k <;> fin_cases i <;> fin_cases j
   all_goals first
@@ -717,7 +716,7 @@ lemma pd_sdsSpatialG_eq_sdsSpatialDG_1 (M Λ : ℝ) (x : SpaceChart)
     have hfun : (fun s : ℝ => sdsSpatialG M Λ (Function.update x 1 s) 0 2 2) =
         fun s : ℝ => -(x 0 * (sdsSpacetime M Λ).metricFn (x 0) * Real.sin s ^ 2) := by
       funext s; simp [sdsSpatialG]; ring
-    unfold CoordinateCurvature.coordDeriv; rw [hfun]
+    rw [CoordinateCurvature.coordDeriv_eq_of_slice_eq hfun]
     have hd :=
       ((CoordinateCurvature.hasDerivAt_sin_sq (x 1)).const_mul
         (x 0 * (sdsSpacetime M Λ).metricFn (x 0))).fun_neg
@@ -728,7 +727,7 @@ lemma pd_sdsSpatialG_eq_sdsSpatialDG_1 (M Λ : ℝ) (x : SpaceChart)
       sdsSpatialDG M Λ 1 x 1 2 2 := by
     have hfun : (fun s : ℝ => sdsSpatialG M Λ (Function.update x 1 s) 1 2 2) =
         fun s : ℝ => -(Real.sin s * Real.cos s) := by funext s; simp [sdsSpatialG]
-    unfold CoordinateCurvature.coordDeriv; rw [hfun]
+    rw [CoordinateCurvature.coordDeriv_eq_of_slice_eq hfun]
     have hd := ((Real.hasDerivAt_sin (x 1)).fun_mul (Real.hasDerivAt_cos (x 1))).fun_neg
     convert hd.deriv using 1
     simp [sdsSpatialDG]
@@ -737,7 +736,7 @@ lemma pd_sdsSpatialG_eq_sdsSpatialDG_1 (M Λ : ℝ) (x : SpaceChart)
       sdsSpatialDG M Λ 1 x 2 1 2 := by
     have hfun : (fun s : ℝ => sdsSpatialG M Λ (Function.update x 1 s) 2 1 2) =
         fun s : ℝ => Real.cos s / Real.sin s := by funext s; simp [sdsSpatialG]
-    unfold CoordinateCurvature.coordDeriv; rw [hfun]
+    rw [CoordinateCurvature.coordDeriv_eq_of_slice_eq hfun]
     have hd := (Real.hasDerivAt_cos (x 1)).fun_div (Real.hasDerivAt_sin (x 1)) hsin
     have hcos_sin : -Real.sin (x 1) * Real.sin (x 1) - Real.cos (x 1) * Real.cos (x 1) =
         -(Real.sin (x 1) ^ 2 + Real.cos (x 1) ^ 2) := by ring

@@ -99,6 +99,14 @@ lemma coordDeriv_congr {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x
   simp only [coordDeriv]
   exact congrArg (fun F => deriv F (x μ)) (funext fun s => h _)
 
+/-- `coordDeriv` along `μ` equals the ordinary derivative of the slice, once the
+slice is rewritten to a single-variable function `g`. -/
+lemma coordDeriv_eq_of_slice_eq {n : ℕ} {μ : Fin n} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ}
+    {g : ℝ → ℝ} (h : (fun s => f (Function.update x μ s)) = g) :
+    coordDeriv μ f x = deriv g (x μ) := by
+  simp only [coordDeriv]
+  rw [h]
+
 /-- Agreement of partial derivatives for locally equal functions on a neighborhood of `x`. -/
 lemma coordDeriv_congr_nhds {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ)
     (hfg : f =ᶠ[nhds x] g) : coordDeriv μ f x = coordDeriv μ g x := by
