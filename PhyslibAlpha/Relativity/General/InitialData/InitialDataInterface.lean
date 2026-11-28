@@ -742,7 +742,10 @@ It does not claim arbitrary multi-chart gluing or a geometric 4D Lorentzian
 manifold.
 -/
 
-/-- A manifold-level spacetime interface at global-chart scope. -/
+/-- Chart-level ADM data of a spacetime read in a single global chart, together
+with the smoothness certificate for that chart.  The `Manifold` in the name refers
+to this global chart scope only: the type is not a smooth manifold, and no
+gluing of charts is asserted. -/
 structure ManifoldSpacetime where
   /-- The underlying smooth chart spacetime. -/
   smoothChart : SmoothChartSpacetime
@@ -838,8 +841,9 @@ lemma spatialMetricField_eq {X Y : ManifoldSpacetime} (e : ManifoldTransition X 
 
 end ManifoldTransition
 
-/-- Manifold-level initial data: chart initial data packaged against a
-`ManifoldSpacetime`. -/
+/-- Chart-level ADM initial data: `ChartInitialData` packaged against a
+`ManifoldSpacetime`, so the induced spatial metric, the derived curvature and the
+constraint residual are those of the single global chart. -/
 structure ManifoldInitialData (X : ManifoldSpacetime) where
   /-- The underlying chart initial data. -/
   data : ChartInitialData X.chartSpacetime
