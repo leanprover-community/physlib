@@ -11,6 +11,7 @@ public import PhyslibAlpha.Relativity.Metrics.Christoffel
 public import PhyslibAlpha.Relativity.Metrics.Einstein
 public import PhyslibAlpha.Relativity.Metrics.Minkowski
 public import PhyslibAlpha.Relativity.Metrics.Ricci
+public import PhyslibAlpha.Relativity.Metrics.RicciScalar
 public import PhyslibAlpha.Relativity.Metrics.Riemann
 public import PhyslibAlpha.Relativity.Tensors.EinsteinTensor
 

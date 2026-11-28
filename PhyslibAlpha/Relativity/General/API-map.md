@@ -212,7 +212,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
 8. PhyslibAlpha/Relativity/Metrics/MetricTrace.lean — `metricTrace`, `metricTrace_diag`,
    `sum_ginv_mul_g`, `metricTrace_mul_g`
 9. PhyslibAlpha/Relativity/Metrics/RicciScalar.lean — `ricciScalar`, `ricciScalar_eq_metricTrace`,
-   `ricciScalar_flat`
+   `ricciScalar_flat`, `CoordinateCurvature.ricciScalar`, `CoordinateCurvature.ricciScalar_const`
 10. PhyslibAlpha/Mathematics/Calculus/CoordDeriv.lean — `coordDeriv`, `coordDeriv_of_hasDerivAt`,
     `coordDeriv_const_slice`, `coordDeriv_const`, `coordDeriv_congr`, `coordDeriv_congr_nhds`,
     `coordDeriv_eq_fderiv`, `coordDeriv_comm`

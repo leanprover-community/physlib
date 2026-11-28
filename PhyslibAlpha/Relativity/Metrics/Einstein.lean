@@ -6,6 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import PhyslibAlpha.Relativity.Metrics.Ricci
+public import PhyslibAlpha.Relativity.Metrics.RicciScalar
 
 /-!
 
