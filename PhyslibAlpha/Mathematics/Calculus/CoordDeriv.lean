@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Deriv
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Mul
@@ -34,6 +35,8 @@ quotient rule, neighborhood congruence, `C²` differentiability, and Schwarz sym
 - `CoordinateCurvature.coordDeriv_comm` : Schwarz mixed-derivative symmetry.
 - `CoordinateCurvature.contDiffAt_coordDeriv`, `CoordinateCurvature.coordDeriv_differentiableAt` :
   regularity of coordinate derivatives.
+- `CoordinateCurvature.hasDerivAt_sin_sq` : the derivative of the trigonometric slice
+  `t ↦ sin² t`.
 
 ## iii. Table of contents
 
@@ -233,6 +236,13 @@ lemma hasDerivAt_update_slice {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n
   have hf' : HasFDerivAt f (fderiv ℝ f x) (Function.update x μ (x μ)) := by
     simpa [Function.update_eq_self] using hf.hasFDerivAt
   exact (hf'.comp_hasDerivAt (x μ) hd).differentiableAt.hasDerivAt
+
+/-- The derivative of the trigonometric slice `t ↦ sin² t`: `(sin² t)' = 2 sin t cos t`.
+This is the identity a coordinate derivative needs when it runs along an angular
+direction. -/
+lemma hasDerivAt_sin_sq (θ : ℝ) :
+    HasDerivAt (fun t : ℝ => Real.sin t ^ 2) (2 * Real.sin θ * Real.cos θ) θ :=
+  ((hasDerivAt_pow 2 (Real.sin θ)).comp θ (Real.hasDerivAt_sin θ)).congr_deriv (by ring)
 
 /-- A differentiable field on `ℝⁿ` has differentiable coordinate slices. -/
 lemma slice_differentiableAt {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} (μ : Fin n)

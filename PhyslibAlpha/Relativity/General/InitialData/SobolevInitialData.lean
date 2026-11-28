@@ -28,7 +28,13 @@ import Mathlib.Tactic.Ring
 
 ## i. Overview
 
-This module goes beyond the flat chart interface by supplying:
+The Cauchy problem for the Einstein equations asks for a spacetime whose data on
+a spacelike slice reproduce a prescribed spatial metric, extrinsic curvature and
+matter content, and whose evolution satisfies the field equations.  The
+existence and uniqueness theory for that problem is posed in Sobolev spaces: the
+hyperbolic reduction is solved in `H^s`, and the energy estimates behind it need
+a norm that controls a field together with its first spatial derivatives on a
+bounded box.  This module supplies the parts of that picture formalised here:
 
 * 1D and 3D-box Sobolev `H¹` energy norms (`sobolevH1NormSq1D`, `sobolevH1NormSq3D`)
   with nonnegativity and component dominance inequalities;
@@ -39,18 +45,28 @@ This module goes beyond the flat chart interface by supplying:
   `spatialScalarCurvOf`) and ADM constraints (`hamiltonianConstraintOf`,
   `momentumConstraintOf`) computed directly from a 3-metric field `(h, hinv)`
   and extrinsic curvature field `K`, without supplying `R3` or `dK` by hand;
-* three genuine nonlinear constraint solutions: the Brill–Lindquist / Lichnerowicz
-  harmonic conformal factor (`spatialLaplacian3D_brillLindquistPhi`), the curved
-  3D Schwarzschild–de Sitter spatial slice (`spatialScalarCurvOf_sdsSpatial = 2 Λ`,
-  vacuum at `Λ = 0` with nonzero spatial Ricci curvature), and flat FLRW initial data.
-
+* three constraint solutions: the Brill–Lindquist / Lichnerowicz harmonic
+  conformal factor (`spatialLaplacian3D_brillLindquistPhi`), the curved 3D
+  Schwarzschild–de Sitter spatial slice (`spatialScalarCurvOf_sdsSpatial = 2 Λ`,
+  vacuum at `Λ = 0` with nonzero spatial Ricci curvature), and flat FLRW initial
+  data (`flrw_initial_constraints`).
 
 ## ii. Key results
 
-- `sobolevH1NormSq1D`
-- `sobolev_embedding_1D`
-- `trace_estimate_1D`
-- `sobolevH1NormSq3D`
+- `sobolevH1NormSq1D` : the squared `H¹` energy `∫₀^L (u² + u'²)` of a field on an
+  interval, with nonnegativity and the two dominance inequalities
+  `l2_le_sobolevH1_1D` and `deriv_l2_le_sobolevH1_1D`.
+- `sobolev_embedding_1D` : the `H¹([0, L]) → L^∞([0, L])` bound, proved from the
+  Fundamental Theorem of Calculus and Cauchy–Schwarz.
+- `trace_estimate_1D` : the boundary trace of a field is controlled by its `H¹`
+  energy.
+- `sobolevH1NormSq3D` : the same energy on a closed 3D box, which bounds the `L²`
+  and gradient integrals separately (`l2_le_sobolevH1_3D`,
+  `grad_le_sobolevH1_3D`).
+- `spatialLaplacian3D_brillLindquistPhi`, `spatialScalarCurvOf_sdsSpatial`,
+  `flrw_initial_constraints` : the Brill–Lindquist conformal factor, the
+  Schwarzschild–de Sitter spatial slice and flat FLRW data solve the ADM
+  constraint operators of Section C.
 
 ## iii. Table of contents
 
@@ -69,13 +85,6 @@ namespace GeneralRelativity
 
 open MeasureTheory Filter Topology
 open scoped Interval
-
-/-- Coordinate partial derivative of a `Real.sin · ^ 2` slice: `(sin² θ)' = 2 sin θ cos θ`.
-The upstream `hasDerivAt_sin_sq` helper was dropped in the
-refactor, so it is restated here. -/
-lemma hasDerivAt_sin_sq (θ : ℝ) :
-    HasDerivAt (fun t => Real.sin t ^ 2) (2 * Real.sin θ * Real.cos θ) θ :=
-  ((hasDerivAt_pow 2 (Real.sin θ)).comp θ (Real.hasDerivAt_sin θ)).congr_deriv (by ring)
 
 /-- Schwarzschild spacetime of mass `M`, named so lapse expressions read as
 `(schwarzschildSpacetime M).metricFn r`. -/
@@ -569,7 +578,8 @@ lemma christoffel_eq_sdsSpatialG (M Λ : ℝ) (x : Space3) (hr : x 0 ≠ 0)
         Real.sin (Function.update x 1 s 1) ^ 2) = fun s => x 0 ^ 2 * Real.sin s ^ 2 := by
       funext s; simp
     unfold CoordinateCurvature.coordDeriv; rw [hfun]
-    have hd := (hasDerivAt_sin_sq (x 1)).const_mul (x 0 ^ 2)
+    have hd :=
+      (CoordinateCurvature.hasDerivAt_sin_sq (x 1)).const_mul (x 0 ^ 2)
     convert hd.deriv using 1
     ring
   have h2_22 : CoordinateCurvature.coordDeriv 2 (fun y : Space3 => y 0 ^ 2 * Real.sin (y 1) ^ 2) x = 0 := by
@@ -700,8 +710,9 @@ lemma pd_sdsSpatialG_eq_sdsSpatialDG_1 (M Λ : ℝ) (x : Space3)
         fun s : ℝ => -(x 0 * (sdsSpacetime M Λ).metricFn (x 0) * Real.sin s ^ 2) := by
       funext s; simp [sdsSpatialG]; ring
     unfold CoordinateCurvature.coordDeriv; rw [hfun]
-    have hd := ((hasDerivAt_sin_sq (x 1)).const_mul
-      (x 0 * (sdsSpacetime M Λ).metricFn (x 0))).fun_neg
+    have hd :=
+      ((CoordinateCurvature.hasDerivAt_sin_sq (x 1)).const_mul
+        (x 0 * (sdsSpacetime M Λ).metricFn (x 0))).fun_neg
     convert hd.deriv using 1
     simp [sdsSpatialDG]
     ring
