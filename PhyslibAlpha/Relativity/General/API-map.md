@@ -286,7 +286,8 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `StaticSphericalMetric.einsteinTensor`
 38. PhyslibAlpha/Relativity/General/Schwarzschild/ElectricWeyl.lean — `electricPart`,
     `electricPart_symm`, `electricPart_trace`, `electricWeylRiemann`, `ricci_eq_zero`,
-    `electricWeyl_frameSumOfSquares_eq`, `kretschmann_scalar`, `weyl_purely_electric`,
+    `electricWeyl_frameSumOfSquares_eq`, `kretschmann_scalar`, `kretschmann_scalar_total`,
+    `weyl_purely_electric`,
     `electricPart_from_metric`
 39. PhyslibAlpha/Relativity/General/Schwarzschild/Basic.lean — `SchwarzschildSpacetime`,
     `SchwarzschildSpacetime.metricFn`, `SchwarzschildSpacetime.metric`,
@@ -303,7 +304,9 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `cosChia_lt_one`, `rs_div_Ra`, `one_third_lt_cosChia_iff_rs`
 42. PhyslibAlpha/Relativity/General/SchwarzschildDeSitter/DeSitterFrame.lean — `deSitterPart`,
     `SchwarzschildDeSitterSpacetime.frameSumOfSquares`, `SchwarzschildDeSitterSpacetime.frameSumOfSquares_eq`,
-    `SchwarzschildDeSitterSpacetime.kretschmann`, `SchwarzschildDeSitterSpacetime.frameRicciTensor_eq`,
+    `SchwarzschildDeSitterSpacetime.kretschmann`,
+    `SchwarzschildDeSitterSpacetime.kretschmann_total`,
+    `SchwarzschildDeSitterSpacetime.frameRicciTensor_eq`,
     `SchwarzschildDeSitterSpacetime.frameScalar_eq`,
     `SchwarzschildDeSitterSpacetime.frameEinstein_eq`,
     `SchwarzschildDeSitterSpacetime.frame_bianchi`,

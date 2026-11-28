@@ -36,7 +36,8 @@ contracted Bianchi identity holds without being assumed (`frame_einstein_conserv
   with its Riemann symmetries.
 - `SchwarzschildDeSitterSpacetime.frameSumOfSquares`,
   `SchwarzschildDeSitterSpacetime.frameSumOfSquares_eq`,
-  `SchwarzschildDeSitterSpacetime.kretschmann` : frame Kretschmann scalar
+  `SchwarzschildDeSitterSpacetime.kretschmann`,
+  `SchwarzschildDeSitterSpacetime.kretschmann_total` : frame Kretschmann scalar
   `48 M² / r⁶ + 8 Λ² / 3`.
 - `SchwarzschildDeSitterSpacetime.frameRicciTensor_eq`,
   `SchwarzschildDeSitterSpacetime.frameScalar_eq`,
@@ -216,6 +217,18 @@ lemma kretschmann (S : SchwarzschildDeSitterSpacetime) (r : ℝ) (hr : r ≠ 0) 
   have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
   have hr6 : r ^ 6 ≠ 0 := pow_ne_zero 6 hr
   field_simp [hr3, hr6]
+
+/-- The Schwarzschild–de Sitter frame Kretschmann scalar `48 M² / r⁶ + 8 Λ² / 3` at every radius.
+The `r ≠ 0` hypothesis of `kretschmann` only clears denominators, and division by zero is total, so
+at `r = 0` the mass term vanishes on both sides. -/
+lemma kretschmann_total (M Λ r : ℝ) :
+    (SchwarzschildDeSitterSpacetime.mk M Λ).frameSumOfSquares r
+      = 48 * M ^ 2 / r ^ 6 + 8 * Λ ^ 2 / 3 := by
+  by_cases hr : r = 0
+  · subst r
+    rw [SchwarzschildDeSitterSpacetime.frameSumOfSquares_eq]
+    norm_num
+  · exact (SchwarzschildDeSitterSpacetime.mk M Λ).kretschmann r hr
 
 /-!
 

@@ -44,6 +44,7 @@ Hessian of `Φ`, not the frame Riemann tensor.)
   frame curvature `RiemannTensor 4`, Ricci flatness, and frame sum of squares `48 k²`.
 - `weyl_purely_electric` : every component with one temporal index vanishes.
 - `SchwarzschildSpacetime.frameRiemann`, `SchwarzschildSpacetime.kretschmann_scalar`,
+  `SchwarzschildSpacetime.kretschmann_scalar_total`,
   `SchwarzschildSpacetime.tidalPart_eq_electricPart`,
   `SchwarzschildSpacetime.electricPart_from_metric` : Schwarzschild spacetime frame curvature,
   Kretschmann invariant `48 M² / r⁶`, tidal Hessian match, and metric electric eigenvalues.
@@ -181,6 +182,16 @@ lemma kretschmann_scalar (S : SchwarzschildSpacetime) (r : ℝ) (hr : r ≠ 0) :
   rw [frameRiemann, electricWeyl_frameSumOfSquares_eq]
   have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
   field_simp
+
+/-- The Schwarzschild frame Kretschmann scalar `48 M² / r⁶` at every radius. The `r ≠ 0`
+hypothesis of `kretschmann_scalar` only clears denominators, and division by zero is total, so at
+`r = 0` both sides vanish. -/
+lemma kretschmann_scalar_total (M r : ℝ) :
+    ((SchwarzschildSpacetime.mk M).frameRiemann r).frameSumOfSquares = 48 * M ^ 2 / r ^ 6 := by
+  by_cases hr : r = 0
+  · subst r
+    simp [SchwarzschildSpacetime.frameRiemann, electricWeyl_frameSumOfSquares_eq]
+  · exact (SchwarzschildSpacetime.mk M).kretschmann_scalar r hr
 
 /-- Newtonian tidal tensor of `Φ = -M / r`, whose Hessian has eigenvalues `(-2M/r³, M/r³, M/r³)`,
 equals `electricPart (S.M / r³)`. This is a statement about the Newtonian potential, not about the
