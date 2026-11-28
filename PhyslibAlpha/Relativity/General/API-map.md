@@ -594,7 +594,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `Cosmology.FLRW.energyEquation`, `Cosmology.FLRW.momentumEquation`,
     `Cosmology.FLRW.pressureEquation`, `Cosmology.FLRW.PerturbedFieldEq`,
     `Cosmology.FLRW.perturbedFieldEq_gauge`
-97. PhyslibAlpha/Relativity/General/InitialData/Divergence3D.lean — `SpaceChart`,
+ 97. PhyslibAlpha/Relativity/General/InitialData/SpaceChart.lean — `SpaceChart`,
     `integral_divergence_box_eq_zero`
 98. PhyslibAlpha/Relativity/General/InitialData/WaveCauchy.lean — `dAlembert`,
     `dAlembert_wave_equation`, `dAlembert_cauchy_data`, `hasDerivAt_dAlembert_t`

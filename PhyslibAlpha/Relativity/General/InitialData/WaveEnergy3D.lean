@@ -5,7 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
-public import PhyslibAlpha.Relativity.General.InitialData.Divergence3D
+public import PhyslibAlpha.Relativity.General.InitialData.SpaceChart
 public import Mathlib.Analysis.Calculus.ParametricIntegral
 public import Mathlib.MeasureTheory.Function.LocallyIntegrable
 public import Mathlib.MeasureTheory.Measure.OpenPos

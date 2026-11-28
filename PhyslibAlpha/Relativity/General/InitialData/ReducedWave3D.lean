@@ -7,7 +7,7 @@ Authors: Alex Vergara Gil
 module
 
 public import PhyslibAlpha.Relativity.General.InitialData.WaveCauchy
-public import PhyslibAlpha.Relativity.General.InitialData.Divergence3D
+public import PhyslibAlpha.Relativity.General.InitialData.SpaceChart
 
 /-!
 

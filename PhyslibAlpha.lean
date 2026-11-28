@@ -826,7 +826,7 @@ public import PhyslibAlpha.Relativity.General.GravitationalConstant
 public import PhyslibAlpha.Relativity.General.InitialData.AnisotropicSlice
 public import PhyslibAlpha.Relativity.General.InitialData.Basic
 public import PhyslibAlpha.Relativity.General.InitialData.CovariantDerivTensor2
-public import PhyslibAlpha.Relativity.General.InitialData.Divergence3D
+public import PhyslibAlpha.Relativity.General.InitialData.SpaceChart
 public import PhyslibAlpha.Relativity.General.InitialData.FlatSlice
 public import PhyslibAlpha.Relativity.General.InitialData.InitialDataInterface
 public import PhyslibAlpha.Relativity.General.InitialData.ReducedWave3D
