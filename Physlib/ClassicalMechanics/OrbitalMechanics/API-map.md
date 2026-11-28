@@ -44,9 +44,10 @@ the escape speed and is bound. [8]
 ### General orbits
 
 On an orbit of semi-major axis a the vis-viva equation gives v² = G M (2 / r − 1 / a) {1}. [TODO]
-The two-body problem reduces to the motion of a single body of reduced mass M m / (M + m) in the
-relative coordinate {1}. [TODO] In a planar binary, the relative displacement sweeps out equal
-signed areas in equal times within a collision-free interval. Its areal rate is half the signed
+The kinetic energy in the centre-of-mass frame is half the reduced mass M m / (M + m) times the
+squared relative speed. [10] The two-body problem reduces to the motion of a single body of this
+mass in the relative coordinate {1}. [TODO] In a planar binary, the relative displacement sweeps
+out equal signed areas in equal times within a collision-free interval. Its areal rate is half the signed
 angular momentum per unit reduced mass. [9] Bound nonradial orbits are ellipses with the centre of
 force at a focus, and their squared periods are proportional to a³ {1}. [TODO]
 
@@ -71,6 +72,8 @@ force at a focus, and their squared periods are proportional to a³ {1}. [TODO]
    `VisViva.speedEscape_sq_eq_two_mul_speedCircular_sq`, `VisViva.speedCircular_lt_speedEscape`
 9. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/BinaryStar.lean —
    `binarySignedSweptArea_eq_of_gravity`, `binarySignedSweptArea_eq_of_eq_duration`
+10. Physlib/ClassicalMechanics/OrbitalMechanics/TwoBodyKineticEnergy.lean —
+    `binaryReducedMass`, `sum_relativeKineticEnergy_eq_binaryReducedMass`
 
 ## References
 

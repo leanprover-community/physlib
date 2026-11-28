@@ -22,6 +22,7 @@ at any time is determined by its position and the total momentum at a reference 
 
 ## ii. Key results
 
+- `centerOfMassVelocity` is the time derivative of the center-of-mass position.
 - `hasDerivAt_centerOfMass` expresses the center-of-mass velocity in terms of total momentum.
 - `centerOfMass_eq_of_noExternalForces` gives the center-of-mass position at any time from
   its position and the total momentum at a reference time.
@@ -52,6 +53,9 @@ variable {d : ℕ} (S : NewtonianSystem d)
 /-- The center of mass in the system's frame coordinates. -/
 def centerOfMass (t : ℝ) : S.Vector :=
   Finset.univ.centerMass (fun p : S.Particle => p.mass.val) (fun p => p.pos t)
+
+/-- The velocity of the center of mass in the system's frame coordinates. -/
+def centerOfMassVelocity : ℝ → S.Vector := deriv S.centerOfMass
 
 /-- The center-of-mass velocity is the total momentum divided by the total mass. -/
 lemma hasDerivAt_centerOfMass (t : ℝ) :
