@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Alex Meiburg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Meiburg, Leonardo A. Lessa
+Authors: Alex Meiburg, Leonardo A. Lessa, Morgan Tang
 -/
 module
 
@@ -984,7 +984,140 @@ theorem pure_separable_iff_traceLeft_pure (ψ : Ket (d₁ × d₂)) : IsSeparabl
     rw [ h4, Matrix.rank_transpose, Matrix.rank_conjTranspose_mul_self ];
   grind
 
---TODO: Separable states are convex
+private lemma probDist_mk'_coe {α : Type*} [Fintype α] (f : α → ℝ)
+    (h₁ : ∀ i, 0 ≤ f i) (hN : ∑ i, f i = 1) (i : α) :
+    ((ProbDistribution.mk' f h₁ hN i : Prob) : ℝ) = f i :=
+  rfl
+
+/-- Any finite convex mixture of product mixed states is separable. -/
+lemma isSeparable_of_product_mixture {ι : Type*} [Fintype ι]
+    (p : ProbDistribution ι) (σ₁ : ι → MState d₁) (σ₂ : ι → MState d₂)
+    (ρ : MState (d₁ × d₂))
+    (hρ : ρ.M = ∑ k : ι, (p k : ℝ) • ((σ₁ k) ⊗ᴹ (σ₂ k)).M) :
+    ρ.IsSeparable := by
+  classical
+  let f : ι → MState d₁ × MState d₂ := fun k => (σ₁ k, σ₂ k)
+  let S : Finset (MState d₁ × MState d₂) := Finset.univ.image f
+  let w : S → ℝ := fun x => ∑ k ∈ Finset.univ.filter (fun k => f k = x.val), (p k : ℝ)
+  have hw_nonneg : ∀ x : S, 0 ≤ w x := fun x =>
+    Finset.sum_nonneg fun k _ => Prob.zero_le_coe
+  have hw_sum : ∑ x : S, w x = 1 := by
+    calc ∑ x : S, w x
+        = ∑ x ∈ S, ∑ k ∈ Finset.univ.filter (fun k => f k = x), (p k : ℝ) := by
+            simpa [w] using (Finset.sum_attach S
+              (fun x => ∑ k ∈ Finset.univ.filter (fun k => f k = x), (p k : ℝ)))
+      _ = ∑ k ∈ (Finset.univ : Finset ι), (p k : ℝ) :=
+            Finset.sum_fiberwise_of_maps_to
+              (fun k _ => Finset.mem_image_of_mem f (Finset.mem_univ k)) _
+      _ = 1 := p.normalized
+  refine ⟨S, ProbDistribution.mk' w hw_nonneg hw_sum, ?_⟩
+  rw [hρ]
+  symm
+  change ∑ x : S, ((ProbDistribution.mk' w hw_nonneg hw_sum x : Prob) : ℝ) •
+      (x.val.1 ⊗ᴹ x.val.2).M = _
+  calc ∑ x : S, ((ProbDistribution.mk' w hw_nonneg hw_sum x : Prob) : ℝ) •
+          (x.val.1 ⊗ᴹ x.val.2).M
+      = ∑ x : S, w x • (x.val.1 ⊗ᴹ x.val.2).M := by
+          refine Finset.sum_congr rfl fun x _ => ?_
+          rw [probDist_mk'_coe]
+    _ = ∑ x ∈ S, (∑ k ∈ Finset.univ.filter (fun k => f k = x), (p k : ℝ)) •
+          (x.1 ⊗ᴹ x.2).M := by
+            simpa [w] using (Finset.sum_attach S
+              (fun x => (∑ k ∈ Finset.univ.filter (fun k => f k = x), (p k : ℝ)) •
+                (x.1 ⊗ᴹ x.2).M))
+    _ = ∑ x ∈ S, ∑ k ∈ Finset.univ.filter (fun k => f k = x),
+          (p k : ℝ) • ((σ₁ k) ⊗ᴹ (σ₂ k)).M := by
+            refine Finset.sum_congr rfl fun x _ => ?_
+            rw [Finset.sum_smul]
+            refine Finset.sum_congr rfl fun k hk => ?_
+            have hfk : f k = x := (Finset.mem_filter.mp hk).2
+            rw [← hfk]
+    _ = ∑ k ∈ (Finset.univ : Finset ι), (p k : ℝ) • ((σ₁ k) ⊗ᴹ (σ₂ k)).M :=
+            Finset.sum_fiberwise_of_maps_to
+              (fun k _ => Finset.mem_image_of_mem f (Finset.mem_univ k)) _
+
+/-- Any finite convex mixture of separable mixed states is separable. -/
+lemma isSeparable_of_separable_mixture {ι : Type*} [Fintype ι]
+    (p : ProbDistribution ι) (ρs : ι → MState (d₁ × d₂))
+    (hsep : ∀ k : ι, (ρs k).IsSeparable)
+    (ρ : MState (d₁ × d₂))
+    (hρ : ρ.M = ∑ k : ι, (p k : ℝ) • (ρs k).M) :
+    ρ.IsSeparable := by
+  classical
+  let S : ι → Finset (MState d₁ × MState d₂) := fun k => (hsep k).choose
+  let q : ∀ k : ι, ProbDistribution (S k) := fun k => (hsep k).choose_spec.choose
+  have hq : ∀ k : ι, (ρs k).M =
+      ∑ x : S k, ((q k x : Prob) : ℝ) • (x.val.1 ⊗ᴹ x.val.2).M :=
+    fun k => (hsep k).choose_spec.choose_spec
+  let J := Σ k : ι, S k
+  let w : J → ℝ := fun kx => (p kx.1 : ℝ) * ((q kx.1 kx.2 : Prob) : ℝ)
+  have hw_nonneg : ∀ kx : J, 0 ≤ w kx := fun kx =>
+    mul_nonneg Prob.zero_le_coe Prob.zero_le_coe
+  have hw_sum : ∑ kx : J, w kx = 1 := by
+    calc ∑ kx : J, w kx
+        = ∑ k : ι, ∑ x : S k, (p k : ℝ) * ((q k x : Prob) : ℝ) :=
+            Fintype.sum_sigma (fun kx : J => (p kx.1 : ℝ) * ((q kx.1 kx.2 : Prob) : ℝ))
+      _ = ∑ k : ι, (p k : ℝ) * ∑ x : S k, ((q k x : Prob) : ℝ) := by
+            refine Finset.sum_congr rfl fun k _ => ?_
+            rw [← Finset.mul_sum]
+      _ = ∑ k : ι, (p k : ℝ) * 1 := by
+            refine Finset.sum_congr rfl fun k _ => by rw [(q k).normalized]
+      _ = 1 := by simp [p.normalized]
+  let P : ProbDistribution J := ProbDistribution.mk' w hw_nonneg hw_sum
+  have hsum_P :
+      ∑ kx : J, ((P kx : Prob) : ℝ) • (kx.2.val.1 ⊗ᴹ kx.2.val.2).M =
+      ∑ k : ι, ∑ x : S k, ((p k : ℝ) * ((q k x : Prob) : ℝ)) • (x.val.1 ⊗ᴹ x.val.2).M := by
+    calc ∑ kx : J, ((P kx : Prob) : ℝ) • (kx.2.val.1 ⊗ᴹ kx.2.val.2).M
+        = ∑ kx : J, w kx • (kx.2.val.1 ⊗ᴹ kx.2.val.2).M := by
+            refine Finset.sum_congr rfl fun kx _ => ?_
+            rw [probDist_mk'_coe]
+      _ = ∑ k : ι, ∑ x : S k,
+            ((p k : ℝ) * ((q k x : Prob) : ℝ)) • (x.val.1 ⊗ᴹ x.val.2).M :=
+            Fintype.sum_sigma (fun kx : J => w kx • (kx.2.val.1 ⊗ᴹ kx.2.val.2).M)
+  apply isSeparable_of_product_mixture P (fun kx => kx.2.val.1) (fun kx => kx.2.val.2) ρ
+  rw [hρ, hsum_P]
+  refine Finset.sum_congr rfl fun k _ => ?_
+  rw [hq k, Finset.smul_sum]
+  refine Finset.sum_congr rfl fun x _ => by rw [smul_smul]
+
+/-- The convex mixture of two separable mixed states is separable. -/
+lemma isSeparable_mix {ρ₁ ρ₂ : MState (d₁ × d₂)}
+    (h₁ : ρ₁.IsSeparable) (h₂ : ρ₂.IsSeparable) (p : Prob) :
+    (p [ρ₁ ↔ ρ₂]).IsSeparable := by
+  let f : Bool → ℝ := fun b => if b then (p : ℝ) else 1 - (p : ℝ)
+  have hf_nonneg : ∀ b : Bool, 0 ≤ f b := fun b => by
+    cases b <;> dsimp [f]
+    · have h1m : 0 ≤ ((1 - p : Prob) : ℝ) := (1 - p).zero_le_coe
+      rwa [Prob.coe_one_minus] at h1m
+    · exact p.zero_le_coe
+  have hf_sum : ∑ b : Bool, f b = 1 := by
+    rw [Fintype.sum_bool]
+    dsimp [f]
+    ring
+  let dist : ProbDistribution Bool := ProbDistribution.mk' f hf_nonneg hf_sum
+  let ρs : Bool → MState (d₁ × d₂) := fun b => if b then ρ₁ else ρ₂
+  have hsep : ∀ b : Bool, (ρs b).IsSeparable := fun b => by cases b <;> assumption
+  apply isSeparable_of_separable_mixture dist ρs hsep (p [ρ₁ ↔ ρ₂])
+  have hmix : (p [ρ₁ ↔ ρ₂]).M = (p : ℝ) • ρ₁.M + (1 - (p : ℝ)) • ρ₂.M := by
+    change (p : ℝ) • ρ₁.M + ((1 - p : Prob) : ℝ) • ρ₂.M = _
+    rw [Prob.coe_one_minus]
+  rw [hmix, Fintype.sum_bool]
+  have hd_t : ((dist true : Prob) : ℝ) = (p : ℝ) := probDist_mk'_coe f hf_nonneg hf_sum true
+  have hd_f : ((dist false : Prob) : ℝ) = 1 - (p : ℝ) := probDist_mk'_coe f hf_nonneg hf_sum false
+  rw [hd_t, hd_f]
+  rfl
+
+/-- The set of density matrices of separable bipartite states is `Convex ℝ`. -/
+lemma isSeparable_convex :
+    Convex ℝ { M : HermitianMat (d₁ × d₂) ℂ |
+      ∃ ρ : MState (d₁ × d₂), ρ.IsSeparable ∧ ρ.M = M } := by
+  rintro _ ⟨ρ₁, h₁, rfl⟩ _ ⟨ρ₂, h₂, rfl⟩ a b ha hb hab
+  have ha_le : a ≤ 1 := by linarith
+  have hb_eq : b = 1 - a := by linarith
+  let p : Prob := ⟨a, ⟨ha, ha_le⟩⟩
+  refine ⟨p [ρ₁ ↔ ρ₂], isSeparable_mix h₁ h₂ p, ?_⟩
+  change (p : ℝ) • ρ₁.M + ((1 - p : Prob) : ℝ) • ρ₂.M = a • ρ₁.M + b • ρ₂.M
+  rw [Prob.coe_one_minus, hb_eq]
 
 section purification
 
