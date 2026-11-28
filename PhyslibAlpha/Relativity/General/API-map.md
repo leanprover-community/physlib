@@ -53,7 +53,13 @@ solutions by the Picard-Lindelöf theorem, reducing to straight lines when the c
 Riemannian 3-metric and symmetric extrinsic curvature tensor K_{ij} subject to the Hamiltonian and
 momentum constraint equations (using the 3D Levi-Civita covariant derivative `∇K`), which simplify
 on time-symmetric (K_{ij} = 0) and maximal (tr K = 0) slices [19][82], distinguish flat Minkowski
-vacuum data [20] from non-vacuum initial data with anisotropic extrinsic curvature [21]. Around the
+vacuum data [20] from non-vacuum initial data with anisotropic extrinsic curvature [21]. The
+analytic infrastructure behind the constraints is in place as well: the 3D divergence theorem
+[97], the one-dimensional wave Cauchy problem with its d'Alembert representation [98], the
+reduced wave equation in three space dimensions [99], the one- and three-dimensional wave
+energies [100][101] and their conservation [102][103], and the uniqueness of one- and
+three-dimensional wave solutions [104][105]. The initial-data interface assembles these into
+Sobolev data and well-posedness statements [106][107]. Around the
 Minkowski background g = η + h, first-order perturbation theory packages symmetric metric
 perturbations `MetricPerturbation` [22], defines the Minkowski trace `perturbationTrace` and
 trace-reversed perturbation h̄_{ij} = h_{ij} - ½ η_{ij} h [23], and defines the Minkowski
@@ -582,7 +588,31 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `Cosmology.FLRW.energyEquation`, `Cosmology.FLRW.momentumEquation`,
     `Cosmology.FLRW.pressureEquation`, `Cosmology.FLRW.PerturbedFieldEq`,
     `Cosmology.FLRW.perturbedFieldEq_gauge`
-
+97. PhyslibAlpha/Relativity/General/InitialData/Divergence3D.lean — `Space3`,
+    `integral_divergence_box_eq_zero`
+98. PhyslibAlpha/Relativity/General/InitialData/WaveCauchy.lean — `dAlembert`,
+    `dAlembert_wave_equation`, `dAlembert_cauchy_data`, `hasDerivAt_dAlembert_t`
+99. PhyslibAlpha/Relativity/General/InitialData/ReducedWave3D.lean — `planeWave3D`,
+    `spatialLaplacian3D_planeWave3D`, `planeWave3D_wave_equation`, `planeWave3D_cauchy_data`
+100. PhyslibAlpha/Relativity/General/InitialData/WaveEnergy.lean — `waveEnergy`,
+    `hasDerivAt_waveEnergy`, `waveEnergy_eq_initial`, `wave_zero_of_zero_data`
+101. PhyslibAlpha/Relativity/General/InitialData/WaveEnergy3D.lean — `waveEnergy3D`,
+    `hasDerivAt_waveEnergy3D`
+102. PhyslibAlpha/Relativity/General/InitialData/WaveEnergy3DConservation.lean —
+    `waveEnergy3D_eq_initial_of_divergence`
+103. PhyslibAlpha/Relativity/General/InitialData/WaveEnergy3DWave.lean — `waveFlux3D`,
+    `waveEnergy3D_eq_initial_of_wave`, `waveEnergy3DIntegrand_nonneg`,
+    `eq_zero_of_waveEnergy3D_eq_zero`
+104. PhyslibAlpha/Relativity/General/InitialData/WaveUniqueness.lean — `WaveSolutionOn`,
+    `wave_unique_of_same_data`
+105. PhyslibAlpha/Relativity/General/InitialData/WaveUniqueness3D.lean — `WaveSolution3D`,
+    `wave_zero_of_zero_data3D`, `wave_unique3D_of_same_data`
+106. PhyslibAlpha/Relativity/General/InitialData/InitialDataInterface.lean —
+    `ChartSpacetime.spatialMetric`, `ChartSpacetime.spatialMetricField`,
+    `spatialRiemannTensorOf`, `extrinsicDerivativeOf`,
+    `spatialRiemannTensorOfConstMetric_eq_flat`, `ChartInitialData`
+107. PhyslibAlpha/Relativity/General/InitialData/SobolevInitialData.lean — `sobolevH1NormSq1D`,
+    `sobolev_embedding_1D`, `trace_estimate_1D`, `sobolevH1NormSq3D`, `l2_le_sobolevH1_3D`
 ## References
 
 1. Units API map — Physlib/Units/API-map.md
