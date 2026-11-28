@@ -394,6 +394,7 @@ public import PhyslibAlpha.Mathematics.TauCeti.Analysis.InnerProductSpace.BasisS
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.InnerProductSpace.CourantFischer
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.InnerProductSpace.LinearCombination
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Matrix.PosSemidef
+public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Matrix.PosSemidefExp
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Normed.Operator.Dense
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.PositiveDefinite.AddGroup
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.PositiveDefinite.AdditiveCharacter
@@ -421,6 +422,7 @@ public import PhyslibAlpha.Mathematics.TauCeti.RepresentationTheory.Continuous.S
 public import PhyslibAlpha.Mathematics.TauCeti.RepresentationTheory.Continuous.Unitary.Basic
 public import PhyslibAlpha.Mathematics.TauCeti.Topology.Algebra.ContinuousMonoidHom.Polish
 public import PhyslibAlpha.Mathematics.TauCeti.Topology.Algebra.PontryaginDual
+public import PhyslibAlpha.Mathematics.TauCeti.Topology.Instances.Matrix
 public import PhyslibAlpha.Mathematics.TensorProductComm
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.GeorgiGlashow.StandardModelHom
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.ChargeBalance
