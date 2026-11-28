@@ -14,24 +14,24 @@ You should contribute to this project if: you have a formalization that has unde
 
 ## ./PhyslibAlpha
 
-This is the staging ground for ./Physlib. It is anlagous to things like ./linux/drivers/staging. Results going into it undergo a one-look human review with a binary decision of accept or reject.
+This is the staging ground for `./Physlib`. It is analogous to things like `./linux/drivers/staging`. Results going into it undergo a one-look human review with a binary decision of accept or reject.
 
-The purpose of it is to: Create a connected corpus of physics formalizations, following the best practices learned from Physlib which will one day be cleaned up for Physlib. In doing so, we will have a guide to the new definitions and results that can be added to Physlib. We will also have new lemmas around Physlib's existing trusted definitions, giving others access to a larger pool of results which they can use in their own formalisation.
+The purpose of it is to: Create a connected corpus of physics formalizations, following the best practices learned from Physlib which will one day be cleaned up for Physlib. In doing so, we will have a guide to the new definitions and results that can be added to Physlib. We will also have new lemmas around Physlib's existing trusted definitions, giving others access to a larger pool of results which they can use in their own formalization.
 
-You should contribute to this project if: You have a formalization that you think one day will want to end up in ./Physlib, but is not quite ready and you intend to improve it until that point, prehapse with a collobration of others.
+You should contribute to this project if: You have a formalization that you think one day will want to end up in ./Physlib, but is not quite ready and you intend to improve it until that point, perhaps with a collaboration of others.
 
-*misconception:* There is a misconception that this project is about AI generated code. It never has been, but it is naturally more accepting of AI generated code this ./Physlib.
+*misconception:* There is a misconception that this project is about AI generated code. It never has been, but it is naturally more accepting of AI generated code than ./Physlib.
 
 
 ## The community projects (physlib-community/...)
 
 This is a place for projects that have emerged out of the community that are distinct from the core project. They are also distinct from the maintainer team, which run the core project.
 
-These projects live on the *Physlib Lab* page of the website and link out to seperate websites.
+Many of these projects will live on the *Physlib Lab* page of the website and link out to separate websites.
 
 ### Website
 
-This is the landing page for Physlib.
+This is the landing page for Physlib. But also hosts ways to view and explore information related to Physlib.
 
 ### PhyslibX (name still undetermined)
 
