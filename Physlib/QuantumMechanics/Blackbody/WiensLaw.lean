@@ -79,7 +79,7 @@ noncomputable section
 
 namespace BlackBody
 
-open Set Filter Topology
+open Constants Set Filter Topology
 
 /-!
 
