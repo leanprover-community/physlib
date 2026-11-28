@@ -518,8 +518,7 @@ lemma quadraticProfile_second_deriv (G ρ : ℝ) (x : ℝ) :
   have h1 : deriv (fun z : ℝ => 2 * Real.pi * G * ρ * z ^ 2)
       = fun y : ℝ => 4 * Real.pi * G * ρ * y := by
     funext y
-    simp
-    ring
+    simp <;> ring
   rw [h1]
   simp
 
@@ -532,9 +531,11 @@ lemma aqual_integral_mul_deriv_eq_neg_integral_deriv_mul
     (hu : ContinuousOn u (Set.uIcc a b)) (hv : ContinuousOn v (Set.uIcc a b))
     (hu' : ∀ x ∈ Set.Ioo (min a b) (max a b), HasDerivAt u (u' x) x)
     (hv' : ∀ x ∈ Set.Ioo (min a b) (max a b), HasDerivAt v (v' x) x)
-    (hiu : IntervalIntegrable u' MeasureTheory.volume a b) (hiv : IntervalIntegrable v' MeasureTheory.volume a b)
+    (hiu : IntervalIntegrable u' MeasureTheory.volume a b) (hiv : IntervalIntegrable v'
+      MeasureTheory.volume a b)
     (hva : v a = 0) (hvb : v b = 0) :
-    (∫ x in a..b, u x * v' x ∂MeasureTheory.volume) = -∫ x in a..b, u' x * v x ∂MeasureTheory.volume := by
+    (∫ x in a..b, u x * v' x ∂MeasureTheory.volume) = -∫ x in a..b, u' x
+      * v x ∂MeasureTheory.volume := by
   rw [intervalIntegral.integral_mul_deriv_eq_deriv_mul_of_hasDerivAt hu hv hu' hv' hiu hiv,
     hva, hvb]
   ring
@@ -1592,7 +1593,8 @@ lemma hasDerivAt_aqualActionLine_of_decay
       calc |-ρ x * v x + aqualMomentumDensity a0 G F' (fun t => φ' t + ε * v' t) x * v' x|
           ≤ |-ρ x * v x| + |aqualMomentumDensity a0 G F' (fun t => φ' t + ε * v' t) x * v' x| :=
             abs_add_le _ _
-        _ = |ρ x| * |v x| + |aqualMomentumDensity a0 G F' (fun t => φ' t + ε * v' t) x| * |v' x| := by
+        _ = |ρ x| * |v x| + |aqualMomentumDensity a0 G F' (fun t => φ' t + ε * v' t) x|
+          * |v' x| := by
             rw [abs_mul, abs_neg, abs_mul]
         _ ≤ |ρ x| * |v x| + (C * (|φ' x| + |v' x|)) * |v' x| := by
             gcongr
@@ -1619,10 +1621,13 @@ lemma hasDerivAt_aqualActionLine_of_decay
       have hprod : MeasureTheory.Integrable (fun x => v' x * v' x) MeasureTheory.volume :=
         hv'_int.mul_bdd hv'_meas hvCv'
       simpa only [abs_mul] using hprod.abs
-    have hterm2 : MeasureTheory.Integrable (fun x => C * (|φ' x| + |v' x|) * |v' x|) MeasureTheory.volume := by
-      have hsum : MeasureTheory.Integrable (fun x => |φ' x| * |v' x| + |v' x| * |v' x|) MeasureTheory.volume :=
+    have hterm2 : MeasureTheory.Integrable (fun x => C * (|φ' x| + |v' x|)
+      * |v' x|) MeasureTheory.volume := by
+      have hsum : MeasureTheory.Integrable (fun x => |φ' x| * |v' x| + |v' x|
+        * |v' x|) MeasureTheory.volume :=
         hterm2a.add hterm2b
-      have hmul : MeasureTheory.Integrable (fun x => C * (|φ' x| * |v' x| + |v' x| * |v' x|)) MeasureTheory.volume :=
+      have hmul : MeasureTheory.Integrable (fun x => C * (|φ' x| * |v' x| + |v' x|
+        * |v' x|)) MeasureTheory.volume :=
         hsum.const_mul C
       refine hmul.congr (Filter.Eventually.of_forall (fun x => ?_))
       ring

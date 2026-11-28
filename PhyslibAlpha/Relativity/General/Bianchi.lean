@@ -159,34 +159,42 @@ lemma metric_compat {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fin 
     covDeriv2 g ginv g x l i j = 0 := by
   have hsum : ∀ p q : Fin n,
       (∑ a, christoffel g ginv x a l p * g x a q) =
-        (1 / 2) * (CoordinateCurvature.coordDeriv l (fun y => g y p q) x + CoordinateCurvature.coordDeriv p (fun y => g y l q) x
+        (1 / 2) * (CoordinateCurvature.coordDeriv l (fun y => g y p q) x
+          + CoordinateCurvature.coordDeriv p (fun y => g y l q) x
           - CoordinateCurvature.coordDeriv q (fun y => g y l p) x) := by
     intro p q
     simp only [christoffel, Finset.mul_sum, Finset.sum_mul]
     rw [Finset.sum_comm]
     calc
       ∑ m, ∑ a, (1 / 2) * (ginv x a m *
-          (CoordinateCurvature.coordDeriv l (fun y => g y p m) x + CoordinateCurvature.coordDeriv p (fun y => g y l m) x
+          (CoordinateCurvature.coordDeriv l (fun y => g y p m) x
+            + CoordinateCurvature.coordDeriv p (fun y => g y l m) x
             - CoordinateCurvature.coordDeriv m (fun y => g y l p) x)) * g x a q
-          = ∑ m, (1 / 2) * (CoordinateCurvature.coordDeriv l (fun y => g y p m) x + CoordinateCurvature.coordDeriv p (fun y => g y l m) x
-              - CoordinateCurvature.coordDeriv m (fun y => g y l p) x) * (∑ a, ginv x a m * g x a q) := by
+          = ∑ m, (1 / 2) * (CoordinateCurvature.coordDeriv l (fun y => g y p m) x
+            + CoordinateCurvature.coordDeriv p (fun y => g y l m) x
+              - CoordinateCurvature.coordDeriv m (fun y => g y l p) x) * (∑ a, ginv x a m
+                * g x a q) := by
             apply Finset.sum_congr rfl
             intro m _
             rw [Finset.mul_sum]
             apply Finset.sum_congr rfl
             intro a _
             ring
-      _ = ∑ m, (1 / 2) * (CoordinateCurvature.coordDeriv l (fun y => g y p m) x + CoordinateCurvature.coordDeriv p (fun y => g y l m) x
-            - CoordinateCurvature.coordDeriv m (fun y => g y l p) x) * (if m = q then 1 else 0) := by
+      _ = ∑ m, (1 / 2) * (CoordinateCurvature.coordDeriv l (fun y => g y p m) x
+        + CoordinateCurvature.coordDeriv p (fun y => g y l m) x
+            - CoordinateCurvature.coordDeriv m (fun y => g y l p) x) *
+            (if m = q then 1 else 0) := by
             apply Finset.sum_congr rfl
             intro m _
             rw [hInv m q]
-      _ = (1 / 2) * (CoordinateCurvature.coordDeriv l (fun y => g y p q) x + CoordinateCurvature.coordDeriv p (fun y => g y l q) x
+      _ = (1 / 2) * (CoordinateCurvature.coordDeriv l (fun y => g y p q) x
+        + CoordinateCurvature.coordDeriv p (fun y => g y l q) x
             - CoordinateCurvature.coordDeriv q (fun y => g y l p) x) := by
             simp
   have h1 := hsum i j
   have h2 : (∑ a, christoffel g ginv x a l j * g x i a) =
-      (1 / 2) * (CoordinateCurvature.coordDeriv l (fun y => g y j i) x + CoordinateCurvature.coordDeriv j (fun y => g y l i) x
+      (1 / 2) * (CoordinateCurvature.coordDeriv l (fun y => g y j i) x
+        + CoordinateCurvature.coordDeriv j (fun y => g y l i) x
         - CoordinateCurvature.coordDeriv i (fun y => g y l j) x) := by
     have hg0 : ∀ a b, g x a b = g x b a := hgSymm.self_of_nhds
     have hrewrite : (∑ a, christoffel g ginv x a l j * g x i a) =
@@ -230,24 +238,30 @@ lemma inv_metric_compat {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : 
     exact (coordDeriv_mul l x (slice_differentiableAt l (hginvD i k))
       (slice_differentiableAt l (hgD k j))).symm
   have hpd_ginv : CoordinateCurvature.coordDeriv l (fun y => ginv y i b) x =
-      -∑ j, ∑ k, ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x * ginv x j b := by
+      -∑ j, ∑ k, ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x
+        * ginv x j b := by
     have h1 : CoordinateCurvature.coordDeriv l (fun y => ginv y i b) x =
-        ∑ k, CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * (∑ j, g x k j * ginv x j b) := by
+        ∑ k, CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * (∑ j, g x k j
+          * ginv x j b) := by
       simp [hInvR]
     rw [h1]
     simp_rw [Finset.mul_sum]
     rw [Finset.sum_comm]
-    have hstep : ∀ j, (∑ k, CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * (g x k j * ginv x j b)) =
-        -(∑ k, ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x * ginv x j b) := by
+    have hstep : ∀ j, (∑ k, CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * (g x k j
+      * ginv x j b)) =
+        -(∑ k, ginv x i k *
+          CoordinateCurvature.coordDeriv l (fun y => g y k j) x * ginv x j b) := by
       intro j
       have hd := hdiff j
       have hmul : (∑ k, (CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * g x k j
-          + ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x) * ginv x j b) = 0 := by
+          + ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x) * ginv x j b)
+            = 0 := by
         rw [← Finset.sum_mul, hd, zero_mul]
       have hsplit : (∑ k, (CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * g x k j
           + ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x) * ginv x j b) =
           (∑ k, CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * (g x k j * ginv x j b))
-            + ∑ k, ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x * ginv x j b := by
+            + ∑ k, ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x
+              * ginv x j b := by
         rw [← Finset.sum_add_distrib]
         apply Finset.sum_congr rfl
         intro k _
@@ -304,7 +318,8 @@ lemma inv_metric_compat {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : 
             simp
   unfold covDeriv2Up
   rw [hpd_ginv]
-  have hsplit : (∑ j, ∑ k, ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x * ginv x j b) =
+  have hsplit : (∑ j, ∑ k, ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x
+    * ginv x j b) =
       (∑ j, ∑ k, ginv x i k * (∑ a, christoffel g ginv x a l k * g x a j) * ginv x j b)
         + ∑ j, ∑ k, ginv x i k * (∑ a, christoffel g ginv x a l j * g x k a) * ginv x j b := by
     rw [← Finset.sum_add_distrib]
@@ -378,7 +393,8 @@ lemma riemann_lower_skew_first {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n
         (fun β => slice_differentiableAt p ((hΓD β q α).fun_mul (hgD β σ))),
       coordDeriv_sum p (fun β y => christoffel g ginv y β q σ * g y α β) x
         (fun β => slice_differentiableAt p ((hΓD β q σ).fun_mul (hgD α β)))]
-    have hm1 : ∀ β, CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q α * g y β σ) x =
+    have hm1 : ∀ β, CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q α
+      * g y β σ) x =
         CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q α) x * g x β σ +
           christoffel g ginv x β q α *
             ((∑ γ, christoffel g ginv x γ p β * g x γ σ) +
@@ -389,7 +405,8 @@ lemma riemann_lower_skew_first {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n
             ∑ γ, christoffel g ginv x γ p σ * g x β γ := (hmc_nhds β σ p).self_of_nhds
       rw [coordDeriv_mul p x (slice_differentiableAt p (hΓD β q α))
         (slice_differentiableAt p (hgD β σ)), hβ]
-    have hm2 : ∀ β, CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q σ * g y α β) x =
+    have hm2 : ∀ β, CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q σ
+      * g y α β) x =
         CoordinateCurvature.coordDeriv p (fun y => christoffel g ginv y β q σ) x * g x α β +
           christoffel g ginv x β q σ *
             ((∑ γ, christoffel g ginv x γ p α * g x γ β) +
@@ -403,7 +420,9 @@ lemma riemann_lower_skew_first {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n
     simp_rw [hm1, hm2, mul_add, Finset.mul_sum, Finset.sum_add_distrib]
     simp_rw [mul_assoc]
     ring
-  have hcomm : CoordinateCurvature.coordDeriv μ (CoordinateCurvature.coordDeriv ν (fun z => g z α σ)) x - CoordinateCurvature.coordDeriv ν (CoordinateCurvature.coordDeriv μ (fun z => g z α σ)) x = 0 := by
+  have hcomm : CoordinateCurvature.coordDeriv μ (CoordinateCurvature.coordDeriv ν (fun z => g z α
+    σ)) x - CoordinateCurvature.coordDeriv ν (CoordinateCurvature.coordDeriv μ (fun z => g z α σ)) x
+    = 0 := by
     rw [coordDeriv_comm μ ν (hgC2 α σ)]
     ring
   have hg0 : ∀ a b, g x a b = g x b a := hgSymm.self_of_nhds
@@ -731,16 +750,23 @@ lemma second_bianchi {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fin
   have hΓD : ∀ k i j, DifferentiableAt ℝ (fun y => christoffel g ginv y k i j) x :=
     fun k i j => (hΓC2 k i j).differentiableAt two_ne_zero
   have hdΓD : ∀ a k i j,
-      DifferentiableAt ℝ (fun y => CoordinateCurvature.coordDeriv a (fun z => christoffel g ginv z k i j) y) x :=
+      DifferentiableAt ℝ (fun y => CoordinateCurvature.coordDeriv a (fun z => christoffel g ginv z k
+        i j) y) x :=
     fun a k i j => (contDiffAt_one_pd (hΓC2 k i j) a).differentiableAt one_ne_zero
   have hpdR : ∀ a r s m p : Fin n,
       CoordinateCurvature.coordDeriv a (fun y => riemann g ginv y r s m p) x =
-        CoordinateCurvature.coordDeriv a (fun y => CoordinateCurvature.coordDeriv m (fun z => christoffel g ginv z r p s) y) x
-        - CoordinateCurvature.coordDeriv a (fun y => CoordinateCurvature.coordDeriv p (fun z => christoffel g ginv z r m s) y) x
-        + ∑ c, (CoordinateCurvature.coordDeriv a (fun y => christoffel g ginv y r m c) x * christoffel g ginv x c p s
-              + christoffel g ginv x r m c * CoordinateCurvature.coordDeriv a (fun y => christoffel g ginv y c p s) x
-              - CoordinateCurvature.coordDeriv a (fun y => christoffel g ginv y r p c) x * christoffel g ginv x c m s
-              - christoffel g ginv x r p c * CoordinateCurvature.coordDeriv a (fun y => christoffel g ginv y c m s) x) := by
+        CoordinateCurvature.coordDeriv a (fun y => CoordinateCurvature.coordDeriv m (fun z =>
+          christoffel g ginv z r p s) y) x
+        - CoordinateCurvature.coordDeriv a (fun y => CoordinateCurvature.coordDeriv p (fun z =>
+          christoffel g ginv z r m s) y) x
+        + ∑ c, (CoordinateCurvature.coordDeriv a (fun y => christoffel g ginv y r m c) x
+          * christoffel g ginv x c p s
+              + christoffel g ginv x r m c
+                * CoordinateCurvature.coordDeriv a (fun y => christoffel g ginv y c p s) x
+              - CoordinateCurvature.coordDeriv a (fun y => christoffel g ginv y r p c) x
+                * christoffel g ginv x c m s
+              - christoffel g ginv x r p c
+                * CoordinateCurvature.coordDeriv a (fun y => christoffel g ginv y c m s) x) := by
     intro a r s m p
     unfold riemann
     have hsub : DifferentiableAt ℝ (fun y =>
@@ -775,7 +801,8 @@ lemma second_bianchi {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fin
   have halg := second_bianchi_of
     (fun k i j => christoffel g ginv x k i j)
     (fun a k i j => CoordinateCurvature.coordDeriv a (fun y => christoffel g ginv y k i j) x)
-    (fun a b k i j => CoordinateCurvature.coordDeriv a (fun y => CoordinateCurvature.coordDeriv b (fun z => christoffel g ginv z k i j) y) x)
+    (fun a b k i j => CoordinateCurvature.coordDeriv a (fun y => CoordinateCurvature.coordDeriv b
+      (fun z => christoffel g ginv z k i j) y) x)
     (fun k i j => christoffel_symm g ginv hgSymm k i j)
     (fun a b k i j => coordDeriv_comm a b (hΓC2 k i j))
     l ρ σ μ ν
@@ -793,7 +820,8 @@ lemma differentiableAt_riemann {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n
   have hΓD : ∀ k i j, DifferentiableAt ℝ (fun y => christoffel g ginv y k i j) x :=
     fun k i j => (hΓC2 k i j).differentiableAt two_ne_zero
   have hdΓD : ∀ a k i j,
-      DifferentiableAt ℝ (fun y => CoordinateCurvature.coordDeriv a (fun z => christoffel g ginv z k i j) y) x :=
+      DifferentiableAt ℝ (fun y => CoordinateCurvature.coordDeriv a (fun z => christoffel g ginv z k
+        i j) y) x :=
     fun a k i j => (contDiffAt_one_pd (hΓC2 k i j) a).differentiableAt one_ne_zero
   unfold riemann
   exact ((hdΓD μ ρ ν σ).sub (hdΓD ν ρ μ σ)).add
@@ -819,7 +847,7 @@ lemma differentiableAt_scalarOf {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 
     DifferentiableAt.fun_sum fun ν _ =>
       (hginvD σ ν).mul (differentiableAt_ricciOf g ginv hΓC2 σ ν)
 
-/-- Contracting `ρ = μ` in `covDerivRiemann` yields `covDeriv2 (CoordinateCurvature.ricciTensor)`. -/
+/-- Contracting `ρ = μ` in `covDerivRiemann` yields `covDeriv2` of the Ricci tensor. -/
 lemma sum_covDerivRiemann_ricci {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fin n → ℝ}
     (hΓC2 : ∀ k i j, ContDiffAt ℝ 2 (fun y => christoffel g ginv y k i j) x)
     (m σ l : Fin n) :
@@ -880,8 +908,7 @@ lemma sum_covDerivRiemann_second_bianchi {n : ℕ} (g ginv : (Fin n → ℝ) →
     (l : Fin n) :
     (∑ m, ∑ σ, ginv x m σ * ∑ r, covDerivRiemann g ginv x m r σ r l)
     + (∑ m, ∑ σ, ginv x m σ * ∑ r, covDerivRiemann g ginv x r r σ l m)
-    + (∑ m, ∑ σ, ginv x m σ * ∑ r, covDerivRiemann g ginv x l r σ m r) = 0
-    := by
+    + (∑ m, ∑ σ, ginv x m σ * ∑ r, covDerivRiemann g ginv x l r σ m r) = 0 := by
   have hpt : ∀ m σ r : Fin n,
       covDerivRiemann g ginv x m r σ r l
         + covDerivRiemann g ginv x r r σ l m
@@ -909,8 +936,7 @@ lemma sum_ginv_covDerivRiemann_ricci {n : ℕ} (g ginv : (Fin n → ℝ) → Ten
     (hΓC2 : ∀ k i j, ContDiffAt ℝ 2 (fun y => christoffel g ginv y k i j) x)
     (l : Fin n) :
     (∑ m, ∑ σ, ginv x m σ * ∑ r, covDerivRiemann g ginv x m r σ r l) =
-    covDiv2 g ginv (CoordinateCurvature.ricciTensor g ginv) x l
-    := by
+    covDiv2 g ginv (CoordinateCurvature.ricciTensor g ginv) x l := by
   unfold covDiv2
   apply Finset.sum_congr rfl
   intro m _
@@ -929,13 +955,16 @@ lemma sum_ginv_covDerivRiemann_scalar {n : ℕ} (g ginv : (Fin n → ℝ) → Te
         - ∑ c, christoffel g ginv x j a c * ginv x i c)
     (l : Fin n) :
     (∑ m, ∑ σ, ginv x m σ * ∑ r, covDerivRiemann g ginv x l r σ m r) =
-    -CoordinateCurvature.coordDeriv l (CoordinateCurvature.ricciScalar g ginv) x
-    := by
-  have hRicD : ∀ σ ν, DifferentiableAt ℝ (fun y => CoordinateCurvature.ricciTensor g ginv y σ ν) x :=
+    -CoordinateCurvature.coordDeriv l (CoordinateCurvature.ricciScalar g ginv) x := by
+  have hRicD : ∀ σ ν,
+      DifferentiableAt ℝ (fun y => CoordinateCurvature.ricciTensor g ginv y σ ν) x :=
     fun σ ν => differentiableAt_ricciOf g ginv hΓC2 σ ν
   have hpdS : CoordinateCurvature.coordDeriv l (CoordinateCurvature.ricciScalar g ginv) x =
-      ∑ m, ∑ σ, (CoordinateCurvature.coordDeriv l (fun y => ginv y m σ) x * CoordinateCurvature.ricciTensor g ginv x m σ
-        + ginv x m σ * CoordinateCurvature.coordDeriv l (fun y => CoordinateCurvature.ricciTensor g ginv y m σ) x) := by
+      ∑ m, ∑ σ, (CoordinateCurvature.coordDeriv l (fun y => ginv y m σ) x
+        * CoordinateCurvature.ricciTensor g ginv x m σ
+        + ginv x m σ
+          * CoordinateCurvature.coordDeriv l (fun y => CoordinateCurvature.ricciTensor g ginv y m σ)
+          x) := by
     unfold CoordinateCurvature.ricciScalar
     rw [coordDeriv_sum l
       (fun m y => ∑ σ, ginv y m σ * CoordinateCurvature.ricciTensor g ginv y m σ) x
@@ -980,12 +1009,17 @@ lemma sum_ginv_covDerivRiemann_scalar {n : ℕ} (g ginv : (Fin n → ℝ) → Te
   have hginv0 : ∀ a b, ginv x a b = ginv x b a := hginvSymm.self_of_nhds
   have hmain :
       (∑ m, ∑ σ, ginv x m σ * covDeriv2 g ginv (CoordinateCurvature.ricciTensor g ginv) x l σ m) =
-      (∑ m, ∑ σ, (CoordinateCurvature.coordDeriv l (fun y => ginv y m σ) x * CoordinateCurvature.ricciTensor g ginv x σ m
-        + ginv x m σ * CoordinateCurvature.coordDeriv l (fun y => CoordinateCurvature.ricciTensor g ginv y σ m) x)) := by
+      (∑ m, ∑ σ, (CoordinateCurvature.coordDeriv l (fun y => ginv y m σ) x
+        * CoordinateCurvature.ricciTensor g ginv x σ m
+        + ginv x m σ
+          * CoordinateCurvature.coordDeriv l (fun y => CoordinateCurvature.ricciTensor g ginv y σ m)
+          x)) := by
     simp only [covDeriv2, mul_sub, Finset.sum_sub_distrib, hInvUp]
     have hA :
-        (∑ m, ∑ σ, ginv x m σ * ∑ a, christoffel g ginv x a l σ * CoordinateCurvature.ricciTensor g ginv x a m) =
-        (∑ m, ∑ σ, (∑ c, christoffel g ginv x σ l c * ginv x m c) * CoordinateCurvature.ricciTensor g ginv x σ m) := by
+        (∑ m, ∑ σ, ginv x m σ * ∑ a, christoffel g ginv x a l σ
+          * CoordinateCurvature.ricciTensor g ginv x a m) =
+        (∑ m, ∑ σ, (∑ c, christoffel g ginv x σ l c * ginv x m c)
+          * CoordinateCurvature.ricciTensor g ginv x σ m) := by
       apply Finset.sum_congr rfl
       intro m _
       simp_rw [Finset.mul_sum, Finset.sum_mul]
@@ -996,8 +1030,10 @@ lemma sum_ginv_covDerivRiemann_scalar {n : ℕ} (g ginv : (Fin n → ℝ) → Te
       intro c _
       ring
     have hB :
-        (∑ m, ∑ σ, ginv x m σ * ∑ a, christoffel g ginv x a l m * CoordinateCurvature.ricciTensor g ginv x σ a) =
-        (∑ m, ∑ σ, (∑ c, christoffel g ginv x m l c * ginv x c σ) * CoordinateCurvature.ricciTensor g ginv x σ m) := by
+        (∑ m, ∑ σ, ginv x m σ * ∑ a, christoffel g ginv x a l m
+          * CoordinateCurvature.ricciTensor g ginv x σ a) =
+        (∑ m, ∑ σ, (∑ c, christoffel g ginv x m l c * ginv x c σ)
+          * CoordinateCurvature.ricciTensor g ginv x σ m) := by
       rw [Finset.sum_comm]
       conv_rhs => rw [Finset.sum_comm]
       apply Finset.sum_congr rfl
@@ -1012,11 +1048,18 @@ lemma sum_ginv_covDerivRiemann_scalar {n : ℕ} (g ginv : (Fin n → ℝ) → Te
       ring
     have hsplit :
         (∑ m, ∑ σ, ((-(∑ c, christoffel g ginv x m l c * ginv x c σ)
-          - ∑ c, christoffel g ginv x σ l c * ginv x m c) * CoordinateCurvature.ricciTensor g ginv x σ m
-          + ginv x m σ * CoordinateCurvature.coordDeriv l (fun y => CoordinateCurvature.ricciTensor g ginv y σ m) x)) =
-        (∑ m, ∑ σ, ginv x m σ * CoordinateCurvature.coordDeriv l (fun y => CoordinateCurvature.ricciTensor g ginv y σ m) x)
-          - (∑ m, ∑ σ, (∑ c, christoffel g ginv x σ l c * ginv x m c) * CoordinateCurvature.ricciTensor g ginv x σ m)
-          - (∑ m, ∑ σ, (∑ c, christoffel g ginv x m l c * ginv x c σ) * CoordinateCurvature.ricciTensor g ginv x σ m) := by
+          - ∑ c, christoffel g ginv x σ l c * ginv x m c)
+            * CoordinateCurvature.ricciTensor g ginv x σ m
+          + ginv x m σ
+            * CoordinateCurvature.coordDeriv l (fun y => CoordinateCurvature.ricciTensor g ginv y σ
+            m) x)) =
+        (∑ m, ∑ σ, ginv x m σ
+          * CoordinateCurvature.coordDeriv l (fun y => CoordinateCurvature.ricciTensor g ginv y σ m)
+          x)
+          - (∑ m, ∑ σ, (∑ c, christoffel g ginv x σ l c * ginv x m c)
+            * CoordinateCurvature.ricciTensor g ginv x σ m)
+          - (∑ m, ∑ σ, (∑ c, christoffel g ginv x m l c * ginv x c σ)
+            * CoordinateCurvature.ricciTensor g ginv x σ m) := by
       simp_rw [← Finset.sum_sub_distrib]
       apply Finset.sum_congr rfl
       intro m _
@@ -1046,8 +1089,7 @@ lemma sum_ginv_riemann_ricci {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) 
     (hΓC2 : ∀ k i j, ContDiffAt ℝ 2 (fun y => christoffel g ginv y k i j) x) :
     ∀ r a : Fin n,
     (fun y => ∑ m, ∑ σ, ginv y m σ * riemann g ginv y r σ a m) =ᶠ[𝓝 x]
-    fun y => ∑ m, ginv y r m * CoordinateCurvature.ricciTensor g ginv y m a
-    := by
+    fun y => ∑ m, ginv y r m * CoordinateCurvature.ricciTensor g ginv y m a := by
   intro r a
   have hS : ∀ᶠ y in 𝓝 x, ∀ᶠ z in 𝓝 y, ∀ i j, g z i j = g z j i :=
     eventually_eventually_nhds.mpr hgSymm
@@ -1176,25 +1218,29 @@ lemma sum_ginv_covDerivRiemann_ricci_div {n : ℕ} (g ginv : (Fin n → ℝ) →
         - ∑ c, christoffel g ginv x j a c * ginv x i c)
     (l : Fin n) :
     (∑ m, ∑ σ, ginv x m σ * ∑ r, covDerivRiemann g ginv x r r σ l m) =
-    covDiv2 g ginv (CoordinateCurvature.ricciTensor g ginv) x l
-    := by
+    covDiv2 g ginv (CoordinateCurvature.ricciTensor g ginv) x l := by
   have hRD : ∀ ρ σ μ ν, DifferentiableAt ℝ (fun y => riemann g ginv y ρ σ μ ν) x :=
     fun ρ σ μ ν => differentiableAt_riemann g ginv hΓC2 ρ σ μ ν
-  have hRicD : ∀ σ ν, DifferentiableAt ℝ (fun y => CoordinateCurvature.ricciTensor g ginv y σ ν) x :=
+  have hRicD : ∀ σ ν,
+      DifferentiableAt ℝ (fun y => CoordinateCurvature.ricciTensor g ginv y σ ν) x :=
     fun σ ν => differentiableAt_ricciOf g ginv hΓC2 σ ν
   have hginv0 : ∀ a b, ginv x a b = ginv x b a := hginvSymm.self_of_nhds
   have hstep : ∀ r,
       (∑ m, ∑ σ, ginv x m σ * covDerivRiemann g ginv x r r σ l m) =
-        CoordinateCurvature.coordDeriv r (fun y => ∑ m, ∑ σ, ginv y m σ * riemann g ginv y r σ l m) x
+        CoordinateCurvature.coordDeriv r
+          (fun y => ∑ m, ∑ σ, ginv y m σ * riemann g ginv y r σ l m) x
         + ∑ a, christoffel g ginv x r r a *
             (∑ m, ∑ σ, ginv x m σ * riemann g ginv x a σ l m)
         - ∑ a, christoffel g ginv x a r l *
             (∑ m, ∑ σ, ginv x m σ * riemann g ginv x r σ a m) := by
     intro r
     have hpd_lhs :
-        CoordinateCurvature.coordDeriv r (fun y => ∑ m, ∑ σ, ginv y m σ * riemann g ginv y r σ l m) x =
-          ∑ m, ∑ σ, (CoordinateCurvature.coordDeriv r (fun y => ginv y m σ) x * riemann g ginv x r σ l m
-            + ginv x m σ * CoordinateCurvature.coordDeriv r (fun y => riemann g ginv y r σ l m) x) := by
+        CoordinateCurvature.coordDeriv r (fun y => ∑ m, ∑ σ, ginv y m σ
+          * riemann g ginv y r σ l m) x =
+          ∑ m, ∑ σ, (CoordinateCurvature.coordDeriv r (fun y => ginv y m σ) x
+            * riemann g ginv x r σ l m
+            + ginv x m σ
+              * CoordinateCurvature.coordDeriv r (fun y => riemann g ginv y r σ l m) x) := by
       rw [coordDeriv_sum r
         (fun m y => ∑ σ, ginv y m σ * riemann g ginv y r σ l m) x
         (fun m => slice_differentiableAt r
@@ -1209,9 +1255,11 @@ lemma sum_ginv_covDerivRiemann_ricci_div {n : ℕ} (g ginv : (Fin n → ℝ) →
       exact coordDeriv_mul r x (slice_differentiableAt r (hginvD m σ))
         (slice_differentiableAt r (hRD r σ l m))
     have hsplit :
-        (∑ m, ∑ σ, ((CoordinateCurvature.coordDeriv r (fun y => ginv y m σ) x) * riemann g ginv x r σ l m
+        (∑ m, ∑ σ, ((CoordinateCurvature.coordDeriv r (fun y => ginv y m σ) x)
+          * riemann g ginv x r σ l m
           + ginv x m σ * CoordinateCurvature.coordDeriv r (fun y => riemann g ginv y r σ l m) x)) =
-        (∑ m, ∑ σ, ginv x m σ * CoordinateCurvature.coordDeriv r (fun y => riemann g ginv y r σ l m) x)
+        (∑ m, ∑ σ, ginv x m σ
+          * CoordinateCurvature.coordDeriv r (fun y => riemann g ginv y r σ l m) x)
           - (∑ m, ∑ σ, (∑ c, christoffel g ginv x σ r c * ginv x m c) *
               riemann g ginv x r σ l m)
           - (∑ m, ∑ σ, (∑ c, christoffel g ginv x m r c * ginv x c σ) *
@@ -1229,7 +1277,8 @@ lemma sum_ginv_covDerivRiemann_ricci_div {n : ℕ} (g ginv : (Fin n → ℝ) →
           (∑ m, ∑ σ,
             ((-(∑ c, christoffel g ginv x m r c * ginv x c σ)
               - ∑ c, christoffel g ginv x σ r c * ginv x m c) * riemann g ginv x r σ l m
-              + ginv x m σ * CoordinateCurvature.coordDeriv r (fun y => riemann g ginv y r σ l m) x)) =
+              + ginv x m σ
+                * CoordinateCurvature.coordDeriv r (fun y => riemann g ginv y r σ l m) x)) =
           ∑ m, ∑ σ,
             (ginv x m σ * CoordinateCurvature.coordDeriv r (fun y => riemann g ginv y r σ l m) x
               - (∑ c, christoffel g ginv x σ r c * ginv x m c) * riemann g ginv x r σ l m
@@ -1330,16 +1379,22 @@ lemma sum_ginv_covDerivRiemann_ricci_div {n : ℕ} (g ginv : (Fin n → ℝ) →
     rw [coordDeriv_sum r
       (fun m y => ginv y r m * CoordinateCurvature.ricciTensor g ginv y m l) x
       (fun m => slice_differentiableAt r ((hginvD r m).fun_mul (hRicD m l)))]
-    have hpm : ∀ m, CoordinateCurvature.coordDeriv r (fun y => ginv y r m * CoordinateCurvature.ricciTensor g ginv y m l) x =
-        CoordinateCurvature.coordDeriv r (fun y => ginv y r m) x * CoordinateCurvature.ricciTensor g ginv x m l
-          + ginv x r m * CoordinateCurvature.coordDeriv r (fun y => CoordinateCurvature.ricciTensor g ginv y m l) x :=
+    have hpm : ∀ m, CoordinateCurvature.coordDeriv r (fun y => ginv y r m
+      * CoordinateCurvature.ricciTensor g ginv y m l) x =
+        CoordinateCurvature.coordDeriv r (fun y => ginv y r m) x
+          * CoordinateCurvature.ricciTensor g ginv x m l
+          + ginv x r m
+            * CoordinateCurvature.coordDeriv r (fun y => CoordinateCurvature.ricciTensor g ginv y m
+            l) x :=
       fun m => coordDeriv_mul r x (slice_differentiableAt r (hginvD r m))
         (slice_differentiableAt r (hRicD m l))
     simp_rw [hpm, hInvUp]
     simp only [covDeriv2, mul_sub, Finset.sum_add_distrib, Finset.sum_sub_distrib]
     have hX :
-        (∑ a, christoffel g ginv x r r a * ∑ m, ginv x a m * CoordinateCurvature.ricciTensor g ginv x m l) =
-        (∑ m, (∑ c, christoffel g ginv x r r c * ginv x c m) * CoordinateCurvature.ricciTensor g ginv x m l) := by
+        (∑ a, christoffel g ginv x r r a * ∑ m, ginv x a m
+          * CoordinateCurvature.ricciTensor g ginv x m l) =
+        (∑ m, (∑ c, christoffel g ginv x r r c * ginv x c m)
+          * CoordinateCurvature.ricciTensor g ginv x m l) := by
       simp_rw [Finset.mul_sum]
       rw [Finset.sum_comm]
       apply Finset.sum_congr rfl
@@ -1349,8 +1404,10 @@ lemma sum_ginv_covDerivRiemann_ricci_div {n : ℕ} (g ginv : (Fin n → ℝ) →
       intro c _
       ring
     have hY :
-        (∑ m, ginv x r m * ∑ a, christoffel g ginv x a r m * CoordinateCurvature.ricciTensor g ginv x a l) =
-        (∑ m, (∑ c, christoffel g ginv x m r c * ginv x r c) * CoordinateCurvature.ricciTensor g ginv x m l) := by
+        (∑ m, ginv x r m * ∑ a, christoffel g ginv x a r m
+          * CoordinateCurvature.ricciTensor g ginv x a l) =
+        (∑ m, (∑ c, christoffel g ginv x m r c * ginv x r c)
+          * CoordinateCurvature.ricciTensor g ginv x m l) := by
       simp_rw [Finset.mul_sum, Finset.sum_mul]
       rw [Finset.sum_comm]
       apply Finset.sum_congr rfl
@@ -1359,8 +1416,10 @@ lemma sum_ginv_covDerivRiemann_ricci_div {n : ℕ} (g ginv : (Fin n → ℝ) →
       intro c _
       ring
     have hZ :
-        (∑ a, christoffel g ginv x a r l * ∑ m, ginv x r m * CoordinateCurvature.ricciTensor g ginv x m a) =
-        (∑ m, ginv x r m * ∑ a, christoffel g ginv x a r l * CoordinateCurvature.ricciTensor g ginv x m a) := by
+        (∑ a, christoffel g ginv x a r l * ∑ m, ginv x r m
+          * CoordinateCurvature.ricciTensor g ginv x m a) =
+        (∑ m, ginv x r m * ∑ a, christoffel g ginv x a r l
+          * CoordinateCurvature.ricciTensor g ginv x m a) := by
       simp_rw [Finset.mul_sum]
       rw [Finset.sum_comm]
       apply Finset.sum_congr rfl
@@ -1370,14 +1429,20 @@ lemma sum_ginv_covDerivRiemann_ricci_div {n : ℕ} (g ginv : (Fin n → ℝ) →
       ring
     have hsplit :
         (∑ m, (-(∑ c, christoffel g ginv x r r c * ginv x c m)
-          - ∑ c, christoffel g ginv x m r c * ginv x r c) * CoordinateCurvature.ricciTensor g ginv x m l) =
-        -(∑ m, (∑ c, christoffel g ginv x r r c * ginv x c m) * CoordinateCurvature.ricciTensor g ginv x m l)
-          - (∑ m, (∑ c, christoffel g ginv x m r c * ginv x r c) * CoordinateCurvature.ricciTensor g ginv x m l) := by
+          - ∑ c, christoffel g ginv x m r c * ginv x r c)
+            * CoordinateCurvature.ricciTensor g ginv x m l) =
+        -(∑ m, (∑ c, christoffel g ginv x r r c * ginv x c m)
+          * CoordinateCurvature.ricciTensor g ginv x m l)
+          - (∑ m, (∑ c, christoffel g ginv x m r c * ginv x r c)
+            * CoordinateCurvature.ricciTensor g ginv x m l) := by
       have hm : ∀ m,
           (-(∑ c, christoffel g ginv x r r c * ginv x c m)
-            - ∑ c, christoffel g ginv x m r c * ginv x r c) * CoordinateCurvature.ricciTensor g ginv x m l =
-          -((∑ c, christoffel g ginv x r r c * ginv x c m) * CoordinateCurvature.ricciTensor g ginv x m l)
-            - (∑ c, christoffel g ginv x m r c * ginv x r c) * CoordinateCurvature.ricciTensor g ginv x m l := by
+            - ∑ c, christoffel g ginv x m r c * ginv x r c)
+              * CoordinateCurvature.ricciTensor g ginv x m l =
+          -((∑ c, christoffel g ginv x r r c * ginv x c m)
+            * CoordinateCurvature.ricciTensor g ginv x m l)
+            - (∑ c, christoffel g ginv x m r c * ginv x r c)
+              * CoordinateCurvature.ricciTensor g ginv x m l := by
         intro m; ring
       simp_rw [hm, Finset.sum_sub_distrib, Finset.sum_neg_distrib]
     rw [hsplit, hX, hY, hZ]
@@ -1396,7 +1461,8 @@ lemma contracted_bianchi {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x :
     (hginvD : ∀ i j, DifferentiableAt ℝ (fun y => ginv y i j) x)
     (hΓC2 : ∀ k i j, ContDiffAt ℝ 2 (fun y => christoffel g ginv y k i j) x)
     (l : Fin n) :
-    covDiv2 g ginv (CoordinateCurvature.ricciTensor g ginv) x l = (1 / 2) * CoordinateCurvature.coordDeriv l (CoordinateCurvature.ricciScalar g ginv) x := by
+    covDiv2 g ginv (CoordinateCurvature.ricciTensor g ginv) x l = (1 / 2)
+      * CoordinateCurvature.coordDeriv l (CoordinateCurvature.ricciScalar g ginv) x := by
   have hgD : ∀ i j, DifferentiableAt ℝ (fun y => g y i j) x :=
     fun i j => (hgC2 i j).differentiableAt two_ne_zero
   have hInvUp : ∀ a i j, CoordinateCurvature.coordDeriv a (fun y => ginv y i j) x =
@@ -1407,7 +1473,8 @@ lemma contracted_bianchi {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x :
   have hBsum := sum_covDerivRiemann_second_bianchi g ginv hgSymm hΓC2 l
   have hT1 := sum_ginv_covDerivRiemann_ricci g ginv hΓC2 l
   have hT3 := sum_ginv_covDerivRiemann_scalar g ginv hginvSymm hginvD hΓC2 hInvUp l
-  have hT2 := sum_ginv_covDerivRiemann_ricci_div g ginv hginvSymm hginvD hΓC2 (sum_ginv_riemann_ricci g ginv hgSymm hginvSymm hInvL hInvR hgC2 hΓC2) hInvUp l
+  have hT2 := sum_ginv_covDerivRiemann_ricci_div g ginv hginvSymm hginvD hΓC2
+    (sum_ginv_riemann_ricci g ginv hgSymm hginvSymm hInvL hInvR hgC2 hΓC2) hInvUp l
   rw [hT1, hT2, hT3] at hBsum
   linarith
 /-- **General Einstein tensor conservation**: `∇^μ G_{μl} = 0` in arbitrary
@@ -1425,7 +1492,8 @@ lemma covDiv_einstein_eq_zero {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     covDiv2 g ginv (CoordinateCurvature.einsteinTensor g ginv) x l = 0 := by
   have hgD : ∀ i j, DifferentiableAt ℝ (fun y => g y i j) x :=
     fun i j => (hgC2 i j).differentiableAt two_ne_zero
-  have hRicD : ∀ σ ν, DifferentiableAt ℝ (fun y => CoordinateCurvature.ricciTensor g ginv y σ ν) x :=
+  have hRicD : ∀ σ ν,
+      DifferentiableAt ℝ (fun y => CoordinateCurvature.ricciTensor g ginv y σ ν) x :=
     fun σ ν => differentiableAt_ricciOf g ginv hΓC2 σ ν
   have hSD : DifferentiableAt ℝ (CoordinateCurvature.ricciScalar g ginv) x :=
     differentiableAt_scalarOf g ginv hginvD hΓC2
@@ -1435,7 +1503,8 @@ lemma covDiv_einstein_eq_zero {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
   have hcd : ∀ μ ν,
       covDeriv2 g ginv (CoordinateCurvature.einsteinTensor g ginv) x μ ν l =
         covDeriv2 g ginv (CoordinateCurvature.ricciTensor g ginv) x μ ν l
-          - (1 / 2) * CoordinateCurvature.coordDeriv μ (CoordinateCurvature.ricciScalar g ginv) x * g x ν l := by
+          - (1 / 2) * CoordinateCurvature.coordDeriv μ (CoordinateCurvature.ricciScalar g ginv) x
+            * g x ν l := by
     intro μ ν
     unfold covDeriv2 CoordinateCurvature.einsteinTensor
     have hsub := coordDeriv_sub μ x (slice_differentiableAt μ (hRicD ν l))
@@ -1453,15 +1522,19 @@ lemma covDiv_einstein_eq_zero {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     rw [hsub, hmul, hcmul]
     simp_rw [mul_sub, Finset.sum_sub_distrib]
     have h1 :
-        (∑ a, christoffel g ginv x a μ ν * ((1 / 2) * CoordinateCurvature.ricciScalar g ginv x * g x a l)) =
-        (1 / 2) * CoordinateCurvature.ricciScalar g ginv x * ∑ a, christoffel g ginv x a μ ν * g x a l := by
+        (∑ a, christoffel g ginv x a μ ν * ((1 / 2) * CoordinateCurvature.ricciScalar g ginv x
+          * g x a l)) =
+        (1 / 2) * CoordinateCurvature.ricciScalar g ginv x * ∑ a, christoffel g ginv x a μ ν
+          * g x a l := by
       rw [Finset.mul_sum]
       apply Finset.sum_congr rfl
       intro a _
       ring
     have h2 :
-        (∑ a, christoffel g ginv x a μ l * ((1 / 2) * CoordinateCurvature.ricciScalar g ginv x * g x ν a)) =
-        (1 / 2) * CoordinateCurvature.ricciScalar g ginv x * ∑ a, christoffel g ginv x a μ l * g x ν a := by
+        (∑ a, christoffel g ginv x a μ l * ((1 / 2) * CoordinateCurvature.ricciScalar g ginv x
+          * g x ν a)) =
+        (1 / 2) * CoordinateCurvature.ricciScalar g ginv x * ∑ a, christoffel g ginv x a μ l
+          * g x ν a := by
       rw [Finset.mul_sum]
       apply Finset.sum_congr rfl
       intro a _
@@ -1471,20 +1544,25 @@ lemma covDiv_einstein_eq_zero {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
   have hdiv :
       covDiv2 g ginv (CoordinateCurvature.einsteinTensor g ginv) x l =
         covDiv2 g ginv (CoordinateCurvature.ricciTensor g ginv) x l
-          - (1 / 2) * CoordinateCurvature.coordDeriv l (CoordinateCurvature.ricciScalar g ginv) x := by
+          - (1 / 2)
+            * CoordinateCurvature.coordDeriv l (CoordinateCurvature.ricciScalar g ginv) x := by
     unfold covDiv2
     simp_rw [hcd, mul_sub, Finset.sum_sub_distrib]
     congr 1
     calc
-      ∑ μ, ∑ ν, ginv x μ ν * ((1 / 2) * CoordinateCurvature.coordDeriv μ (CoordinateCurvature.ricciScalar g ginv) x * g x ν l)
-          = ∑ μ, (1 / 2) * CoordinateCurvature.coordDeriv μ (CoordinateCurvature.ricciScalar g ginv) x * (∑ ν, ginv x μ ν * g x ν l) := by
+      ∑ μ, ∑ ν, ginv x μ ν * ((1 / 2)
+        * CoordinateCurvature.coordDeriv μ (CoordinateCurvature.ricciScalar g ginv) x * g x ν l)
+          = ∑ μ, (1 / 2)
+            * CoordinateCurvature.coordDeriv μ (CoordinateCurvature.ricciScalar g ginv) x
+            * (∑ ν, ginv x μ ν * g x ν l) := by
             apply Finset.sum_congr rfl
             intro μ _
             rw [Finset.mul_sum]
             apply Finset.sum_congr rfl
             intro ν _
             ring
-      _ = (1 / 2) * CoordinateCurvature.coordDeriv l (CoordinateCurvature.ricciScalar g ginv) x := by
+      _ = (1 / 2) * CoordinateCurvature.coordDeriv l
+            (CoordinateCurvature.ricciScalar g ginv) x := by
             simp_rw [hInvL.self_of_nhds]
             simp
   rw [hdiv, contracted_bianchi g ginv hgSymm hginvSymm hInvL hInvR hgC2 hginvD hΓC2 l]
