@@ -861,6 +861,7 @@ public import PhyslibAlpha.Relativity.General.Schwarzschild.EddingtonFinkelstein
 public import PhyslibAlpha.Relativity.General.Schwarzschild.ElectricWeyl
 public import PhyslibAlpha.Relativity.General.Schwarzschild.IncompressibleSphere
 public import PhyslibAlpha.Relativity.General.Schwarzschild.KruskalSzekeres
+public import PhyslibAlpha.Relativity.General.Schwarzschild.SchwarzschildManifold
 public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.Basic
 public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.CoordinateCurvature
 public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.DeSitterFrame

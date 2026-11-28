@@ -9,6 +9,7 @@ public import PhyslibAlpha.Relativity.General.ManifoldInterface
 public import PhyslibAlpha.Relativity.Metrics.Basic
 public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
 public import PhyslibAlpha.Relativity.General.Schwarzschild.CoordinateCurvature
+public import PhyslibAlpha.Relativity.General.Schwarzschild.SchwarzschildManifold
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 public import Mathlib.Tactic.FieldSimp
@@ -62,6 +63,11 @@ through the Schwarzschild chart and does not assume `1 - 2M/r ≠ 0`.
   `r = 2M`.
 - `tortoiseStar`, `deriv_tortoiseStar` : the tortoise coordinate on `r > 2M`
   and its derivative `(1 - 2M/r)⁻¹`.
+- `schwarzschildToEF`, `transitionJacobian`, `schwarzschild_eq_pullback` : the
+  overlap transition map to Schwarzschild coordinates, its Jacobian, and the
+  metric pullback identity on the exterior overlap.
+- `schwarzschildEFTransition` : the EF–Schwarzschild exterior overlap as a
+  `PartialChartTransition`.
 
 ## iii. Table of contents
 
@@ -70,6 +76,7 @@ through the Schwarzschild chart and does not assume `1 - 2M/r ≠ 0`.
 - C. The partial chart
 - D. The horizon `r = 2M`
 - E. The tortoise coordinate
+- F. Overlap with the Schwarzschild exterior chart
 
 ## iv. References
 
@@ -532,6 +539,109 @@ lemma contDiffOn_tortoiseStar (M : ℝ) (hM : 0 < M) :
   show ContDiffOn ℝ ∞ (fun r : ℝ => r + 2 * M * Real.log (r / (2 * M) - 1))
     {r : ℝ | 2 * M < r}
   exact contDiffOn_id.add (contDiffOn_const.mul hlog)
+
+/-! ## F. Overlap with the Schwarzschild exterior chart -/
+
+/-- The overlap transition map: Schwarzschild `(t, r, θ, φ)` to EF
+`(v, r, θ, φ)` via `v = t + r*`. -/
+noncomputable def schwarzschildToEF (M : ℝ) (x : SpacetimeChart) : SpacetimeChart :=
+  fun i => if i = 0 then x 0 + tortoiseStar M (x 1) else x i
+
+@[simp] lemma schwarzschildToEF_zero (M : ℝ) (x : SpacetimeChart) :
+    schwarzschildToEF M x 0 = x 0 + tortoiseStar M (x 1) := by
+  simp [schwarzschildToEF]
+
+@[simp] lemma schwarzschildToEF_one (M : ℝ) (x : SpacetimeChart) :
+    schwarzschildToEF M x 1 = x 1 := by
+  simp [schwarzschildToEF]
+
+@[simp] lemma schwarzschildToEF_two (M : ℝ) (x : SpacetimeChart) :
+    schwarzschildToEF M x 2 = x 2 := by
+  simp [schwarzschildToEF]
+
+@[simp] lemma schwarzschildToEF_three (M : ℝ) (x : SpacetimeChart) :
+    schwarzschildToEF M x 3 = x 3 := by
+  simp [schwarzschildToEF]
+
+/-- The transition map is smooth on the exterior overlap. -/
+lemma contDiffOn_schwarzschildToEF (M : ℝ) (hM : 0 < M) :
+    ContDiffOn ℝ ∞ (schwarzschildToEF M) {x : SpacetimeChart | 2 * M < x 1} := by
+  rw [contDiffOn_pi]
+  intro i
+  fin_cases i
+  · exact (contDiffOn_apply (𝕜 := ℝ) (F' := fun _ : Fin 4 => ℝ) 0 _).add
+      ((contDiffOn_tortoiseStar M hM).comp
+        (contDiffOn_apply (𝕜 := ℝ) (F' := fun _ : Fin 4 => ℝ) 1 _)
+        (by intro x hx; exact hx))
+  · exact contDiffOn_apply (𝕜 := ℝ) (F' := fun _ : Fin 4 => ℝ) 1 _
+  · exact contDiffOn_apply (𝕜 := ℝ) (F' := fun _ : Fin 4 => ℝ) 2 _
+  · exact contDiffOn_apply (𝕜 := ℝ) (F' := fun _ : Fin 4 => ℝ) 3 _
+
+/-- The Jacobian of the overlap transition map: the identity except for the
+`(v, r)` entry `(1 - 2M/r)⁻¹`. -/
+noncomputable def transitionJacobian (M : ℝ) (x : SpacetimeChart) :
+    Matrix (Fin 4) (Fin 4) ℝ :=
+  fun α μ => if α = 0 ∧ μ = 1 then (1 - 2 * M / x 1)⁻¹
+    else if α = μ then 1 else 0
+
+/-- The `(v, r)` Jacobian entry is the tortoise derivative. -/
+lemma transitionJacobian_zero_one (M : ℝ) (x : SpacetimeChart) (hM : 0 < M)
+    (hr : 2 * M < x 1) :
+    transitionJacobian M x 0 1 = deriv (fun s : ℝ => tortoiseStar M s) (x 1) := by
+  have hJ : transitionJacobian M x 0 1 = (1 - 2 * M / x 1)⁻¹ := by
+    simp [transitionJacobian]
+  rw [hJ]
+  exact (deriv_tortoiseStar M (x 1) hM hr).symm
+
+/-- The Schwarzschild exterior metric is the pullback of the EF metric under
+the overlap transition map. -/
+lemma schwarzschild_eq_pullback (M : ℝ) (x : SpacetimeChart) (hM : 0 < M)
+    (hr : 2 * M < x 1) :
+    (schwarzschildSpacetime M).metric x =
+      (transitionJacobian M x).transpose * metric M (schwarzschildToEF M x) *
+        transitionJacobian M x := by
+  have hx1 : (0 : ℝ) < x 1 := by linarith
+  have hf : (1 : ℝ) - 2 * M / x 1 ≠ 0 := by
+    have hfrm : (1 : ℝ) - 2 * M / x 1 = (x 1 - 2 * M) / x 1 := by
+      field_simp
+    rw [hfrm]
+    exact div_ne_zero (by linarith) hx1.ne'
+  ext σ ν
+  fin_cases σ <;> fin_cases ν <;>
+    simp [Schwarzschild.SchwarzschildSpacetime.metric, Schwarzschild.SchwarzschildSpacetime.metric,
+      StaticSpherical.StaticSphericalMetric.metric, schwarzschildSpacetime, Schwarzschild.SchwarzschildSpacetime.metricFn,
+      Schwarzschild.SchwarzschildSpacetime.toStaticSpherical,
+      metric, schwarzschildToEF, transitionJacobian,
+      Matrix.mul_apply, Matrix.transpose_apply, Fin.sum_univ_four] <;>
+    field_simp [hx1.ne', hM.ne', hf] <;>
+    (first | exact Or.inl (by ring) | ring)
+
+/-- The EF–Schwarzschild exterior overlap: on `r > 2M` the Schwarzschild metric
+is the pullback of the EF metric, patching the two partial charts. -/
+noncomputable def schwarzschildEFTransition (M : ℝ) (hM : 0 < M) :
+    PartialChartTransition (Schwarzschild.exteriorPartialChart M hM) (partialChart M) where
+  overlap := Schwarzschild.exteriorPartialDomain M
+  overlap_open := Schwarzschild.exteriorPartialDomain_isOpen M
+  overlap_subset := Set.Subset.rfl
+  toFun := schwarzschildToEF M
+  smooth := (contDiffOn_schwarzschildToEF M hM).mono (by
+    intro x hx
+    obtain ⟨h1, -⟩ := hx
+    exact h1)
+  maps_into := by
+    intro x hx
+    obtain ⟨hr, hsin⟩ := hx
+    constructor
+    · simp only [schwarzschildToEF_one]
+      have hx1 : (0 : ℝ) < x 1 := by linarith
+      exact hx1.ne'
+    · simp only [schwarzschildToEF_two]
+      exact hsin
+  jacobian := transitionJacobian M
+  metric_pullback := by
+    intro x hx
+    obtain ⟨hr, -⟩ := hx
+    exact schwarzschild_eq_pullback M x hM hr
 
 end EddingtonFinkelstein
 

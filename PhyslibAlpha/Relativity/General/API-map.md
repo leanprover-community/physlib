@@ -59,7 +59,8 @@ analytic infrastructure behind the constraints is in place as well: the 3D diver
 reduced wave equation in three space dimensions [99], the one- and three-dimensional wave
 energies [100][101] and their conservation [102][103], and the uniqueness of one- and
 three-dimensional wave solutions [104][105]. The initial-data interface assembles these into
-Sobolev data and well-posedness statements [106][107]. Around the
+Sobolev data and well-posedness statements [106][107], and the Schwarzschild manifold chart
+carries the corresponding initial data [108]. Around the
 Minkowski background g = η + h, first-order perturbation theory packages symmetric metric
 perturbations `MetricPerturbation` [22], defines the Minkowski trace `perturbationTrace` and
 trace-reversed perturbation h̄_{ij} = h_{ij} - ½ η_{ij} h [23], and defines the Minkowski
@@ -613,6 +614,14 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `spatialRiemannTensorOfConstMetric_eq_flat`, `ChartInitialData`
 107. PhyslibAlpha/Relativity/General/InitialData/SobolevInitialData.lean — `sobolevH1NormSq1D`,
     `sobolev_embedding_1D`, `trace_estimate_1D`, `sobolevH1NormSq3D`, `l2_le_sobolevH1_3D`
+108. PhyslibAlpha/Relativity/General/Schwarzschild/SchwarzschildManifold.lean —
+    `schwarzschildSpacetime`, `Schwarzschild.SchwarzschildSpacetime.toStaticSpherical`,
+    `Schwarzschild.SchwarzschildSpacetime.metricFn`,
+    `Schwarzschild.SchwarzschildSpacetime.metric`,
+    `Schwarzschild.exteriorPartialDomain`,
+    `Schwarzschild.exteriorPartialDomain_isOpen`,
+    `Schwarzschild.exteriorPartialChart`
+
 ## References
 
 1. Units API map — Physlib/Units/API-map.md
