@@ -579,6 +579,9 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
 95. PhyslibAlpha/Relativity/General/Bianchi.lean — `Bianchi.metric_compat`, `Bianchi.inv_metric_compat`, `Bianchi.riemann_lower_skew_first`,
     `Bianchi.riemann_bianchi`, `Bianchi.riemann_lower_bianchi`,
     `Bianchi.riemann_lower_pair_symm`, `Bianchi.second_bianchi`,
+    `Bianchi.coordDeriv_ginv`, `Bianchi.sum_covDerivRiemann_second_bianchi`,
+    `Bianchi.sum_ginv_covDerivRiemann_ricci`, `Bianchi.sum_ginv_covDerivRiemann_scalar`,
+    `Bianchi.sum_ginv_riemann_ricci`, `Bianchi.sum_ginv_covDerivRiemann_ricci_div`,
     `Bianchi.contracted_bianchi`, `Bianchi.covDiv_einstein_eq_zero`,
     `Bianchi.chartSpacetime_second_bianchi`, `Bianchi.chartSpacetime_covDiv_einstein_eq_zero`
 96. PhyslibAlpha/Cosmology/FLRW/Perturbation.lean — `Cosmology.FLRW.ScalarPerturbation`,
