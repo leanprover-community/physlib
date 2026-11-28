@@ -1,4 +1,4 @@
-# The organization of Physlib and its related projects
+# The ecosystem of Physlib and its related projects
 
 ## The core project (leanprover-community/Physlib)
 
