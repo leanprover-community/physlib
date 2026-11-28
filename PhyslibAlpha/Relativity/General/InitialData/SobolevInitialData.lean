@@ -104,21 +104,21 @@ noncomputable def sobolevH1NormSq1D (u u' : ℝ → ℝ) (a b : ℝ) : ℝ :=
 
 lemma sobolevH1NormSq1D_nonneg (u u' : ℝ → ℝ) {a b : ℝ} (hab : a ≤ b) :
     0 ≤ sobolevH1NormSq1D u u' a b := by
-  unfold sobolevH1NormSq1D
+  rw [sobolevH1NormSq1D]
   exact add_nonneg
     (intervalIntegral.integral_nonneg hab fun _ _ => sq_nonneg _)
     (intervalIntegral.integral_nonneg hab fun _ _ => sq_nonneg _)
 
 lemma l2_le_sobolevH1_1D (u u' : ℝ → ℝ) {a b : ℝ} (hab : a ≤ b) :
     (∫ x in a..b, u x ^ 2) ≤ sobolevH1NormSq1D u u' a b := by
-  unfold sobolevH1NormSq1D
+  rw [sobolevH1NormSq1D]
   have h := intervalIntegral.integral_nonneg (μ := volume) hab (f := fun x => u' x ^ 2)
     fun _ _ => sq_nonneg _
   linarith
 
 lemma deriv_l2_le_sobolevH1_1D (u u' : ℝ → ℝ) {a b : ℝ} (hab : a ≤ b) :
     (∫ x in a..b, u' x ^ 2) ≤ sobolevH1NormSq1D u u' a b := by
-  unfold sobolevH1NormSq1D
+  rw [sobolevH1NormSq1D]
   have h := intervalIntegral.integral_nonneg (μ := volume) hab (f := fun x => u x ^ 2)
     fun _ _ => sq_nonneg _
   linarith
@@ -276,10 +276,10 @@ noncomputable def sobolevH1NormSq3D
 lemma sobolevH1NormSq3D_nonneg
     (u : SpaceChart → ℝ) (grad : SpaceChart → SpaceChart) (I : BoxIntegral.Box (Fin 3)) :
     0 ≤ sobolevH1NormSq3D u grad I := by
-  unfold sobolevH1NormSq3D
+  rw [sobolevH1NormSq3D]
   apply setIntegral_nonneg measurableSet_Icc
   intro x _
-  unfold waveEnergy3DIntegrand
+  rw [waveEnergy3DIntegrand]
   exact add_nonneg (sq_nonneg _) (Finset.sum_nonneg fun i _ => sq_nonneg _)
 
 lemma l2_le_sobolevH1_3D
@@ -287,7 +287,7 @@ lemma l2_le_sobolevH1_3D
     (hu : IntegrableOn (fun x => u x ^ 2) (BoxIntegral.Box.Icc I))
     (hg : IntegrableOn (fun x => ∑ i : Fin 3, grad x i ^ 2) (BoxIntegral.Box.Icc I)) :
     (∫ x in BoxIntegral.Box.Icc I, u x ^ 2) ≤ sobolevH1NormSq3D u grad I := by
-  unfold sobolevH1NormSq3D waveEnergy3DIntegrand
+  rw [sobolevH1NormSq3D]; simp only [waveEnergy3DIntegrand]
   rw [integral_add hu hg]
   have hnn : 0 ≤ ∫ x in BoxIntegral.Box.Icc I, ∑ i : Fin 3, grad x i ^ 2 := by
     apply setIntegral_nonneg measurableSet_Icc
@@ -301,7 +301,7 @@ lemma grad_le_sobolevH1_3D
     (hg : IntegrableOn (fun x => ∑ i : Fin 3, grad x i ^ 2) (BoxIntegral.Box.Icc I)) :
     (∫ x in BoxIntegral.Box.Icc I, ∑ i : Fin 3, grad x i ^ 2) ≤
       sobolevH1NormSq3D u grad I := by
-  unfold sobolevH1NormSq3D waveEnergy3DIntegrand
+  rw [sobolevH1NormSq3D]; simp only [waveEnergy3DIntegrand]
   rw [integral_add hu hg]
   have hnn : 0 ≤ ∫ x in BoxIntegral.Box.Icc I, u x ^ 2 := by
     apply setIntegral_nonneg measurableSet_Icc
@@ -374,7 +374,7 @@ noncomputable def norm3Sq (x : SpaceChart) : ℝ :=
   x 0 ^ 2 + x 1 ^ 2 + x 2 ^ 2
 
 lemma norm3Sq_nonneg (x : SpaceChart) : 0 ≤ norm3Sq x := by
-  unfold norm3Sq
+  rw [norm3Sq]
   positivity
 
 lemma norm3Sq_pos {x : SpaceChart} (hx : norm3Sq x ≠ 0) : 0 < norm3Sq x :=
@@ -499,7 +499,7 @@ lemma spatialLaplacian3D_brillLindquistPhi (M : ℝ) {x : SpaceChart} (hx : norm
     field_simp [hsqrt]
     rw [hsq2]
     ring
-  unfold spatialLaplacian3D
+  rw [spatialLaplacian3D]
   rw [Fin.sum_univ_three, hcoord2 0, hcoord2 1, hcoord2 2]
   have hn : norm3Sq x = x 0 ^ 2 + x 1 ^ 2 + x 2 ^ 2 := rfl
   rw [hn]
