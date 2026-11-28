@@ -210,6 +210,20 @@ lemma metric_compat {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fin 
   rw [h1, h2, hpd_sym]
   ring
 
+/-- The coordinate derivative of the metric, in component form: metric compatibility
+`∇_l g_{kj} = 0` solved for `∂_l g_{kj}` gives
+`∂_l g_{kj} = ∑_a Γ^a_{lk} g_{aj} + ∑_a Γ^a_{lj} g_{ka}`. -/
+lemma coordDeriv_g_eq {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fin n → ℝ}
+    (hgSymm : ∀ᶠ y in 𝓝 x, ∀ i j, g y i j = g y j i)
+    (hInv : ∀ m j, ∑ a, ginv x a m * g x a j = if m = j then 1 else 0)
+    (l k j : Fin n) :
+    CoordinateCurvature.coordDeriv l (fun y => g y k j) x =
+      (∑ a, christoffel g ginv x a l k * g x a j)
+        + ∑ a, christoffel g ginv x a l j * g x k a := by
+  have h := metric_compat g ginv hgSymm hInv l k j
+  unfold covDeriv2 at h
+  linarith
+
 /-- The coordinate derivative of the inverse metric: differentiating `g * ginv = 1`
 and solving for `∂ ginv` gives `∂_l ginv^{ib} = -∑_{j,k} ginv^{ik} (∂_l g_{kj}) ginv^{jb}`. -/
 private lemma coordDeriv_ginv_eq {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fin n → ℝ}
@@ -282,11 +296,8 @@ lemma inv_metric_compat {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : 
         * ginv x j b := coordDeriv_ginv_eq g ginv hInvL hInvR hgD hginvD l i b
   have hmc : ∀ k j, CoordinateCurvature.coordDeriv l (fun y => g y k j) x =
       (∑ a, christoffel g ginv x a l k * g x a j)
-        + ∑ a, christoffel g ginv x a l j * g x k a := by
-    intro k j
-    have h := metric_compat g ginv hgSymm hInvAt l k j
-    unfold covDeriv2 at h
-    linarith
+        + ∑ a, christoffel g ginv x a l j * g x k a :=
+    coordDeriv_g_eq g ginv hgSymm hInvAt l
   have hterm1 : (∑ j, ∑ k, ginv x i k * (∑ a, christoffel g ginv x a l k * g x a j) * ginv x j b) =
       ∑ k, christoffel g ginv x b l k * ginv x i k := by
     calc
