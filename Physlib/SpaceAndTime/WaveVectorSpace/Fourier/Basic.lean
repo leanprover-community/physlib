@@ -12,12 +12,12 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.DualPairing
 
 ## i. Overview
 
-The purpose of this module is to provide a means to work with Fourier transforms in a way
+The purpose of this module is to provide a means to work with Fourier integrals in a way
 that is both dimensionally consistent and flexible enough to allow various conventions.
 
 The two main definitions are `fourierIntegral a b : (Space d → E) → WaveVectorSpace d → E`
 and `fourierIntegralInv a b : (WaveVectorSpace d → E) → Space d → E` which amount to the following
-integral transformations depending on two parameters `a b : ℝ`:
+integral transformations depending on two parameters `a : ℝ` and `b : ℝˣ`:
 
 $$
 \tilde{f}(k) :=
@@ -33,7 +33,7 @@ $$
 These are implemented as rescaled/dilated versions of `VectorFourier.fourierIntegral`
 and most results require that the input function be integrable.
 
-Results which hold for all `a` and `b` should be written in terms of `fourierIntegral a b`.
+Results which hold for all `a` and `b ≠ 0` should be written in terms of `fourierIntegral a b`.
 Opening the `FourierTransform` namespace allows one to use the notation `𝓕` and `𝓕⁻`
 with default values $(a,b) = (0,1)$; to use this notation with a different convention include
 the line `open scoped FourierTransform[a][b]` (*e.g.* `open scoped FourierTransform1n1`
@@ -41,10 +41,10 @@ for $(a,b) = (1,-1)$). If a common convention is missing it can be added below i
 
 ## ii. Key results
 
-- `fourierIntegral a b` : the Fourier integral with real parameters `a` and `b`,
+- `fourierIntegral a b` : the Fourier integral with real parameters `a` and `b ≠ 0`,
   corresponding to a choice of convention, which maps a function `f : Space d → E`
   to its Fourier transform of type `WaveVectorSpace d → E`.
-- `fourierIntegralInv a b` : the inverse Fourier integral with real parameters `a` and `b`,
+- `fourierIntegralInv a b` : the inverse Fourier integral with real parameters `a` and `b ≠ 0`,
   corresponding to a choice of convention, which maps a function `g : WaveVectorSpace d → E`
   to its Fourier transform of type `Space d → E`.
 - `deriv_fourierIntegral` / `deriv_fourierIntegralInv` : for a suitably nice function
@@ -78,7 +78,7 @@ for $(a,b) = (1,-1)$). If a common convention is missing it can be added below i
 
 ## iv. References
 
-The parametrization in terms of `a b : ℝ` follows that given here:
+The parametrization in terms of `a : ℝ` and `b : ℝˣ` follows that given here:
 
 * Weisstein, Eric W. "Fourier Transform." From MathWorld--A Wolfram Resource.
   [ref: mathworld_fourier_transform]
@@ -100,7 +100,7 @@ section FourierIntegral
 open Complex MeasureTheory Real
 open scoped FourierTransform
 
-variable (a b : ℝ) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable (a : ℝ) (b : ℝˣ) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-!
 ### A.1. Two-parameter definitions
@@ -110,22 +110,23 @@ variable (a b : ℝ) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 `(|b| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ) • ∫ x, exp (b * (k ⬝ᵥ x) * I) • f x ∂volume`,
 
-parametrized by `a b : ℝ`.
+parametrized by `a : ℝ` and `b : ℝˣ`.
 -/
 noncomputable def fourierIntegral (f : Space d → E) (k : WaveVectorSpace d) : E :=
-  (|b| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
+  (|b.val| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
     • VectorFourier.fourierIntegral 𝐞 volume (-(b / (2 * π)) • pairingCLM.flip).toLinearMap₁₂ f k
 
 lemma fourierIntegral_def (f : Space d → E) :
     fourierIntegral a b f
-      = (|b| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
+      = (|b.val| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
         • VectorFourier.fourierIntegral 𝐞 volume
           (-(b / (2 * π)) • pairingCLM.flip).toLinearMap₁₂ f :=
   rfl
 
 lemma fourierIntegral_eq (f : Space d → E) (k : WaveVectorSpace d) :
     fourierIntegral a b f k
-      = (|b| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ) • ∫ x : Space d, cexp (b * (k ⬝ᵥ x) * I) • f x := by
+      = (|b.val| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
+        • ∫ x : Space d, cexp (b * (k ⬝ᵥ x) * I) • f x := by
   simp [fourierIntegral_def, VectorFourier.fourierIntegral, fourierChar, pairingCLM_apply_eq_dual,
     dual_apply, Circle.smul_def, ← mul_assoc, mul_div_cancel₀]
 
@@ -135,7 +136,7 @@ open scoped RealInnerProductSpace in
 by mapping through the standard bases of `Space d` and `WaveVectorSpace d`. -/
 lemma fourierIntegral_eq_smul_fourier_comp (f : Space d → E) :
     fourierIntegral a b f
-      = (|b| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
+      = (|b.val| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
         • 𝓕 (f ∘ Space.basis.repr.symm) ∘ (-(b / (2 * π)) • basis.repr.toLinearMap) := by
   ext k
   rw [fourierIntegral_eq]
@@ -153,21 +154,21 @@ lemma fourierIntegral_eq_smul_fourier_comp (f : Space d → E) :
 
 `(|b| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ) • ∫ k, exp (-b * (k ⬝ᵥ x) * I) • g k ∂volume`,
 
-parametrized by `a b : ℝ`.
+parametrized by `a : ℝ` and `b : ℝˣ`.
 -/
 noncomputable def fourierIntegralInv (g : WaveVectorSpace d → E) (x : Space d) : E :=
-  (|b| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
+  (|b.val| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
     • VectorFourier.fourierIntegral 𝐞 volume ((b / (2 * π)) • pairingCLM).toLinearMap₁₂ g x
 
 lemma fourierIntegralInv_def (g : WaveVectorSpace d → E) :
     fourierIntegralInv a b g
-      = (|b| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
+      = (|b.val| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
         • VectorFourier.fourierIntegral 𝐞 volume ((b / (2 * π)) • pairingCLM).toLinearMap₁₂ g :=
   rfl
 
 lemma fourierIntegralInv_eq (g : WaveVectorSpace d → E) (x : Space d) :
     fourierIntegralInv a b g x
-      = (|b| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
+      = (|b.val| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
         • ∫ k : WaveVectorSpace d, cexp (-b * (k ⬝ᵥ x) * I) • g k := by
   simp [fourierIntegralInv_def, VectorFourier.fourierIntegral, pairingCLM_apply_eq_dual,
     fourierChar, dual_apply, Circle.smul_def, Complex.exp_neg, ← mul_assoc, mul_div_cancel₀]
@@ -178,7 +179,7 @@ on Euclidean space `𝓢 : (EuclideanSpace ℝ (Fin d) → E) → EuclideanSpace
 by mapping through the standard bases of `Space d` and `WaveVectorSpace d`. -/
 lemma fourierIntegralInv_eq_smul_fourierInv_comp (g : WaveVectorSpace d → E) :
     fourierIntegralInv a b g
-      = (|b| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
+      = (|b.val| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
         • 𝓕⁻ (g ∘ basis.repr.symm) ∘ (-(b / (2 * π)) • Space.basis.repr.toLinearMap) := by
   ext x
   rw [fourierIntegralInv_eq]
@@ -331,7 +332,7 @@ lemma deriv_fourierIntegral (i : Fin d)
     {f : Space d → E} (hf : Integrable f) (hf' : Integrable fun x ↦ ‖x‖ * ‖f x‖) :
     ∂[i] (fourierIntegral a b f) = fourierIntegral a b fun x ↦ (b * I * x i) • f x := by
   have h : Integrable (fun x : Space d ↦ (b * I) • x.dual.smulRight (f x)) :=
-    hf'.smul b |>.congr' (by fun_prop) <| by simp [norm_smul]
+    hf'.smul b.val |>.congr' (by fun_prop) <| by simp [norm_smul]
   ext
   simp [deriv_eq, fderiv_fourierIntegral, fourierIntegral_continuousLinearMap_apply,
     Space.dual_apply, dotProduct, ← nsmul_eq_mul, ← coe_smul, smul_smul, hf, hf', h]
@@ -342,7 +343,7 @@ lemma deriv_fourierIntegralInv (i : Fin d)
     {g : WaveVectorSpace d → E} (hg : Integrable g) (hg' : Integrable fun k ↦ ‖k‖ * ‖g k‖) :
     ∂[i] (fourierIntegralInv a b g) = fourierIntegralInv a b fun k ↦ -(b * I * k i) • g k := by
   have h : Integrable (fun k : WaveVectorSpace d ↦ -(b * I) • k.dual.smulRight (g k)) :=
-    hg'.smul b |>.congr' (by fun_prop) <| by simp [norm_smul]
+    hg'.smul b.val |>.congr' (by fun_prop) <| by simp [norm_smul]
   ext
   simp [Space.deriv_eq, fderiv_fourierIntegralInv, fourierIntegralInv_continuousLinearMap_apply,
     dual_apply, dotProduct, Space.basis_apply, ← coe_smul, smul_smul, hg, hg', h]
@@ -433,21 +434,21 @@ variable {b}
 
 /-- The Fourier inversion formula:
 `𝓕⁻ (𝓕 f) = f` for a suitably nice function `f : Space d → E`. -/
-lemma fourierIntegralInv_fourierIntegral_eq (hb : b ≠ 0) [CompleteSpace E] {f : Space d → E}
+lemma fourierIntegralInv_fourierIntegral_eq [CompleteSpace E] {f : Space d → E}
     (h : Continuous f) (hf : Integrable f) (hf' : Integrable (fourierIntegral a b f)) :
     fourierIntegralInv a b (fourierIntegral a b f) = f := by
   -- The heavy lifting in this proof is done by `Continuous.fourierInv_fourier_eq`.
   -- What follows is mostly dealing with the dilations by `c := -b/(2π)`
   -- and the linear isometries with Euclidean space provided by the standard bases.
   let c : ℝ := -(b / (2 * π))
-  have hc : c ≠ 0 := by simpa [c]
-  let c₁ : ℝ := (|b| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
-  let c₂ : ℝ := (|b| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
-  have hc₂ : c₂ ≠ 0 := ne_of_gt <| rpow_pos_of_pos (by positivity) _
+  have hc : c ≠ 0 := by simp [c]
+  let c₁ : ℝ := (|b.val| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
+  let c₂ : ℝ := (|b.val| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
+  have hc₂ : c₂ ≠ 0 := ne_of_gt <| rpow_pos_of_pos (by bound) _
   have hc₁₂ : c₁ * c₂ = |c| ^ d := by
     rw [← Real.mul_rpow (by bound) (by bound), div_mul_div_comm, ← Real.rpow_add (by bound),
       div_rpow (by bound) (by bound), ← pow_two, ← Real.rpow_natCast, add_add_sub_cancel]
-    simp only [← Real.rpow_mul, abs_nonneg b, one_add_one_eq_two, show 0 ≤ 2 * π by bound]
+    simp only [← Real.rpow_mul, abs_nonneg, one_add_one_eq_two, show 0 ≤ 2 * π by bound]
     simp [mul_div_cancel₀, c, abs_div, div_pow]
   let e₁ : Space d ≃ₗᵢ[ℝ] ℝᵈ := Space.basis.repr
   let e₂ : WaveVectorSpace d ≃ₗᵢ[ℝ] ℝᵈ := basis.repr
@@ -476,22 +477,21 @@ lemma fourierIntegralInv_fourierIntegral_eq (hb : b ≠ 0) [CompleteSpace E] {f 
 
 /-- The Fourier inversion formula:
 `𝓕 (𝓕⁻ g) = g` for a suitably nice function `g : WaveVectorSpace d → E`. -/
-lemma fourierIntegral_fourierIntegralInv_eq
-    (hb : b ≠ 0) [CompleteSpace E] {g : WaveVectorSpace d → E}
+lemma fourierIntegral_fourierIntegralInv_eq [CompleteSpace E] {g : WaveVectorSpace d → E}
     (h : Continuous g) (hg : Integrable g) (hg' : Integrable (fourierIntegralInv a b g)) :
     fourierIntegral a b (fourierIntegralInv a b g) = g := by
   -- The heavy lifting in this proof is done by `Continuous.fourier_fourierInv_eq`.
   -- What follows is mostly dealing with the dilations by `c := -b/(2π)`
   -- and the linear isometries with Euclidean space provided by the standard bases.
   let c : ℝ := -(b / (2 * π))
-  have hc : c ≠ 0 := by simpa [c]
-  let c₁ : ℝ := (|b| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
-  let c₂ : ℝ := (|b| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
-  have hc₁ : c₁ ≠ 0 := ne_of_gt <| rpow_pos_of_pos (by positivity) _
+  have hc : c ≠ 0 := by simp [c]
+  let c₁ : ℝ := (|b.val| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
+  let c₂ : ℝ := (|b.val| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
+  have hc₁ : c₁ ≠ 0 := ne_of_gt <| rpow_pos_of_pos (by bound) _
   have hc₂₁ : c₂ * c₁ = |c| ^ d := by
     rw [← Real.mul_rpow (by bound) (by bound), div_mul_div_comm, ← Real.rpow_add (by bound),
       div_rpow (by bound) (by bound), ← pow_two, ← Real.rpow_natCast, sub_add_add_cancel]
-    simp only [← Real.rpow_mul, abs_nonneg b, one_add_one_eq_two, show 0 ≤ 2 * π by bound]
+    simp only [← Real.rpow_mul, abs_nonneg, one_add_one_eq_two, show 0 ≤ 2 * π by bound]
     simp [mul_div_cancel₀, c, abs_div, div_pow]
   let e₁ : Space d ≃ₗᵢ[ℝ] ℝᵈ := Space.basis.repr
   let e₂ : WaveVectorSpace d ≃ₗᵢ[ℝ] ℝᵈ := basis.repr
