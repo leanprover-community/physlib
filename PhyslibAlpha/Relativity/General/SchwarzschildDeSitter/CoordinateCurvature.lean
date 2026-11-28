@@ -28,8 +28,8 @@ This module connects `SchwarzschildDeSitterSpacetime.metric` and
 `SchwarzschildDeSitterSpacetime.metricInv` to the general static spherically symmetric curvature
 formulas in `GeneralRelativity.StaticSpherical`:
 
-1. Equates `S.christoffel` and `S.christoffelDeriv` with `S.toStaticSpherical.christoffel` and
-   `S.toStaticSpherical.christoffelDeriv`.
+1. Equates the closed-form Christoffel table and its derivative table with those of the
+   static-spherical representation of the same metric function.
 2. Delegates `christoffel_eq`, `pd_christoffel_eq`, `pd_christoffel_eq_deriv`, `ricciTensor`, and
    `ricciScalar` directly to `GeneralRelativity.StaticSpherical`.
 3. Obtains `riemann_eq_data`, all six independent Riemann components
@@ -83,7 +83,8 @@ namespace SchwarzschildDeSitterSpacetime
 ## A. Christoffel and derivative tables
 
 Explicit tables for the Schwarzschild–de Sitter Christoffel connection and its partial derivatives
-isolate rational algebra in `S.metricFn` and `S.metricFnHalfDeriv` from generic summation loops.
+isolate rational algebra in the Kottler metric function and its half-derivative from generic
+summation loops.
 
 -/
 
@@ -146,8 +147,9 @@ noncomputable def christoffelDeriv (S : SchwarzschildDeSitterSpacetime) (μ : Fi
 
 ## B. Static-spherical reduction and Christoffel identification
 
-Recognizing `S.metric` via `S.toStaticSpherical` delegates the coordinate Christoffel and Ricci
-computations directly to `GeneralRelativity.StaticSpherical`.
+Recognizing the Schwarzschild–de Sitter metric as the static-spherical metric of its profile
+delegates the coordinate Christoffel and Ricci computations directly to
+`GeneralRelativity.StaticSpherical`.
 
 -/
 
@@ -208,7 +210,7 @@ lemma christoffel_eq (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (h
 
 /-- Away from the central singularity (`r ≠ 0`), event and cosmological horizons (`f ≠ 0`), and
 polar axis (`sin θ ≠ 0`), every spacetime point has a regular neighborhood where the coordinate
-Christoffel symbols and `S.christoffel` agree, so their coordinate partial derivatives match
+Christoffel symbols and the closed-form table agree, so their coordinate partial derivatives match
 along every axis. -/
 lemma pd_christoffel_eq (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (μ a b c : Fin 4) :
@@ -229,8 +231,8 @@ lemma pd_christoffel_eq (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ)
     exact (S.christoffel_eq_staticSpherical y hy a b c).symm
   exact coordDeriv_congr_nhds μ x heq
 
-/-- Every partial derivative of `S.christoffel` equals `S.christoffelDeriv`, across all 256
-index tuples `(μ, k, i, j)`. -/
+/-- Every partial derivative of the closed-form Christoffel table equals the matching entry of the
+derivative table, across all 256 index tuples `(μ, k, i, j)`. -/
 lemma pd_christoffel_eq_deriv (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (μ k i j : Fin 4) :
     coordDeriv μ (fun y => S.christoffel y k i j) x = S.christoffelDeriv μ x k i j := by
@@ -255,9 +257,9 @@ verifies the cosmological Einstein-space equations `Ric_{ij} = Λ g_{ij}` and `G
 
 -/
 
-/-- The coordinate Riemann tensor of `S.metric` equals
-`riemannFromData S.christoffel S.christoffelDeriv` at every 4-tuple `(ρ, σ, μ, ν)`, for general
-`Λ`. -/
+/-- The coordinate Riemann tensor of the Schwarzschild–de Sitter metric equals the Riemann tensor
+built from its closed-form Christoffel and derivative tables at every 4-tuple `(ρ, σ, μ, ν)`, for
+general `Λ`. -/
 private lemma riemann_eq_data_raw (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (ρ σ μ ν : Fin 4) :
     CoordinateCurvature.riemann S.metric S.metricInv x ρ σ μ ν
@@ -360,10 +362,10 @@ private lemma einsteinTensor_raw (S : SchwarzschildDeSitterSpacetime) (x : Fin 4
     S.ricciScalar_raw x hr hf hsin]
   ring
 
-/-- The inverse diagonal scale `|g_{aa}|⁻¹` relating coordinate Ricci components of `S.metric`
-to the orthonormal frame `η`.
+/-- The inverse diagonal scale `|g_{aa}|⁻¹` relating coordinate Ricci components of the
+Schwarzschild–de Sitter metric to the orthonormal frame `η`.
 
-This is deliberately not `S.metricInv`: the inverse metric carries the Lorentzian sign, so
+This is deliberately not the inverse metric: the inverse metric carries the Lorentzian sign, so
 `g^{00} = -(f)⁻¹`, while the frame components below are compared with `η = diag(-1, 1, 1, 1)` and
 therefore need the positive scale `(f)⁻¹` in the time slot. -/
 noncomputable def frameScale (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ)
@@ -373,8 +375,8 @@ noncomputable def frameScale (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 →
   else if a = 2 then ((x 1) ^ 2)⁻¹
   else ((x 1) ^ 2 * Real.sin (x 2) ^ 2)⁻¹
 
-/-- Scaling the coordinate Ricci tensor `CoordinateCurvature.ricciTensor S.metric S.metricInv` by
-`S.frameScale` reproduces `Λ η` in the orthonormal frame. -/
+/-- Scaling the coordinate Ricci tensor of the metric by the frame scale reproduces `Λ η` in the
+orthonormal frame. -/
 lemma ricciTensor_frame (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
     S.frameScale x σ * CoordinateCurvature.ricciTensor S.metric S.metricInv x σ ν
@@ -387,8 +389,8 @@ lemma ricciTensor_frame (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ)
   · field_simp [hr]
   · field_simp [hr, hsin]
 
-/-- The Schwarzschild–de Sitter coordinate Riemann tensor agrees with
-`riemannFromData S.christoffel S.christoffelDeriv`, stated with the chart-level operator. -/
+/-- The Schwarzschild–de Sitter coordinate Riemann tensor agrees with the tensor built from its
+closed-form Christoffel and derivative tables, stated with the chart-level operator. -/
 lemma riemann_eq_data (S : SchwarzschildDeSitterSpacetime)
     (p : S.toStaticSpherical.RegularPoint) (ρ σ μ ν : Fin 4) :
     S.toCoordinateMetric.riemann p.x ρ σ μ ν
