@@ -16,6 +16,20 @@
 - **Commits this session (`gravity`, on top of `8e4011ba`):**
   - `8d406d94` — Task 18 (Basic #2, #5): general analysis moved to `Mathematics/`, `MondFieldTheory`
     structure, `STVGContent`/`TeVeSContent` structures.
+  - *(new)* sole copyright holder in the 20 ported modules, `BrillLindquist1963`/`Gourgoulhon2012`
+    citations, EF/Kruskal convention prose, three `maxHeartbeats` removed, `riemann_of_christoffel_data`
+    — Tasks 18 (Basic #12), 22 (Ref 3, Ref 4), 21 (Proofs 5).
+  - *(new)* `Bianchi.lean` split into `Bianchi`/`BianchiContracted`/`BianchiChart`,
+    `WaveUniqueness{,3D}` folded into `WaveEnergy{,3D}`, `InitialDataInterface` → `CauchyInterfaces`,
+    M-code labels removed, API map renumbered — Task 20 (Org 2, Org 3).
+  - *(new)* component projection lemmas `covDeriv2_eq`/`covDeriv2Up_eq`/`covDerivRiemann_eq`/
+    `covDiv2_eq`/`riemann_apply` replace every `unfold` in the Bianchi modules — Task 21 (Proofs 3).
+  - **Verification of the three new commits:** `lake build PhyslibAlpha` completes (11 562 jobs) with
+    no errors; `module_doc_lint`, `theorem_lint`, `runPhyslibAlphaLinters`, `noAlphaImports`,
+    `alphaFileImports`, `forMathlib_lint` and `auxillary_script_test` all pass, and
+    `alphaPythonLinters.sh` exits 0 with no `ERR_` — `ERR_NUM_LIN` is gone with the Bianchi split.
+    `lint_all` still reports the four restored `Physlib/` transitive-import lines noted above
+    (pre-existing, out of scope).
   - `8f7a0485` — Task 21 (Proofs #4): `WaveSolutionOn.sub` / `WaveSolution3D.sub` extracted.
   - `963057c5` — Task 20 (Org #3): `Divergence3D.lean` renamed to `SpaceChart.lean`.
   - `41b1867e` — Task 21 (Proofs #4): `coordDeriv_ginv_eq` extracted from `inv_metric_compat`.
