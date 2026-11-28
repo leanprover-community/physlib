@@ -18,16 +18,13 @@ metric by specializing `SchwarzschildDeSitterSpacetime` to `Λ = 0`.
 
 ## i. Overview
 
-Specializing `S.toDeSitter` (`⟨S.M, 0⟩ : SchwarzschildDeSitterSpacetime`) to `Λ = 0` matches
-`S.metric` and `S.metricInv`, recovering all six independent Riemann components, Ricci flatness
-`Ric = 0`, vanishing scalar curvature `R = 0`, and vacuum Einstein equations `G = 0`.
+The embedding `S.toDeSitter` (`⟨S.M, 0⟩ : SchwarzschildDeSitterSpacetime`, defined in
+`SchwarzschildDeSitter/Basic.lean` with its `Λ = 0` reductions) matches `S.metric` and
+`S.metricInv`, recovering all six independent Riemann components, Ricci flatness `Ric = 0`,
+vanishing scalar curvature `R = 0`, and vacuum Einstein equations `G = 0`.
 
 ## ii. Key results
 
-- `SchwarzschildSpacetime.toDeSitter` : Schwarzschild–de Sitter embedding at `Λ = 0`.
-- `SchwarzschildSpacetime.toDeSitter_M`, `SchwarzschildSpacetime.toDeSitter_Λ`,
-  `SchwarzschildSpacetime.toDeSitter_metricFn`, `SchwarzschildSpacetime.toDeSitter_metric`,
-  `SchwarzschildSpacetime.toDeSitter_metricInv` : reduction from `toDeSitter` at `Λ = 0`.
 - `SchwarzschildSpacetime.riemann_components_from_coordinateMetric` : all six independent
   Schwarzschild Riemann components computed from the coordinate metric.
 - `SchwarzschildSpacetime.ricciTensor_eq_zero`, `SchwarzschildSpacetime.ricciScalar_eq_zero`,
@@ -65,37 +62,6 @@ Sitter spacetime, its coordinate Riemann, Ricci, scalar, and Einstein tensors fo
 at `Λ = 0`.
 
 -/
-
-/-- Embed a Schwarzschild spacetime into `SchwarzschildDeSitterSpacetime` at `Λ = 0`. -/
-def toDeSitter (S : SchwarzschildSpacetime) : SchwarzschildDeSitterSpacetime :=
-  ⟨S.M, 0⟩
-
-/-- Mass parameter of `S.toDeSitter` equals `S.M`. -/
-@[simp]
-lemma toDeSitter_M (S : SchwarzschildSpacetime) : S.toDeSitter.M = S.M := rfl
-
-/-- Cosmological constant of `S.toDeSitter` vanishes. -/
-@[simp]
-lemma toDeSitter_Λ (S : SchwarzschildSpacetime) : S.toDeSitter.Λ = 0 := rfl
-
-/-- At `Λ = 0`, `S.toDeSitter.metricFn` agrees pointwise with `S.metricFn`. -/
-@[simp]
-lemma toDeSitter_metricFn (S : SchwarzschildSpacetime) (r : ℝ) :
-    S.toDeSitter.metricFn r = S.metricFn r :=
-  SchwarzschildDeSitterSpacetime.metricFn_zero_lambda S.M r
-
-/-- At `Λ = 0`, `S.toDeSitter.metric` reduces to `S.metric`. -/
-lemma toDeSitter_metric (S : SchwarzschildSpacetime) : S.toDeSitter.metric = S.metric := by
-  ext x i j
-  simp [SchwarzschildDeSitterSpacetime.metric, SchwarzschildDeSitterSpacetime.toStaticSpherical,
-    StaticSpherical.StaticSphericalMetric.metric, metric, toStaticSpherical]
-
-/-- At `Λ = 0`, `S.toDeSitter.metricInv` reduces to `S.metricInv`. -/
-lemma toDeSitter_metricInv (S : SchwarzschildSpacetime) :
-    S.toDeSitter.metricInv = S.metricInv := by
-  ext x i j
-  simp [SchwarzschildDeSitterSpacetime.metricInv, SchwarzschildDeSitterSpacetime.toStaticSpherical,
-    StaticSpherical.StaticSphericalMetric.metricInv, metricInv, toStaticSpherical]
 
 /-- All six independent Schwarzschild Riemann components computed from the coordinate metric,
 specialized from `SchwarzschildDeSitterSpacetime.riemann_components_from_metric` at `Λ = 0`. -/
