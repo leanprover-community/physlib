@@ -1,18 +1,25 @@
 # Physlib `gravity` Branch — Handbook Alignment Task List
 
 - **Branch / PR:** `gravity` / PR `#2132` (merge-base `7910f51f` on `master`, latest commit
-  `f3c5362d`, `115` files changed, 30 419 insertions)
-- **Audit date:** `2026-11-28` (re-run for `f3c5362d`; earlier full report for `3540573f` in
+  `f3c5362d`, `115` files changed, 30 419 insertions; local head `e26eb962`, 114 files,
+  35 034 insertions)
+- **Audit date:** `2026-11-28` (this pass: `e26eb962`, local changes against `master` merge-base
+  `7910f51f`; earlier full report for `3540573f` in
   `/home/alex/.gemini/antigravity/brain/d4b25eb5-a184-4c5d-a5b4-64448e95576f/scratch/handbook-2132-v5/report.md`,
-  re-run against the pushed PR head in `/tmp/hb3/report.md`)
+  and `f3c5362d` in `/tmp/hb3/report.md`)
 - **Prior baseline scores (`44e23ac2`):** Basic `2/5` | Documentation `3/5` | Organization `3/5` | Proofs `3/5` | References `4/5` | Scope `3/5`
-- **Latest scores (`3540573f`, 2026-11-27):** Basic `2/5` *(11 suggestions)* | Documentation `3/5` *(10 suggestions)* | Organization `3/5` *(15 suggestions)* | Proofs `3/5` *(8 suggestions)* | References `3/5` *(9 suggestions)* | Scope `4/5` *(5 suggestions)* — **58 total suggestions**
-- **Latest scores (`f3c5362d`, 2026-11-28, re-run over 115 files / 31 390 diff lines):** Basic `2/5` *(6)* | Documentation `3/5` *(6)* | Organization `3/5` *(6)* | Proofs `2/5` *(6)* | References `2/5` *(6)* | Scope `3/5` *(6)* — **30 suggestions**
+- **Scores (`3540573f`, 2026-11-27):** Basic `2/5` *(11 suggestions)* | Documentation `3/5` *(10 suggestions)* | Organization `3/5` *(15 suggestions)* | Proofs `3/5` *(8 suggestions)* | References `3/5` *(9 suggestions)* | Scope `4/5` *(5 suggestions)* — **58 total suggestions**
+- **Scores (`f3c5362d`, 2026-11-28, re-run over 115 files / 31 390 diff lines):** Basic `2/5` *(6)* | Documentation `3/5` *(6)* | Organization `3/5` *(6)* | Proofs `2/5` *(6)* | References `2/5` *(6)* | Scope `3/5` *(6)* — **30 suggestions**
+- **Latest scores (`e26eb962`, 2026-11-28, 114 files / 34 822 diff lines):** Basic `3/5` *(6)* | Documentation `4/5` *(6)* | Organization `4/5` *(6)* | Proofs `3/5` *(6)* | References `3/5` *(7)* | Scope `4/5` *(5)* — **36 suggestions**
 
 ---
 
 ## Session status
 
+- **Latest handbook pass (`2026-11-28`, local head `e26eb962`):** six-pass run over the whole branch
+  diff gave Basic `3/5`, Documentation `4/5`, Organization `4/5`, Proofs `3/5`, References `3/5`,
+  Scope `4/5` — 36 suggestions, recorded as Tasks 24–29 at the end of this file. The report is in
+  `/tmp/hb4/report.md`; nothing was posted (local run, per the skill).
 - **Commits this session (`gravity`, on top of `8e4011ba`):**
   - `8d406d94` — Task 18 (Basic #2, #5): general analysis moved to `Mathematics/`, `MondFieldTheory`
     structure, `STVGContent`/`TeVeSContent` structures.
@@ -391,3 +398,106 @@ the new ports brought long proofs, uncited modules and invented names.
     `GaugeRecovery`, …) before porting it.
   - [ ] Whole change *(Scope 1)* — confirm with maintainers that modified gravity stays in scope
     as a group.
+
+---
+
+## Handbook alignment re-run (`2026-11-28`, local head `e26eb962`)
+
+Six-pass `.agents/skills/handbook-alignment` run over the whole branch diff (`7910f51f`..`e26eb962`,
+114 files, 34 822 diff lines), raw outputs and generated report in `/tmp/hb4/` (`raw-Outputs/*.json`,
+`report.md`). Scores: **Basic `3/5`** (6) | **Documentation `4/5`** (6) | **Organization `4/5`** (6) |
+**Proofs `3/5`** (6) | **References `3/5`** (7) | **Scope `4/5`** (5) — **36 suggestions**.
+
+Movement against `f3c5362d`: `Basic 2→3` (the analysis moved out of `AqualVariation`, the MOND and
+Dirac field content is structured, the ports reuse the branch conventions), `Documentation 3→4` and
+`Organization 3→4` (module docs and file names aligned), `References 2→3` (Wald/Carroll/Evans keys
+and the new Brill–Lindquist and Gourgoulhon entries); `Proofs` and `Scope` held at `3` and `4`.
+Nothing here is a CI or linter matter — `lint-style`, `module_doc_lint` and the rest are clean.
+
+- [ ] **24. `handbook-basic-e26eb962`** *(Basic `3/5`, 6 suggestions)*
+  - [ ] `InitialData/ReducedCauchy.lean` — `flrw_ivp_exists_in_ball` and `flrwField_lipschitzOn`
+    re-prove Picard–Lindelöf local existence by hand (~250 lines); use the Mathlib ODE result and
+    keep only the FLRW vector field.
+  - [ ] `Mathematics/Analysis/SecondDifference.lean` — `secondDifference_tendsto` is Taylor's theorem
+    at order two for a finite-difference expression; retrieve it from `HasTaylorAt` rather than
+    reproving it.
+  - [ ] `Modified/BransDicke.lean:92` — two parallel APIs for `γ`: `BransDicke.gamma` on a bare `ω`
+    and `BransDickeTheory.gamma` on the structure; fold the raw form into the structure.
+  - [ ] `Modified/KaluzaKlein/Basic.lean` — `kkMetric`/`kkMetricInv` duplicate the structure's metric
+    and inverse at the raw field level.
+  - [ ] `Modified/EinsteinCartan/Basic.lean` — `torsion` defined both raw and as a projection.
+  - [ ] `Modified/KaluzaKlein/KaluzaMiracle.lean:80` — `ricci44`/`ricci5DHorizontal` restate
+    curvature components that follow from the 5D metric in `KaluzaKlein/Basic.lean`.
+
+- [ ] **25. `handbook-documentation-e26eb962`** *(Documentation `4/5`, 6 suggestions)*
+  - [ ] `InitialData/CauchyInterfaces.lean` — the `IsSolution`/`HasCauchyData`/`IsWaveGauge` fields
+    are explained as Lean fields; say what physical obligation each encodes.
+  - [ ] `InitialData/MaximalDevelopment.lean` — the "zero-hypothesis open-domain instance" prose does
+    not say what the interval model physically is.
+  - [ ] `InitialData/ExplicitDevelopments.lean` — key results name Lean fields
+    (`einsteinOf (schwarzschildG M)`); state them in physics language.
+  - [ ] `Modified/ChameleonScreening.lean:92` — screening helper docstrings name parameters by Lean
+    name (`m`, `β`, `M`).
+  - [ ] `General/PPNParameters.lean:159` — PPN parameters are not tied to the observable each
+    measures.
+  - [ ] `Modified/EinsteinAether.lean:176` — the aether coupling constants are listed without saying
+    what each couples.
+
+- [ ] **26. `handbook-organization-e26eb962`** *(Organization `4/5`, 6 suggestions)*
+  - [ ] `Modified/MassiveGravity/VDVZ.lean:74` — file named after its authors, not its object;
+    rename after the propagator, or move the results into `MassiveGravity/Basic.lean`.
+  - [ ] `Modified/KaluzaKlein/KaluzaMiracle.lean:80` — named after a phenomenon; move
+    `KaluzaKleinData.{ricci44,ricci5DHorizontal,scalar5D}` into `KaluzaKlein/Basic.lean` or rename.
+  - [ ] `Cosmology/FLRW/Basic.lean:77` — `FLRWSpacetime` re-packages `Physlib`'s `Cosmology.FLRW`;
+    build the chart API on `FLRW.a`/`FLRW.geometry`.
+  - [ ] `Modified/Teleparallel/Basic.lean:136` — `superpotential`/`torsionScalar` interleaved with
+    the Weitzenböck lemmas; group the definitions first.
+  - [ ] `Modified/ChameleonScreening.lean:105` — the six screening helpers sit far from
+    `ChameleonModel`; move them directly after it (or make them methods).
+  - [ ] `InitialData/CauchyInterfaces.lean` — four certificate layers in one file; group or split by
+    layer.
+
+- [ ] **27. `handbook-proofs-e26eb962`** *(Proofs `3/5`, 6 suggestions)*
+  - [ ] `General/BianchiContracted.lean` — `sum_ginv_covDerivRiemann_ricci_div` (246 lines),
+    `sum_ginv_covDerivRiemann_scalar` (134) and `sum_ginv_riemann_ricci` (126) are far over the
+    50-line guideline; split each along the contraction stage it performs.
+  - [ ] `General/Bianchi.lean` — the `second_bianchi` commutator lemma differentiates each
+    Christoffel product inline; extract a general derivative-of-product identity.
+  - [ ] `Cosmology/FLRW/Perturbation.lean` — long `calc` blocks of scalar algebra whose steps are
+    the first-order expansion terms; name the ones that say something.
+  - [ ] `InitialData/MaximalDevelopment.lean` — the Zorn-argument proof is one long chain; extract
+    the chain-upper-bound and union steps.
+  - [ ] `InitialData/ReducedCauchy.lean` — `flrwField_lipschitzOn` computes an explicit Lipschitz
+    constant in one proof; extract the numerator estimate and the denominator lower bound.
+  - [ ] `InitialData/SobolevInitialData.lean` — six `change` type-ascriptions remain; state the
+    quadratic-form normalisations as lemmas.
+
+- [ ] **28. `handbook-references-e26eb962`** *(References `3/5`, 7 suggestions)*
+  - [ ] `Cosmology/FLRW/Perturbation.lean` — Mukhanov and Dodelson are plain text with no
+    `[ref: ...]` key; add bib entries and cite by key.
+  - [ ] `InitialData/ManifoldSobolev.lean` — Evans and Adams un-keyed.
+  - [ ] `Metrics/ConformalDecomposition.lean` — York and Lichnerowicz un-keyed.
+  - [ ] `InitialData/CauchyInterfaces.lean` — development-layer forward references un-keyed.
+  - [ ] `InitialData/MaximalDevelopment.lean` — cite Choquet-Bruhat–Geroch (1969) with a page, not
+    only a survey.
+  - [ ] `General/BianchiContracted.lean` — the contracted identity is cited to Carroll only; add
+    Wald (Ch. 3) and MTW (Ch. 13), as `RicciScalar.lean` already does.
+  - [ ] `Modified/BransDicke.lean:60` — `BertottiIessTortora2003` is a full-paper span; add the
+    section or page of the Shapiro bound.
+
+- [ ] **29. `handbook-scope-e26eb962`** *(Scope `4/5`, 5 suggestions)*
+  - [ ] Whole change — the branch carries three separable contributions (gravity library, ported
+    wave/initial-data stack, modified-gravity field theories); split into three PRs.
+  - [ ] `InitialData/MaximalDevelopment.lean` — the title claims the Choquet-Bruhat–Geroch maximal
+    development, but what is proved is maximality for an abstract `OrderedDevelopmentSystem` and an
+    interval model; retitle and say no Einstein development is constructed.
+  - [ ] `InitialData/CauchyInterfaces.lean` — say which certificates are inhabited anywhere in the
+    library, and by which lemma.
+  - [ ] `Modified/AqualVariation.lean` — the discrete finite-graph derivation and the continuum
+    Poisson-limit action are two ideas in one module; split.
+  - [ ] `Cosmology/FLRW/Perturbation.lean` — the module proves the scalar first-order equations for
+    a restricted ansatz; scope the title/overview and say tensor/vector modes are out of scope.
+
+Note: Tasks 24–29 overlap Tasks 14, 15, 16, 18 and 23 (the same open items, re-scored and in some
+cases located more precisely, e.g. the three contraction lemmas in `BianchiContracted.lean` and the
+six un-keyed reference lists). Work on either set closes both.
