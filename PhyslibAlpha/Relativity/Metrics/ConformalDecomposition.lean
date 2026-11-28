@@ -197,7 +197,8 @@ lemma hasDerivAt_hamiltonianResidual
     (HasDerivAt.sub (HasDerivAt.const_mul 8 hlin) (HasDerivAt.const_mul R hphit))
     (HasDerivAt.div (hasDerivAt_const (0 : ℝ) sigmaSq) hpow (by simpa using pow_ne_zero 7 hphi))
   have hfun : (fun t : ℝ => hamiltonianResidual (lapPhi + t * lapPsi) R sigmaSq (phi + t * psi)) =
-      (fun t => 8 * (lapPhi + t * lapPsi) - R * (phi + t * psi) + sigmaSq / (phi + t * psi) ^ 7) := by
+      (fun t => 8 * (lapPhi + t * lapPsi) - R * (phi + t * psi) +
+        sigmaSq / (phi + t * psi) ^ 7) := by
     funext t
     simp [hamiltonianResidual]
   rw [hfun]

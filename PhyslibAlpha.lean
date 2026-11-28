@@ -830,6 +830,7 @@ public import PhyslibAlpha.Relativity.General.InitialData.CovariantDerivTensor2
 public import PhyslibAlpha.Relativity.General.InitialData.FlatSlice
 public import PhyslibAlpha.Relativity.General.InitialData.InitialDataInterface
 public import PhyslibAlpha.Relativity.General.InitialData.ManifoldSobolev
+public import PhyslibAlpha.Relativity.General.InitialData.ReducedCauchy
 public import PhyslibAlpha.Relativity.General.InitialData.ReducedWave3D
 public import PhyslibAlpha.Relativity.General.InitialData.SobolevInitialData
 public import PhyslibAlpha.Relativity.General.InitialData.SpaceChart
