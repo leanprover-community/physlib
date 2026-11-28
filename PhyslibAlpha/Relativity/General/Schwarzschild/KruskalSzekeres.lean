@@ -28,18 +28,9 @@ Kruskal coordinates `(T, X, θ, φ)` the line element is
 
 `ds² = F(r)(-dT² + dX²) + r² dΩ²`,
 
-with
-
-`F(r) = (32 M³ / r) exp(-r / (2M))`
-
-and `r` determined implicitly by
-
-`X² - T² = (r/(2M) - 1) exp(r/(2M))`.
-
-The conformal factor is finite and nonzero at the horizon `r = 2M`, so the
-metric and its inverse remain regular across `r = 2M`.  The singularity
-`r = 0` corresponds to `T² - X² = 1` and is excluded by the domain condition
-`X² - T² > -1`.
+with `r` determined implicitly by `X² - T² = (r/(2M) - 1) exp(r/(2M))`.  The
+conformal factor `F` is finite and nonzero at the horizon `r = 2M`, so the metric
+and its inverse stay regular there.
 
 ## ii. Key results
 
