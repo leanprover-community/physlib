@@ -37,6 +37,9 @@ quotient rule, neighborhood congruence, `C²` differentiability, and Schwarz sym
   regularity of coordinate derivatives.
 - `CoordinateCurvature.hasDerivAt_sin_sq` : the derivative of the trigonometric slice
   `t ↦ sin² t`.
+- `CoordinateCurvature.coordDeriv_add`, `CoordinateCurvature.coordDeriv_mul`,
+  `CoordinateCurvature.coordDeriv_div`, `CoordinateCurvature.coordDeriv_neg` : the
+  algebraic rules.
 
 ## iii. Table of contents
 
@@ -210,6 +213,22 @@ lemma coordDeriv_differentiableAt {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : F
   have hdf' : DifferentiableAt ℝ (fderiv ℝ f) x :=
     (hf.fderiv_right (m := 1) (by norm_num)).differentiableAt (by norm_num)
   exact (hdf'.clm_apply (differentiableAt_const _)).congr_of_eventuallyEq hcongr
+
+/-- The coordinate derivative of a negated field is the negation of its coordinate
+derivative. -/
+lemma coordDeriv_neg {n : ℕ} (μ : Fin n) (f : (Fin n → ℝ) → ℝ) (x : Fin n → ℝ) :
+    coordDeriv μ (fun y => -f y) x = -coordDeriv μ f x := by
+  simp [coordDeriv]
+
+/-- Leibniz rule for `coordDeriv` under pointwise multiplication of differentiable
+slices. -/
+lemma coordDeriv_mul {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ)
+    (hf : DifferentiableAt ℝ (fun s => f (Function.update x μ s)) (x μ))
+    (hg : DifferentiableAt ℝ (fun s => g (Function.update x μ s)) (x μ)) :
+    coordDeriv μ (fun y => f y * g y) x =
+      coordDeriv μ f x * g x + f x * coordDeriv μ g x := by
+  have hm := hf.hasDerivAt.fun_mul hg.hasDerivAt
+  simpa [coordDeriv, Function.update_eq_self] using hm.deriv
 
 /-- Quotient rule for `coordDeriv` under pointwise division of differentiable slices. -/
 lemma coordDeriv_div {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ)

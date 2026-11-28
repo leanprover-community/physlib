@@ -576,8 +576,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `aqualEulerLagrangeResidual_eq`, `aqual_euler_lagrange_iff`, `sum_link_mul_difference`,
     `discrete_stationary_iff`, `quadraticProfile_stationary`,
     `aqual_first_variation_eq_integral_residual`, `aqual_fundamental_lemma`
-95. PhyslibAlpha/Relativity/General/Bianchi.lean — `Bianchi.pd_comm_of_contDiffAt`,
-    `Bianchi.metric_compat`, `Bianchi.inv_metric_compat`, `Bianchi.riemann_lower_skew_first`,
+95. PhyslibAlpha/Relativity/General/Bianchi.lean — `Bianchi.metric_compat`, `Bianchi.inv_metric_compat`, `Bianchi.riemann_lower_skew_first`,
     `Bianchi.riemann_bianchi`, `Bianchi.riemann_lower_bianchi`,
     `Bianchi.riemann_lower_pair_symm`, `Bianchi.second_bianchi`,
     `Bianchi.contracted_bianchi`, `Bianchi.covDiv_einstein_eq_zero`,

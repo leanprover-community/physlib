@@ -613,7 +613,7 @@ lemma pd_christoffel_eq_pd_sdsSpatialG (M Λ : ℝ) (x : SpaceChart) (hr : x 0 �
     have hth' := (hcont 1).eventually hev_th
     filter_upwards [hr', hth'] with y hy1 hy2
     exact ⟨hy1.1, hy1.2, hy2⟩
-  apply Bianchi.pd_congr_nhds μ
+  apply CoordinateCurvature.coordDeriv_congr_nhds μ x
   filter_upwards [hev_y] with y hy
   exact christoffel_eq_sdsSpatialG M Λ y hy.1 hy.2.1 hy.2.2 k i j
 
