@@ -37,7 +37,7 @@ divergence theorem.
 
 ## iv. References
 
-* L. C. Evans, *Partial Differential Equations*, 2nd ed., AMS, 2010, §2.4.
+* L. C. Evans, *Partial Differential Equations*, 2nd ed., AMS, 2010, §2.4. [ref: Evans2010PDE]
 -/
 @[expose] public section
 
