@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Analysis.SpecialFunctions.Exp
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.Notation
-public import PhyslibAlpha.Mathematics.MatrixInverse
 public import PhyslibAlpha.Relativity.Metrics.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
@@ -132,7 +132,7 @@ lemma TeVeSMetric.inv_mul (T : TeVeSMetric) : T.metricInv * T.metric = 1 := by
 
 /-- `T.metric * T.metricInv = 1`. -/
 lemma TeVeSMetric.mul_inv (T : TeVeSMetric) : T.metric * T.metricInv = 1 :=
-  mul_eq_one_of_isSymm_of_mul_eq_one T.symm T.inv_mul
+  mul_eq_one_comm.mp T.inv_mul
 
 /-- The TeVeS physical metric of the data `T` as a `MetricTensor 4` with its certified inverse. -/
 noncomputable def TeVeSMetric.metricTensor (T : TeVeSMetric) : MetricTensor 4 where

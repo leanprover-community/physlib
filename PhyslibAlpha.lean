@@ -330,7 +330,6 @@ public import PhyslibAlpha.Mathematics.LadderSystem.Vacuum
 public import PhyslibAlpha.Mathematics.LeviCivita.Basic
 public import PhyslibAlpha.Mathematics.LieAlgebraUnit
 public import PhyslibAlpha.Mathematics.LinearCombination
-public import PhyslibAlpha.Mathematics.MatrixInverse
 public import PhyslibAlpha.Mathematics.MeasureTheory.BoundedMeasurable
 public import PhyslibAlpha.Mathematics.MeasureTheory.EuclideanProd
 public import PhyslibAlpha.Mathematics.MeasureTheory.IntegrationFunctional

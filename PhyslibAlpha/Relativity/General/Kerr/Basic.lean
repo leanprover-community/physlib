@@ -6,7 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import PhyslibAlpha.Mathematics.MatrixInverse
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
 public import PhyslibAlpha.Relativity.Tensors.EinsteinTensor
 import Mathlib.Tactic.FieldSimp
@@ -174,8 +174,7 @@ lemma metric_mul_metricInv (K : KerrSpacetime) (x : Fin 4 → ℝ)
     (hsig : K.sigma (x 1) (x 2) ≠ 0) (hdel : K.delta (x 1) ≠ 0)
     (hs : Real.sin (x 2) ≠ 0) :
     K.metric x * K.metricInv x = 1 :=
-  mul_eq_one_of_isSymm_of_mul_eq_one (K.metric_symm x)
-    (K.metricInv_mul_metric x hsig hdel hs)
+  mul_eq_one_comm.mp (K.metricInv_mul_metric x hsig hdel hs)
 
 /-- Package the Boyer–Lindquist Kerr metric at a regular point (`Σ ≠ 0`, `Δ ≠ 0`, `sin θ ≠ 0`) as a
 `MetricTensor 4`. -/

@@ -6,7 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import PhyslibAlpha.Mathematics.MatrixInverse
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
@@ -141,7 +141,7 @@ lemma metricInv_mul (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 
 lemma metric_mul_inv (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
     (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     S.metric x * S.metricInv x = 1 :=
-  mul_eq_one_of_isSymm_of_mul_eq_one (metric_symm S x) (metricInv_mul S x ha hr hkr hsin)
+  mul_eq_one_comm.mp (metricInv_mul S x ha hr hkr hsin)
 
 /-- The FLRW metric as a `MetricTensor 4` at a point where the scale factor, `r`, `1 - k r²`, and
 `sin θ` are nonzero. -/

@@ -6,7 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import PhyslibAlpha.Mathematics.MatrixInverse
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
@@ -144,7 +144,7 @@ lemma metricInv_mul (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 �
 lemma metric_mul_inv (S : StaticSphericalMetric) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     S.metric x * S.metricInv x = 1 :=
-  mul_eq_one_of_isSymm_of_mul_eq_one (metric_symm S x) (metricInv_mul S x hr hf hsin)
+  mul_eq_one_comm.mp (metricInv_mul S x hr hf hsin)
 
 /-- The metric as a `MetricTensor 4` at a point away from coordinate and horizon
 singularities. -/

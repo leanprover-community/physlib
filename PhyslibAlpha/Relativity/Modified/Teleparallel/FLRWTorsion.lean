@@ -5,9 +5,9 @@ Authors: Alex Vergara Gil
 -/
 module
 
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import PhyslibAlpha.Cosmology.FLRW.FriedmannEquations
-public import PhyslibAlpha.Mathematics.MatrixInverse
 public import PhyslibAlpha.Relativity.Modified.Teleparallel.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
@@ -162,8 +162,7 @@ noncomputable def flrwCartesianMetricTensor (a : ℝ → ℝ) (x : Fin 4 → ℝ
   g := Matrix.diagonal ![-1, a (x 0) ^ 2, a (x 0) ^ 2, a (x 0) ^ 2]
   ginv := Matrix.diagonal ![-1, (a (x 0) ^ 2)⁻¹, (a (x 0) ^ 2)⁻¹, (a (x 0) ^ 2)⁻¹]
   symm := Matrix.isSymm_diagonal _
-  inv_left := mul_eq_one_of_isSymm_of_mul_eq_one (Matrix.isSymm_diagonal _)
-    (flrwCartesianMetricInv_mul a x ha)
+  inv_left := mul_eq_one_comm.mp (flrwCartesianMetricInv_mul a x ha)
   inv_right := flrwCartesianMetricInv_mul a x ha
 
 private lemma flrwTetrad_coordDeriv_eq (a : ℝ → ℝ) (x : Fin 4 → ℝ) (u A j : Fin 4) :
