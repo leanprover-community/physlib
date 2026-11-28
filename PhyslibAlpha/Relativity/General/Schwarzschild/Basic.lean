@@ -128,11 +128,11 @@ lemma r_mul_metricFn (S : SchwarzschildSpacetime) (r : ℝ) (hr : r ≠ 0) :
   rw [metricFn_eq]
   field_simp
 
-/-- The covariant field of `S.toCoordinateMetric` is `S.metric`. -/
+/-- The metric field of the chart is the metric of the spacetime. -/
 @[simp] lemma toCoordinateMetric_g (S : SchwarzschildSpacetime) :
     S.toCoordinateMetric.g = S.metric := rfl
 
-/-- The inverse field of `S.toCoordinateMetric` is `S.metricInv`. -/
+/-- The inverse-metric field of the chart is the inverse metric of the spacetime. -/
 @[simp] lemma toCoordinateMetric_ginv (S : SchwarzschildSpacetime) :
     S.toCoordinateMetric.ginv = S.metricInv := rfl
 

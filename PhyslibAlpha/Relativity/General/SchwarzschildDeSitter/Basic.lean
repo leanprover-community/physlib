@@ -133,11 +133,11 @@ noncomputable def metric (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ
 noncomputable def metricInv (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
   S.toStaticSpherical.metricInv x
 
-/-- The covariant field of `S.toCoordinateMetric` is `S.metric`. -/
+/-- The metric field of the chart is the metric of the spacetime. -/
 @[simp] lemma toCoordinateMetric_g (S : SchwarzschildDeSitterSpacetime) :
     S.toCoordinateMetric.g = S.metric := rfl
 
-/-- The inverse field of `S.toCoordinateMetric` is `S.metricInv`. -/
+/-- The inverse-metric field of the chart is the inverse metric of the spacetime. -/
 @[simp] lemma toCoordinateMetric_ginv (S : SchwarzschildDeSitterSpacetime) :
     S.toCoordinateMetric.ginv = S.metricInv := rfl
 

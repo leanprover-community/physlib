@@ -182,11 +182,11 @@ noncomputable def toCoordinateMetric (S : StaticSphericalMetric) : CoordinateMet
   inv_left x hx := S.metric_mul_inv x hx.1 hx.2.1 hx.2.2
   inv_right x hx := S.metricInv_mul x hx.1 hx.2.1 hx.2.2
 
-/-- The covariant field of `S.toCoordinateMetric` is `S.metric`. -/
+/-- The metric field of the chart is the metric of the spacetime. -/
 @[simp] lemma toCoordinateMetric_g (S : StaticSphericalMetric) :
     S.toCoordinateMetric.g = S.metric := rfl
 
-/-- The inverse field of `S.toCoordinateMetric` is `S.metricInv`. -/
+/-- The inverse-metric field of the chart is the inverse metric of the spacetime. -/
 @[simp] lemma toCoordinateMetric_ginv (S : StaticSphericalMetric) :
     S.toCoordinateMetric.ginv = S.metricInv := rfl
 

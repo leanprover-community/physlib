@@ -125,11 +125,11 @@ noncomputable def NordstromSpacetime.toCoordinateMetric (N : NordstromSpacetime)
   inv_left x hx := (N.metricTensor x hx).inv_left
   inv_right x hx := (N.metricTensor x hx).inv_right
 
-/-- The covariant field of `N.toCoordinateMetric` is `N.metric`. -/
+/-- The metric field of the chart is the metric of the spacetime. -/
 @[simp] lemma NordstromSpacetime.toCoordinateMetric_g (N : NordstromSpacetime) :
     N.toCoordinateMetric.g = N.metric := rfl
 
-/-- The inverse field of `N.toCoordinateMetric` is `N.metricInv`. -/
+/-- The inverse-metric field of the chart is the inverse metric of the spacetime. -/
 @[simp] lemma NordstromSpacetime.toCoordinateMetric_ginv (N : NordstromSpacetime) :
     N.toCoordinateMetric.ginv = N.metricInv := rfl
 

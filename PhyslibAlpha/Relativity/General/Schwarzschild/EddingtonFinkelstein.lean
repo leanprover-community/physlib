@@ -304,7 +304,7 @@ lemma ricciTensorOf_metric (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     apply CoordinateCurvature.coordDeriv_congr_nhds
     filter_upwards [hr', hsin'] with y hy1 hy2
     exact christoffel_eq_efGamma M y hy1 hy2 k i j
-  have hdata := CoordinateCurvature.riemann_of_christoffel_data
+  obtain hdata := CoordinateCurvature.riemann_of_christoffel_data
     (metric M) (metricInv M) (efGamma M) (fun μ y => efGammaDeriv M y μ) x
     (fun a b c => christoffel_eq_efGamma M x hr hsin a b c)
     (fun μ a b c => hcoord μ a b c)

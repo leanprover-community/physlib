@@ -136,11 +136,11 @@ noncomputable def metricInv (S : ReissnerNordstromSpacetime) : (Fin 4 → ℝ) �
 lemma toStaticSpherical_metricFn (S : ReissnerNordstromSpacetime) :
     S.toStaticSpherical.metricFn = S.metricFn := rfl
 
-/-- The covariant field of `S.toCoordinateMetric` is `S.metric`. -/
+/-- The metric field of the chart is the metric of the spacetime. -/
 @[simp] lemma toCoordinateMetric_g (S : ReissnerNordstromSpacetime) :
     S.toCoordinateMetric.g = S.metric := rfl
 
-/-- The inverse field of `S.toCoordinateMetric` is `S.metricInv`. -/
+/-- The inverse-metric field of the chart is the inverse metric of the spacetime. -/
 @[simp] lemma toCoordinateMetric_ginv (S : ReissnerNordstromSpacetime) :
     S.toCoordinateMetric.ginv = S.metricInv := rfl
 

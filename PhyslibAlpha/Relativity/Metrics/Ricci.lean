@@ -68,5 +68,4 @@ lemma ricciTensor_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : 
 
 end CoordinateCurvature
 
-
 end GeneralRelativity
