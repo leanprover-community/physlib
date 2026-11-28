@@ -16,19 +16,19 @@ A color gives the kind of an index of a tensor and whether the index is up or do
 
 A color `⟨κ, v⟩` is a kind of index `κ : K` and a variance `v`, `up` or `down`. For Lorentz
 tensors there is one kind, `vec`. The vector index of `v^μ` has color `⟨vec, up⟩` and the
-covector index of `w_μ` has color `⟨vec, down⟩`. Complex Lorentz tensors have three kinds, one
-for each of the two types of Weyl spinor index and one for the vector index.
+covector index of `w_μ` has color `⟨vec, down⟩`.
 
-A tensor has one color per index. A species (`Species.lean`) gives each color a space, and a
-tensor is an element of the tensor product of the spaces of its indices. Each index has a color
-rather than a space, so that whether two indices can be contracted is an equation of colors,
-`c j = (c i).dual`, which Lean checks by computation when the colors are known. When two colors
-are equal only through a proof, vectors are moved between their spaces by `S.cast`
-(`Species.lean`, §C).
+A tensor has one color per index. A species (`Species.lean`) gives each color a vector space, and a
+tensor is an element of the tensor product of the vector spaces of its indices. Each index has a
+color rather than a vector space, so that the contraction `S.contr c` (`Species.lean`) pairs `S.V c`
+with `S.V c.dual`, and an equation of written-out colors holds by `rfl`. When two colors are equal
+only through a proof, vectors are moved between their vector spaces by `S.cast` (`Species.lean`,
+§C).
 
 The dual of `⟨κ, v⟩` is `⟨κ, v.dual⟩`, the same kind with the other variance. A contraction such
 as `v^μ w_μ` pairs an index of color `c` with an index of color `c.dual`. `Color K` is a structure
-rather than the product `K × Variance`, so that `c.dual` works as dot notation.
+rather than the product `K × Variance`, so that a written-out color `⟨κ, up⟩` has the type
+`Color K` and `⟨κ, up⟩.dual` works as dot notation.
 
 ## ii. Key results
 
@@ -36,6 +36,8 @@ rather than the product `K × Variance`, so that `c.dual` works as dot notation.
   `Variance.dual`.
 - `Color` : a kind of index and a variance.
 - `Color.dual` : the dual color, and `Color.dual_dual` : `c.dual.dual = c` by `rfl`.
+- `Color.dual_mk`, `Variance.dual_up`, `Variance.dual_down` : `simp` computes the dual of a
+  written-out color, `⟨κ, up⟩.dual = ⟨κ, down⟩`.
 
 ## iii. Table of contents
 
@@ -57,7 +59,8 @@ namespace Tensor
 ## A. Variance
 
 `Variance` is two booleans, and `dual` swaps them. So `c.dual.dual` is `c` by definition, also for
-a variable color `c`, and the spaces `S.V c.dual.dual` and `S.V c` of a species are the same type.
+a variable color `c`, and the vector spaces `S.V c.dual.dual` and `S.V c` of a species are the same
+type.
 
 -/
 
@@ -81,9 +84,17 @@ abbrev up : Variance := ⟨true, false, by decide⟩
 @[match_pattern]
 abbrev down : Variance := ⟨false, true, by decide⟩
 
-/-- The dual variance, exchanging up and down. It is an abbrev, so that `simp` and `rw` see
-`c.dual.dual` as `c`. -/
+/-- The dual variance, exchanging up and down. It is reducible, as is `Color.dual`, so that instance
+search and unification see `⟨κ, up⟩.dual` as `⟨κ, down⟩` and `c.dual.dual` as `c`. -/
 abbrev dual (v : Variance) : Variance := ⟨v.isDown, v.isUp, v.ne.symm⟩
+
+/-- The dual of an upper index is a lower index. -/
+@[simp]
+lemma dual_up : up.dual = down := rfl
+
+/-- The dual of a lower index is an upper index. -/
+@[simp]
+lemma dual_down : down.dual = up := rfl
 
 end Variance
 
@@ -101,10 +112,17 @@ structure Color (K : Type) where
   variance : Variance
 deriving DecidableEq
 
-/-- The dual color, with the same kind and the other variance. -/
+/-- The dual color, with the same kind and the other variance. It is reducible, as is
+`Variance.dual`, so that instance search and unification see `⟨κ, up⟩.dual` as `⟨κ, down⟩`. -/
 abbrev Color.dual {K : Type} (c : Color K) : Color K := ⟨c.kind, c.variance.dual⟩
 
 /-- Taking the dual twice gives back the color. -/
 lemma Color.dual_dual {K : Type} (c : Color K) : c.dual.dual = c := rfl
+
+/-- The dual of `⟨κ, v⟩` is `⟨κ, v.dual⟩`. With `Variance.dual_up` and `Variance.dual_down`,
+`simp` computes the dual of a written-out color, `⟨κ, up⟩.dual = ⟨κ, down⟩`. -/
+@[simp]
+lemma Color.dual_mk {K : Type} (κ : K) (v : Variance) :
+    (⟨κ, v⟩ : Color K).dual = ⟨κ, v.dual⟩ := rfl
 
 end Tensor

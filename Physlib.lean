@@ -157,7 +157,6 @@ public import Physlib.Mathematics.Distribution.PowMul
 public import Physlib.Mathematics.Distribution.TemperedDistribution
 public import Physlib.Mathematics.ForMathlib.Analytic
 public import Physlib.Mathematics.ForMathlib.ComplexLinear
-public import Physlib.Mathematics.ForMathlib.Contraction
 public import Physlib.Mathematics.ForMathlib.Cutoff
 public import Physlib.Mathematics.ForMathlib.DataStructures.Matrix.LieTrace
 public import Physlib.Mathematics.ForMathlib.Distribution
@@ -176,6 +175,8 @@ public import Physlib.Mathematics.ForMathlib.LpStarOrder
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Basic
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Unitary
 public import Physlib.Mathematics.ForMathlib.OrthogonalMatrix
+public import Physlib.Mathematics.ForMathlib.PiTensorProduct
+public import Physlib.Mathematics.ForMathlib.Representation
 public import Physlib.Mathematics.ForMathlib.SchurTriangulation
 public import Physlib.Mathematics.ForMathlib.SesquilinearForm
 public import Physlib.Mathematics.ForMathlib.TestFunction
@@ -204,7 +205,10 @@ public import Physlib.Mathematics.Projection.Compress
 public import Physlib.Mathematics.SpecialFunctions.EllipticIntegral
 public import Physlib.Mathematics.SpecialFunctions.PhysHermite
 public import Physlib.Mathematics.Tensors.Color
+public import Physlib.Mathematics.Tensors.Examples
+public import Physlib.Mathematics.Tensors.IndexMaps
 public import Physlib.Mathematics.Tensors.Species
+public import Physlib.Mathematics.Tensors.Tensor
 public import Physlib.Mathematics.VariationalCalculus.Basic
 public import Physlib.Mathematics.VariationalCalculus.HasVarAdjDeriv
 public import Physlib.Mathematics.VariationalCalculus.HasVarAdjoint
