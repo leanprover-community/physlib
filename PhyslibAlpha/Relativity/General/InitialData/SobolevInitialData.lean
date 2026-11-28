@@ -28,7 +28,7 @@ import Mathlib.Tactic.Ring
 
 ## i. Overview
 
-This module advances M2 beyond the flat chart interface by supplying:
+This module goes beyond the flat chart interface by supplying:
 
 * 1D and 3D-box Sobolev `H¹` energy norms (`sobolevH1NormSq1D`, `sobolevH1NormSq3D`)
   with nonnegativity and component dominance inequalities;
@@ -61,7 +61,7 @@ This module advances M2 beyond the flat chart interface by supplying:
 
 ## iv. References
 
-* L. C. Evans, *Partial Differential Equations*, 2nd ed., AMS, 2010, §5.6.
+* L. C. Evans, *Partial Differential Equations*, 2nd ed., AMS, 2010, §5.6. [ref: Evans2010PDE]
 -/
 @[expose] public section
 

@@ -18,8 +18,8 @@ public import Mathlib.Analysis.Calculus.ContDiff.Operations
 
 ## i. Overview
 
-This file provides the chart-level M2 layer by connecting a chart spacetime to
-the existing ADM `InitialData` structure.  The induced spatial metric is read
+This file connects a chart spacetime to the existing ADM `InitialData`
+structure.  The induced spatial metric is read
 from the `t = 0` slice of the chart metric.  The file packages smooth chart
 regularity, the slice embedding and restriction of the metric to it, and the
 constraint residual of bundled initial data.
@@ -117,8 +117,8 @@ lemma contDiff_spacetimeSlice : ContDiff ℝ ∞ spacetimeSlice := by
       (contDiff_apply (𝕜 := ℝ) (n := ∞) (F' := fun _ : Fin 3 => ℝ) j)
 
 /-- Smoothness of the metric components in a chart.  This is the chart-level
-regularity input for M2; it is stronger than, and not a substitute for,
-manifold Sobolev regularity. -/
+regularity input; it is stronger than, and not a substitute for, manifold
+Sobolev regularity. -/
 def ChartSpacetime.IsSmooth (X : ChartSpacetime) : Prop :=
   ∀ i j : Fin 4, ContDiff ℝ ∞ fun x : SpacetimeChart => X.coordinateMetric x i j
 
