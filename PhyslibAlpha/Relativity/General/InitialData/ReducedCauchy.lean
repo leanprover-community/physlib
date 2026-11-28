@@ -285,8 +285,11 @@ initial velocity and spatial gradient so Cauchy data uniqueness determines the
 entire value uniquely via `WaveUniqueness3D`. -/
 @[ext]
 structure LinearizedBoxField (I : BoxIntegral.Box (Fin 3)) where
+  /-- The spacetime field value at a time and a spatial point in `I`. -/
   val : ℝ → {x : SpaceChart // x ∈ BoxIntegral.Box.Icc I} → ℝ
+  /-- The initial velocity of the field. -/
   vel0 : SpaceChart → ℝ
+  /-- The initial spatial gradient of the field. -/
   grad0 : SpaceChart → SpaceChart
 
 /-- The canonical zero wave-gauge field on `I`. -/
@@ -656,6 +659,7 @@ lemma flrwLocalRadius_pos (Λ a₀ v₀ : ℝ) (ha₀ : a₀ ≠ 0) :
 Einstein ODE `2 a a'' + (a')² = Λ a²`. -/
 @[ext]
 structure FLRWReducedSol (δ : ℝ) where
+  /-- The scale factor and its derivative along the interval `Ioo (-δ) δ`. -/
   val : {t : ℝ // t ∈ Ioo (-δ) δ} → ℝ × ℝ
 
 /-- The nonlinear 4D flat FLRW reduced Einstein Cauchy problem packaged as a

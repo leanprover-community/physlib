@@ -105,7 +105,7 @@ lemma physicalMetric_g (D : ConformalData) :
     D.physicalMetric.g = fun i j => D.phi ^ 4 * D.seed.g i j := by
   rfl
 
-/-! The physical extrinsic curvature `K = phi^{-2} sigma + (tau/3) h`. -/
+/-- The physical extrinsic curvature `K = phi^{-2} sigma + (tau/3) h`. -/
 noncomputable def extrinsicCurvature (D : ConformalData) : Tensor2 3 :=
   fun i j => (D.phi ^ 2)⁻¹ * D.sigma i j
     + (D.meanCurvature / 3) * D.physicalMetric.g i j
