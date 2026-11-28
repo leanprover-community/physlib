@@ -40,11 +40,15 @@ at large radius when `μ > 0`.
   `1 ≤ T.yukawaEnhancementFactor r < 1 + T.α`.
 - `MOGTheory.yukawaEnhancementFactor_tendsto_atTop` : for `T.μ > 0`,
   `T.yukawaEnhancementFactor r → 1 + T.α` as `r → ∞`.
+- `stvgActionDensity`, `procaResidual`, `mogEinsteinResidual`, `IsMogSolution` : the gravitational
+  sector of the STVG action density, the Proca and modified Einstein equations as residuals, and a
+  point at which both hold.
 
 ## iii. Table of contents
 
 - A. The MOG enhancement factor and potential
 - B. Bounds, Newtonian limits, and asymptotic behaviour
+- C. The STVG action and field equations at a point
 
 ## iv. References
 
@@ -149,6 +153,51 @@ lemma MOGTheory.yukawaEnhancementFactor_tendsto_atTop (T : MOGTheory) (hμ : 0 <
       Filter.atTop (nhds (1 + T.α * (1 - 0))) :=
     tendsto_const_nhds.add (tendsto_const_nhds.mul (tendsto_const_nhds.sub hexp))
   simpa [MOGTheory.yukawaEnhancementFactor] using h1
+
+/-!
+
+## C. The STVG action and field equations at a point
+
+The gravitational sector combines the Einstein term with a Proca mass term and a scalar potential.
+Varying it gives the Proca equation for the massive vector and a modified Einstein equation whose
+vector and scalar stress contributions are supplied as data, so the equations are stated as
+residuals rather than derived.
+
+-/
+
+/-- The gravitational sector of the STVG action density at a point:
+`R / (16 π G) - B² / 4 + μ² φ² / 2 - V`, with `G` the running coupling, `B²` the squared field
+strength, `φ² = φ_μ φ^μ` and `V` the scalar potential. The matter coupling is not included. -/
+noncomputable def stvgActionDensity (G R B2 phiSq mu V : ℝ) : ℝ :=
+  R / (16 * Real.pi * G) - B2 / 4 + mu ^ 2 * phiSq / 2 - V
+
+/-- The Proca field equation `div B + μ² φ = 0` in one frame component, with the divergence of the
+field strength and the vector component supplied. -/
+noncomputable def procaResidual (divB mu phiComp : ℝ) : ℝ :=
+  divB + mu ^ 2 * phiComp
+
+/-- At zero mass the Proca equation is the Maxwell equation `div B = 0`. -/
+lemma procaResidual_mu_zero_eq_zero_iff (divB phiComp : ℝ) :
+    procaResidual divB 0 phiComp = 0 ↔ divB = 0 := by
+  simp [procaResidual]
+
+/-- One component of the modified Einstein equation `G_{μν} = 8 π G T_{μν}`, with the vector and
+scalar stress contributions folded into `Ecouple`. -/
+noncomputable def mogEinsteinResidual (G Ecouple T : ℝ) : ℝ :=
+  Ecouple - 8 * Real.pi * G * T
+
+/-- The modified Einstein equation holds exactly when the coupled Einstein tensor equals `8 π G`
+times the source. -/
+lemma mogEinsteinResidual_eq_zero_iff (G Ecouple T : ℝ) :
+    mogEinsteinResidual G Ecouple T = 0 ↔ Ecouple = 8 * Real.pi * G * T := by
+  rw [mogEinsteinResidual, sub_eq_zero]
+
+/-- A point at which the STVG field equations hold. -/
+structure IsMogSolution (G Ecouple T divB mu phiComp : ℝ) : Prop where
+  /-- The modified Einstein equation holds. -/
+  einstein_eq : mogEinsteinResidual G Ecouple T = 0
+  /-- The Proca equation holds. -/
+  proca_eq : procaResidual divB mu phiComp = 0
 
 end MOG
 

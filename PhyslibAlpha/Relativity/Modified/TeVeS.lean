@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Analysis.SpecialFunctions.Exp
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import PhyslibAlpha.Relativity.Metrics.Basic
@@ -39,11 +40,15 @@ In an orthonormal frame where `g = η = diag(-1, 1, 1, 1)` and `U = ∂_t`, this
 - `TeVeSMetric.symm`, `TeVeSMetric.lorentzian`, `TeVeSMetric.spatial` : symmetry, preserved
   Lorentzian signature, and spatial conformal rescaling.
 - `TeVeSMetric.metricTensor` : the TeVeS physical metric as a `MetricTensor 4`.
+- `tevesActionDensity`, `tevesScalarResidual`, `tevesEinsteinResidual`, `IsTeVeSSolution` : the
+  TeVeS action density, its scalar and modified Einstein equations as residuals, and a point at
+  which both hold.
 
 ## iii. Table of contents
 
 - A. The TeVeS physical metric and its inverse
 - B. Signature, spatial rescaling, and metric tensor
+- C. The TeVeS action and field equations at a point
 
 ## iv. References
 
@@ -141,6 +146,51 @@ noncomputable def TeVeSMetric.metricTensor (T : TeVeSMetric) : MetricTensor 4 wh
   symm := T.symm
   inv_left := T.mul_inv
   inv_right := T.inv_mul
+
+/-!
+
+## C. The TeVeS action and field equations at a point
+
+The TeVeS action couples the Einstein term to the aether-projected scalar gradient and a scalar
+potential. Varying it gives a projected scalar equation and a modified Einstein equation whose
+scalar and vector stress contributions are supplied as data, so the equations are stated as
+residuals rather than derived.
+
+-/
+
+/-- The TeVeS action density at a point:
+`R / (16 π G) - (1/2) (g^{μν} - U^μ U^ν) ∂_μ φ ∂_ν φ - V`, with the projected kinetic term and the
+scalar potential `V` supplied. The matter coupling to the disformal metric is not included. -/
+noncomputable def tevesActionDensity (G R gradPhiSq V : ℝ) : ℝ :=
+  R / (16 * Real.pi * G) - gradPhiSq / 2 - V
+
+/-- The TeVeS scalar equation in one frame component: the aether-projected d'Alembertian of the
+scalar equals the supplied source. -/
+noncomputable def tevesScalarResidual (projBox source : ℝ) : ℝ :=
+  projBox - source
+
+/-- The scalar equation holds exactly when the projected d'Alembertian equals its source. -/
+lemma tevesScalarResidual_eq_zero_iff (projBox source : ℝ) :
+    tevesScalarResidual projBox source = 0 ↔ projBox = source := by
+  rw [tevesScalarResidual, sub_eq_zero]
+
+/-- One component of the modified Einstein equation `G_{μν} = 8 π G T_{μν}`, with the scalar and
+vector stress contributions folded into `Ecouple`. -/
+noncomputable def tevesEinsteinResidual (G Ecouple T : ℝ) : ℝ :=
+  Ecouple - 8 * Real.pi * G * T
+
+/-- The modified Einstein equation holds exactly when the coupled Einstein tensor equals `8 π G`
+times the source. -/
+lemma tevesEinsteinResidual_eq_zero_iff (G Ecouple T : ℝ) :
+    tevesEinsteinResidual G Ecouple T = 0 ↔ Ecouple = 8 * Real.pi * G * T := by
+  rw [tevesEinsteinResidual, sub_eq_zero]
+
+/-- A point at which the TeVeS field equations hold. -/
+structure IsTeVeSSolution (G Ecouple T projBox source : ℝ) : Prop where
+  /-- The modified Einstein equation holds. -/
+  einstein_eq : tevesEinsteinResidual G Ecouple T = 0
+  /-- The scalar equation holds. -/
+  scalar_eq : tevesScalarResidual projBox source = 0
 
 end TeVeS
 

@@ -470,12 +470,14 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
 75. PhyslibAlpha/Relativity/Modified/TeVeS.lean — `TeVeSMetric`, `TeVeSMetric.metric`,
     `TeVeSMetric.metricInv`, `TeVeSMetric.symm`, `TeVeSMetric.lorentzian`,
     `TeVeSMetric.spatial`, `TeVeSMetric.mul_inv`, `TeVeSMetric.inv_mul`,
-    `TeVeSMetric.metricTensor`
+    `TeVeSMetric.metricTensor`, `tevesActionDensity`, `tevesScalarResidual`,
+    `tevesEinsteinResidual`, `IsTeVeSSolution`
 76. PhyslibAlpha/Relativity/Modified/MOG.lean — `MOGTheory`,
     `MOGTheory.yukawaEnhancementFactor`, `MOGTheory.potential`,
     `MOGTheory.yukawaEnhancementFactor_zero`, `MOGTheory.yukawaEnhancementFactor_alpha_zero`,
     `MOGTheory.yukawaEnhancementFactor_mu_zero`, `MOGTheory.yukawaEnhancementFactor_bounds`,
-    `MOGTheory.yukawaEnhancementFactor_tendsto_atTop`
+    `MOGTheory.yukawaEnhancementFactor_tendsto_atTop`, `stvgActionDensity`, `procaResidual`,
+    `mogEinsteinResidual`, `IsMogSolution`
 77. PhyslibAlpha/Relativity/Modified/PPNParameters.lean — `PPNParameters`,
     `IsFullyConservative`, `IsSemiconservative`, `IsFullyConservative.isSemiconservative`,
     `grPPN`, `bransDickePPN`, `fRMetricPPN`, `nordstromPPN`, `grPPN_isFullyConservative`,
