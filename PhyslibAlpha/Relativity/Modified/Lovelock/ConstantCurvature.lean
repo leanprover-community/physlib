@@ -53,6 +53,10 @@ namespace Lovelock
 
 ## A. Constant-curvature models
 
+A constant-curvature model is fixed by one scalar `κ`: its Riemann tensor is the maximally
+symmetric combination of Kronecker deltas, so every contraction of it is an algebraic expression
+in `κ` and the dimension `n`.
+
 -/
 
 /-- Constant-curvature model `R^{ab}_{cd} = κ (δ^a_c δ^b_d - δ^a_d δ^b_c)` in `n` dimensions. -/

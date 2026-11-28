@@ -80,6 +80,10 @@ namespace RiemannTensor
 
 ### A.1. Algebraic symmetries and vanishing components
 
+The algebraic identities carried by a curvature tensor — antisymmetry in the last pair, symmetry
+under exchange of the two pairs, and the first Bianchi identity — already force antisymmetry in the
+first pair and force every component with a repeated index to vanish.
+
 -/
 
 variable {n : ℕ} (R : RiemannTensor n)
@@ -123,6 +127,9 @@ lemma swap_mixed (i j k l : Fin n) : R.comp i j k l = R.comp j i l k := by
 /-!
 
 ### A.2. The flat curvature tensor
+
+The flat curvature tensor is the zero element of the algebraic Riemann tensor: it is the model
+whose every component, and hence every contraction, vanishes.
 
 -/
 
