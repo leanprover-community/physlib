@@ -16,7 +16,7 @@ You should contribute to this project if: you have a formalization that has unde
 
 This is the staging ground for `./Physlib`. It is analogous to things like `./linux/drivers/staging`. Results going into it undergo a one-look human review with a binary decision of accept or reject.
 
-The purpose of it is to: Create a connected corpus of physics formalizations, following the best practices learned from Physlib which will one day be cleaned up for Physlib. In doing so, we will have a guide to the new definitions and results that can be added to Physlib. We will also have new lemmas around Physlib's existing trusted definitions, giving others access to a larger pool of results which they can use in their own formalization.
+The purpose of it is to: Create a connected corpus of physics formalizations, following the best practices learned from Physlib which will one day be cleaned up for Physlib. In doing so, we will have a guide to the new definitions and results that can be added to Physlib. We will also have new lemmas around Physlib's existing trusted definitions, giving others access to a larger pool of results which they can use in their own formalization. It will also enable us to see concretely work works and what does not work.
 
 You should contribute to this project if: You have a formalization that you think one day will want to end up in ./Physlib, but is not quite ready and you intend to improve it until that point, perhaps with a collaboration of others.
 
