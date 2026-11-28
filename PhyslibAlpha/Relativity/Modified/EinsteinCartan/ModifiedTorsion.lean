@@ -17,9 +17,10 @@ The modified torsion tensor and Cartan's algebraic spin-torsion equation in four
 
 ## i. Overview
 
-The modified torsion `S^k_{ij} = T^k_{ij} + δ^k_i T_{mj}{}^m - δ^k_j T_{mi}{}^m` is the combination
-that appears in the Palatini variation. In four dimensions Cartan's equation `T = κ Ŝ + …` is
-algebraically invertible, and vanishing spin implies vanishing torsion.
+Write `T^k_{ij}` for the torsion and `T_i = T^m_{im}` for its trace. The modified torsion
+`S^k_{ij} = T^k_{ij} + δ^k_i T_j - δ^k_j T_i` is the combination that appears in the Palatini
+variation. In four dimensions Cartan's equation `S^k_{ij} = κ spin^k_{ij}` is algebraically
+invertible, and vanishing spin implies vanishing torsion.
 
 ## ii. Key results
 
@@ -54,7 +55,7 @@ namespace EinsteinCartan
 
 ## A. Cartan algebraic spin-torsion inversion in four dimensions
 
-In four spacetime dimensions, Cartan's algebraic field equation `T̃^k_{ij} = κ spin^k_{ij}`
+In four spacetime dimensions, Cartan's algebraic field equation `S^k_{ij} = κ spin^k_{ij}`
 inverts linearly, forcing torsion to vanish identically in spinless vacuum.
 
 -/
@@ -63,7 +64,7 @@ inverts linearly, forcing torsion to vanish identically in spinless vacuum.
 def torsionTrace (T : AffineConnection 4) (i : Fin 4) : ℝ := ∑ m : Fin 4, T m i m
 
 /-- Modified torsion tensor entering the 4D Palatini variation of Einstein–Cartan theory:
-`T̃^k_{ij} = T^k_{ij} + δ^k_i T^m_{jm} - δ^k_j T^m_{im}`. -/
+`S^k_{ij} = T^k_{ij} + δ^k_i T_j - δ^k_j T_i`, with `T_i = T^m_{im}` the torsion trace. -/
 def modifiedTorsion (T : AffineConnection 4) : AffineConnection 4 :=
   fun k i j => T k i j
     + (if k = i then torsionTrace T j else 0)
@@ -77,15 +78,15 @@ lemma modifiedTorsion_antisymm (T : AffineConnection 4)
   ring
 
 /-- In four dimensions, contracting the modified torsion gives `-2` times the torsion trace:
-`∑ k, T̃^k_{ik} = -2 T^m_{im}`. -/
+`∑ k, S^k_{ik} = -2 T_i`. -/
 lemma torsionTrace_modifiedTorsion (T : AffineConnection 4) (i : Fin 4) :
     torsionTrace (modifiedTorsion T) i = -2 * torsionTrace T i := by
   simp only [torsionTrace, modifiedTorsion, Fin.sum_univ_four]
   fin_cases i <;> simp <;> ring
 
-/-- Recovers the torsion `T` from the Palatini spin source `S = κ Σ` in four dimensions, by
-`T^k_{ij} = S^k_{ij} + ½ (δ^k_i S^m_{jm} - δ^k_j S^m_{im})`; this inverts `modifiedTorsion`, that is,
-the algebraic spin-torsion field equation of Einstein–Cartan theory. -/
+/-- Recovers the torsion `T` from the Palatini source `S = κ spin` in four dimensions, by
+`T^k_{ij} = S^k_{ij} + ½ (δ^k_i S_j - δ^k_j S_i)` with `S_i = S^m_{im}`; this inverts
+`modifiedTorsion`, that is, the algebraic spin-torsion field equation of Einstein–Cartan theory. -/
 noncomputable def invertModifiedTorsion (S : AffineConnection 4) : AffineConnection 4 :=
   fun k i j => S k i j
     + (1 / 2) * ((if k = i then torsionTrace S j else 0)
@@ -110,7 +111,7 @@ lemma modifiedTorsion_invertModifiedTorsion (S : AffineConnection 4) :
   simp only [modifiedTorsion, htr, invertModifiedTorsion]
   split_ifs <;> ring
 
-/-- Cartan's algebraic spin-torsion field equation `T̃^k_{ij} = κ spin^k_{ij}` uniquely determines
+/-- Cartan's algebraic spin-torsion field equation `S^k_{ij} = κ spin^k_{ij}` uniquely determines
 spacetime torsion linearly in the spin density. -/
 lemma cartan_algebraic_inversion (κ : ℝ) (T spin : AffineConnection 4)
     (hcartan : ∀ k i j, modifiedTorsion T k i j = κ * spin k i j) (k i j : Fin 4) :

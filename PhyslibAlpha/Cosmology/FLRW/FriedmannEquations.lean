@@ -7,7 +7,8 @@ module
 
 public import Physlib.Cosmology.FLRW.Basic
 public import Physlib.Cosmology.FLRW.MatterContent
-public import PhyslibAlpha.Cosmology.FLRW.PerfectFluid
+public import Physlib.Relativity.SpeedOfLight
+public import PhyslibAlpha.Cosmology.FLRW.Christoffel
 public import PhyslibAlpha.Relativity.General.GravitationalConstant
 public import PhyslibAlpha.Relativity.Tensors.PerfectFluidStressEnergy
 import Mathlib.Analysis.Calculus.Deriv.Comp
@@ -18,10 +19,15 @@ import Mathlib.Tactic.Ring
 
 # Deriving the Friedmann equations from Einstein's field equations
 
-Derivation of `Physlib.Cosmology.FLRW`'s first- and second-order Friedmann equations for an
-arbitrary speed of light and Newton's gravitational constant from the FLRW Einstein field equations.
+Comoving perfect-fluid stress-energy in an FLRW chart, and derivation of `Physlib.Cosmology.FLRW`'s
+first- and second-order Friedmann equations for an arbitrary speed of light and Newton's
+gravitational constant from the FLRW Einstein field equations.
 
 ## i. Overview
+
+Equating the FLRW Einstein tensor with the stress-energy tensor of a comoving perfect fluid —
+energy density `ρ`, pressure `p`, and four-velocity `u = ∂_t` in comoving coordinates — gives the
+first and second Friedmann equations and their equivalence with the Einstein field equations.
 
 Whereas `Physlib.Cosmology.FLRW` postulates the two Friedmann equations as ordinary differential
 equations for a cosmological model with scale factor `a(t)`, this module derives them directly from
@@ -33,6 +39,10 @@ of light. Reparametrizing cosmic time `t` by the length-dimensioned coordinate `
 
 ## ii. Key results
 
+- `FLRWSpacetime.einsteinTensor_00_iff_friedmann`,
+  `FLRWSpacetime.einsteinTensor_spatial_iff_friedmann`,
+  `FLRWSpacetime.einsteinTensor_iff_friedmann` : equivalence of the comoving perfect-fluid
+  Einstein equations with the two Friedmann equations.
 - `flrwScaleFactorOfReal`, `FLRWSpacetime.ofCosmology` : scale factor in coordinate time `τ = c t`
   and corresponding FLRW spacetime geometry.
 - `hasDerivAt_flrwScaleFactorOfReal`, `eventually_differentiableAt_flrwScaleFactorOfReal`,
@@ -44,7 +54,8 @@ of light. Reparametrizing cosmic time `t` by the length-dimensioned coordinate `
 
 ## iii. Table of contents
 
-- A. Real-coordinate scale factor and Friedmann derivation
+- A. Comoving perfect fluid and Einstein–Friedmann equivalence
+- B. Real-coordinate scale factor and Friedmann derivation
 
 ## iv. References
 
@@ -67,7 +78,139 @@ open GeneralRelativity.CoordinateCurvature
 
 /-!
 
-## A. Real-coordinate scale factor and Friedmann derivation
+## A. Comoving perfect fluid and Einstein–Friedmann equivalence
+
+Equating the FLRW Einstein tensor with the comoving perfect-fluid stress-energy tensor directly
+recovers the first and second Friedmann equations for an arbitrary speed of light and Newton's
+gravitational constant.
+
+-/
+
+namespace FLRWSpacetime
+
+/-- The `(0, 0)` Einstein equation `G_{00} + Λ g_{00} = (8 π G / c⁴) T_{00}` for an FLRW spacetime
+and a comoving perfect fluid is equivalent to the first-order Friedmann energy-density equation in
+coordinate time `τ = c t`. -/
+lemma einsteinTensor_00_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight) (Λ : ℝ)
+    (G : GravitationalConstant) (ρ p : ℝ) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0) (hr : x 1 ≠ 0)
+    (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
+    (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
+    (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
+    (S.toCoordinateMetric.einsteinTensor x 0 0 + Λ * S.metric x 0 0
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * GeneralRelativity.perfectFluidStressEnergy c ρ p (S.metric x) 0 0)
+      ↔ (deriv S.a (x 0) / S.a (x 0)) ^ 2
+          = (8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * ρ - S.k / (S.a (x 0)) ^ 2 + Λ / 3 := by
+  have hc : (c : ℝ) ≠ 0 := c.val_ne_zero
+  rw [S.einsteinTensor ⟨x, ha, hr, hkr, hsin⟩ ha_diff ha2 0 0]
+  simp only [metric, GeneralRelativity.perfectFluidStressEnergy, Matrix.of_apply, ↓reduceIte, and_self, mul_one]
+  have hrhs : 8 * Real.pi * G.val / (c : ℝ) ^ 4 * (ρ * (c : ℝ) ^ 2 + p + p * -1)
+      = 8 * Real.pi * G.val / (c : ℝ) ^ 2 * ρ := by
+    field_simp [hc]
+    ring
+  rw [hrhs]
+  have hdiv : 8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2) * ρ
+      = (8 * Real.pi * G.val / (c : ℝ) ^ 2 * ρ) / 3 := by
+    field_simp [hc]
+  rw [hdiv]
+  constructor <;> intro h <;> linarith
+
+/-- Algebraic core of the spatial Friedmann equation: given the first-order equation
+`(ȧ/a)² = 8πG ρ / (3 c²) - k/a² + Λ/3`, the spatial Einstein equation
+`-(2 ä/a + (ȧ/a)² + k/a²) + Λ = 8πG p / c⁴` is equivalent to the acceleration equation
+`ä/a = -4πG (ρ + 3p/c²) / (3 c²) + Λ/3`. -/
+private lemma spatial_coef_eq (c : SpeedOfLight) (Λ G ρ p a adot addot k : ℝ)
+    (hc : (c : ℝ) ≠ 0)
+    (hf1 : (adot / a) ^ 2 = 8 * Real.pi * G / (3 * (c : ℝ) ^ 2) * ρ - k / a ^ 2 + Λ / 3) :
+    -(2 * (addot / a) + (adot / a) ^ 2 + k / a ^ 2) + Λ = 8 * Real.pi * G / (c : ℝ) ^ 4 * p ↔
+      addot / a = -(4 * Real.pi * G / (3 * (c : ℝ) ^ 2)) * (ρ + 3 * p / (c : ℝ) ^ 2) + Λ / 3 := by
+  have hrhs : -(4 * Real.pi * G / (3 * (c : ℝ) ^ 2)) * (ρ + 3 * p / (c : ℝ) ^ 2)
+      = -(4 * Real.pi * G / (3 * (c : ℝ) ^ 2) * ρ) - 4 * Real.pi * G / (c : ℝ) ^ 4 * p := by
+    field_simp [hc]
+    ring
+  have h8 : 8 * Real.pi * G / (3 * (c : ℝ) ^ 2) * ρ
+      = 2 * (4 * Real.pi * G / (3 * (c : ℝ) ^ 2) * ρ) := by ring
+  have h8p : 8 * Real.pi * G / (c : ℝ) ^ 4 * p
+      = 2 * (4 * Real.pi * G / (c : ℝ) ^ 4 * p) := by ring
+  rw [hrhs]
+  constructor <;> intro h <;> linarith
+
+/-- Given the first-order Friedmann equation, the spatial diagonal Einstein equation `(1, 1)` is
+equivalent to the second-order Friedmann acceleration equation in coordinate time `τ = c t`. -/
+lemma einsteinTensor_spatial_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight) (Λ : ℝ)
+    (G : GravitationalConstant) (ρ p : ℝ) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0) (hr : x 1 ≠ 0)
+    (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
+    (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
+    (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0))
+    (hf1 : (deriv S.a (x 0) / S.a (x 0)) ^ 2
+      = (8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * ρ - S.k / (S.a (x 0)) ^ 2 + Λ / 3) :
+    (S.toCoordinateMetric.einsteinTensor x 1 1 + Λ * S.metric x 1 1
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * GeneralRelativity.perfectFluidStressEnergy c ρ p (S.metric x) 1 1)
+      ↔ deriv (deriv S.a) (x 0) / S.a (x 0)
+          = -(4 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * (ρ + 3 * p / (c : ℝ) ^ 2) + Λ / 3 := by
+  have hc : (c : ℝ) ≠ 0 := c.val_ne_zero
+  have hg11 : S.a (x 0) ^ 2 / (1 - S.k * x 1 ^ 2) ≠ 0 :=
+    div_ne_zero (pow_ne_zero 2 ha) hkr
+  rw [S.einsteinTensor ⟨x, ha, hr, hkr, hsin⟩ ha_diff ha2 1 1]
+  simp only [metric, GeneralRelativity.perfectFluidStressEnergy, Matrix.of_apply, Fin.isValue, one_ne_zero,
+    false_and, ↓reduceIte, mul_zero, zero_add]
+  have hfac : -(2 * (deriv (deriv S.a) (x 0) / S.a (x 0)) + (deriv S.a (x 0) / S.a (x 0)) ^ 2
+        + S.k / (S.a (x 0)) ^ 2) * (S.a (x 0) ^ 2 / (1 - S.k * x 1 ^ 2))
+        + Λ * (S.a (x 0) ^ 2 / (1 - S.k * x 1 ^ 2))
+      = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * (p * (S.a (x 0) ^ 2 / (1 - S.k * x 1 ^ 2))) ↔
+      -(2 * (deriv (deriv S.a) (x 0) / S.a (x 0)) + (deriv S.a (x 0) / S.a (x 0)) ^ 2
+        + S.k / (S.a (x 0)) ^ 2) + Λ = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * p := by
+    constructor <;> intro h
+    · exact mul_right_cancel₀ hg11 (by linear_combination h)
+    · linear_combination (S.a (x 0) ^ 2 / (1 - S.k * x 1 ^ 2)) * h
+  rw [hfac]
+  exact spatial_coef_eq c Λ G.val ρ p (S.a (x 0)) (deriv S.a (x 0))
+    (deriv (deriv S.a) (x 0)) S.k hc hf1
+
+/-- Einstein's equation `G_{ij} + Λ g_{ij} = (8 π G / c⁴) T_{ij}` for an FLRW spacetime and a
+comoving perfect fluid is equivalent to the first- and second-order Friedmann equations in
+coordinate time `τ = c t`. -/
+lemma einsteinTensor_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight) (Λ : ℝ)
+    (G : GravitationalConstant) (ρ p : ℝ) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0) (hr : x 1 ≠ 0)
+    (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
+    (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
+    (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
+    (∀ i j, S.toCoordinateMetric.einsteinTensor x i j + Λ * S.metric x i j
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * GeneralRelativity.perfectFluidStressEnergy c ρ p (S.metric x) i j)
+      ↔ ((deriv S.a (x 0) / S.a (x 0)) ^ 2
+            = (8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * ρ - S.k / (S.a (x 0)) ^ 2 + Λ / 3)
+          ∧ (deriv (deriv S.a) (x 0) / S.a (x 0)
+              = -(4 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * (ρ + 3 * p / (c : ℝ) ^ 2)
+                + Λ / 3) := by
+  have hc : (c : ℝ) ≠ 0 := c.val_ne_zero
+  constructor
+  · intro h
+    have hf1 := (S.einsteinTensor_00_iff_friedmann c Λ G ρ p x ha hr hkr hsin ha_diff ha2).mp
+      (h 0 0)
+    exact ⟨hf1,
+      (S.einsteinTensor_spatial_iff_friedmann c Λ G ρ p x ha hr hkr hsin ha_diff ha2 hf1).mp
+        (h 1 1)⟩
+  · rintro ⟨hf1, hf2⟩ i j
+    rw [S.einsteinTensor ⟨x, ha, hr, hkr, hsin⟩ ha_diff ha2 i j]
+    have hcoef : -(2 * (deriv (deriv S.a) (x 0) / S.a (x 0))
+        + (deriv S.a (x 0) / S.a (x 0)) ^ 2 + S.k / (S.a (x 0)) ^ 2) + Λ
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * p :=
+      (spatial_coef_eq c Λ G.val ρ p (S.a (x 0)) (deriv S.a (x 0)) (deriv (deriv S.a) (x 0))
+        S.k hc hf1).mpr hf2
+    fin_cases i <;> fin_cases j <;> simp [metric, GeneralRelativity.perfectFluidStressEnergy]
+    · have hrhs0 : 8 * Real.pi * G.val / (c : ℝ) ^ 4 * (ρ * (c : ℝ) ^ 2)
+          = 3 * (8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2) * ρ) := by
+        field_simp [hc]
+      rw [hrhs0]
+      linarith
+    · linear_combination (S.a (x 0) ^ 2 / (1 - S.k * x 1 ^ 2)) * hcoef
+    · linear_combination (S.a (x 0) ^ 2 * x 1 ^ 2) * hcoef
+    · linear_combination (S.a (x 0) ^ 2 * x 1 ^ 2 * Real.sin (x 2) ^ 2) * hcoef
+
+end FLRWSpacetime
+
+/-!
+
+## B. Real-coordinate scale factor and Friedmann derivation
 
 Rewriting a cosmological model's scale factor `a(t)` as a function of the length-dimensioned time
 coordinate `τ = c t` relates the FLRW Einstein tensor directly to the first- and second-order
@@ -260,6 +403,7 @@ lemma friedmannSolution_of_einsteinTensor (c : SpeedOfLight) (U : Cosmology.FLRW
       rfl hr hkr hsin).mp (heinst t ht)).1
   · exact ((einsteinTensor_ofCosmology_iff_friedmann c U F Λ G ht ![(c : ℝ) * t.val, r₀, θ₀, 0]
       rfl hr hkr hsin).mp (heinst t ht)).2
+
 
 end FLRW
 

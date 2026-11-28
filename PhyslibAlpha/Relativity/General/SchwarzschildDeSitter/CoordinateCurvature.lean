@@ -6,7 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.Basic
-public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric.RicciCurvature
+public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric.Christoffel
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Mul

@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import PhyslibAlpha.Relativity.General.Schwarzschild.Basic
-public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric.RicciCurvature
+public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric.Christoffel
 public import PhyslibAlpha.Relativity.Tensors.MaxwellStressEnergy
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Inv

@@ -22,13 +22,13 @@ nondegenerate metric carrying its explicit two-sided inverse [2], with the four-
 Minkowski metric η = diag(-1, 1, 1, 1) as the flat reference background [3]. Conformal
 rescalings g ↦ Ω g preserve metric invertibility [4] and leave null tangent cones invariant [5].
 Algebraic (0, 4) Riemann curvature tensors satisfy pair antisymmetry, pair-exchange symmetry, and
-the first Bianchi identity [6][82], and contract with the inverse metric to the symmetric Ricci tensor
+the first Bianchi identity [6][80], and contract with the inverse metric to the symmetric Ricci tensor
 [7] and scalar curvature defined as its metric trace [8][9]. Using coordinate-axis partial
-derivatives bridged to `SpaceTime.deriv` [10][85], coordinate curvature operators compute the
+derivatives bridged to `SpaceTime.deriv` [10][82], coordinate curvature operators compute the
 Levi-Civita Christoffel symbols from a coordinate metric field [11], construct the Riemann
 curvature tensor [12][13], Ricci tensor, Ricci scalar, and Einstein tensor, and establish that any
 covariant coordinate components lower to algebraic curvature contractions through the bridge
-in [79], and that any
+in [77], and that any
 locally constant metric has identically vanishing connection and curvature [13]. From any metric
 and curvature tensor, the Einstein tensor G_{ij} = R_{ij} - ½ R g_{ij} is symmetric, has metric
 trace (1 - n / 2) R in n dimensions, and in n = 4 spacetime dimensions makes the vacuum Einstein
@@ -47,7 +47,7 @@ solutions by the Picard-Lindelöf theorem, reducing to straight lines when the c
 [18]. In the Arnowitt-Deser-Misner 3+1 initial-value formulation, spatial slices carry a
 Riemannian 3-metric and symmetric extrinsic curvature tensor K_{ij} subject to the Hamiltonian and
 momentum constraint equations (using the 3D Levi-Civita covariant derivative `∇K`), which simplify
-on time-symmetric (K_{ij} = 0) and maximal (tr K = 0) slices [19][83], distinguish flat Minkowski
+on time-symmetric (K_{ij} = 0) and maximal (tr K = 0) slices [19][81], distinguish flat Minkowski
 vacuum data [20] from non-vacuum initial data with anisotropic extrinsic curvature [21]. Around the
 Minkowski background g = η + h, first-order perturbation theory packages symmetric metric
 perturbations `MetricPerturbation` [22], defines the Minkowski trace `perturbationTrace` and
@@ -68,32 +68,32 @@ Flat Minkowski spacetime has vanishing Ricci tensor, scalar curvature, and Einst
 algebraically and from the coordinate metric [35]. A general static spherically symmetric metric
 with radial metric function f(r) (line element diag(-f(r), f(r)⁻¹, r², r² sin²θ)) carries a
 certified `MetricTensor` and `CoordinateMetric` [36], explicit coordinate Christoffel symbols and
-derivatives [37], and closed-form Riemann, Ricci, and Einstein curvature evaluation [38].
+derivatives [37], and closed-form Riemann, Ricci, and Einstein curvature evaluation [37].
 The orthonormal Schwarzschild Weyl electric tidal tensor yields the Kretschmann scalar 48 M² / r⁶
-and proves purely electric Weyl curvature [39], while `SchwarzschildSpacetime` with metric
+and proves purely electric Weyl curvature [38], while `SchwarzschildSpacetime` with metric
 function f(r) = 1 - 2 M / r gives direct metric-derivative Christoffel and Riemann components and
-matches the exterior of `IncompressibleSphere` [40], with vacuum flatness proved by specializing
-the Schwarzschild-de Sitter coordinate metric at Λ = 0 [41]. Inside the fluid sphere,
+matches the exterior of `IncompressibleSphere` [39], with vacuum flatness proved by specializing
+the Schwarzschild-de Sitter coordinate metric at Λ = 0 [40]. Inside the fluid sphere,
 `IncompressibleSphere` formalizes Schwarzschild's 1916 constant-density interior pressure profile,
 surface continuity/differentiability junction properties, and compactness bound `α < (8 / 9) Ra`
-[42]. Including a cosmological constant Λ in the
+[41]. Including a cosmological constant Λ in the
 Schwarzschild-de Sitter (Kottler) metric f(r) = 1 - 2 M / r - Λ r² / 3 yields constant-curvature
 de Sitter frame components, Kretschmann invariant 48 M² / r⁶ + 8 Λ² / 3, and frame Bianchi
-conservation [43], Λ-independent Weyl electric components [44], and full coordinate-metric
-verification of R_{ij} = Λ g_{ij}, R = 4 Λ, and G_{ij} = -Λ g_{ij} [45]. Adding electric charge
+conservation [42], Λ-independent Weyl electric components [43], and full coordinate-metric
+verification of R_{ij} = Λ g_{ij}, R = 4 Λ, and G_{ij} = -Λ g_{ij} [44]. Adding electric charge
 yields the Reissner-Nordström electrovacuum metric f(r) = 1 - 2 M / r + Q² / r², the radial
 Coulomb-Maxwell field strength tensor F_{ab}, and the trace-free electromagnetic stress-energy
-tensor satisfying the Einstein-Maxwell equations [46]. Rotating black holes are represented by
+tensor satisfying the Einstein-Maxwell equations [45]. Rotating black holes are represented by
 `KerrSpacetime` in Boyer-Lindquist coordinates (t, r, θ, φ) with spin a, polynomial functions
-Σ = r² + a² cos²θ and Δ = r² - r_s r + a², and exact block inverse metric [47], metric coordinate
-partial derivatives [48], all 64 Levi-Civita Christoffel symbols and contracted trace [49], and
+Σ = r² + a² cos²θ and Δ = r² - r_s r + a², and exact block inverse metric [46], metric coordinate
+partial derivatives [47], all 64 Levi-Civita Christoffel symbols and contracted trace [48], and
 full verification that the Ricci tensor, Ricci scalar, and Einstein tensor vanish identically in
-vacuum [50]. Homogeneous and isotropic cosmology is formalized on `FLRWSpacetime` with scale
-factor a(t) and spatial curvature k [51], evaluating all FLRW Christoffel symbols, Ricci
-components, scalar curvature, and Einstein tensor from the coordinate metric [52][84], proving
+vacuum [49]. Homogeneous and isotropic cosmology is formalized on `FLRWSpacetime` with scale
+factor a(t) and spatial curvature k [50], evaluating all FLRW Christoffel symbols, Ricci
+components, scalar curvature, and Einstein tensor from the coordinate metric [51], proving
 equivalence with the Friedmann equations for a comoving perfect fluid with arbitrary speed of
-light c and gravitational constant G [53][81], and bridging directly to Physlib's `Cosmology.FLRW`
-[54].
+light c and gravitational constant G [52][79], and bridging directly to Physlib's `Cosmology.FLRW`
+[52].
 
 ### Scalar-tensor, higher-curvature, and screening gravity theories
 
@@ -101,75 +101,75 @@ Historically, Nordström's relativistic scalar gravity restricts the spacetime m
 `NordstromSpacetime` to the conformally flat form φ(x)² η_{μν}, preserving null cones (producing
 zero gravitational light deflection) while evaluating its Christoffel symbols and proving the
 four-dimensional Einstein-Fokker curvature identity R = -6 □_η φ / φ³ and its equivalence to the
-nonlinear scalar wave equation □_η φ = -4 π φ³ T [55]. Brans-Dicke scalar-tensor gravity couples a
+nonlinear scalar wave equation □_η φ = -4 π φ³ T [53]. Brans-Dicke scalar-tensor gravity couples a
 scalar mode to curvature with dimensionless parameter ω on `BransDickeTheory`, yielding the
 post-Newtonian parameter γ(ω) = (1 + ω) / (2 + ω) approaching the General Relativity value 1 under
 the Cassini bound ω > 40000{7}, the weak-field effective gravitational coupling
 `effectiveCouplingRatio(ω) = (4 + 2ω) / (3 + 2ω) = 1 + 1 / (3 + 2ω)` bounded in `[1, 4/3]` for
 ω ≥ 0, and the
-ω = 0 metric f(R) value γ = 1 / 2 [56]. Non-linear f(R) gravity (`FRTheory`) replaces the
+ω = 0 metric f(R) value γ = 1 / 2 [54]. Non-linear f(R) gravity (`FRTheory`) replaces the
 Einstein-Hilbert density R with f(R), modifying the algebraic field equations, recovering General
 Relativity with Λ via `FRTheory.generalRelativity Λ`, deriving the `n`-dimensional and 4D `3 □f'`
 trace identities, and supplying Starobinsky's `R + α R²` Legendre potential `(φ - 1)² / (8 α)` and
-normalized Einstein-frame slow-roll plateau `V(φ) / φ² → 1 / (8 α)` [57]. By Ostrogradsky's
+normalized Einstein-frame slow-roll plateau `V(φ) / φ² → 1 / (8 α)` [55]. By Ostrogradsky's
 theorem (`HigherDerivativeOscillator`), a second-order higher-derivative benchmark Lagrangian
 `L = ½ q̈² - ½ m² q²` has a degenerate kinetic Hessian matrix `Matrix.det oscillatorKineticHessian = 0` in
 `(q̇, q̈)` and a canonical Hamiltonian linear in the position-conjugate momentum `p₁`, making it
-unbounded below for any `v ≠ 0` in contrast to positive-definite first-order kinetic energy [58].
+unbounded below for any `v ≠ 0` in contrast to positive-definite first-order kinetic energy [56].
 Cubic Galileon scalar-tensor theories (`CubicGalileon`) achieve second-order equations of motion
 because their one-dimensional cubic density reduces to a total time derivative even under constant
 velocity shifts `φ' ↦ φ' + c`, whereas exact shift symmetry forbids a non-trivial potential term
-[59]. Chameleon scalar-tensor theories (`ChameleonModel`) feature an environment-dependent mass
+[57]. Chameleon scalar-tensor theories (`ChameleonModel`) feature an environment-dependent mass
 that grows monotonically with ambient matter density, shrinking the Compton range and suppressing
-fifth forces for screened bodies via the thin-shell parameter Δ = |δφ| / (2 β M_pl |Φ_N|) [60].
+fifth forces for screened bodies via the thin-shell parameter Δ = |δφ| / (2 β M_pl |Φ_N|) [58].
 
 ### Torsion, teleparallel, higher-dimensional, Lorentz-violating, massive, and PPN formalisms
 
 Einstein-Cartan-Sciama-Kibble theory (`EinsteinCartanData`) relaxes the torsion-free constraint on
 the affine connection, proving that any metric-compatible connection decomposes uniquely into the
 Levi-Civita connection plus the contorsion tensor built from torsion, and inverting the algebraic
-4D Palatini spin-torsion equation [61][86][87]. In the Teleparallel Equivalent of General Relativity
+4D Palatini spin-torsion equation [59][83][84]. In the Teleparallel Equivalent of General Relativity
 (TEGR), gravity is carried by the curvature-free Weitzenböck connection of an orthonormal `Tetrad`
-and its torsion `superpotential` [62]; on flat FLRW cosmologies the general `torsionScalar` matches
+and its torsion `superpotential` [60]; on flat FLRW cosmologies the general `torsionScalar` matches
 `flrwTorsionScalar = 6 H²` and the Levi-Civita scalar curvature satisfies R_LC = -T + B up to the
-total-divergence boundary term B [63], while non-linear f(T) = T + F(T) models (`FTTheory`) modify
-the Friedmann expansion equation [64]. Lovelock higher-curvature gravity constructs the generalized
+total-divergence boundary term B [61], while non-linear f(T) = T + F(T) models (`FTTheory`) modify
+the Friedmann expansion equation [62]. Lovelock higher-curvature gravity constructs the generalized
 Kronecker delta `generalizedKroneckerDelta` and proves dimensional pigeonhole vanishing alongside antisymmetric
-permutation-sum coset splits [65], defines `AlgebraicCurvature`, the quadratic Gauss-Bonnet scalar
-𝒢 = R² - 4 R^a_b R^b_a + R^{cd}_{ab} R^{ab}_{cd}, and Lanczos variation tensor H^i_j [66], proves via
+permutation-sum coset splits [63], defines `AlgebraicCurvature`, the quadratic Gauss-Bonnet scalar
+𝒢 = R² - 4 R^a_b R^b_a + R^{cd}_{ab} R^{ab}_{cd}, and Lanczos variation tensor H^i_j [64], proves via
 `lovelockContract5 = -8 H^i_j` that H^i_j vanishes identically in dimension n ≤ 4 (the 4D
-Bach-Lanczos theorem) [88], and contrasts the 4D topological invariant with non-zero 5D dynamics on
-`constantCurvature` spaces [89]. Five-dimensional Kaluza-Klein theory (`KaluzaKleinData`) unifies
+Bach-Lanczos theorem) [85], and contrasts the 4D topological invariant with non-zero 5D dynamics on
+`constantCurvature` spaces [86]. Five-dimensional Kaluza-Klein theory (`KaluzaKleinData`) unifies
 4D General Relativity and Maxwell electromagnetism inside a 5D metric G_{AB} built from g_{μν},
 four-potential A_μ, and dilaton φ, establishing the exact 5D inverse metric and `MetricTensor 5`
-[67], unit-determinant upper-unitriangular vielbein factorization [68], diffeomorphism-to-U(1)
-gauge equivalence under compact-circle shifts [69], and 4D Maxwell stress-energy tracelessness
-together with the Kaluza miracle R^{(5)} = R^{(4)} - ¼ F_{ab} F^{ab} [70]. Einstein-Aether theory
+[65], unit-determinant upper-unitriangular vielbein factorization [66], diffeomorphism-to-U(1)
+gauge equivalence under compact-circle shifts [67], and 4D Maxwell stress-energy tracelessness
+together with the Kaluza miracle R^{(5)} = R^{(4)} - ¼ F_{ab} F^{ab} [68]. Einstein-Aether theory
 (`AetherCouplings`) breaks local Lorentz boost invariance with a unit-timelike vector field u^a
 (g_{ab} u^a u^b = -1) governed by four Jacobson-Mattingly couplings (c₁, c₂, c₃, c₄), yielding
 explicit squared propagation speeds for the spin-2, spin-1, and spin-0 modes, the GW170817 luminal
 graviton constraint s₂² = 1 ↔ c₁ + c₃ = 0, and the renormalized Newtonian constant
-G_N = G_bare / (1 - (c₁ + c₄) / 2) [71]. Fierz-Pauli and de Rham-Gabadadze-Tolley (dRGT) massive
+G_N = G_bare / (1 - (c₁ + c₄) / 2) [69]. Fierz-Pauli and de Rham-Gabadadze-Tolley (dRGT) massive
 gravity formalize the Lorentz-invariant mass term -(m² / 4)(h_{ab} h^{ab} + α h²) on
 `FierzPauliTheory`, proving that the ghost-free tuning α = -1 uniquely eliminates the sixth
-longitudinal derivative mode and enforces vacuum tracelessness h = 0 [72], derive the van
+longitudinal derivative mode and enforces vacuum tracelessness h = 0 [70], derive the van
 Dam-Veltman-Zakharov (vDVZ) 4 / 3 static coupling ratio and 3 / 4 light-deflection discontinuity
 between `massivePropagatorCoupling` and `grPropagatorCoupling`, both built on the shared
-`MassiveGravityTheory` core [73][80], and construct the ghost-free
-dRGT potential on `DRGTTheory` from elementary symmetric polynomials of trace powers [74]. Galactic
+`MassiveGravityTheory` core [71][78], and construct the ghost-free
+dRGT potential on `DRGTTheory` from elementary symmetric polynomials of trace powers [72]. Galactic
 rotation-curve alternatives without non-baryonic dark matter are represented by Milgrom's Modified
 Newtonian Dynamics (`MONDTheory`), which interpolates between the Newtonian regime a ≫ a₀ and the
 deep-MOND regime a = √(a_N a₀) to produce asymptotically flat circular velocities v⁴ = G M a₀ and
-bridges directly to Physlib's `pairGravityAcceleration` [75]{8}, by Bekenstein's relativistic
+bridges directly to Physlib's `pairGravityAcceleration` [73]{8}, by Bekenstein's relativistic
 Tensor-Vector-Scalar (`TeVeSMetric`) disformal physical metric and its exact analytical
-inverse [76], and by Moffat's Scalar-Tensor-Vector Gravity (`MOGTheory`) Yukawa-enhancement factor
+inverse [74], and by Moffat's Scalar-Tensor-Vector Gravity (`MOGTheory`) Yukawa-enhancement factor
 `1 + α (1 - e^{-μ r})` and Yukawa-enhanced gravitational potential
-`Φ(r) = -(G M / r) (1 + α (1 - e^{-μ r}))` [77]. Finally, the Will-Nordtvedt Parameterized
+`Φ(r) = -(G M / r) (1 + α (1 - e^{-μ r}))` [75]. Finally, the Will-Nordtvedt Parameterized
 Post-Newtonian (PPN) formalism unifies solar-system tests across metric theories via ten
 dimensionless parameters (γ, β, ξ, α₁, α₂, α₃, ζ₁, ζ₂, ζ₃, ζ₄), classifying fully conservative and
 semiconservative theories, embedding General Relativity, `BransDickeTheory`, metric f(R), and
 Nordström gravity, and evaluating light deflection, Shapiro time delay, perihelion precession, and
-the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
+the Nordtvedt Strong Equivalence Principle violation parameter η_N [76]{5}{6}.
 
 ## Lean References
 
@@ -279,36 +279,35 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
 37. PhyslibAlpha/Relativity/Metrics/StaticSphericalMetric/Christoffel.lean —
     `StaticSphericalMetric.christoffel`, `StaticSphericalMetric.christoffel_eq`,
     `StaticSphericalMetric.eventually_christoffel_eq`, `StaticSphericalMetric.christoffelDeriv`,
-    `StaticSphericalMetric.pd_christoffel_eq_deriv`
-38. PhyslibAlpha/Relativity/Metrics/StaticSphericalMetric/RicciCurvature.lean —
-    `StaticSphericalMetric.riemann_eq_data`, `StaticSphericalMetric.ricciTensor`,
-    `StaticSphericalMetric.ricciScalar`, `StaticSphericalMetric.einsteinTensor`
-39. PhyslibAlpha/Relativity/General/Schwarzschild/ElectricWeyl.lean — `electricPart`,
+    `StaticSphericalMetric.pd_christoffel_eq_deriv`, `StaticSphericalMetric.riemann_eq_data`,
+    `StaticSphericalMetric.ricciTensor`, `StaticSphericalMetric.ricciScalar`,
+    `StaticSphericalMetric.einsteinTensor`
+38. PhyslibAlpha/Relativity/General/Schwarzschild/ElectricWeyl.lean — `electricPart`,
     `electricPart_symm`, `electricPart_trace`, `electricWeylRiemann`, `ricci_eq_zero`,
     `electricWeyl_frameSumOfSquares_eq`, `kretschmann_scalar`, `weyl_purely_electric`,
     `electricPart_from_metric`
-40. PhyslibAlpha/Relativity/General/Schwarzschild/Basic.lean — `SchwarzschildSpacetime`,
+39. PhyslibAlpha/Relativity/General/Schwarzschild/Basic.lean — `SchwarzschildSpacetime`,
     `SchwarzschildSpacetime.metricFn`, `SchwarzschildSpacetime.metric`,
     `SchwarzschildSpacetime.toStaticSpherical`, `SchwarzschildSpacetime.toCoordinateMetric`,
     `SchwarzschildSpacetime.metricFn_ofIncompressibleSphere`,
     `SchwarzschildSpacetime.christoffelTtr_from_metric`,
     `SchwarzschildSpacetime.christoffelRrr_from_metric`
-41. PhyslibAlpha/Relativity/General/Schwarzschild/CoordinateCurvature.lean —
+40. PhyslibAlpha/Relativity/General/Schwarzschild/CoordinateCurvature.lean —
     `SchwarzschildSpacetime.toDeSitter`, `SchwarzschildSpacetime.toDeSitter_metric`,
     `SchwarzschildSpacetime.riemann_components_from_coordinateMetric`,
     `SchwarzschildSpacetime.ricciTensor`,
     `SchwarzschildSpacetime.ricciScalar`, `SchwarzschildSpacetime.einsteinTensor`
-42. PhyslibAlpha/Relativity/General/Schwarzschild/IncompressibleSphere.lean —
+41. PhyslibAlpha/Relativity/General/Schwarzschild/IncompressibleSphere.lean —
     `IncompressibleSphere`, `rs`, `chia`, `cosChia`, `cosChia_sq`, `cosChia_pos`,
     `cosChia_lt_one`, `rs_div_Ra`, `one_third_lt_cosChia_iff_rs`
-43. PhyslibAlpha/Relativity/General/SchwarzschildDeSitter/DeSitterFrame.lean — `deSitterPart`,
+42. PhyslibAlpha/Relativity/General/SchwarzschildDeSitter/DeSitterFrame.lean — `deSitterPart`,
     `SchwarzschildDeSitterSpacetime.frameSumOfSquares`, `SchwarzschildDeSitterSpacetime.frameSumOfSquares_eq`,
     `SchwarzschildDeSitterSpacetime.kretschmann`, `SchwarzschildDeSitterSpacetime.frameRicciTensor_eq`,
     `SchwarzschildDeSitterSpacetime.frameScalar_eq`,
     `SchwarzschildDeSitterSpacetime.frameEinstein_eq`,
     `SchwarzschildDeSitterSpacetime.frame_bianchi`,
     `SchwarzschildDeSitterSpacetime.frame_einstein_conserved`
-44. PhyslibAlpha/Relativity/General/SchwarzschildDeSitter/Basic.lean —
+43. PhyslibAlpha/Relativity/General/SchwarzschildDeSitter/Basic.lean —
     `SchwarzschildDeSitterSpacetime`, `SchwarzschildDeSitterSpacetime.metricFn`,
     `SchwarzschildDeSitterSpacetime.metricFnHalfDeriv`,
     `SchwarzschildDeSitterSpacetime.metric`, `SchwarzschildDeSitterSpacetime.metricInv`,
@@ -317,14 +316,14 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `SchwarzschildDeSitterSpacetime.christoffelTtr`,
     `SchwarzschildDeSitterSpacetime.christoffelRrr`, `SchwarzschildDeSitterSpacetime.weyl_rr`,
     `SchwarzschildDeSitterSpacetime.weyl_thetatheta`, `SchwarzschildDeSitterSpacetime.weyl_phiphi`
-45. PhyslibAlpha/Relativity/General/SchwarzschildDeSitter/CoordinateCurvature.lean —
+44. PhyslibAlpha/Relativity/General/SchwarzschildDeSitter/CoordinateCurvature.lean —
     `SchwarzschildDeSitterSpacetime.christoffel`, `SchwarzschildDeSitterSpacetime.christoffelDeriv`,
     `SchwarzschildDeSitterSpacetime.christoffel_eq`,
     `SchwarzschildDeSitterSpacetime.riemann_components_from_metric`,
     `SchwarzschildDeSitterSpacetime.ricciTensor`,
     `SchwarzschildDeSitterSpacetime.ricciScalar`,
     `SchwarzschildDeSitterSpacetime.einsteinTensor`
-46. PhyslibAlpha/Relativity/General/ReissnerNordstrom/Basic.lean —
+45. PhyslibAlpha/Relativity/General/ReissnerNordstrom/Basic.lean —
     `ReissnerNordstromSpacetime`, `ReissnerNordstromSpacetime.metricFn`,
     `ReissnerNordstromSpacetime.metric`, `ReissnerNordstromSpacetime.metricInv`,
     `ReissnerNordstromSpacetime.toStaticSpherical`,
@@ -333,44 +332,43 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `ReissnerNordstromSpacetime.coulombFieldStrength_antisymm`,
     `ReissnerNordstromSpacetime.maxwellStressEnergy`,
     `ReissnerNordstromSpacetime.einsteinTensor_eq_maxwell`
-47. PhyslibAlpha/Relativity/General/Kerr/Basic.lean — `KerrSpacetime`, `KerrSpacetime.sigma`,
+46. PhyslibAlpha/Relativity/General/Kerr/Basic.lean — `KerrSpacetime`, `KerrSpacetime.sigma`,
     `KerrSpacetime.delta`, `KerrSpacetime.axialFactor`, `KerrSpacetime.axialFactor_eq_sigma`,
     `KerrSpacetime.tphi_det_id`, `KerrSpacetime.metric`, `KerrSpacetime.metricInv`,
     `KerrSpacetime.metric_symm`, `KerrSpacetime.metricInv_mul_metric`,
     `KerrSpacetime.metric_mul_metricInv`, `KerrSpacetime.metricTensor`,
     `KerrSpacetime.metric_zero_spin`
-48. PhyslibAlpha/Relativity/General/Kerr/MetricDeriv.lean — `KerrSpacetime.metricCoordDeriv`,
+47. PhyslibAlpha/Relativity/General/Kerr/MetricDeriv.lean — `KerrSpacetime.metricCoordDeriv`,
     `KerrSpacetime.hasDerivAt_sigma_r`, `KerrSpacetime.hasDerivAt_sigma_theta`,
     `KerrSpacetime.hasDerivAt_delta_r`, `KerrSpacetime.pd_metric_eq`
-49. PhyslibAlpha/Relativity/General/Kerr/Christoffel.lean — `KerrSpacetime.christoffel`,
+48. PhyslibAlpha/Relativity/General/Kerr/Christoffel.lean — `KerrSpacetime.christoffel`,
     `KerrSpacetime.christoffel_symm`, `KerrSpacetime.christoffel_eq`,
     `KerrSpacetime.eventually_christoffel_eq`, `KerrSpacetime.christoffelTrace`,
     `KerrSpacetime.sum_christoffel_trace`
-50. PhyslibAlpha/Relativity/General/Kerr/RicciCurvature.lean — `KerrSpacetime.ricci`,
+49. PhyslibAlpha/Relativity/General/Kerr/RicciCurvature.lean — `KerrSpacetime.ricci`,
     `KerrSpacetime.einstein`, `KerrSpacetime.christoffelTraceDeriv_rr`,
     `KerrSpacetime.christoffelTraceDeriv_thetar`, `KerrSpacetime.christoffelTraceDeriv_rtheta`,
     `KerrSpacetime.christoffelTraceDeriv_thetatheta`, `KerrSpacetime.ricciTensor_eq_zero`,
     `KerrSpacetime.ricciScalar_eq_zero`, `KerrSpacetime.einsteinTensor_eq_zero`
-51. PhyslibAlpha/Cosmology/FLRW/Basic.lean — `FLRWSpacetime`, `FLRWSpacetime.metric`,
+50. PhyslibAlpha/Cosmology/FLRW/Basic.lean — `FLRWSpacetime`, `FLRWSpacetime.metric`,
     `FLRWSpacetime.metricInv`, `FLRWSpacetime.metric_symm`, `FLRWSpacetime.metric_mul_inv`,
     `FLRWSpacetime.metricTensor`, `FLRWSpacetime.toCoordinateMetric`
-52. PhyslibAlpha/Cosmology/FLRW/Christoffel.lean — `FLRWSpacetime.christoffel`,
+51. PhyslibAlpha/Cosmology/FLRW/Christoffel.lean — `FLRWSpacetime.christoffel`,
     `FLRWSpacetime.christoffelDeriv`, `FLRWSpacetime.christoffel_eq`,
     `FLRWSpacetime.eventually_christoffel_eq`, `FLRWSpacetime.pd_christoffel_eq_deriv`,
-    `FLRWSpacetime.riemann_eq_data`
-53. PhyslibAlpha/Cosmology/FLRW/PerfectFluid.lean —
-    `FLRWSpacetime.einsteinTensor_00_iff_friedmann`,
+    `FLRWSpacetime.riemann_eq_data`, `FLRWSpacetime.ricciTensor`, `FLRWSpacetime.ricciScalar`,
+    `FLRWSpacetime.einsteinTensor`
+52. PhyslibAlpha/Cosmology/FLRW/FriedmannEquations.lean — `flrwScaleFactorOfReal`,
+    `FLRWSpacetime.ofCosmology`, `einsteinTensor_ofCosmology_iff_friedmann`,
+    `friedmannSolution_of_einsteinTensor`, `FLRWSpacetime.einsteinTensor_00_iff_friedmann`,
     `FLRWSpacetime.einsteinTensor_spatial_iff_friedmann`,
     `FLRWSpacetime.einsteinTensor_iff_friedmann`
-54. PhyslibAlpha/Cosmology/FLRW/FriedmannEquations.lean — `flrwScaleFactorOfReal`,
-    `FLRWSpacetime.ofCosmology`, `einsteinTensor_ofCosmology_iff_friedmann`,
-    `friedmannSolution_of_einsteinTensor`
-55. PhyslibAlpha/Relativity/Modified/Nordstrom.lean — `NordstromSpacetime`,
+53. PhyslibAlpha/Relativity/Modified/Nordstrom.lean — `NordstromSpacetime`,
     `NordstromSpacetime.metric`, `NordstromSpacetime.metricInv`, `NordstromSpacetime.metricTensor`,
     `NordstromSpacetime.toCoordinateMetric`, `NordstromSpacetime.light_deflection_zero`,
     `NordstromSpacetime.christoffel`, `NordstromSpacetime.christoffel_eq`,
     `NordstromSpacetime.ricciScalar`, `NordstromSpacetime.einsteinFokker_iff`
-56. PhyslibAlpha/Relativity/Modified/BransDicke.lean — `BransDickeTheory`,
+54. PhyslibAlpha/Relativity/Modified/BransDicke.lean — `BransDickeTheory`,
     `BransDickeTheory.gamma`, `BransDickeTheory.gamma_eq_one_sub`,
     `BransDickeTheory.gamma_bounds`, `BransDickeTheory.cassini_deviation`,
     `BransDickeTheory.effectiveCouplingRatio`,
@@ -378,64 +376,64 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `BransDickeTheory.effectiveCouplingRatio_bounds`, `BransDickeTheory.fR`,
     `BransDickeTheory.fR_gamma`,
     `gamma_tendsto_atTop`
-57. PhyslibAlpha/Relativity/Modified/FRGravity.lean — `FRTheory`,
+55. PhyslibAlpha/Relativity/Modified/FRGravity.lean — `FRTheory`,
     `FRTheory.generalRelativity`, `FRTheory.starobinsky`, `FRTheory.algebraicFieldEqn`,
     `linear_is_einstein`, `trace_algebraicFieldEqn`, `trace_algebraicFieldEqn_four`,
     `starobinskyPotential`, `starobinsky_scalar_inversion`, `starobinskyPotential_eq`,
     `starobinsky_nonconstant_deriv`, `einsteinFramePotential`, `starobinsky_einsteinFrame`,
     `starobinsky_plateau`
-58. PhyslibAlpha/Relativity/Modified/Ostrogradsky.lean — `HigherDerivativeOscillator`,
+56. PhyslibAlpha/Relativity/Modified/Ostrogradsky.lean — `HigherDerivativeOscillator`,
     `oscillatorKineticHessian`, `oscillatorKineticHessian_degenerate`,
     `HigherDerivativeOscillator.hamiltonian`,
     `HigherDerivativeOscillator.hamiltonian_add`,
     `HigherDerivativeOscillator.ostrogradsky_unbounded_below`
-59. PhyslibAlpha/Relativity/Modified/Galileon.lean — `CubicGalileon`,
+57. PhyslibAlpha/Relativity/Modified/Galileon.lean — `CubicGalileon`,
     `CubicGalileon.density`, `cubic_total_derivative`, `CubicGalileon.density_hasDerivAt`,
     `shift_total_derivative`
-60. PhyslibAlpha/Relativity/Modified/ChameleonScreening.lean — `ChameleonModel`,
+58. PhyslibAlpha/Relativity/Modified/ChameleonScreening.lean — `ChameleonModel`,
     `ChameleonModel.massSq`, `ChameleonModel.mass`, `ChameleonModel.mass_mono`,
     `ChameleonModel.range`, `ChameleonModel.range_shrinks`, `ChameleonModel.suppression`,
     `comptonRange`, `comptonRange_antitone`, `yukawaSuppression`, `yukawaSuppression_lt_half`,
     `thinShellParameter`, `screeningFactor`, `thin_shell_suppressed`
-61. PhyslibAlpha/Relativity/Modified/EinsteinCartan/Basic.lean — `AffineConnection`,
+59. PhyslibAlpha/Relativity/Modified/EinsteinCartan/Basic.lean — `AffineConnection`,
     `EinsteinCartanData`, `EinsteinCartanData.torsion`, `EinsteinCartanData.torsion_antisymm`,
     `EinsteinCartanData.torsion_diag`, `torsion`, `torsion_antisymm`
-62. PhyslibAlpha/Relativity/Modified/Teleparallel/Basic.lean — `Tetrad`,
+60. PhyslibAlpha/Relativity/Modified/Teleparallel/Basic.lean — `Tetrad`,
     `Tetrad.weitzenbockConnection`, `Tetrad.mul_weitzenbockConnection`,
     `Tetrad.weitzenbockTorsion`, `Tetrad.weitzenbockTorsion_eq`,
     `Tetrad.weitzenbockTorsion_antisymm`, `superpotential`, `superpotential_antisymm`,
     `torsionScalar`
-63. PhyslibAlpha/Relativity/Modified/Teleparallel/FLRWTorsion.lean — `flrwTetrad`,
+61. PhyslibAlpha/Relativity/Modified/Teleparallel/FLRWTorsion.lean — `flrwTetrad`,
     `flrwTetradInv`, `flrwTetrad_mul_inv`, `flrwTetradFrame`, `flrwWeitzenbock_hubble`,
     `flrwTorsionScalar`, `torsionScalar_flrw_eq_flrwTorsionScalar`,
     `flrwTorsionScalar_ofCosmology`, `flrwBoundaryTerm`,
     `ricciScalar_flrw_flat_eq_neg_torsion_add_boundary`
-64. PhyslibAlpha/Relativity/Modified/Teleparallel/FTGravity.lean — `FTTheory`,
+62. PhyslibAlpha/Relativity/Modified/Teleparallel/FTGravity.lean — `FTTheory`,
     `FTTheory.tegr`, `FTTheory.quadratic`, `FTTheory.friedmannLHS`, `FTTheory.friedmannLHS_tegr`,
     `FTTheory.friedmannLHS_quadratic`
-65. PhyslibAlpha/Mathematics/GeneralizedKronecker.lean — `generalizedKroneckerDelta`,
+63. PhyslibAlpha/Mathematics/GeneralizedKronecker.lean — `generalizedKroneckerDelta`,
     `generalizedKroneckerDelta_eq_zero_of_lt`, `generalizedKroneckerDelta_five_eq_sum_perm`, `perm_fin5_fiber_split`
-66. PhyslibAlpha/Relativity/Modified/Lovelock/Basic.lean — `AlgebraicCurvature`,
+64. PhyslibAlpha/Relativity/Modified/Lovelock/Basic.lean — `AlgebraicCurvature`,
     `AlgebraicCurvature.ricciMixed`, `AlgebraicCurvature.ricciScalar`, `AlgebraicCurvature.ricciSq`,
     `AlgebraicCurvature.riemannSq`, `AlgebraicCurvature.gaussBonnetScalar`,
     `AlgebraicCurvature.lanczosTensor`
-67. PhyslibAlpha/Relativity/Modified/KaluzaKlein/Basic.lean — `KaluzaKleinData`,
+65. PhyslibAlpha/Relativity/Modified/KaluzaKlein/Basic.lean — `KaluzaKleinData`,
     `KaluzaKleinData.metric`, `KaluzaKleinData.metric_symm`, `KaluzaKleinData.metricInv`,
     `KaluzaKleinData.metricInv_symm`, `KaluzaKleinData.gaugeShift`,
     `KaluzaKleinData.toMetricTensor`, `extendedPotential`, `metric4Ext`, `kkMetric`,
     `kkMetric_symm`, `contravariantPotential`, `kkMetricInv`, `kkMetricInv_mul_kkMetric`,
     `kkMetricInv_symm`, `kkMetric_mul_kkMetricInv`, `kkMetricTensor`
-68. PhyslibAlpha/Relativity/Modified/KaluzaKlein/TriangularFactorization.lean —
+66. PhyslibAlpha/Relativity/Modified/KaluzaKlein/TriangularFactorization.lean —
     `kkTriangular`, `kkBlockDiag`, `det_kkTriangular`, `kkMetric_eq_triangular_conj`,
     `KaluzaKleinData.metric_eq_triangular_conj`
-69. PhyslibAlpha/Relativity/Modified/KaluzaKlein/GaugeTransform.lean —
+67. PhyslibAlpha/Relativity/Modified/KaluzaKlein/GaugeTransform.lean —
     `kkGaugeJacobian`, `det_kkGaugeJacobian`, `kkGaugeJacobian_pullback`,
     `KaluzaKleinData.gaugeJacobian_pullback`
-70. PhyslibAlpha/Relativity/Modified/KaluzaKlein/KaluzaMiracle.lean — `maxwellFieldInvariant`,
+68. PhyslibAlpha/Relativity/Modified/KaluzaKlein/KaluzaMiracle.lean — `maxwellFieldInvariant`,
     `maxwellStressEnergy`, `maxwellStressEnergy_trace_zero`, `KaluzaKleinData.ricci44`,
     `KaluzaKleinData.ricci5DHorizontal`, `KaluzaKleinData.scalar5D`, `KaluzaKleinData.kaluza_miracle`,
     `KaluzaKleinData.einstein4D_eq_zero_iff`
-71. PhyslibAlpha/Relativity/Modified/EinsteinAether.lean — `AetherCouplings`,
+69. PhyslibAlpha/Relativity/Modified/EinsteinAether.lean — `AetherCouplings`,
     `AetherCouplings.c13`, `AetherCouplings.c14`, `AetherCouplings.c123`,
     `AetherCouplings.c1Sub3`, `IsUnitTimelike`, `minkowskiRestAether`,
     `minkowskiRestAether_unitTimelike`, `linUnitTimelike_time_zero`,
@@ -446,33 +444,33 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `AetherCouplings.spin1SpeedSq_luminal_graviton`,
     `AetherCouplings.spin0SpeedSq_luminal_graviton`, `AetherCouplings.effectiveNewtonG`,
     `AetherCouplings.effectiveNewtonG_eq_bare_iff`
-72. PhyslibAlpha/Relativity/Modified/MassiveGravity/FierzPauli.lean —
+70. PhyslibAlpha/Relativity/Modified/MassiveGravity/FierzPauli.lean —
     `FierzPauliTheory`, `FierzPauliTheory.ghostFree`, `minkowskiContractionSq`,
     `FierzPauliTheory.lagrangian`, `FierzPauliTheory.massTensor`,
     `FierzPauliTheory.massTensor_trace`, `FierzPauliTheory.massTensor_trace_tuned`,
     `FierzPauliTheory.longitudinal_time_ghost_free_iff`,
     `FierzPauliTheory.traceless_of_zero_trace_source`
-73. PhyslibAlpha/Relativity/Modified/MassiveGravity/VDVZ.lean — `grPropagatorCoupling`,
+71. PhyslibAlpha/Relativity/Modified/MassiveGravity/VDVZ.lean — `grPropagatorCoupling`,
     `massivePropagatorCoupling`, `staticSource`, `vdvz_static_ratio`,
     `vdvz_light_deflection_ratio`
-74. PhyslibAlpha/Relativity/Modified/MassiveGravity/DRGT.lean — `DRGTTheory`, `traceK`,
+72. PhyslibAlpha/Relativity/Modified/MassiveGravity/DRGT.lean — `DRGTTheory`, `traceK`,
 `traceKSq`, `traceKCube`, `elemSymm0`, `elemSymm1`, `elemSymm2`, `elemSymm3`, `elemSymm_isotropic3`,
     `DRGTTheory.potential`, `DRGTTheory.potential_vacuum_zero`
-75. PhyslibAlpha/Relativity/Modified/MOND.lean — `MONDTheory`, `newtonianAcceleration`,
+73. PhyslibAlpha/Relativity/Modified/MOND.lean — `MONDTheory`, `newtonianAcceleration`,
     `MONDTheory.deepMONDAcceleration`, `MONDTheory.Relation`, `MONDTheory.newtonian_limit`,
     `MONDTheory.deepMONDAcceleration_sq`, `MONDTheory.flat_rotation`, `newtonian_velocity_ne`,
     `simpleMu`, `standardMu`, `simpleMu_bounds`,
     `norm_pairGravityAcceleration_eq_newtonianAcceleration`
-76. PhyslibAlpha/Relativity/Modified/TeVeS.lean — `TeVeSMetric`, `TeVeSMetric.metric`,
+74. PhyslibAlpha/Relativity/Modified/TeVeS.lean — `TeVeSMetric`, `TeVeSMetric.metric`,
     `TeVeSMetric.metricInv`, `TeVeSMetric.symm`, `TeVeSMetric.lorentzian`,
     `TeVeSMetric.spatial`, `TeVeSMetric.mul_inv`, `TeVeSMetric.inv_mul`,
     `TeVeSMetric.metricTensor`
-77. PhyslibAlpha/Relativity/Modified/MOG.lean — `MOGTheory`,
+75. PhyslibAlpha/Relativity/Modified/MOG.lean — `MOGTheory`,
     `MOGTheory.yukawaEnhancementFactor`, `MOGTheory.potential`,
     `MOGTheory.yukawaEnhancementFactor_zero`, `MOGTheory.yukawaEnhancementFactor_alpha_zero`,
     `MOGTheory.yukawaEnhancementFactor_mu_zero`, `MOGTheory.yukawaEnhancementFactor_bounds`,
     `MOGTheory.yukawaEnhancementFactor_tendsto_atTop`
-78. PhyslibAlpha/Relativity/Modified/PPNParameters.lean — `PPNParameters`,
+76. PhyslibAlpha/Relativity/Modified/PPNParameters.lean — `PPNParameters`,
     `IsFullyConservative`, `IsSemiconservative`, `IsFullyConservative.isSemiconservative`,
     `grPPN`, `bransDickePPN`, `fRMetricPPN`, `nordstromPPN`, `grPPN_isFullyConservative`,
     `bransDickePPN_isFullyConservative`, `bransDickePPN_zero_eq_fRMetricPPN`,
@@ -482,7 +480,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `perihelionPrecessionFactor_nordstrom`, `perihelionPrecessionFactor_bransDicke`,
     `nordtvedtParameter_gr`, `nordtvedtParameter_bransDicke`, `nordtvedtParameter_fRMetric`,
     `cassini_deviation_bransDickePPN`
-79. PhyslibAlpha/Relativity/Metrics/CurvatureBridge.lean — `CoordinateMetric.loweredRiemann`,
+77. PhyslibAlpha/Relativity/Metrics/CurvatureBridge.lean — `CoordinateMetric.loweredRiemann`,
     `CoordinateMetric.riemann_skew_last`, `CoordinateMetric.loweredRiemann_skew_last`,
     `CoordinateMetric.toRiemannTensor`, `ricci_lowered`,
     `CoordinateMetric.ricci_toRiemannTensor`, `CoordinateMetric.ricciScalar_toRiemannTensor`,
@@ -491,27 +489,25 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [78]{5}{6}.
     `CoordinateMetric.ricci_toRiemannTensorConst`,
     `CoordinateMetric.ricciScalar_toRiemannTensorConst`,
     `CoordinateMetric.einstein_toRiemannTensorConst`
-80. PhyslibAlpha/Relativity/Modified/MassiveGravity/Basic.lean — `MassiveGravityTheory`,
+78. PhyslibAlpha/Relativity/Modified/MassiveGravity/Basic.lean — `MassiveGravityTheory`,
     `MassiveGravityTheory.massSq`, `MassiveGravityTheory.propagatorCoupling`,
     `MassiveGravityTheory.generalRelativity`, `MassiveGravityTheory.fierzPauli`
-81. PhyslibAlpha/Relativity/Tensors/PerfectFluidStressEnergy.lean — `perfectFluidStressEnergy`
-82. PhyslibAlpha/Relativity/General/FrameKretschmann.lean —
+79. PhyslibAlpha/Relativity/Tensors/PerfectFluidStressEnergy.lean — `perfectFluidStressEnergy`
+80. PhyslibAlpha/Relativity/General/FrameKretschmann.lean —
     `RiemannTensor.frameSumOfSquares`
-83. PhyslibAlpha/Relativity/General/InitialData/CovariantDerivTensor2.lean —
+81. PhyslibAlpha/Relativity/General/InitialData/CovariantDerivTensor2.lean —
     `InitialData.covariantDerivTensor2`
-84. PhyslibAlpha/Cosmology/FLRW/Curvature.lean — `FLRWSpacetime.ricciTensor`,
-    `FLRWSpacetime.ricciScalar`, `FLRWSpacetime.einsteinTensor`
-85. PhyslibAlpha/Relativity/Metrics/SpaceTimeDerivBridge.lean — `coordDeriv_eq_spaceTime_deriv`
-86. PhyslibAlpha/Relativity/Modified/EinsteinCartan/Contorsion.lean —
+82. PhyslibAlpha/Relativity/Metrics/SpaceTimeDerivBridge.lean — `coordDeriv_eq_spaceTime_deriv`
+83. PhyslibAlpha/Relativity/Modified/EinsteinCartan/Contorsion.lean —
     `EinsteinCartanData.MetricCompatible`, `EinsteinCartanData.connection_unique`,
     `MetricCompatible`, `leviCivitaOfDeriv`, `leviCivitaOfDeriv_compatible`, `contorsion`,
     `contorsion_antisymm_outer`, `contorsion_torsion`, `connection_unique`
-87. PhyslibAlpha/Relativity/Modified/EinsteinCartan/ModifiedTorsion.lean — `modifiedTorsion`,
+84. PhyslibAlpha/Relativity/Modified/EinsteinCartan/ModifiedTorsion.lean — `modifiedTorsion`,
     `invertModifiedTorsion`
-88. PhyslibAlpha/Relativity/Modified/Lovelock/Contract5.lean — `lovelockContract5`,
+85. PhyslibAlpha/Relativity/Modified/Lovelock/Contract5.lean — `lovelockContract5`,
     `lovelockContract5_eq_kronecker_sum`, `lovelockContract5_eq_zero_of_lt`,
     `lovelockContract5_eq_neg_eight_lanczos`, `bach_lanczos_lt_five`, `bach_lanczos_four`
-89. PhyslibAlpha/Relativity/Modified/Lovelock/ConstantCurvature.lean — `constantCurvature`,
+86. PhyslibAlpha/Relativity/Modified/Lovelock/ConstantCurvature.lean — `constantCurvature`,
     `gaussBonnetScalar_constantCurvature_four`, `lanczosTensor_constantCurvature_five`
 
 ## References
