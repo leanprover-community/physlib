@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 The Gravitation formalisation contributors.
+Copyright (c) 2026 Alex Vergara Gil.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Vergara Gil
 -/
@@ -49,7 +49,9 @@ bounded box.  This module supplies the parts of that picture formalised here:
   conformal factor (`spatialLaplacian3D_brillLindquistPhi`), the curved 3D
   Schwarzschild–de Sitter spatial slice (`spatialScalarCurvOf_sdsSpatial = 2 Λ`,
   vacuum at `Λ = 0` with nonzero spatial Ricci curvature), and flat FLRW initial
-  data (`flrw_initial_constraints`).
+  data (`flrw_initial_constraints`).  The Brill–Lindquist conformal factor is
+  [ref: BrillLindquist1963] and the ADM form of the constraints is
+  [ref: Gourgoulhon2012, Ch. 4].
 
 ## ii. Key results
 
@@ -78,6 +80,11 @@ bounded box.  This module supplies the parts of that picture formalised here:
 ## iv. References
 
 * L. C. Evans, *Partial Differential Equations*, 2nd ed., AMS, 2010, §5.6. [ref: Evans2010PDE]
+* D. R. Brill, R. W. Lindquist, *Interaction Energy in Geometrostatics*, Phys. Rev. 131,
+  pp. 471–476 (1963). [ref: BrillLindquist1963]
+* E. Gourgoulhon, *3+1 Formalism in General Relativity: Bases of Numerical Relativity*,
+  Lecture Notes in Physics 846, Springer (2012), Ch. 4
+  (https://arxiv.org/pdf/gr-qc/0703035#page=60). [ref: Gourgoulhon2012, Ch. 4]
 -/
 @[expose] public section
 
@@ -414,7 +421,9 @@ lemma norm3Sq_update_ne_zero {x : SpaceChart} (hx : norm3Sq x ≠ 0) (i : Fin 3)
 /-- **Brill–Lindquist / Lichnerowicz harmonic conformal factor** on `ℝ³ \ {0}`:
 `φ(x) = 1 + M / (2 √(x₀² + x₁² + x₂²))`.  Solving the Lichnerowicz vacuum
 constraint `Δ φ = 0` yields conformally flat time-symmetric initial data
-`h_{ij} = φ⁴ δ_{ij}` with vanishing scalar curvature. -/
+`h_{ij} = φ⁴ δ_{ij}` with vanishing scalar curvature.  This is the conformal
+factor of [ref: BrillLindquist1963]; the Lichnerowicz form of the conformal
+constraint is [ref: Gourgoulhon2012, Ch. 4]. -/
 noncomputable def brillLindquistPhi (M : ℝ) (x : SpaceChart) : ℝ :=
   1 + M / (2 * Real.sqrt (norm3Sq x))
 
@@ -767,7 +776,8 @@ lemma pd_sdsSpatialG_eq_sdsSpatialDG (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠
 /-- **3D spatial scalar curvature of the Schwarzschild–de Sitter slice**:
 `³R = 2 Λ` directly from `sdsSpatialMetric`.  In particular, at `Λ = 0` it gives
 nontrivial curved 3D vacuum initial data (`³R = 0` while `³Ric_{00} ≠ 0` for
-`M ≠ 0`). -/
+`M ≠ 0`).  The induced-metric curvature of such a slice is [ref: Gourgoulhon2012,
+Ch. 4]. -/
 lemma spatialScalarCurvOf_sdsSpatial (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
     (hf : (sdsSpacetime M Λ).metricFn (x 0) ≠ 0) (hsin : Real.sin (x 1) ≠ 0) :
     spatialScalarCurvOf (sdsSpatialMetric M Λ) (sdsSpatialMetricInv M Λ) x = 2 * Λ := by
@@ -854,7 +864,8 @@ lemma schwarzschild_spatial_hamiltonian_zero (M : ℝ) (x : SpaceChart) (hr : x 
 
 /-- Flat FLRW initial data `(h_{ij} = a₀² δ_{ij}, K_{ij} = H a₀² δ_{ij})`
 satisfy the derived momentum constraint identically and yield Hamiltonian
-value `6 H²` (vanishing when `3 H² = Λ`). -/
+value `6 H²` (vanishing when `3 H² = Λ`).  The homogeneous and isotropic ADM
+data are the flat case of [ref: Gourgoulhon2012, Ch. 4]. -/
 lemma flrw_initial_constraints (a₀ H : ℝ) (ha : a₀ ≠ 0) (x : SpaceChart) :
     hamiltonianConstraintOf (fun _ => a₀ ^ 2 • (1 : Tensor2 3))
         (fun _ => (a₀ ^ 2)⁻¹ • (1 : Tensor2 3))

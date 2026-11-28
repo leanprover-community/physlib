@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 The Gravitation formalisation contributors.
+Copyright (c) 2026 Alex Vergara Gil.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Vergara Gil
 -/
@@ -31,6 +31,13 @@ Kruskal coordinates `(T, X, θ, φ)` the line element is
 with `r` determined implicitly by `X² - T² = (r/(2M) - 1) exp(r/(2M))`.  The
 conformal factor `F` is finite and nonzero at the horizon `r = 2M`, so the metric
 and its inverse stay regular there.
+
+Conventions: the signature is `(-, +, +, +)` and the mass enters only as
+`r/(2M)`, i.e. in units with `G = c = 1`, the same conventions as for the
+Eddington–Finkelstein chart of `EddingtonFinkelstein.lean`; the Kruskal
+`(T, X)` are the maximal extension that chart is extended to.  The conformal
+factor is written `F`, which is not the `f = 1 - 2M/r` of the Schwarzschild and
+Eddington–Finkelstein charts.
 
 ## ii. Key results
 

@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 The Gravitation formalisation contributors.
+Copyright (c) 2026 Alex Vergara Gil.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Vergara Gil
 -/
@@ -44,6 +44,12 @@ This is a chart-level metric and inverse.  It is not a global
 the open set `r ≠ 0 ∧ sin θ ≠ 0`.  The coordinate curvature pipeline is
 evaluated directly on the EF components, so Ricci flatness below does not pass
 through the Schwarzschild chart and does not assume `1 - 2M/r ≠ 0`.
+
+Conventions: the signature is `(-, +, +, +)`, the cross component is the
+positive `g_{vr} = g_{rv} = 1`, and the Schwarzschild mass enters only as
+`2M/r`, so the chart is stated in units with `G = c = 1`.  These are the
+conventions of both cited sources, so the signs below are not a different
+choice from theirs.
 
 ## ii. Key results
 
@@ -252,7 +258,6 @@ private noncomputable def efGammaDeriv (M : ℝ) (x : Fin 4 → ℝ) (μ k i j :
     else 0
   else 0
 
-set_option maxHeartbeats 2000000 in
 private lemma christoffel_eq_efGamma (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hsin : Real.sin (x 2) ≠ 0) (k i j : Fin 4) :
     CoordinateCurvature.christoffel (metric M) (metricInv M) x k i j = efGamma M x k i j := by
@@ -263,7 +268,6 @@ private lemma christoffel_eq_efGamma (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠
     try field_simp [hr, hsin] <;>
     try ring_nf
 
-set_option maxHeartbeats 2000000 in
 private lemma coordDeriv_efGamma_eq (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hsin : Real.sin (x 2) ≠ 0) (μ k i j : Fin 4) :
     CoordinateCurvature.coordDeriv μ (fun y => efGamma M y k i j) x = efGammaDeriv M x μ k i j := by
@@ -280,8 +284,6 @@ private lemma coordDeriv_efGamma_eq (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 
   all_goals try field_simp [hr, hsin]
   all_goals try ring_nf
   all_goals try nlinarith [Real.sin_sq_add_cos_sq (x 2)]
-
-set_option maxHeartbeats 4000000
 
 /-- **Direct Ricci flatness in Eddington–Finkelstein coordinates.**  The
 coordinate Ricci tensor obtained from `metric` and `metricInv` vanishes at every
@@ -302,10 +304,13 @@ lemma ricciTensorOf_metric (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     apply CoordinateCurvature.coordDeriv_congr_nhds
     filter_upwards [hr', hsin'] with y hy1 hy2
     exact christoffel_eq_efGamma M y hy1 hy2 k i j
+  have hdata := CoordinateCurvature.riemann_of_christoffel_data
+    (metric M) (metricInv M) (efGamma M) (fun μ y => efGammaDeriv M y μ) x
+    (fun a b c => christoffel_eq_efGamma M x hr hsin a b c)
+    (fun μ a b c => hcoord μ a b c)
+    (fun μ a b c => coordDeriv_efGamma_eq M x hr hsin μ a b c)
   fin_cases σ <;> fin_cases ν <;>
-    simp [CoordinateCurvature.ricciTensor, CoordinateCurvature.riemann, hcoord,
-      coordDeriv_efGamma_eq,
-      christoffel_eq_efGamma, Fin.sum_univ_four, hr, hsin]
+    simp [CoordinateCurvature.ricciTensor, hdata, Fin.sum_univ_four, hr, hsin]
   all_goals simp [efGamma, efGammaDeriv]
   all_goals try field_simp [hr, hsin]
   all_goals try ring_nf

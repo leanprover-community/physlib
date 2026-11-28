@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 The Gravitation formalisation contributors.
+Copyright (c) 2026 Alex Vergara Gil.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Vergara Gil
 -/

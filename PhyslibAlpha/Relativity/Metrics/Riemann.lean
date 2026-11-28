@@ -111,6 +111,24 @@ lemma riemann_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tens
   rw [riemann, h1, h2, h3]
   ring
 
+/-- The Riemann tensor from stated Christoffel symbols and their stated coordinate
+derivatives: it is `riemann` once the symbols and the two partial derivatives at the
+point are identified with those data.  This is the component-level entry point used to
+evaluate curvature without unfolding `riemann`. -/
+lemma riemann_of_christoffel_data {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
+    (G : (Fin n → ℝ) → Fin n → Fin n → Fin n → ℝ)
+    (dG : Fin n → (Fin n → ℝ) → Fin n → Fin n → Fin n → ℝ) (x : Fin n → ℝ)
+    (hG : ∀ a b c, christoffel g ginv x a b c = G x a b c)
+    (hdG : ∀ μ a b c, coordDeriv μ (fun y => christoffel g ginv y a b c) x =
+      coordDeriv μ (fun y => G y a b c) x)
+    (hD : ∀ μ a b c, coordDeriv μ (fun y => G y a b c) x = dG μ x a b c)
+    (ρ σ μ ν : Fin n) :
+    riemann g ginv x ρ σ μ ν =
+      dG μ x ρ ν σ - dG ν x ρ μ σ
+        + ∑ l, (G x ρ μ l * G x l ν σ - G x ρ ν l * G x l μ σ) := by
+  rw [riemann, hdG μ ρ ν σ, hdG ν ρ μ σ]
+  simp only [hD, hG]
+
 end CoordinateCurvature
 
 
