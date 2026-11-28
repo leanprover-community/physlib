@@ -816,6 +816,7 @@ public import PhyslibAlpha.Relativity.Fermions.Weyl.Metric
 public import PhyslibAlpha.Relativity.Fermions.Weyl.MetricPairing
 public import PhyslibAlpha.Relativity.Fermions.Weyl.Tensorial
 public import PhyslibAlpha.Relativity.Fermions.Weyl.Unit
+public import PhyslibAlpha.Relativity.General.Bianchi
 public import PhyslibAlpha.Relativity.General.FrameSumOfSquares
 public import PhyslibAlpha.Relativity.General.GeodesicSystem
 public import PhyslibAlpha.Relativity.General.GravitationalConstant

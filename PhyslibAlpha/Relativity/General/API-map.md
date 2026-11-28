@@ -38,7 +38,10 @@ Einstein tensor and stress-energy conservation [15]. In four dimensions, the tra
 stress-energy tensor [16] bridges index-level electrovacuum sources to Physlib's coordinate-free
 electromagnetic field strength [17]{2}{3}.
 A chart-level interface packages the domain, metric field, connection, causal classification and
-chart isometries, together with partial-chart smoothness and overlap certificates [89].
+chart isometries, together with partial-chart smoothness and overlap certificates [89]. In
+arbitrary dimension and arbitrary coordinates the layered identities are proved as well: metric
+compatibility, the Riemann symmetries, the general second Bianchi identity, and the contracted
+Bianchi identity with the conservation of the Einstein tensor [95].
 Coordinate-free covariant differentiation on general smooth manifolds is a planned extension. [TODO]
 
 ### Geodesics, ADM 3+1 decomposition, linearized gravity, and physical constants
@@ -564,7 +567,12 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `aqualEulerLagrangeResidual_eq`, `aqual_euler_lagrange_iff`, `sum_link_mul_difference`,
     `discrete_stationary_iff`, `quadraticProfile_stationary`,
     `aqual_first_variation_eq_integral_residual`, `aqual_fundamental_lemma`
-
+95. PhyslibAlpha/Relativity/General/Bianchi.lean — `Bianchi.pd_comm_of_contDiffAt`,
+    `Bianchi.metric_compat`, `Bianchi.inv_metric_compat`, `Bianchi.riemann_lower_skew_first`,
+    `Bianchi.riemann_bianchi`, `Bianchi.riemann_lower_bianchi`,
+    `Bianchi.riemann_lower_pair_symm`, `Bianchi.second_bianchi`,
+    `Bianchi.contracted_bianchi`, `Bianchi.covDiv_einstein_eq_zero`,
+    `Bianchi.chartSpacetime_second_bianchi`, `Bianchi.chartSpacetime_covDiv_einstein_eq_zero`
 ## References
 
 1. Units API map — Physlib/Units/API-map.md
