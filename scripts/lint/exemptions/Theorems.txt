@@ -46,6 +46,7 @@ WickContraction.card_of_isfull_odd
 QuantumMechanics.OneDimension.HarmonicOscillator.eigenfunction_completeness
 LinearPMap.numericalRange_convex
 LinearPMap.inner_map_polarization'
+QuantumMechanics.Qubit.pauliMap_isCompletelyPositive_iff
 spaceTime.γ_anticomm
 Fermion.Dirac.gammaMatrix_anticomm
 Fermion.Dirac.gamma_anticomm
