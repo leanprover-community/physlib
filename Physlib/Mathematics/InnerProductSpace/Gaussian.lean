@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 /-!
 
 # Gaussians in inner product spaces
@@ -43,12 +44,15 @@ For some relevant Gaussian integrals see
 - `stdGaussian E 𝕜` : The standard Gaussian `exp (-2⁻¹ * ‖x‖ ^ 2)` as a Schwartz map `𝓢(E, 𝕜)`.
 - `exp_mul_gaussian` : Completing the square for multiplication by `exp ⟪v, x⟫`.
 - `gaussianExpMul 𝕜 B x₀ v` : This product as a Schwartz map when `D` and `E` are complete.
+- `integral_gaussian_smulLeft` : The integral of the real Gaussian with covariance `σ²` in finite
+    dimension `n`, `(2πσ²)^(n/2)`.
 
 ## iii. Table of contents
 
 - A. Standard, real-valued
 - B. General, RCLike-valued
 - C. Multiplication by a real linear exponential
+- D. The integral of an isotropic Gaussian
 
 ## iv. References
 
@@ -220,5 +224,28 @@ lemma gaussianExpMul_apply (v : E) :
     (exp_mul_gaussian 𝕜 B x₀ x v).symm
 
 end
+
+/-!
+## D. The integral of an isotropic Gaussian
+-/
+
+open MeasureTheory in
+/-- The integral of the real Gaussian `exp (-‖x - x₀‖² / (2σ²))` over a finite-dimensional
+inner product space of dimension `n` is `(2πσ²)^(n/2)`. -/
+lemma integral_gaussian_smulLeft {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+    [FiniteDimensional ℝ F] [MeasurableSpace F] [BorelSpace F] {σ : ℝ} (hσ : σ ≠ 0) (x₀ : F) :
+    ∫ x, gaussian ℝ (ContinuousLinearEquiv.smulLeft (R₁ := ℝ) (M₁ := F) (Units.mk0 σ hσ)) x₀ x =
+      (2 * Real.pi * σ ^ 2) ^ (Module.finrank ℝ F / 2 : ℝ) := by
+  have h : ∀ x : F, Real.exp (-2⁻¹ *
+      ‖(ContinuousLinearEquiv.smulLeft (R₁ := ℝ) (M₁ := F) (Units.mk0 σ hσ)).symm (x - x₀)‖ ^ 2) =
+      Real.exp (-(2⁻¹ * (σ ^ 2)⁻¹) * ‖x - x₀‖ ^ 2) := fun x => by
+    change Real.exp (-2⁻¹ * ‖σ⁻¹ • (x - x₀)‖ ^ 2) = _
+    rw [norm_smul, mul_pow, Real.norm_eq_abs, sq_abs, inv_pow]
+    ring_nf
+  simp only [gaussian_apply, RCLike.ofReal_real_eq_id, id, h]
+  rw [integral_sub_right_eq_self (fun x : F => Real.exp (-(2⁻¹ * (σ ^ 2)⁻¹) * ‖x‖ ^ 2)) x₀,
+    GaussianFourier.integral_rexp_neg_mul_sq_norm (by positivity)]
+  congr 1
+  field_simp
 
 end InnerProductSpace
