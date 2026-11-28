@@ -584,9 +584,11 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `Bianchi.riemann_lower_pair_symm`, `Bianchi.second_bianchi`,
     `Bianchi.coordDeriv_ginv`, `Bianchi.sum_covDerivRiemann_second_bianchi`,
     `Bianchi.sum_ginv_covDerivRiemann_ricci`, `Bianchi.sum_ginv_covDerivRiemann_scalar`,
-    `Bianchi.sum_ginv_riemann_ricci`, `Bianchi.sum_ginv_covDerivRiemann_ricci_div`,
-    `Bianchi.contracted_bianchi`, `Bianchi.covDiv_einstein_eq_zero`,
-    `Bianchi.chartSpacetime_second_bianchi`, `Bianchi.chartSpacetime_covDiv_einstein_eq_zero`
+    `Bianchi.sum_ginv_riemann_ricci`, `Bianchi.sum_ginv_covDerivRiemann_ricci_div`
+95a. PhyslibAlpha/Relativity/General/BianchiContracted.lean — `Bianchi.differentiableAt_riemann`,
+    `Bianchi.contracted_bianchi`, `Bianchi.covDiv_einstein_eq_zero`
+95b. PhyslibAlpha/Relativity/General/BianchiChart.lean — `Bianchi.chartSpacetime_second_bianchi`,
+    `Bianchi.chartSpacetime_covDiv_einstein_eq_zero`
 96. PhyslibAlpha/Cosmology/FLRW/Perturbation.lean — `Cosmology.FLRW.ScalarPerturbation`,
     `Cosmology.FLRW.perturbationMetric`, `Cosmology.FLRW.bardeenPhi`,
     `Cosmology.FLRW.bardeenPsi`, `Cosmology.FLRW.bardeenPhi_invariant`,
@@ -601,53 +603,51 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
 99. PhyslibAlpha/Relativity/General/InitialData/ReducedWave3D.lean — `planeWave3D`,
     `spatialLaplacian3D_planeWave3D`, `planeWave3D_wave_equation`, `planeWave3D_cauchy_data`
 100. PhyslibAlpha/Relativity/General/InitialData/WaveEnergy.lean — `waveEnergy`,
-    `hasDerivAt_waveEnergy`, `waveEnergy_eq_initial`, `wave_zero_of_zero_data`
+    `hasDerivAt_waveEnergy`, `waveEnergy_eq_initial`, `wave_zero_of_zero_data`,
+    `WaveSolutionOn`, `WaveSolutionOn.sub`, `wave_unique_of_same_data`
 101. PhyslibAlpha/Relativity/General/InitialData/WaveEnergy3D.lean — `waveEnergy3D`,
     `hasDerivAt_waveEnergy3D`, `waveEnergy3D_eq_initial_of_divergence`, `waveFlux3D`,
     `waveEnergy3D_eq_initial_of_wave`, `waveEnergy3DIntegrand_nonneg`,
-    `eq_zero_of_waveEnergy3D_eq_zero`
-102. PhyslibAlpha/Relativity/General/InitialData/WaveUniqueness.lean — `WaveSolutionOn`,
-    `WaveSolutionOn.sub`, `wave_unique_of_same_data`
-103. PhyslibAlpha/Relativity/General/InitialData/WaveUniqueness3D.lean — `WaveSolution3D`,
-    `WaveSolution3D.sub`, `wave_zero_of_zero_data3D`, `wave_unique3D_of_same_data`
-104. PhyslibAlpha/Relativity/General/InitialData/InitialDataInterface.lean —
+    `eq_zero_of_waveEnergy3D_eq_zero`, `WaveSolution3D`, `WaveSolution3D.sub`,
+    `wave_zero_of_zero_data3D`, `wave_unique3D_of_same_data`
+102. PhyslibAlpha/Relativity/General/InitialData/ChartInitialData.lean —
     `ChartSpacetime.spatialMetric`, `ChartSpacetime.spatialMetricField`,
     `spatialRiemannTensorOf`, `extrinsicDerivativeOf`,
     `spatialRiemannTensorOfConstMetric_eq_flat`, `ChartInitialData`
-105. PhyslibAlpha/Relativity/General/InitialData/SobolevInitialData.lean — `sobolevH1NormSq1D`,
+103. PhyslibAlpha/Relativity/General/InitialData/SobolevInitialData.lean — `sobolevH1NormSq1D`,
     `sobolev_embedding_1D`, `trace_estimate_1D`, `sobolevH1NormSq3D`, `l2_le_sobolevH1_3D`
-106. PhyslibAlpha/Relativity/General/Schwarzschild/SchwarzschildManifold.lean —
+104. PhyslibAlpha/Relativity/General/Schwarzschild/SchwarzschildManifold.lean —
     `schwarzschildSpacetime`, `Schwarzschild.SchwarzschildSpacetime.toStaticSpherical`,
     `Schwarzschild.SchwarzschildSpacetime.metricFn`,
     `Schwarzschild.SchwarzschildSpacetime.metric`,
     `Schwarzschild.exteriorPartialDomain`,
     `Schwarzschild.exteriorPartialDomain_isOpen`,
     `Schwarzschild.exteriorPartialChart`
-107. PhyslibAlpha/Relativity/General/InitialData/ManifoldSobolev.lean — `ManifoldSobolev`
-108. PhyslibAlpha/Relativity/General/InitialData/CauchyInterfaces.lean —
+105. PhyslibAlpha/Relativity/General/InitialData/ManifoldSobolev.lean — `ManifoldSobolev`
+106. PhyslibAlpha/Relativity/General/InitialData/CauchyInterfaces.lean —
     `ReducedCauchyProblem`, `ReducedLocalExistenceCertificate`, `GaugeRecoveryProblem`,
     `GaugeRecoveryCertificate`, `DevelopmentInterface`, `MaximalDevelopmentCertificate`,
     `ChartSpacetime.IsChartDevelopment`, `ExplicitDevelopmentObligations`,
     `ExplicitDevelopmentCertificate`
-109. PhyslibAlpha/Relativity/General/Linearized/LinearizedWaveGauge.lean —
+107. PhyslibAlpha/Relativity/General/Linearized/LinearizedWaveGauge.lean —
     `Linearized.WaveGaugePerturbation`, `Linearized.ttWave_waveGauge`,
     `Linearized.linearizedEinstein_eq_zero_of_waveGauge`
-110. PhyslibAlpha/Relativity/Metrics/ConformalDecomposition.lean — `ConformalData`,
+108. PhyslibAlpha/Relativity/Metrics/ConformalDecomposition.lean — `ConformalData`,
     `ConformalData.physicalMetric`, `ConformalData.extrinsicCurvature`,
     `hamiltonianResidual`, `linearisedHamiltonianResidual`, `momentumResidual`,
     `IsLichnerowiczYorkSolution`, `shiftMomentumResidual`, `IsShiftSolution`
-111. PhyslibAlpha/Relativity/General/InitialData/ReducedCauchy.lean —
+109. PhyslibAlpha/Relativity/General/InitialData/ReducedCauchy.lean —
     `directionalWave3D`, `directionalWave3D_wave_equation`, `spatialLaplacian3D_add`,
     `harmonicGaugeCond`, `linearizedBox_reducedLocalExistence`, `ttWave_reduced_solution`,
     `flrw_reducedLocalExistence`
-112. PhyslibAlpha/Relativity/General/InitialData/MaximalDevelopment.lean —
+110. PhyslibAlpha/Relativity/General/InitialData/MaximalDevelopment.lean —
     `OrderedDevelopmentSystem`, `OrderedDevelopmentSystem.exists_maximal`,
     `OrderedDevelopmentSystem.unique_up_to_isometry`, `chartDevelopmentInterface`,
     `intervalDevelopmentSystem`, `intervalMaximalDevelopmentCertificate`
-113. PhyslibAlpha/Relativity/General/InitialData/GaugeRecovery.lean —
+111. PhyslibAlpha/Relativity/General/InitialData/GaugeRecovery.lean —
     `bianchi_constraint_propagation_split`, `linearizedBox_gaugeRecovery`,
     `flrw_constraint_propagates`, `flrw_full_einstein_of_reduced`, `flrw_gaugeRecovery`
-114. PhyslibAlpha/Relativity/General/InitialData/ExplicitDevelopments.lean —
+112. PhyslibAlpha/Relativity/General/InitialData/ExplicitDevelopments.lean —
     `explicitSolutionObligations`, `explicitSolutions_certificate`
 
 ## References

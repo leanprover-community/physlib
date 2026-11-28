@@ -7,7 +7,7 @@ Authors: Alex Vergara Gil
 module
 
 public import PhyslibAlpha.Relativity.General.Bianchi
-public import PhyslibAlpha.Relativity.General.InitialData.InitialDataInterface
+public import PhyslibAlpha.Relativity.General.InitialData.ChartInitialData
 public import PhyslibAlpha.Relativity.General.InitialData.ReducedWave3D
 public import PhyslibAlpha.Relativity.General.InitialData.WaveEnergy
 public import PhyslibAlpha.Relativity.General.InitialData.WaveEnergy3D

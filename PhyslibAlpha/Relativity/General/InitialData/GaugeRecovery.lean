@@ -19,7 +19,7 @@ public import Mathlib.Tactic.Ring
 
 /-!
 
-# M4: Gauge recovery and constraint propagation
+# Gauge recovery and constraint propagation
 
 ## i. Overview
 
@@ -53,11 +53,11 @@ conservation identity:
 
 - `bianchi_constraint_propagation_split` : the nonlinear Bianchi
   constraint-propagation split.
-- `linearizedBox_gaugeRecovery` : the M4 certificate for the linearized 3D
+- `linearizedBox_gaugeRecovery` : the certificate for the linearized 3D
   wave-gauge system.
 - `flrw_constraint_propagates`, `flrw_full_einstein_of_reduced` : nonlinear FLRW
   constraint propagation and full Einstein recovery.
-- `flrw_gaugeRecovery` : the M4 certificate for the nonlinear 4D flat FLRW
+- `flrw_gaugeRecovery` : the certificate for the nonlinear 4D flat FLRW
   system.
 
 ## iii. Table of contents
@@ -166,7 +166,7 @@ noncomputable def linearizedGaugeReducedProblem (I : BoxIntegral.Box (Fin 3)) :
     ∀ t (x : SpaceChart), x ∈ BoxIntegral.Box.Icc I → ∀ k : Fin 4,
       Linearized.IsLorenzGauge P ![t, x 0, x 1, x 2] k
 
-/-- M4 gauge-recovery problem attached to `linearizedGaugeReducedProblem I`. -/
+/-- Gauge-recovery problem attached to `linearizedGaugeReducedProblem I`. -/
 noncomputable def linearizedBoxGaugeProblem (I : BoxIntegral.Box (Fin 3)) :
     GaugeRecoveryProblem (linearizedGaugeReducedProblem I) where
   GaugeRecovered := fun P =>
@@ -229,7 +229,7 @@ private lemma linearizedBox_fullEinstein_aux (I : BoxIntegral.Box (Fin 3))
     wave := hsol.2.2.1 ![t, x 0, x 1, x 2] }
   exact Linearized.linearizedEinstein_eq_zero_of_waveGauge P ![t, x 0, x 1, x 2] hwg i j
 
-/-- **M4 Certificate (Linearized 3D wave-gauge recovery and constraint propagation)**:
+/-- **Certificate for linearized 3D wave-gauge recovery and constraint propagation**:
 `WaveUniqueness3D.wave_zero_of_zero_data3D` forces the Lorenz gauge residual
 `Γ_k` to remain zero throughout `ℝ × Box.Icc I`; openness of `Box.Ioo I` then
 gives Lorenz gauge in a spacetime neighborhood of every interior box point,
@@ -378,7 +378,7 @@ noncomputable def flrwConstraintReducedProblem (Λ δ : ℝ) (_hδ : 0 < δ) :
     ∃ v : ℝ, HasDerivAt a v 0 ∧ 3 * v ^ 2 = Λ * a 0 ^ 2
   IsWaveGauge := fun a => ∀ t ∈ Ioo (-δ) δ, a t ≠ 0
 
-/-- M4 gauge-recovery problem attached to `flrwConstraintReducedProblem`. -/
+/-- Gauge-recovery problem attached to `flrwConstraintReducedProblem`. -/
 noncomputable def flrwGaugeRecoveryProblem (Λ δ : ℝ) (hδ : 0 < δ) :
     GaugeRecoveryProblem (flrwConstraintReducedProblem Λ δ hδ) where
   GaugeRecovered := fun a => ∀ t ∈ Ioo (-δ) δ, a t ≠ 0
@@ -390,7 +390,7 @@ noncomputable def flrwGaugeRecoveryProblem (Λ δ : ℝ) (hδ : 0 < δ) :
   ConstraintsPreserved := fun a =>
     ∀ t ∈ Ioo (-δ) δ, ∃ a', HasDerivAt a a' t ∧ 3 * a' ^ 2 = Λ * a t ^ 2
 
-/-- **M4 Certificate (Nonlinear 4D flat FLRW constraint propagation and full
+/-- **Certificate for nonlinear 4D flat FLRW constraint propagation and full
 Einstein recovery)**: every reduced solution preserves the nonlinear Hamiltonian
 constraint `3 (a')² = Λ a²` on `Ioo (-δ) δ` and satisfies the full 4D Einstein
 equations `G_{ij} + Λ g_{ij} = 0` at every regular chart point. -/

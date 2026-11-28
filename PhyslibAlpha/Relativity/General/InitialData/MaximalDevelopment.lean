@@ -11,7 +11,7 @@ public import Mathlib.Order.Zorn
 
 /-!
 
-# M5: Maximal development via Choquet–Bruhat–Geroch Zorn argument
+# Maximal development via the Choquet–Bruhat–Geroch Zorn argument
 
 ## i. Overview
 
@@ -42,10 +42,10 @@ abstract/1D domain layer.
 
 - `OrderedDevelopmentSystem`, `OrderedDevelopmentSystem.exists_maximal`,
   `unique_up_to_isometry` : the abstract Choquet–Bruhat–Geroch Zorn argument.
-- `OrderedDevelopmentSystem.maximalDevelopmentCertificate` : the abstract M5
+- `OrderedDevelopmentSystem.maximalDevelopmentCertificate` : the abstract
   certificate.
 - `chartDevelopmentInterface`, `ChartMaximalDevelopmentCertificate` : the
-  chart-level M5 interface, with `ChartSpacetime.IsIsometric` as its uniqueness
+  chart-level development interface, with `ChartSpacetime.IsIsometric` as its uniqueness
   relation.
 - `intervalDevelopmentSystem`, `intervalMaximalDevelopmentCertificate` : the
   concrete zero-hypothesis open-domain instance.
@@ -117,7 +117,7 @@ def OrderedDevelopmentSystem.IsMaximal (S : OrderedDevelopmentSystem)
   ∀ (d : S.Data) (N : S.Spacetime),
     S.IsDevelopment M d → S.IsDevelopment N d → S.Extends M N → S.Extends N M
 
-/-- Package an `OrderedDevelopmentSystem` as an M5 `DevelopmentInterface`. -/
+/-- Package an `OrderedDevelopmentSystem` as a `DevelopmentInterface`. -/
 def OrderedDevelopmentSystem.toDevelopmentInterface
     (S : OrderedDevelopmentSystem.{u, v}) : DevelopmentInterface.{u, v} where
   Data := S.Data
@@ -172,7 +172,7 @@ lemma OrderedDevelopmentSystem.unique_up_to_isometry
   have hWN : S.Extends W N := hmaxN d W hN hW hNW
   exact S.isometric_of_antisymm (S.extends_trans hMW hWN) (S.extends_trans hNW hWM)
 
-/-- **M5 Certificate (Abstract Choquet–Bruhat–Geroch)**: every
+/-- **Abstract Choquet–Bruhat–Geroch certificate**: every
 `OrderedDevelopmentSystem` inhabits `MaximalDevelopmentCertificate`. -/
 lemma OrderedDevelopmentSystem.maximalDevelopmentCertificate
     (S : OrderedDevelopmentSystem) :
@@ -183,7 +183,7 @@ lemma OrderedDevelopmentSystem.maximalDevelopmentCertificate
 
 /-! ## B. Chart-level isometry interface -/
 
-/-- The chart-level M5 development interface: chart developments are chart
+/-- The chart-level development interface: chart developments are chart
 initial data whose induced spatial metric is the chart metric, and its isometry
 relation is the chart-level `ChartSpacetime.IsIsometric` API.
 See arXiv:1309.7591, p. 2. [ref: sbierski_2013, p. 2] -/
@@ -238,7 +238,7 @@ def intervalDevelopmentSystem : OrderedDevelopmentSystem where
   amalgamate := fun _ U V hU hV =>
     ⟨U ∪ V, ⟨hU.1.union hV.1, Or.inl hU.2⟩, subset_union_left, subset_union_right⟩
 
-/-- **M5 Concrete Certificate**: zero-hypothesis `MaximalDevelopmentCertificate`
+/-- **Concrete certificate**: zero-hypothesis `MaximalDevelopmentCertificate`
 for open time-evolution domains containing `t = 0` (witnessed uniquely by
 `Set.univ`). -/
 lemma intervalMaximalDevelopmentCertificate :

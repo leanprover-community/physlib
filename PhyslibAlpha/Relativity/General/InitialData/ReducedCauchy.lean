@@ -18,7 +18,7 @@ public import Mathlib.Tactic.Ring
 
 /-!
 
-# M3: Reduced Cauchy problem in wave gauge and symmetry-reduced Einstein evolution
+# Reduced Cauchy problem in wave gauge and symmetry-reduced Einstein evolution
 
 ## i. Overview
 
@@ -56,10 +56,10 @@ hyperbolic theorem without symmetry.
 - `spatialLaplacian3D_add` : the coordinate Laplacian is linear on sums.
 - `harmonicGaugeCond`, `minkowski_harmonicGauge` : the nonlinear harmonic gauge
   condition and its Minkowski instance.
-- `linearizedBox_reducedLocalExistence`, `ttWave_reduced_solution` : the M3
+- `linearizedBox_reducedLocalExistence`, `ttWave_reduced_solution` : the
   certificate for the linearized 3D wave-gauge system, with a nontrivial
   transverse-traceless solution.
-- `flrw_reducedLocalExistence` : the M3 certificate for the nonlinear 4D flat
+- `flrw_reducedLocalExistence` : the certificate for the nonlinear 4D flat
   FLRW reduced Einstein ODE.
 
 ## iii. Table of contents
@@ -385,7 +385,7 @@ private lemma eq_zero_of_linearizedBoxSol (I : BoxIntegral.Box (Fin 3))
   · simp [hvel0, LinearizedBoxField.zero]
   · simp [hgrad0, LinearizedBoxField.zero]
 
-/-- **M3 Certificate (Linearized 3D wave-gauge system)**: inhabits
+/-- **Certificate for the linearized 3D wave-gauge system**: inhabits
 `ReducedLocalExistenceCertificate` on any closed 3D spatial box `I`, using
 `Linearized.ttWave_waveGauge` and `WaveUniqueness3D.wave_zero_of_zero_data3D`. -/
 lemma linearizedBox_reducedLocalExistence (I : BoxIntegral.Box (Fin 3)) :
@@ -681,7 +681,7 @@ noncomputable def flrwReducedProblem (Λ a₀ v₀ : ℝ) (ha₀ : a₀ ≠ 0) :
     ∀ t (ht : t ∈ Ioo (-flrwLocalRadius Λ a₀ v₀ ha₀) (flrwLocalRadius Λ a₀ v₀ ha₀)),
       (u.val ⟨t, ht⟩).1 ≠ 0
 
-/-- **M3 Certificate (Nonlinear 4D flat FLRW reduced Einstein system)**:
+/-- **Certificate for the nonlinear 4D flat FLRW reduced Einstein system**:
 inhabits `ReducedLocalExistenceCertificate` via Mathlib's Picard–Lindelöf
 existence (`ContDiffAt.exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt₀`)
 and uniqueness (`ODE_solution_unique_of_mem_Ioo`) with an explicit Lipschitz

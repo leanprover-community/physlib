@@ -6,11 +6,11 @@ Authors: Alex Vergara Gil
 
 module
 
-public import PhyslibAlpha.Relativity.General.InitialData.InitialDataInterface
+public import PhyslibAlpha.Relativity.General.InitialData.ChartInitialData
 
 /-!
 
-# Interface certificates for M3–M6
+# Interface certificates for the reduced Cauchy problem and its completions
 
 ## i. Overview
 
@@ -21,28 +21,29 @@ none of the fields is asserted as true.  A consumer must provide the missing
 local-existence, gauge-recovery, constraint-propagation, maximality, or
 explicit-solution recovery input.
 
-The chart-level M1 and M2 layers live in `ManifoldInterface` and
-`InitialDataInterface`; this module deliberately adds no manifold, Sobolev, PDE,
+The chart-level initial data (`ChartInitialData`, `ManifoldInitialData`) live in
+`ChartInitialData`, and this module does not redefine them; it also deliberately
+adds no manifold, Sobolev, PDE,
 or causality theory.
 
 ## ii. Key results
 
-- `ReducedCauchyProblem`, `ReducedLocalExistenceCertificate` : the M3 reduced
+- `ReducedCauchyProblem`, `ReducedLocalExistenceCertificate` : the reduced
   Cauchy interface and its missing local existence/uniqueness input.
-- `GaugeRecoveryProblem`, `GaugeRecoveryCertificate` : the M4 gauge and
+- `GaugeRecoveryProblem`, `GaugeRecoveryCertificate` : the gauge and
   constraint-propagation interface.
-- `DevelopmentInterface`, `MaximalDevelopmentCertificate` : the M5 maximal
+- `DevelopmentInterface`, `MaximalDevelopmentCertificate` : the maximal
   development and uniqueness-up-to-isometry interface, universe-polymorphic in
   its data and spacetime types.
-- `ExplicitDevelopmentObligations`, `ExplicitDevelopmentCertificate` : the M6
+- `ExplicitDevelopmentObligations`, `ExplicitDevelopmentCertificate` : the
   explicit-solution recovery interface.
 
 ## iii. Table of contents
 
-- M3. reduced quasilinear hyperbolic system
-- M4. gauge recovery and constraint propagation
-- M5. maximal development
-- M6. explicit-solution cross-checks
+- A. Reduced quasilinear hyperbolic system
+- B. Gauge recovery and constraint propagation
+- C. Maximal development
+- D. Explicit-solution cross-checks
 
 ## iv. References
 
@@ -57,7 +58,7 @@ namespace GeneralRelativity
 
 universe u v
 
-/-! ## M3. reduced quasilinear hyperbolic system -/
+/-! ## A. Reduced quasilinear hyperbolic system -/
 
 /-- The data of a reduced Cauchy problem.  `Solution` is the type of reduced
 solutions and the predicates are the interface; this structure does not
@@ -74,7 +75,7 @@ structure ReducedCauchyProblem (X : ChartSpacetime) where
   /-- The harmonic/wave gauge condition. -/
   IsWaveGauge : Solution → Prop
 
-/-- The missing M3 local-existence and uniqueness input for a reduced problem.
+/-- The missing local-existence and uniqueness input for a reduced problem.
 This is a certificate of an analytic theorem, not a proof of one. -/
 structure ReducedLocalExistenceCertificate {X : ChartSpacetime}
     (P : ReducedCauchyProblem X) : Prop where
@@ -101,7 +102,7 @@ lemma ReducedLocalExistenceCertificate.unique_solution
     (hu₀ : P.HasCauchyData u) (hv₀ : P.HasCauchyData v) : u = v :=
   h.local_uniqueness u v hu hv hu₀ hv₀
 
-/-! ## M4. gauge recovery and constraint propagation -/
+/-! ## B. Gauge recovery and constraint propagation -/
 
 /-- The full-Einstein and constraint predicates attached to reduced solutions.
 The fields are specifications; no implication between them is asserted. -/
@@ -114,7 +115,7 @@ structure GaugeRecoveryProblem {X : ChartSpacetime}
   /-- The reduced solution satisfies the recovered gauge. -/
   GaugeRecovered : P.Solution → Prop
 
-/-- The missing M4 gauge-recovery and constraint-propagation input. -/
+/-- The missing gauge-recovery and constraint-propagation input. -/
 structure GaugeRecoveryCertificate {X : ChartSpacetime}
     {P : ReducedCauchyProblem X} (G : GaugeRecoveryProblem P) : Prop where
   /-- Every reduced solution satisfies the recovered gauge. -/
@@ -145,7 +146,7 @@ lemma GaugeRecoveryCertificate.preservesConstraints
     {u : P.Solution} (hu : P.IsSolution u) : G.ConstraintsPreserved u :=
   h.constraints_preserved u hu
 
-/-! ## M5. maximal development -/
+/-! ## C. Maximal development -/
 
 /-- The development relation and the maximality and isometry predicates.  The
 structure records only the interface needed to state the maximal-development
@@ -163,7 +164,7 @@ structure DevelopmentInterface where
   /-- Isometry between developments. -/
   IsIsometric : Spacetime → Spacetime → Prop
 
-/-- The missing M5 maximal-existence and uniqueness-up-to-isometry input. -/
+/-- The missing maximal-existence and uniqueness-up-to-isometry input. -/
 structure MaximalDevelopmentCertificate (D : DevelopmentInterface.{u, v}) : Prop where
   /-- Every data set has a maximal development. -/
   maximal_existence : ∀ data : D.Data,
@@ -188,7 +189,7 @@ lemma MaximalDevelopmentCertificate.unique_up_to_isometry
     (hmaxM : D.IsMaximal M) (hmaxN : D.IsMaximal N) : D.IsIsometric M N :=
   h.uniqueness_up_to_isometry M N data hM hN hmaxM hmaxN
 
-/-! ## M6. explicit-solution cross-checks -/
+/-! ## D. Explicit-solution cross-checks -/
 
 /-- A chart-level development relation: the chart-induced spatial metric is
 the ADM metric.  This is the only development condition exported at chart
@@ -202,7 +203,7 @@ lemma minkowskiChart_isChartDevelopment :
     minkowskiChart.IsChartDevelopment minkowskiChartInitialData :=
   minkowskiChartInitialData_metric
 
-/-- Scoped M6 cross-check: the Minkowski initial data have a chart development. -/
+/-- Scoped cross-check: the Minkowski initial data have a chart development. -/
 lemma minkowskiChart_explicit_development :
     ∃ D : ChartInitialData minkowskiChart,
       minkowskiChart.IsChartDevelopment D :=
@@ -221,7 +222,7 @@ structure ExplicitDevelopmentObligations where
   /-- FLRW is recovered as a development of its initial data. -/
   flrw : Prop
 
-/-- The missing M6 explicit-solution recovery input. -/
+/-- The missing explicit-solution recovery input. -/
 structure ExplicitDevelopmentCertificate (O : ExplicitDevelopmentObligations) : Prop where
   /-- The Schwarzschild recovery obligation. -/
   schwarzschild : O.schwarzschild

@@ -13,7 +13,7 @@ public import PhyslibAlpha.Relativity.General.Linearized.LinearizedEinstein
 public import PhyslibAlpha.Relativity.General.Linearized.MinkowskiDalembertian
 public import PhyslibAlpha.Relativity.General.Linearized.LorenzGauge
 public import PhyslibAlpha.Relativity.General.Linearized.TTWave
-public import PhyslibAlpha.Relativity.General.InitialData.WaveUniqueness3D
+public import PhyslibAlpha.Relativity.General.InitialData.WaveEnergy3D
 
 /-!
 

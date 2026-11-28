@@ -23,7 +23,7 @@ public import Mathlib.Analysis.Calculus.ContDiff.Operations
 
 ## i. Overview
 
-This file provides the chart-level M1 layer supported by the current
+This file provides the chart-level interface supported by the current
 component-based development: a spacetime chart domain, a metric field, the
 coordinate connection and curvature, chart causal classification, and a
 coordinate covariant derivative.  It proves torsion-freeness and Minkowski

@@ -18,13 +18,13 @@ public import PhyslibAlpha.Relativity.General.Kerr.RicciCurvature
 
 /-!
 
-# M6: Explicit-solution cross-checks and inhabited explicit development certificate
+# Explicit-solution cross-checks and an inhabited explicit development certificate
 
 ## i. Overview
 
 This module instantiates `ExplicitDevelopmentObligations` with non-vacuous
 4D Einstein field-equation + `t = 0` spatial-slice / initial-data statements and
-proves **`explicitSolutions_certificate : ExplicitDevelopmentCertificate explicitSolutionObligations`**,
+proves that `explicitSolutionObligations` is a `ExplicitDevelopmentCertificate`,
 recovering all four explicit spacetimes directly from the metric-pipeline
 theorems and the curved 3D initial-data theorems in `SobolevInitialData`:
 
@@ -45,12 +45,12 @@ theorems and the curved 3D initial-data theorems in `SobolevInitialData`:
 
 ## ii. Key results
 
-- `explicitSolutionObligations` : the non-vacuous M6 obligations for the four
+- `explicitSolutionObligations` : the non-vacuous obligations for the four
   explicit spacetimes.
 - `schwarzschild_explicit_development`, `sds_explicit_development`,
   `kerr_explicit_development`, `flrw_explicit_development` : the four
   explicit-solution verifications.
-- `explicitSolutions_certificate` : the inhabited M6 certificate.
+- `explicitSolutions_certificate` : the inhabited certificate.
 
 ## iii. Table of contents
 
@@ -77,7 +77,7 @@ namespace GeneralRelativity
 abbrev kerrSpacetime (M a : ℝ) : Kerr.KerrSpacetime :=
   ⟨M, a⟩
 
-/-- Non-vacuous M6 explicit-solution obligations pairing the full 4D Einstein
+/-- Non-vacuous explicit-solution obligations pairing the full 4D Einstein
 equations with `t = 0` spatial-slice restrictions and initial-data checks for
 Schwarzschild, Schwarzschild–de Sitter, Kerr, and FLRW. -/
 def explicitSolutionObligations : ExplicitDevelopmentObligations where
@@ -110,7 +110,8 @@ def explicitSolutionObligations : ExplicitDevelopmentObligations where
     ∀ (M a : ℝ),
       (∀ (x : Fin 4 → ℝ), (kerrSpacetime M a).sigma (x 1) (x 2) ≠ 0 →
         (kerrSpacetime M a).delta (x 1) ≠ 0 → Real.sin (x 2) ≠ 0 → ∀ i j : Fin 4,
-          CoordinateCurvature.einsteinTensor ((kerrSpacetime M a).metric) ((kerrSpacetime M a).metricInv) x i j = 0) ∧
+          CoordinateCurvature.einsteinTensor ((kerrSpacetime M a).metric)
+            ((kerrSpacetime M a).metricInv) x i j = 0) ∧
       (∀ (x : Fin 4 → ℝ) (i j : Fin 4),
         (kerrSpacetime M a).metric x i j = (kerrSpacetime M a).metric x j i) ∧
       (∀ (r θ φ : ℝ),
@@ -135,7 +136,8 @@ def explicitSolutionObligations : ExplicitDevelopmentObligations where
       (∀ (r θ φ : ℝ),
         (⟨a, 0⟩ : Cosmology.FLRW.FLRWSpacetime).metric ![0, r, θ, φ] 1 1 = a 0 ^ 2 ∧
         (⟨a, 0⟩ : Cosmology.FLRW.FLRWSpacetime).metric ![0, r, θ, φ] 2 2 = a 0 ^ 2 * r ^ 2 ∧
-        (⟨a, 0⟩ : Cosmology.FLRW.FLRWSpacetime).metric ![0, r, θ, φ] 3 3 = a 0 ^ 2 * r ^ 2 * Real.sin θ ^ 2)
+        (⟨a, 0⟩ : Cosmology.FLRW.FLRWSpacetime).metric ![0, r, θ, φ] 3 3 =
+          a 0 ^ 2 * r ^ 2 * Real.sin θ ^ 2)
 
 /-- Schwarzschild explicit-development verification: 4D vacuum Einstein equation,
 `t = 0` spatial slice metric match, and 3D nonlinear Hamiltonian constraint. -/
@@ -198,9 +200,9 @@ lemma flrw_explicit_development : explicitSolutionObligations.flrw := by
     fun r θ φ => ?_⟩
   simp [Cosmology.FLRW.FLRWSpacetime.metric]
 
-/-- **M6 Certificate**: inhabits `ExplicitDevelopmentCertificate explicitSolutionObligations`
-with kernel-verified proofs for Schwarzschild, Schwarzschild–de Sitter, Kerr,
-and FLRW. -/
+/-- **Explicit-development certificate**: the inhabited certificate for
+`explicitSolutionObligations`, with kernel-verified proofs for Schwarzschild,
+Schwarzschild–de Sitter, Kerr, and FLRW. -/
 lemma explicitSolutions_certificate :
     ExplicitDevelopmentCertificate explicitSolutionObligations where
   schwarzschild := schwarzschild_explicit_development

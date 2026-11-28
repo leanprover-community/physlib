@@ -15,7 +15,7 @@ public import PhyslibAlpha.Relativity.General.InitialData.SpaceChart
 
 ## i. Overview
 
-This file is a scoped M3 stepping stone, not a quasilinear Einstein existence
+This file is a scoped stepping stone, not a quasilinear Einstein existence
 theorem.  It embeds the one-dimensional d'Alembert solution into three spatial
 dimensions by making it depend only on the first coordinate.  The resulting
 field solves the linear constant-coefficient 3D wave equation

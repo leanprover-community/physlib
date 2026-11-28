@@ -6,7 +6,7 @@ Authors: Alex Vergara Gil
 
 module
 
-public import PhyslibAlpha.Relativity.General.InitialData.InitialDataInterface
+public import PhyslibAlpha.Relativity.General.InitialData.ChartInitialData
 public import PhyslibAlpha.Relativity.General.InitialData.CovariantDerivTensor2
 public import PhyslibAlpha.Relativity.General.InitialData.SobolevInitialData
 
