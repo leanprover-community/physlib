@@ -16,6 +16,9 @@ public import Mathlib.Algebra.Star.Unitary
 A self-adjoint element `u` of a star monoid with `u * u = 1` is unitary, since then
 `star u * u = u * star u = u * u = 1`.
 
+This lemma is proposed for Mathlib in mathlib4#46687. Once Physlib uses a Mathlib version
+containing it, this file can be removed.
+
 ## ii. Key results
 
 - `IsSelfAdjoint.mem_unitary_of_mul_self` : a self-adjoint involution is unitary.
