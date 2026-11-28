@@ -36,6 +36,12 @@ and its velocity is R′(t) = P(t) / M. [6] If the collection of external forces
 center of mass moves at constant velocity. Its position at any time t is
 R(t) = R(t₀) + (t − t₀) P(t₀) / M for any reference time t₀ {1}. [7]
 
+### Work and kinetic energy
+
+The rate of change of total kinetic energy is the sum over particles of their net force dotted
+with their velocity. When that total power is integrable over a time interval, its integral
+equals the change in total kinetic energy over the interval. [11]
+
 ### An isolated binary star
 
 Consider two stars of masses m₀ and m₁ at positions x₀(t) and x₁(t), interacting only
@@ -64,6 +70,8 @@ satisfies the inverse-square equation r″(t) = −G M r(t) / ‖r(t)‖³ {1}. 
    `centerOfMass_eq_of_two_particles`
 10. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/BinaryStar.lean —
     `hasDerivAt_deriv_relativePosition_of_gravity`
+11. Physlib/ClassicalMechanics/PointParticle/NewtonianSystem/Power.lean —
+    `totalPower`, `hasDerivAt_kineticEnergy`, `kineticEnergy_sub_eq_integral_totalPower`
 
 ## References
 
