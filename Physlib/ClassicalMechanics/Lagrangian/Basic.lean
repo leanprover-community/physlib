@@ -9,6 +9,7 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.Geometry.Manifold.Algebra.Monoid
 public import Physlib.ClassicalMechanics.ConfigurationSpace.Basic
+public import Physlib.Meta.TODO.Basic
 public import Physlib.SpaceAndTime.Time.ManifoldCurves
 
 /-!
