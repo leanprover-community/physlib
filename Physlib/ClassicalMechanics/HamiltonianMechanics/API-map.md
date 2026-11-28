@@ -50,17 +50,19 @@ v recovered from (t, p, q), gives the equivalent Hamiltonian description of a La
 
 ### Poisson brackets and observable evolution
 
-The coordinate Poisson bracket is {f, g} = ⟨∇qf, ∇ₚg⟩ − ⟨∇ₚf, ∇qg⟩. [2] It is antisymmetric,
-bilinear and satisfies the Leibniz rule, with the differentiability assumptions needed for the
-gradient rules. [5] Along a differentiable solution of Hamilton's equations, a time-independent
-observable differentiable at the current state satisfies d f(p(t), q(t))/dt = {f, H(t)}(p(t), q(t)).
+The bracket of two observables on the open domain of a Hamiltonian system over a real normed
+space is the dual pairing {f, g} = Dₚg(Dqf) − Dₚf(Dqg). In Hilbert coordinates the Riesz map
+gives the formula {f, g} = ⟨∇qf, ∇ₚg⟩ − ⟨∇ₚf, ∇qg⟩. [2] The coordinate bracket is antisymmetric,
+bilinear and satisfies the Leibniz rule, with the differentiability assumptions needed
+for the gradient rules. [5] Along a differentiable solution of Hamilton's equations, a
+time-independent observable differentiable at the current state satisfies
+d f(p(t), q(t))/dt = {f, H(t)}(p(t), q(t)).
 [6] The canonical coordinate relations are {qᵢ, pⱼ} = δᵢⱼ and {qᵢ, qⱼ} = {pᵢ, pⱼ} = 0. [21]
-On the open phase-space domain of a Hamiltonian system in real Hilbert coordinates, the bracket
-of two observables is again a function on that domain. Restricting coordinate observables before
-or after taking their bracket gives the same result. [22] Twice continuously differentiable
-coordinate observables and their restrictions satisfy the Jacobi identity. At a fixed time in
-a globally defined system, if two such observables each have zero bracket with the Hamiltonian
-everywhere, their bracket also has zero bracket with it. [23]
+For Hilbert coordinate observables, restriction to the system domain commutes with taking
+their bracket. [22] Twice continuously differentiable Hilbert coordinate observables and their
+restrictions satisfy the Jacobi identity. At a fixed time in a globally defined system, if two
+such observables each have zero bracket with the Hamiltonian everywhere, their bracket also
+has zero bracket with it. [23]
 
 ### Symmetries and conserved quantities
 
@@ -105,7 +107,9 @@ the momentum p = m v. [TODO]
 ## Lean References
 
 1. Physlib/ClassicalMechanics/ConfigurationSpace/Basic.lean — `ConfigurationSpace`
-2. Physlib/ClassicalMechanics/HamiltonianMechanics/PoissonBracket.lean — `poissonBracket`
+2. Physlib/ClassicalMechanics/HamiltonianMechanics/PoissonBracket.lean —
+   `HamiltonianSystem.poissonBracket`, `HamiltonianSystem.poissonBracketInHilbertCoords`,
+   `HamiltonianSystem.poissonBracketInHilbertCoords_eq_inner`
 3. Physlib/ClassicalMechanics/HamiltonianMechanics/HamiltonsEquations.lean —
    `hamiltonEqOp`, `hamiltonEqOp_eq_zero_iff_hamiltons_equations`
 4. Physlib/ClassicalMechanics/HamiltonianMechanics/HamiltonsEquations.lean —
@@ -148,7 +152,6 @@ the momentum p = m v. [TODO]
     `poissonBracket_position_momentum`, `poissonBracket_position_position`,
     `poissonBracket_momentum_momentum`
 22. Physlib/ClassicalMechanics/HamiltonianMechanics/PoissonBracket.lean —
-    `HamiltonianSystem.poissonBracket`,
     `HamiltonianSystem.poissonBracket_restrictObservable`
 23. Physlib/ClassicalMechanics/HamiltonianMechanics/PoissonBracket.lean —
     `poissonBracket_jacobi`, `HamiltonianSystem.poissonBracket_jacobi`,

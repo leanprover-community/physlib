@@ -17,29 +17,27 @@ The Poisson bracket of phase-space observables and their Hamiltonian time evolut
 
 ## i. Overview
 
-The Poisson bracket packages, into a single antisymmetric bilinear operation on phase-space
-functions, the way an observable evolves along a Hamiltonian flow. Following the convention of
-`hamiltonEqOp` in `HamiltonsEquations.lean`, a phase-space function is a function `f : X → X → ℝ`
-read as `f p q` for `p` a momentum and `q` a position, both valued in a real inner product space
-`X`. The bracket of two such functions is
+The Poisson bracket of two observables is an observable on the open phase-space domain of a
+Hamiltonian system over a real normed space. With momentum a continuous covector and
+position a vector, the bracket is the difference of two dual pairings
+`Dₚg(Dqf) - Dₚf(Dqg)`.
 
-$$\{f, g\} := \left\langle \frac{\partial f}{\partial q}, \frac{\partial g}{\partial p}
+In real Hilbert coordinates the Riesz map identifies the momentum covector with a vector.
+The bracket then has the familiar gradient formula
+
+$$\{f, g\} = \left\langle \frac{\partial f}{\partial q}, \frac{\partial g}{\partial p}
   \right\rangle - \left\langle \frac{\partial f}{\partial p}, \frac{\partial g}{\partial q}
-  \right\rangle,$$
-
-built from the same currying-and-`gradient` idiom `hamiltonEqOp` already uses to express partial
-derivatives on phase space. On a Hamiltonian system with an open domain in real Hilbert
-coordinates, observables can also be defined directly on that domain. Their bracket is again a
-domain observable and agrees with the coordinate bracket on restricting coordinate functions.
+  \right\rangle.$$
 
 ## ii. Key results
 
-- `poissonBracket` : the Poisson bracket of two phase-space functions.
+- `HamiltonianSystem.poissonBracket` : the bracket of two observables on a system domain.
+- `HamiltonianSystem.poissonBracketInHilbertCoords` : the coordinate formula for whole-space
+  observables, also valid on restriction to a system domain.
 - `poissonBracket_eq_of_hasGradientAt` : computes the bracket from known partial gradients.
 - `poissonBracket_antisymm` : the bracket is antisymmetric.
 - `poissonBracket_self` : every observable Poisson-commutes with itself.
 - `poissonBracket_jacobi` gives the Jacobi identity for `C²` observables.
-- `HamiltonianSystem.poissonBracket` takes the bracket on the open domain of a system.
 - `HamiltonianSystem.poissonBracket_firstIntegrals` gives closure under the bracket for
   observables commuting with a full-domain system's Hamiltonian at fixed time.
 - `poissonBracket_position_momentum`, `poissonBracket_position_position`,
@@ -58,15 +56,15 @@ domain observable and agrees with the coordinate bracket on restricting coordina
 
 ## iii. Table of contents
 
-- A. The definition of the Poisson bracket
-- B. Antisymmetry
+- A. The Poisson bracket on a system domain
+- B. Antisymmetry in Hilbert coordinates
 - C. Bilinearity
 - D. The Leibniz rule
 - E. Time evolution along a Hamiltonian flow
   - E.1. The chain rule for a phase-space function along a trajectory
   - E.2. Time evolution as the Poisson bracket with the Hamiltonian
 - F. Canonical coordinate relations
-- G. Observables on a Hamiltonian system
+- G. Restricting Hilbert coordinate observables
 - H. The Jacobi identity
   - H.1. Jacobi in momentum-position coordinates
   - H.2. Jacobi and first integrals on a system domain
@@ -85,43 +83,140 @@ open InnerProductSpace KroneckerDelta Time
 
 namespace ClassicalMechanics
 
-variable {X} [NormedAddCommGroup X] [InnerProductSpace ℝ X] [CompleteSpace X]
-
 /-!
-
-## A. The definition of the Poisson bracket
-
+## A. The Poisson bracket on a system domain
 -/
 
-/-- The Poisson bracket of two phase-space functions `f g : X → X → ℝ`, each read as `f p q` for
-a momentum `p` and a position `q`, at a point `(p, q)` of phase space. -/
-noncomputable def poissonBracket (f g : X → X → ℝ) (p q : X) : ℝ :=
-  ⟪gradient (fun q' => f p q') q, gradient (fun p' => g p' q) p⟫_ℝ -
-  ⟪gradient (fun p' => f p' q) p, gradient (fun q' => g p q') q⟫_ℝ
+namespace HamiltonianSystem
+
+open scoped Manifold ContDiff Topology
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+
+/-- The canonical bracket in covector-position coordinates evaluates each momentum derivative
+on the position derivative of the opposite observable. -/
+private noncomputable def poissonBracketInDualCoords
+    (f g : (E →L[ℝ] ℝ) → E → ℝ) (p : E →L[ℝ] ℝ) (q : E) : ℝ :=
+  fderiv ℝ (fun p' => g p' q) p (fderiv ℝ (fun q' => f p q') q) -
+    fderiv ℝ (fun p' => f p' q) p (fderiv ℝ (fun q' => g p q') q)
+
+variable (S : HamiltonianSystem 𝓘(ℝ, E) ⟨E⟩)
+
+/-- The canonical Poisson bracket of observables on the open domain of a Hamiltonian system
+over a real normed space. The extensions by zero agree with the observables near each
+interior state, which suffices to compute the partial derivatives there. -/
+@[no_expose]
+noncomputable def poissonBracket (f g : S.domain → ℝ) : S.domain → ℝ :=
+  let coord (a : S.domain → ℝ) (p : E →L[ℝ] ℝ) (q : E) :=
+    Function.extend Subtype.val a (fun _ => 0) (PhaseSpace.ofNormedSpace p q)
+  Function.uncurry (poissonBracketInDualCoords (coord f) (coord g)) ∘
+    PhaseSpace.normedSpaceDiffeomorph E ∘ Subtype.val
+
+/-- Restricting both coordinate observables to the open system domain leaves the bracket
+unchanged at any state in the domain. -/
+private lemma poissonBracket_restrictDualCoords (f g : (E →L[ℝ] ℝ) → E → ℝ) :
+    S.poissonBracket (Function.uncurry f ∘ PhaseSpace.normedSpaceDiffeomorph E ∘ Subtype.val)
+        (Function.uncurry g ∘ PhaseSpace.normedSpaceDiffeomorph E ∘ Subtype.val) =
+      Function.uncurry (poissonBracketInDualCoords f g) ∘
+        PhaseSpace.normedSpaceDiffeomorph E ∘ Subtype.val := by
+  funext x
+  let e := PhaseSpace.normedSpaceDiffeomorph E
+  let z := e x.val
+  let restrict (a : (E →L[ℝ] ℝ) → E → ℝ) : S.domain → ℝ :=
+    Function.uncurry a ∘ e ∘ Subtype.val
+  let lift (a : (E →L[ℝ] ℝ) → E → ℝ) (pq : (E →L[ℝ] ℝ) × E) :=
+    Function.extend Subtype.val (restrict a) (fun _ => 0) (e.symm pq)
+  have hx : e.symm z ∈ S.domain := by simp [z]
+  have heq (a : (E →L[ℝ] ℝ) → E → ℝ) : lift a =ᶠ[𝓝 z] Function.uncurry a := by
+    filter_upwards [(S.isOpen_domain.preimage e.symm.contMDiff.continuous).mem_nhds hx] with y hy
+    change Function.extend Subtype.val (restrict a) _ (e.symm y) = a y.1 y.2
+    rw [Subtype.val_injective.extend_apply (restrict a) _ ⟨e.symm y, hy⟩]
+    simp [restrict, Function.uncurry]
+  have hfst (a : (E →L[ℝ] ℝ) → E → ℝ) :
+      (fun p' => lift a (p', z.2)) =ᶠ[𝓝 z.1] (fun p' => a p' z.2) :=
+    (heq a).comp_tendsto (continuous_id.prodMk continuous_const).continuousAt
+  have hsnd (a : (E →L[ℝ] ℝ) → E → ℝ) :
+      (fun q' => lift a (z.1, q')) =ᶠ[𝓝 z.2] (fun q' => a z.1 q') :=
+    (heq a).comp_tendsto (continuous_const.prodMk continuous_id).continuousAt
+  change poissonBracketInDualCoords (Function.curry (lift f)) (Function.curry (lift g))
+    z.1 z.2 = poissonBracketInDualCoords f g z.1 z.2
+  simp only [poissonBracketInDualCoords, Function.curry, (hfst f).fderiv_eq,
+    (hsnd f).fderiv_eq, (hfst g).fderiv_eq, (hsnd g).fderiv_eq]
+
+/-- Interchanging the two observables reverses the bracket at each state. -/
+lemma poissonBracket_antisymm (f g : S.domain → ℝ) (x : S.domain) :
+    S.poissonBracket f g x = -S.poissonBracket g f x := by
+  simp only [poissonBracket, poissonBracketInDualCoords, Function.comp_apply, Function.uncurry,
+    neg_sub]
+
+/-- A zero observable has zero bracket with every observable on the system domain. -/
+@[simp]
+lemma poissonBracket_zero_right (f : S.domain → ℝ) : S.poissonBracket f 0 = 0 := by
+  funext x
+  simp [poissonBracket, poissonBracketInDualCoords, Function.uncurry, Function.extend]
+
+end HamiltonianSystem
+
+variable {X} [NormedAddCommGroup X] [InnerProductSpace ℝ X] [CompleteSpace X]
+
+namespace HamiltonianSystem
+
+/-- The Poisson bracket of whole-space observables in Hilbert coordinates, with momentum as
+the first argument. The Riesz map converts the momentum vector to a covector. -/
+@[no_expose]
+noncomputable def poissonBracketInHilbertCoords (f g : X → X → ℝ) (p q : X) : ℝ :=
+  let R := toDual ℝ X
+  poissonBracketInDualCoords (fun a => f (R.symm a)) (fun a => g (R.symm a)) (R p) q
+
+/-- In Hilbert coordinates the two dual pairings are inner products of partial gradients. -/
+lemma poissonBracketInHilbertCoords_eq_inner (f g : X → X → ℝ) (p q : X) :
+    poissonBracketInHilbertCoords f g p q =
+      ⟪gradient (fun q' => f p q') q, gradient (fun p' => g p' q) p⟫_ℝ -
+      ⟪gradient (fun p' => f p' q) p, gradient (fun q' => g p q') q⟫_ℝ := by
+  let e := (toDual ℝ X).symm.toContinuousLinearEquiv
+  have hp (u : X → X → ℝ) :
+      fderiv ℝ (fun p' => u ((toDual ℝ X).symm p') q) ((toDual ℝ X) p) =
+        (fderiv ℝ (fun p' => u p' q) p).comp e.toContinuousLinearMap := by
+    change fderiv ℝ ((fun p' => u p' q) ∘ e) ((toDual ℝ X) p) = _
+    rw [e.comp_right_fderiv]
+    change (fderiv ℝ (fun p' => u p' q) ((toDual ℝ X).symm ((toDual ℝ X) p))).comp _ = _
+    rw [LinearIsometryEquiv.symm_apply_apply]
+  unfold poissonBracketInHilbertCoords poissonBracketInDualCoords
+  simp only [hp, LinearIsometryEquiv.symm_apply_apply, ContinuousLinearMap.comp_apply]
+  change fderiv ℝ (fun p' => g p' q) p (gradient (fun q' => f p q') q) -
+    fderiv ℝ (fun p' => f p' q) p (gradient (fun q' => g p q') q) = _
+  simp only [← inner_gradient_left]
+  rw [real_inner_comm (gradient (fun p' => g p' q) p)]
+
+end HamiltonianSystem
+
+open HamiltonianSystem (poissonBracketInHilbertCoords poissonBracketInHilbertCoords_eq_inner)
 
 /-- The Poisson bracket of two phase-space functions whose partial gradients at `(p, q)` are
 known. -/
 lemma poissonBracket_eq_of_hasGradientAt {f g : X → X → ℝ} {p q fp fq gp gq : X}
     (hfp : HasGradientAt (fun p' => f p' q) fp p) (hfq : HasGradientAt (fun q' => f p q') fq q)
     (hgp : HasGradientAt (fun p' => g p' q) gp p) (hgq : HasGradientAt (fun q' => g p q') gq q) :
-    poissonBracket f g p q = ⟪fq, gp⟫_ℝ - ⟪fp, gq⟫_ℝ := by
-  rw [poissonBracket, hfq.gradient, hgp.gradient, hfp.gradient, hgq.gradient]
+    poissonBracketInHilbertCoords f g p q = ⟪fq, gp⟫_ℝ - ⟪fp, gq⟫_ℝ := by
+  rw [poissonBracketInHilbertCoords_eq_inner, hfq.gradient, hgp.gradient,
+    hfp.gradient, hgq.gradient]
 
 /-!
 
-## B. Antisymmetry
+## B. Antisymmetry in Hilbert coordinates
 
 -/
 
 /-- The Poisson bracket is antisymmetric. -/
 lemma poissonBracket_antisymm (f g : X → X → ℝ) (p q : X) :
-    poissonBracket f g p q = -poissonBracket g f p q := by
-  simp only [poissonBracket, neg_sub]
+    poissonBracketInHilbertCoords f g p q = -poissonBracketInHilbertCoords g f p q := by
+  simp only [poissonBracketInHilbertCoords_eq_inner, neg_sub]
   rw [real_inner_comm (gradient (fun p' => g p' q) p) (gradient (fun q' => f p q') q),
     real_inner_comm (gradient (fun q' => g p q') q) (gradient (fun p' => f p' q) p)]
 
 /-- The Poisson bracket of a phase-space function with itself vanishes. -/
-lemma poissonBracket_self (f : X → X → ℝ) (p q : X) : poissonBracket f f p q = 0 := by
+lemma poissonBracket_self (f : X → X → ℝ) (p q : X) :
+    poissonBracketInHilbertCoords f f p q = 0 := by
   have h := poissonBracket_antisymm f f p q
   linarith
 
@@ -141,9 +236,9 @@ lemma poissonBracket_add_left (f₁ f₂ g : X → X → ℝ) (p q : X)
     (hf₂p : DifferentiableAt ℝ (fun p' => f₂ p' q) p)
     (hf₁q : DifferentiableAt ℝ (fun q' => f₁ p q') q)
     (hf₂q : DifferentiableAt ℝ (fun q' => f₂ p q') q) :
-    poissonBracket (fun p' q' => f₁ p' q' + f₂ p' q') g p q =
-      poissonBracket f₁ g p q + poissonBracket f₂ g p q := by
-  simp only [poissonBracket]
+    poissonBracketInHilbertCoords (fun p' q' => f₁ p' q' + f₂ p' q') g p q =
+      poissonBracketInHilbertCoords f₁ g p q + poissonBracketInHilbertCoords f₂ g p q := by
+  simp only [poissonBracketInHilbertCoords_eq_inner]
   rw [gradient_add hf₁q hf₂q, gradient_add hf₁p hf₂p, inner_add_left, inner_add_left]
   ring
 
@@ -152,8 +247,9 @@ differentiable in both phase-space directions. -/
 lemma poissonBracket_const_mul_left (c : ℝ) (f g : X → X → ℝ) (p q : X)
     (hfp : DifferentiableAt ℝ (fun p' => f p' q) p)
     (hfq : DifferentiableAt ℝ (fun q' => f p q') q) :
-    poissonBracket (fun p' q' => c * f p' q') g p q = c * poissonBracket f g p q := by
-  simp only [poissonBracket]
+    poissonBracketInHilbertCoords (fun p' q' => c * f p' q') g p q =
+      c * poissonBracketInHilbertCoords f g p q := by
+  simp only [poissonBracketInHilbertCoords_eq_inner]
   rw [gradient_const_mul c hfq, gradient_const_mul c hfp, inner_smul_left, inner_smul_left]
   simp [mul_sub]
 
@@ -163,8 +259,8 @@ lemma poissonBracket_add_right (f g₁ g₂ : X → X → ℝ) (p q : X)
     (hg₂p : DifferentiableAt ℝ (fun p' => g₂ p' q) p)
     (hg₁q : DifferentiableAt ℝ (fun q' => g₁ p q') q)
     (hg₂q : DifferentiableAt ℝ (fun q' => g₂ p q') q) :
-    poissonBracket f (fun p' q' => g₁ p' q' + g₂ p' q') p q =
-      poissonBracket f g₁ p q + poissonBracket f g₂ p q := by
+    poissonBracketInHilbertCoords f (fun p' q' => g₁ p' q' + g₂ p' q') p q =
+      poissonBracketInHilbertCoords f g₁ p q + poissonBracketInHilbertCoords f g₂ p q := by
   rw [poissonBracket_antisymm f, poissonBracket_add_left g₁ g₂ f p q hg₁p hg₂p hg₁q hg₂q,
     poissonBracket_antisymm g₁ f, poissonBracket_antisymm g₂ f]
   ring
@@ -173,7 +269,8 @@ lemma poissonBracket_add_right (f g₁ g₂ : X → X → ℝ) (p q : X)
 lemma poissonBracket_const_mul_right (c : ℝ) (f g : X → X → ℝ) (p q : X)
     (hgp : DifferentiableAt ℝ (fun p' => g p' q) p)
     (hgq : DifferentiableAt ℝ (fun q' => g p q') q) :
-    poissonBracket f (fun p' q' => c * g p' q') p q = c * poissonBracket f g p q := by
+    poissonBracketInHilbertCoords f (fun p' q' => c * g p' q') p q =
+      c * poissonBracketInHilbertCoords f g p q := by
   rw [poissonBracket_antisymm f, poissonBracket_const_mul_left c g f p q hgp hgq,
     poissonBracket_antisymm g f]
   ring
@@ -190,9 +287,10 @@ lemma poissonBracket_mul_left (f₁ f₂ g : X → X → ℝ) (p q : X)
     (hf₂p : DifferentiableAt ℝ (fun p' => f₂ p' q) p)
     (hf₁q : DifferentiableAt ℝ (fun q' => f₁ p q') q)
     (hf₂q : DifferentiableAt ℝ (fun q' => f₂ p q') q) :
-    poissonBracket (fun p' q' => f₁ p' q' * f₂ p' q') g p q =
-      poissonBracket f₁ g p q * f₂ p q + f₁ p q * poissonBracket f₂ g p q := by
-  simp only [poissonBracket]
+    poissonBracketInHilbertCoords (fun p' q' => f₁ p' q' * f₂ p' q') g p q =
+      poissonBracketInHilbertCoords f₁ g p q * f₂ p q +
+        f₁ p q * poissonBracketInHilbertCoords f₂ g p q := by
+  simp only [poissonBracketInHilbertCoords_eq_inner]
   rw [(hf₁q.hasGradientAt.mul hf₂q.hasGradientAt).gradient,
     (hf₁p.hasGradientAt.mul hf₂p.hasGradientAt).gradient]
   simp only [inner_add_left, real_inner_smul_left]
@@ -204,8 +302,9 @@ lemma poissonBracket_mul_right (f g₁ g₂ : X → X → ℝ) (p q : X)
     (hg₂p : DifferentiableAt ℝ (fun p' => g₂ p' q) p)
     (hg₁q : DifferentiableAt ℝ (fun q' => g₁ p q') q)
     (hg₂q : DifferentiableAt ℝ (fun q' => g₂ p q') q) :
-    poissonBracket f (fun p' q' => g₁ p' q' * g₂ p' q') p q =
-      poissonBracket f g₁ p q * g₂ p q + g₁ p q * poissonBracket f g₂ p q := by
+    poissonBracketInHilbertCoords f (fun p' q' => g₁ p' q' * g₂ p' q') p q =
+      poissonBracketInHilbertCoords f g₁ p q * g₂ p q +
+        g₁ p q * poissonBracketInHilbertCoords f g₂ p q := by
   rw [poissonBracket_antisymm f, poissonBracket_mul_left g₁ g₂ f p q hg₁p hg₂p hg₁q hg₂q,
     poissonBracket_antisymm g₁ f, poissonBracket_antisymm g₂ f]
   ring
@@ -252,10 +351,10 @@ theorem deriv_comp_eq_poissonBracket (H : Time → X → X → ℝ) (p q : Time 
     (t : Time) (heq : hamiltonEqOp H p q = 0)
     (hp : DifferentiableAt ℝ p t) (hq : DifferentiableAt ℝ q t)
     (hf : DifferentiableAt ℝ (Function.uncurry f) (p t, q t)) :
-    ∂ₜ (fun t => f (p t) (q t)) t = poissonBracket f (H t) (p t) (q t) := by
+    ∂ₜ (fun t => f (p t) (q t)) t = poissonBracketInHilbertCoords f (H t) (p t) (q t) := by
   obtain ⟨hq', hp'⟩ := (hamiltonEqOp_eq_zero_iff_hamiltons_equations H p q).mp heq
   rw [deriv_comp_eq_inner_gradient_add f p q t hp hq hf, hq' t, hp' t, inner_neg_right]
-  unfold poissonBracket
+  rw [poissonBracketInHilbertCoords_eq_inner]
   ring
 
 /-- The Poisson bracket gives the derivative of an observable at a real time where the
@@ -264,7 +363,8 @@ lemma hasDerivAt_comp_eq_poissonBracket (H f : X → X → ℝ) {p q : ℝ → X
     (hp : HasDerivAt p (-gradient (fun p' => H (p t) p') (q t)) t)
     (hq : HasDerivAt q (gradient (fun q' => H q' (q t)) (p t)) t)
     (hf : DifferentiableAt ℝ (Function.uncurry f) (p t, q t)) :
-    HasDerivAt (fun s => f (p s) (q s)) (poissonBracket f H (p t) (q t)) t := by
+    HasDerivAt (fun s => f (p s) (q s))
+      (poissonBracketInHilbertCoords f H (p t) (q t)) t := by
   have hpq : HasDerivAt (fun s => (p s, q s))
       (-gradient (fun q' => H (p t) q') (q t), gradient (fun p' => H p' (q t)) (p t)) t :=
     by simpa [ContinuousLinearMap.prod_apply] using
@@ -274,7 +374,7 @@ lemma hasDerivAt_comp_eq_poissonBracket (H f : X → X → ℝ) {p q : ℝ → X
     (-gradient (fun q' => H (p t) q') (q t), gradient (fun p' => H p' (q t)) (p t)) hf
   change (fderiv ℝ (Function.uncurry f) (p t, q t)) _ = _ at hbr
   rw [hbr, ← inner_gradient_left, ← inner_gradient_left, inner_neg_right,
-    neg_add_eq_sub, ← poissonBracket] at hd
+    neg_add_eq_sub, ← poissonBracketInHilbertCoords_eq_inner] at hd
   exact hd
 
 /-- A time-independent observable takes the same value at any two times in an interval
@@ -285,7 +385,7 @@ lemma observable_eq_of_poissonBracket_eq_zero (H : ℝ → X → X → ℝ) {p q
     (hp : ∀ t ∈ s, HasDerivAt p (-gradient (fun q' => H t (p t) q') (q t)) t)
     (hq : ∀ t ∈ s, HasDerivAt q (gradient (fun p' => H t p' (q t)) (p t)) t)
     (f : X → X → ℝ) (hf : ∀ t ∈ s, DifferentiableAt ℝ (Function.uncurry f) (p t, q t))
-    (hbr : ∀ t ∈ s, poissonBracket f (H t) (p t) (q t) = 0)
+    (hbr : ∀ t ∈ s, poissonBracketInHilbertCoords f (H t) (p t) (q t) = 0)
     {t₁ t₂ : ℝ} (h₁ : t₁ ∈ s) (h₂ : t₂ ∈ s) : f (p t₁) (q t₁) = f (p t₂) (q t₂) := by
   have hd t (ht : t ∈ s) : HasDerivAt (fun u => f (p u) (q u)) 0 t := by
     simpa only [hbr t ht] using
@@ -301,7 +401,7 @@ lemma observable_eq_of_poissonBracket_eq_zero (H : ℝ → X → X → ℝ) {p q
 For Euclidean phase space, position and momentum coordinates satisfy
 `{qᵢ, pⱼ} = δᵢⱼ`, while brackets between two position coordinates or two momentum coordinates
 vanish.
-The argument order remains momentum first, position second, as in `poissonBracket`.
+The argument order remains momentum first, position second.
 
 -/
 
@@ -310,85 +410,52 @@ delta. -/
 @[simp]
 lemma poissonBracket_position_momentum {ι : Type*} [Fintype ι] [DecidableEq ι] (i j : ι)
     (p q : EuclideanSpace ℝ ι) :
-    poissonBracket (fun _ q => q i) (fun p _ => p j) p q = δ[i,j] := by
-  simp [poissonBracket, gradient_coord, gradient_fun_const, EuclideanSpace.inner_single_left,
-    PiLp.single_apply, kroneckerDelta, eq_comm]
+    poissonBracketInHilbertCoords (fun _ q => q i) (fun p _ => p j) p q = δ[i,j] := by
+  simp [poissonBracketInHilbertCoords_eq_inner, gradient_coord, gradient_fun_const,
+    EuclideanSpace.inner_single_left, PiLp.single_apply, kroneckerDelta, eq_comm]
 
 /-- The Poisson bracket of two position coordinates vanishes. -/
 @[simp]
 lemma poissonBracket_position_position {ι : Type*} [Fintype ι] (i j : ι)
     (p q : EuclideanSpace ℝ ι) :
-    poissonBracket (fun _ q => q i) (fun _ q => q j) p q = 0 := by
-  simp [poissonBracket, gradient_fun_const]
+    poissonBracketInHilbertCoords (fun _ q => q i) (fun _ q => q j) p q = 0 := by
+  simp [poissonBracketInHilbertCoords_eq_inner, gradient_fun_const]
 
 /-- The Poisson bracket of two momentum coordinates vanishes. -/
 @[simp]
 lemma poissonBracket_momentum_momentum {ι : Type*} [Fintype ι] (i j : ι)
     (p q : EuclideanSpace ℝ ι) :
-    poissonBracket (fun p _ => p i) (fun p _ => p j) p q = 0 := by
-  simp [poissonBracket, gradient_fun_const]
+    poissonBracketInHilbertCoords (fun p _ => p i) (fun p _ => p j) p q = 0 := by
+  simp [poissonBracketInHilbertCoords_eq_inner, gradient_fun_const]
 
 /-!
-## G. Observables on a Hamiltonian system
+## G. Restricting Hilbert coordinate observables
 -/
 
 namespace HamiltonianSystem
 
-open scoped Manifold ContDiff Topology
+open scoped Manifold ContDiff
 
 variable (S : HamiltonianSystem 𝓘(ℝ, X) ⟨X⟩)
 
-/-- The canonical Poisson bracket of observables on the open phase-space domain of a system
-in real Hilbert space. The coordinate formula uses extensions by zero. Its value at an
-interior point depends only on the observables in a neighborhood of that point. -/
-noncomputable def poissonBracket (f g : S.domain → ℝ) : S.domain → ℝ :=
-  let coord (a : S.domain → ℝ) (p q : X) :=
-    Function.extend Subtype.val a (fun _ => 0) (PhaseSpace.ofInnerProductSpace p q)
-  Function.uncurry (ClassicalMechanics.poissonBracket (coord f) (coord g)) ∘
-    PhaseSpace.hilbertCoords X ∘ Subtype.val
-
-/-- Restricting the coordinate bracket to the system domain gives the bracket of the restricted
-observables. -/
+/-- Restricting the Hilbert coordinate bracket to the system domain gives the bracket of the
+restricted observables. -/
 @[simp]
 lemma poissonBracket_restrictObservable (f g : X → X → ℝ) :
     S.poissonBracket (Function.uncurry f ∘ PhaseSpace.hilbertCoords X ∘ Subtype.val)
         (Function.uncurry g ∘ PhaseSpace.hilbertCoords X ∘ Subtype.val) =
-      Function.uncurry (ClassicalMechanics.poissonBracket f g) ∘
+      Function.uncurry (poissonBracketInHilbertCoords f g) ∘
         PhaseSpace.hilbertCoords X ∘ Subtype.val := by
+  let e := PhaseSpace.normedSpaceDiffeomorph X
+  let R := toDual ℝ X
+  let F : (X →L[ℝ] ℝ) → X → ℝ := fun p => f (R.symm p)
+  let G : (X →L[ℝ] ℝ) → X → ℝ := fun p => g (R.symm p)
   funext x
-  let e := PhaseSpace.hilbertCoords X
-  let z := e x.val
-  let restrict (a : X → X → ℝ) : S.domain → ℝ := Function.uncurry a ∘ e ∘ Subtype.val
-  let lift (a : X → X → ℝ) (pq : X × X) :=
-    Function.extend Subtype.val (restrict a) (fun _ => 0) (e.symm pq)
-  have hx : e.symm z ∈ S.domain := by simp [z]
-  have heq (a : X → X → ℝ) : lift a =ᶠ[𝓝 z] Function.uncurry a := by
-    filter_upwards [(S.isOpen_domain.preimage e.symm.contMDiff.continuous).mem_nhds hx] with y hy
-    change Function.extend Subtype.val (restrict a) _ (e.symm y) = a y.1 y.2
-    rw [Subtype.val_injective.extend_apply (restrict a) _ ⟨e.symm y, hy⟩]
-    simp [restrict, Function.uncurry]
-  have hfst (a : X → X → ℝ) :
-      (fun p' => lift a (p', z.2)) =ᶠ[𝓝 z.1] (fun p' => a p' z.2) :=
-    (heq a).comp_tendsto (continuous_id.prodMk continuous_const).continuousAt
-  have hsnd (a : X → X → ℝ) :
-      (fun q' => lift a (z.1, q')) =ᶠ[𝓝 z.2] (fun q' => a z.1 q') :=
-    (heq a).comp_tendsto (continuous_const.prodMk continuous_id).continuousAt
-  change ClassicalMechanics.poissonBracket (Function.curry (lift f)) (Function.curry (lift g))
-    z.1 z.2 = ClassicalMechanics.poissonBracket f g z.1 z.2
-  simp only [ClassicalMechanics.poissonBracket, Function.curry, (hfst f).gradient_eq,
-    (hsnd f).gradient_eq, (hfst g).gradient_eq, (hsnd g).gradient_eq]
-
-/-- Interchanging the two domain observables reverses the bracket at each state. -/
-lemma poissonBracket_antisymm (f g : S.domain → ℝ) (x : S.domain) :
-    S.poissonBracket f g x = -S.poissonBracket g f x := by
-  simp only [poissonBracket, Function.comp_apply, Function.uncurry]
-  apply ClassicalMechanics.poissonBracket_antisymm
-
-/-- A zero observable has zero bracket with every observable on the system domain. -/
-@[simp]
-lemma poissonBracket_zero_right (f : S.domain → ℝ) : S.poissonBracket f 0 = 0 := by
-  funext x
-  simp [poissonBracket, Function.uncurry, Function.extend, ClassicalMechanics.poissonBracket]
+  change S.poissonBracket (Function.uncurry F ∘ e ∘ Subtype.val)
+      (Function.uncurry G ∘ e ∘ Subtype.val) x =
+        poissonBracketInDualCoords F G (R (R.symm (e x.1).1)) (e x.1).2
+  rw [LinearIsometryEquiv.apply_symm_apply]
+  exact congrFun (S.poissonBracket_restrictDualCoords F G) x
 
 end HamiltonianSystem
 
@@ -438,7 +505,7 @@ of the second. -/
 private lemma poissonBracket_eq_sharp {f g : X → X → ℝ} {z : X × X}
     (hf : DifferentiableAt ℝ (Function.uncurry f) z)
     (hg : DifferentiableAt ℝ (Function.uncurry g) z) :
-    poissonBracket f g z.1 z.2 =
+    poissonBracketInHilbertCoords f g z.1 z.2 =
       fderiv ℝ (Function.uncurry f) z (poissonSharp (fderiv ℝ (Function.uncurry g) z)) := by
   have restrict (u : X → X → ℝ) (hu : DifferentiableAt ℝ (Function.uncurry u) z) :
       poissonSharp (fderiv ℝ (Function.uncurry u) z) =
@@ -451,7 +518,7 @@ private lemma poissonBracket_eq_sharp {f g : X → X → ℝ} {z : X × X}
   have h := fderiv_uncurry f z (-gradient (g z.1) z.2, gradient (fun p => g p z.2) z.1) hf
   change fderiv ℝ (Function.uncurry f) z _ = _ at h
   rw [h]
-  simp only [poissonBracket, map_neg, ← inner_gradient_left]
+  simp only [poissonBracketInHilbertCoords_eq_inner, map_neg, ← inner_gradient_left]
   ring
 
 /-- The derivative of a bracket along a third Hamiltonian vector involves one Hessian term
@@ -461,10 +528,10 @@ private lemma poissonBracket_nested {f g h : X → X → ℝ} (z : X × X)
     (hh : ContDiff ℝ 2 (Function.uncurry h)) :
     let field := fun k : X → X → ℝ => poissonSharp (fderiv ℝ (Function.uncurry k) z)
     let hessian := fun k : X → X → ℝ => fderiv ℝ (fderiv ℝ (Function.uncurry k)) z
-    poissonBracket f (poissonBracket g h) z.1 z.2 =
+    poissonBracketInHilbertCoords f (poissonBracketInHilbertCoords g h) z.1 z.2 =
       hessian h (field f) (field g) - hessian g (field f) (field h) := by
   dsimp only
-  have heq : Function.uncurry (poissonBracket g h) =
+  have heq : Function.uncurry (poissonBracketInHilbertCoords g h) =
       fun x => fderiv ℝ (Function.uncurry g) x (poissonSharp (fderiv ℝ (Function.uncurry h) x)) :=
     funext fun x => poissonBracket_eq_sharp (hg.differentiable (by simp) x)
       (hh.differentiable (by simp) x)
@@ -485,9 +552,9 @@ lemma poissonBracket_jacobi (f₁ f₂ f₃ : X → X → ℝ) (p q : X)
     (hf₁ : ContDiff ℝ 2 (Function.uncurry f₁))
     (hf₂ : ContDiff ℝ 2 (Function.uncurry f₂))
     (hf₃ : ContDiff ℝ 2 (Function.uncurry f₃)) :
-    poissonBracket f₁ (poissonBracket f₂ f₃) p q +
-    poissonBracket f₂ (poissonBracket f₃ f₁) p q +
-    poissonBracket f₃ (poissonBracket f₁ f₂) p q = 0 := by
+    poissonBracketInHilbertCoords f₁ (poissonBracketInHilbertCoords f₂ f₃) p q +
+    poissonBracketInHilbertCoords f₂ (poissonBracketInHilbertCoords f₃ f₁) p q +
+    poissonBracketInHilbertCoords f₃ (poissonBracketInHilbertCoords f₁ f₂) p q = 0 := by
   simp only [poissonBracket_nested (p, q) hf₁ hf₂ hf₃, poissonBracket_nested (p, q) hf₂ hf₃ hf₁,
     poissonBracket_nested (p, q) hf₃ hf₁ hf₂]
   have symm {f : X → X → ℝ} (hf : ContDiff ℝ 2 (Function.uncurry f)) :=
@@ -518,7 +585,8 @@ lemma poissonBracket_jacobi (f g h : X → X → ℝ)
       S.poissonBracket L (S.poissonBracket F K) x = 0 := by
   dsimp only
   simp only [poissonBracket_restrictObservable]
-  exact ClassicalMechanics.poissonBracket_jacobi f g h _ _ hf hg hh
+  let z := PhaseSpace.hilbertCoords X x.val
+  exact ClassicalMechanics.poissonBracket_jacobi f g h z.1 z.2 hf hg hh
 
 /-- At a fixed time in a globally defined system, the bracket of two twice continuously
 differentiable observables commuting with the Hamiltonian also commutes with it. -/

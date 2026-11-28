@@ -40,8 +40,8 @@ involution is automatic, and independence says only that the gradient of the Ham
 vanish. `LiouvilleIntegrableOn.oneDegreeOfFreedom` records this, and is how the harmonic oscillator
 and the simple pendulum are shown to be integrable.
 
-Following the convention of `poissonBracket`, a phase-space function `f : X → X → ℝ` is read as
-`f p q` for a momentum `p` and a position `q`. Since PhysLib has no existing precedent for a
+In `HamiltonianSystem.poissonBracketInHilbertCoords`, an observable `f : X → X → ℝ` is evaluated
+as `f p q` for a momentum `p` and a position `q`. Since PhysLib has no existing precedent for a
 `FiniteDimensional`/`Module.finrank` hypothesis on an abstract phase space, position space is fixed
 concretely as `EuclideanSpace ℝ (Fin d)` for an explicit `d : ℕ`, matching the indexing convention
 already used for e.g. `RigidBody (d : ℕ)`.
@@ -106,7 +106,8 @@ structure LiouvilleIntegrableOn {d : ℕ}
   /-- The Hamiltonian itself is one of the conserved quantities. -/
   exists_hamiltonian : ∃ i, f i = H
   /-- The conserved quantities pairwise Poisson-commute on `U`, i.e. are in involution. -/
-  involutive : ∀ i j, ∀ x ∈ U, poissonBracket (f i) (f j) x.1 x.2 = 0
+  involutive : ∀ i j, ∀ x ∈ U,
+    HamiltonianSystem.poissonBracketInHilbertCoords (f i) (f j) x.1 x.2 = 0
   /-- The conserved quantities are functionally independent on `U`: their phase-space gradients
   (the `p`- and `q`-partials together) are linearly independent. -/
   independent : ∀ x ∈ U, LinearIndependent ℝ

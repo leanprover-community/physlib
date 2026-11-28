@@ -202,7 +202,7 @@ lemma hasGradientAt_angularMomentumZ_position (p q : EuclideanSpace ℝ (Fin 3))
 
 /-- The squared magnitude of the angular momentum and its z-component are in involution. -/
 lemma poissonBracket_angularMomentumSq_angularMomentumZ (p q : EuclideanSpace ℝ (Fin 3)) :
-    poissonBracket angularMomentumSq angularMomentumZ p q = 0 := by
+    HamiltonianSystem.poissonBracketInHilbertCoords angularMomentumSq angularMomentumZ p q = 0 := by
   rw [poissonBracket_eq_of_hasGradientAt (hasGradientAt_angularMomentumSq_momentum p q)
     (hasGradientAt_angularMomentumSq_position p q) (hasGradientAt_angularMomentumZ_momentum p q)
     (hasGradientAt_angularMomentumZ_position p q)]
@@ -227,7 +227,7 @@ lemma poissonBracket_angularMomentumSq_eq_zero_of_hasGradientAt
     {p q : EuclideanSpace ℝ (Fin 3)} {a c : ℝ}
     (hp : HasGradientAt (fun p' => H p' q) (a • p) p)
     (hq : HasGradientAt (fun q' => H p q') (c • q) q) :
-    poissonBracket angularMomentumSq H p q = 0 := by
+    HamiltonianSystem.poissonBracketInHilbertCoords angularMomentumSq H p q = 0 := by
   rw [poissonBracket_eq_of_hasGradientAt (hasGradientAt_angularMomentumSq_momentum p q)
     (hasGradientAt_angularMomentumSq_position p q) hp hq]
   simp only [inner_sub_left, real_inner_smul_left, real_inner_smul_right, real_inner_comm p q]
@@ -240,7 +240,7 @@ lemma poissonBracket_angularMomentumZ_eq_zero_of_hasGradientAt
     {p q : EuclideanSpace ℝ (Fin 3)} {a c : ℝ}
     (hp : HasGradientAt (fun p' => H p' q) (a • p) p)
     (hq : HasGradientAt (fun q' => H p q') (c • q) q) :
-    poissonBracket angularMomentumZ H p q = 0 := by
+    HamiltonianSystem.poissonBracketInHilbertCoords angularMomentumZ H p q = 0 := by
   rw [poissonBracket_eq_of_hasGradientAt (hasGradientAt_angularMomentumZ_momentum p q)
     (hasGradientAt_angularMomentumZ_position p q) hp hq]
   simp only [inner_sub_left, real_inner_smul_left, real_inner_smul_right,
@@ -259,7 +259,7 @@ variable (S : CentralForce)
 with the Hamiltonian of a central-force system, so is conserved by the motion. -/
 lemma poissonBracket_angularMomentumSq_hamiltonian (p : EuclideanSpace ℝ (Fin 3))
     {q : EuclideanSpace ℝ (Fin 3)} (hq : q ≠ 0) :
-    poissonBracket angularMomentumSq S.hamiltonian p q = 0 :=
+    HamiltonianSystem.poissonBracketInHilbertCoords angularMomentumSq S.hamiltonian p q = 0 :=
   poissonBracket_angularMomentumSq_eq_zero_of_hasGradientAt
     (S.hasGradientAt_hamiltonian_momentum p q) (S.hasGradientAt_hamiltonian_position p hq)
 
@@ -267,7 +267,7 @@ lemma poissonBracket_angularMomentumSq_hamiltonian (p : EuclideanSpace ℝ (Fin 
 the Hamiltonian of a central-force system, so is conserved by the motion. -/
 lemma poissonBracket_angularMomentumZ_hamiltonian (p : EuclideanSpace ℝ (Fin 3))
     {q : EuclideanSpace ℝ (Fin 3)} (hq : q ≠ 0) :
-    poissonBracket angularMomentumZ S.hamiltonian p q = 0 :=
+    HamiltonianSystem.poissonBracketInHilbertCoords angularMomentumZ S.hamiltonian p q = 0 :=
   poissonBracket_angularMomentumZ_eq_zero_of_hasGradientAt
     (S.hasGradientAt_hamiltonian_momentum p q) (S.hasGradientAt_hamiltonian_position p hq)
 
