@@ -31,12 +31,15 @@ the paper.
 - `aqualActionDensity` : the AQUAL Lagrangian density at a point.
 - `aqualFieldResidual` : `div (mu grad phi) - 4 pi G rho`.
 - `IsAqualSolution` : the field equation holds at a point.
+- `MondFieldTheory` : the MOND parameters `a0` and `G` with the interpolating
+  and free functions, and its action density and field residual.
 - `aqualFieldResidual_eq_zero_iff` : with `mu = 1` it is the Poisson equation.
 
 ## iii. Table of contents
 
 - A. The interpolating function
 - B. Action and field equation
+- C. The MOND parameters as a structure
 
 ## iv. References
 
@@ -95,6 +98,11 @@ lemma mondMu_le_self {x : ℝ} (hx : 0 ≤ x) : mondMu x ≤ x := by
 
 /-! ## B. Action and field equation -/
 
+/-- The AQUAL field equation `div (mu (|grad phi| / a0) grad phi) = 4 pi G rho`
+as a residual, with the divergence supplied. -/
+noncomputable def aqualFieldResidual (G rho divMuGrad : ℝ) : ℝ :=
+  divMuGrad - 4 * Real.pi * G * rho
+
 /-- The AQUAL action density
 `-(a0^2 / (8 pi G)) F(|grad phi|^2 / a0^2) - rho phi` at a point.  The free
 function `F` and the field value `phi` are supplied. -/
@@ -102,11 +110,6 @@ noncomputable def aqualActionDensity (a0 G : ℝ) (F : ℝ → ℝ) (rho phi : �
     (gradPhi : Fin 3 → ℝ) : ℝ :=
   -(a0 ^ 2 / (8 * Real.pi * G)) * F ((∑ i : Fin 3, gradPhi i ^ 2) / a0 ^ 2)
     - rho * phi
-
-/-- The AQUAL field equation `div (mu (|grad phi| / a0) grad phi) = 4 pi G rho`
-as a residual, with the divergence supplied. -/
-noncomputable def aqualFieldResidual (G rho divMuGrad : ℝ) : ℝ :=
-  divMuGrad - 4 * Real.pi * G * rho
 
 /-- A point at which the AQUAL field equation holds. -/
 structure IsAqualSolution (G rho divMuGrad : ℝ) : Prop where
@@ -119,5 +122,35 @@ lemma aqualFieldResidual_eq_zero_iff (G rho divGrad : ℝ) :
     aqualFieldResidual G rho divGrad = 0 ↔ divGrad = 4 * Real.pi * G * rho := by
   unfold aqualFieldResidual
   constructor <;> intro h <;> linarith
+
+/-! ## C. The MOND parameters as a structure -/
+
+/-- The data of MOND as a field theory: the MOND acceleration scale `a0`, Newton's
+constant `G`, the interpolating function of the field equation and the free
+function of the action.  The two functions are kept as separate data, as the
+paper does. -/
+structure MondFieldTheory where
+  /-- The MOND acceleration scale `a0`. -/
+  a0 : ℝ
+  /-- Newton's constant `G`. -/
+  G : ℝ
+  /-- The interpolating function of the field equation. -/
+  mu : ℝ → ℝ
+  /-- The free function of the action. -/
+  F : ℝ → ℝ
+
+/-- The AQUAL action density of a MOND field theory: the free function `F`
+evaluated at `|grad phi|^2 / a0^2`. -/
+noncomputable def MondFieldTheory.actionDensity (T : MondFieldTheory) (rho phi : ℝ)
+    (gradPhi : Fin 3 → ℝ) : ℝ :=
+  aqualActionDensity T.a0 T.G T.F rho phi gradPhi
+
+/-- The AQUAL field equation of a MOND field theory: `div (mu grad phi) = 4 pi G rho`,
+with the divergence supplied.  The field equation uses `T.G`; `T.mu` is the
+interpolating function it is written with, and `T.a0` enters through the
+argument of `mu`. -/
+noncomputable def MondFieldTheory.fieldResidual (T : MondFieldTheory) (rho divMuGrad : ℝ) :
+    ℝ :=
+  aqualFieldResidual T.G rho divMuGrad
 
 end GeneralRelativity

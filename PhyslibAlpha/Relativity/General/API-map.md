@@ -564,16 +564,19 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `KruskalSzekeres.horizonPoint_mem_partialChartDomain`
 92. PhyslibAlpha/Relativity/Modified/DiracCounting.lean — `ConstraintCount`, `ConstraintCount.dof`,
     `procaCount_dof`, `unitVectorCount_dof`, `realScalarCount_dof`, `gravitonCount_dof`,
-    `stvgCount_dof`, `tevesCount_dof`, `procaDiracMatrix_det`,
-    `proca_constraints_second_class`, `smearedBracket_primary_gauss`,
+    `stvgCount_dof`, `tevesCount_dof`, `STVGContent`, `STVGContent.count`,
+    `TeVeSContent`, `TeVeSContent.count`, `STVGContent.count_dof`, `TeVeSContent.count_dof`,
+    `procaDiracMatrix_det`, `proca_constraints_second_class`, `smearedBracket_primary_gauss`,
     `smeared_constraints_second_class`, `unitVectorPrimary_first_class`,
     `smearedUnitVectorPrimary_first_class`
 93. PhyslibAlpha/Relativity/Modified/MondFieldTheory.lean — `mondMu`, `tendsto_mondMu_div_self`,
     `mondMu_le_self`, `aqualActionDensity`, `aqualFieldResidual`, `IsAqualSolution`,
-    `aqualFieldResidual_eq_zero_iff`
+    `aqualFieldResidual_eq_zero_iff`, `MondFieldTheory`, `MondFieldTheory.actionDensity`,
+    `MondFieldTheory.fieldResidual`
 94. PhyslibAlpha/Relativity/Modified/AqualVariation.lean — `AqualFreeFunction`,
     `aqualLagrangianDensity1D`, `aqualMomentumDensity`, `aqualDivergence1D`,
-    `aqualEulerLagrangeResidual_eq`, `aqual_euler_lagrange_iff`, `sum_link_mul_difference`,
+    `aqualEulerLagrangeResidual_eq`, `aqual_euler_lagrange_iff`,
+    `GraphDivergence.sum_link_mul_difference`,
     `discrete_stationary_iff`, `quadraticProfile_stationary`,
     `aqual_first_variation_eq_integral_residual`, `aqual_fundamental_lemma`
 95. PhyslibAlpha/Relativity/General/Bianchi.lean — `Bianchi.metric_compat`, `Bianchi.inv_metric_compat`, `Bianchi.riemann_lower_skew_first`,

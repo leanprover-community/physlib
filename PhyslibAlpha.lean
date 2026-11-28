@@ -276,6 +276,7 @@ public import PhyslibAlpha.Mathematics.AlgebraRepresentation
 public import PhyslibAlpha.Mathematics.Analysis.LocalOperator
 public import PhyslibAlpha.Mathematics.Analysis.Normed.HolderDual
 public import PhyslibAlpha.Mathematics.Analysis.RealBounds
+public import PhyslibAlpha.Mathematics.Analysis.SecondDifference
 public import PhyslibAlpha.Mathematics.Calculus.CoordDeriv
 public import PhyslibAlpha.Mathematics.Calculus.IteratedFDerivBounds
 public import PhyslibAlpha.Mathematics.Calculus.ParametricIntegral
@@ -321,6 +322,7 @@ public import PhyslibAlpha.Mathematics.Geometry.Simplex
 public import PhyslibAlpha.Mathematics.Geometry.Sphere.Fourier
 public import PhyslibAlpha.Mathematics.Geometry.Sphere.Polar
 public import PhyslibAlpha.Mathematics.Geometry.Sphere.Profile
+public import PhyslibAlpha.Mathematics.GraphDivergence
 public import PhyslibAlpha.Mathematics.HomogeneousGenerators
 public import PhyslibAlpha.Mathematics.InvariantReduction
 public import PhyslibAlpha.Mathematics.LadderSystem.Basic

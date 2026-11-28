@@ -44,6 +44,8 @@ bracket is not formalised.
 - `procaCount_dof`, `unitVectorCount_dof`, `realScalarCount_dof`,
   `gravitonCount_dof` : `3`, `3`, `1` and `2` degrees of freedom.
 - `stvgCount_dof`, `tevesCount_dof` : `6` for both, with the sums made explicit.
+- `STVGContent.count`, `TeVeSContent.count` : the same counts read off the field
+  content of the two theories, which have `6` degrees of freedom.
 - `procaDiracMatrix_det`, `proca_constraints_second_class` : the Proca Dirac
   matrix has determinant `m^4`, nonzero for `m != 0`.
 - `smearedBracket_primary_gauss`, `smeared_constraints_second_class` : the
@@ -143,6 +145,93 @@ lemma tevesCount_dof : tevesCount.dof = 6 := by decide
 lemma tevesCount_dof_eq_sum :
     tevesCount.dof = gravitonCount.dof + unitVectorCount.dof + realScalarCount.dof := by
   decide
+
+/-- A vector field and its counting type: the four-component Proca vector, with
+its two second-class constraints, or the unit timelike vector, with its single
+first-class constraint. -/
+inductive VectorContent where
+  /-- A massive Proca vector: four components, two second-class constraints. -/
+  | proca
+  /-- A unit timelike vector: four components, one first-class constraint. -/
+  | unitTimelike
+
+deriving DecidableEq, Repr
+
+/-- The constraint count of a vector content: the Proca count or the
+unit-vector count. -/
+def VectorContent.count : VectorContent → ConstraintCount
+  | .proca => procaCount
+  | .unitTimelike => unitVectorCount
+
+/-- The field content of STVG: a metric and a Proca vector, with no scalar sector
+(`AqualVariation` supplies the scalar separately). -/
+structure STVGContent where
+  /-- The metric sector. -/
+  metric : Bool
+  /-- The vector sector: STVG carries a massive (Proca) vector. -/
+  vector : VectorContent
+
+/-- The constraint count of the metric sector: two modes and no constraints. -/
+def STVGContent.metricCount (_S : STVGContent) : ConstraintCount := gravitonCount
+
+/-- The constraint count of an STVG field content: the metric and the vector
+sectors. -/
+def STVGContent.count (S : STVGContent) : ConstraintCount :=
+  ⟨S.metricCount.components + S.vector.count.components,
+    S.metricCount.firstClass + S.vector.count.firstClass,
+    S.metricCount.secondClass + S.vector.count.secondClass⟩
+
+/-- The STVG field content with its vector sector.
+-/
+def stvgContent : STVGContent := ⟨true, .proca⟩
+
+/-- `STVGContent.count` and `TeVeSContent.count` read the same degrees of
+freedom off the field content: the metric gives two and the vector gives three,
+plus one for the TeVeS scalar. -/
+lemma STVGContent.count_dof (S : STVGContent) :
+    S.count.dof = 2 + S.vector.count.dof := by
+  cases h : S.vector with
+  | proca =>
+    simp [STVGContent.count, STVGContent.metricCount, VectorContent.count,
+      ConstraintCount.dof, procaCount, gravitonCount, h]
+  | unitTimelike =>
+    simp [STVGContent.count, STVGContent.metricCount, VectorContent.count,
+      ConstraintCount.dof, unitVectorCount, gravitonCount, h]
+
+/-- The TeVeS field content: a metric, a unit timelike vector and a real scalar.
+-/
+structure TeVeSContent where
+  /-- The metric sector. -/
+  metric : Bool
+  /-- The vector sector: TeVeS carries a unit timelike (Einstein–aether) vector. -/
+  vector : VectorContent
+  /-- The scalar sector: TeVeS carries one real scalar. -/
+  scalar : Bool
+
+/-- The constraint count of the metric sector: two modes and no constraints. -/
+def TeVeSContent.metricCount (_T : TeVeSContent) : ConstraintCount := gravitonCount
+
+/-- The constraint count of a TeVeS field content: the metric, the vector and the
+scalar sectors. -/
+def TeVeSContent.count (T : TeVeSContent) : ConstraintCount :=
+  ⟨T.metricCount.components + T.vector.count.components + realScalarCount.components,
+    T.metricCount.firstClass + T.vector.count.firstClass + realScalarCount.firstClass,
+    T.metricCount.secondClass + T.vector.count.secondClass + realScalarCount.secondClass⟩
+
+/-- The TeVeS field content with its vector and scalar sectors. -/
+def tevesContent : TeVeSContent := ⟨true, .unitTimelike, true⟩
+
+/-- TeVeS has two degrees of freedom from the metric, three from the unit vector
+and one from the scalar, so six in all. -/
+lemma TeVeSContent.count_dof (T : TeVeSContent) :
+    T.count.dof = 2 + T.vector.count.dof + 1 := by
+  cases h : T.vector with
+  | proca =>
+    simp [TeVeSContent.count, TeVeSContent.metricCount, VectorContent.count,
+      ConstraintCount.dof, procaCount, gravitonCount, realScalarCount, h]
+  | unitTimelike =>
+    simp [TeVeSContent.count, TeVeSContent.metricCount, VectorContent.count,
+      ConstraintCount.dof, unitVectorCount, gravitonCount, realScalarCount, h]
 
 /-! ## C. Dirac brackets for the Proca constraints -/
 
