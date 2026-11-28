@@ -160,6 +160,8 @@ public import Physlib.Mathematics.ForMathlib.ComplexLinear
 public import Physlib.Mathematics.ForMathlib.Contraction
 public import Physlib.Mathematics.ForMathlib.Cutoff
 public import Physlib.Mathematics.ForMathlib.DataStructures.Matrix.LieTrace
+public import Physlib.Mathematics.ForMathlib.DataStructures.Matrix.SpecialUnitary
+public import Physlib.Mathematics.ForMathlib.DataStructures.Matrix.Topology
 public import Physlib.Mathematics.ForMathlib.Distribution
 public import Physlib.Mathematics.ForMathlib.FDerivCurry
 public import Physlib.Mathematics.ForMathlib.Fin
@@ -185,6 +187,7 @@ public import Physlib.Mathematics.Groups.SO3.Basic
 public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.Adjoint
 public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.Basic
 public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.Contractions
+public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.Exponential
 public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.GellMann.Adjoint
 public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.GellMann.Basic
 public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.GellMann.SpecialCases

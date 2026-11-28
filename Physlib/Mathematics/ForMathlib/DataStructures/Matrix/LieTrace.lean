@@ -1,7 +1,8 @@
 /-
 Copyright (c) 2025 Matteo Cipollina. All rights reserved.
+Copyright (c) 2026 Nikolai Kashcheev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Matteo Cipollina
+Authors: Matteo Cipollina, Nikolai Kashcheev
 -/
 module
 
@@ -12,18 +13,33 @@ public import Mathlib.Topology.UniformSpace.Matrix
 public import Physlib.Mathematics.ForMathlib.SchurTriangulation
 
 /-!
-# Lie's Trace Formula
+# Lie's trace formula
 
-This file proves the formula `det (exp A) = exp (tr A)` for matrices, also known as Lie's trace
-formula.
+The determinant of a matrix exponential is the exponential of its trace.
 
-The proof proceeds by first showing the formula for upper-triangular matrices and then
-leveraging Schur triangulation to generalize to any matrix. An upper-triangular matrix `A`
-is defined in `mathlib` as `Matrix.BlockTriangular A id`.
+## i. Overview
 
-## Main results
+Lie's trace formula relates the matrix exponential to the determinant, including for complex
+and real matrices. The complex proof first treats upper-triangular matrices and then uses
+Schur triangularization. The finite-index version requires no chosen order on the indices,
+so it applies directly to matrix groups.
 
-- `Matrix.det_exp`: The determinant of the exponential of a matrix is the exponential of its trace.
+## ii. Key results
+
+- `Matrix.det_exp`: Lie's trace formula over an algebraically closed scalar field.
+- `Matrix.det_exp_of_fintype`: the formula for a finite index type without a chosen order.
+- `Matrix.det_exp_real`: Lie's trace formula for real matrices.
+
+## iii. Table of contents
+
+- A. Matrix series
+- B. The determinant of the matrix exponential
+- C. Matrix maps and complexification
+- D. Real matrices
+
+## iv. References
+
+* None.
 -/
 
 @[expose] public section
@@ -33,6 +49,10 @@ namespace Matrix
 open scoped BigOperators Topology
 
 variable {𝕂 m n : Type*}
+
+/-!
+## A. Matrix series
+-/
 
 instance [UniformSpace 𝕂] : UniformSpace (Matrix m n 𝕂) := by unfold Matrix; infer_instance
 
@@ -44,7 +64,7 @@ lemma tsum_eq_zero
   simp_all only [tsum_zero]
 
 /-!
-  ### The determinant of the matrix exponential
+## B. The determinant of the matrix exponential
 -/
 section DetExp
 
@@ -211,7 +231,26 @@ theorem det_exp {𝕂 m : Type*} [RCLike 𝕂] [IsAlgClosed 𝕂] [Fintype m] [L
     det_exp_of_blockTriangular_id h_prop
   rw [h_det_invariant, h_triangular_case, h_trace_invariant]
 
+/-- Lie's trace formula for a finite index type, without a chosen order on its indices. -/
+lemma det_exp_of_fintype {𝕂 ι : Type*} [RCLike 𝕂] [IsAlgClosed 𝕂]
+    [Fintype ι] [DecidableEq ι] (A : Matrix ι ι 𝕂) :
+    (NormedSpace.exp A).det = NormedSpace.exp A.trace := by
+  let e := Fintype.equivFin ι
+  let base := LinearOrder.lift' e e.injective
+  let order : LinearOrder ι :=
+    { base with
+      toDecidableEq := inferInstance
+      compare_eq_compareOfLessAndEq := by
+        intro a b
+        rw [base.compare_eq_compareOfLessAndEq]
+        congr }
+  exact @Matrix.det_exp 𝕂 ι _ _ _ order A
+
 end DetExp
+
+/-!
+## C. Matrix maps and complexification
+-/
 
 -- `Matrix.map` commutes with an absolutely convergent series.
 lemma map_tsum {α β m n : Type*}
@@ -252,6 +291,10 @@ lemma exp_map_algebraMap {n : Type*} [Fintype n] [DecidableEq n]
   simp
 
 end NormedSpace
+
+/-!
+## D. Real matrices
+-/
 
 section DetExp
 namespace Matrix
