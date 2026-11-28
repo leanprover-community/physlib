@@ -28,8 +28,11 @@ internal forces vanishes at each time {1}. [2][4]
 ### Total quantities and the center of mass
 
 Summing the particle masses gives the total mass M. Summing their momenta gives the total
-momentum P(t), and summing their individual kinetic energies gives the total kinetic energy.
-The net external force sums just the forces applied from outside the system. [5]
+momentum P(t). The net external force sums the forces applied from outside the system. [5]
+
+The total kinetic energy is the sum of the individual particle kinetic energies. It splits into
+the translational kinetic energy of the center of mass and the kinetic energy of the particles
+relative to it. [11]
 
 For positive M, the center of mass R(t) is the mass-weighted average of the particle positions
 and its velocity is R′(t) = P(t) / M. [6] If the collection of external forces is empty, the
@@ -53,7 +56,7 @@ satisfies the inverse-square equation r″(t) = −G M r(t) / ‖r(t)‖³ {1}. 
 3. Physlib/ClassicalMechanics/Force.lean — `Force`, `InternalForce`, `netForce`
 4. Physlib/ClassicalMechanics/Force.lean — `InternalForce.reverse`
 5. Physlib/ClassicalMechanics/PointParticle/NewtonianSystem/Basic.lean —
-   `mass`, `momentum`, `kineticEnergy`, `netExternalForce`
+   `mass`, `momentum`, `netExternalForce`
 6. Physlib/ClassicalMechanics/PointParticle/NewtonianSystem/CenterOfMass.lean —
    `centerOfMass`, `hasDerivAt_centerOfMass`
 7. Physlib/ClassicalMechanics/PointParticle/NewtonianSystem/CenterOfMass.lean —
@@ -64,6 +67,8 @@ satisfies the inverse-square equation r″(t) = −G M r(t) / ‖r(t)‖³ {1}. 
    `centerOfMass_eq_of_two_particles`
 10. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/BinaryStar.lean —
     `hasDerivAt_deriv_relativePosition_of_gravity`
+11. Physlib/ClassicalMechanics/PointParticle/NewtonianSystem/KineticEnergy.lean —
+    `Particle.kineticEnergy`, `kineticEnergy`, `kineticEnergy_eq_centerOfMass_add_relative`
 
 ## References
 
