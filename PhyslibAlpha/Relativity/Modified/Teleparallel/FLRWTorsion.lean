@@ -313,7 +313,7 @@ lemma ricciScalar_flrw_flat_eq_neg_torsion_add_boundary (a : ℝ → ℝ) (x : F
     (FLRWSpacetime.mk a 0).toCoordinateMetric.ricciScalar x =
       -flrwTorsionScalar a (x 0) + flrwBoundaryTerm a (x 0) := by
   have hkr : 1 - (0 : ℝ) * (x 1) ^ 2 ≠ 0 := by norm_num
-  rw [FLRWSpacetime.ricciScalar ⟨a, 0⟩ x ha hr hkr hsin ha_diff ha2]
+  rw [FLRWSpacetime.ricciScalar ⟨a, 0⟩ ⟨x, ha, hr, hkr, hsin⟩ ha_diff ha2]
   simp only [flrwTorsionScalar, flrwBoundaryTerm]
   ring
 

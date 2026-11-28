@@ -194,64 +194,60 @@ private lemma einsteinTensor_raw (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S
 
 /-- The FLRW coordinate Riemann tensor agrees with
 `riemannFromData S.christoffel S.christoffelDeriv`. -/
-lemma riemann_eq_data (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
-    (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
-    (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
-    (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) (ρ σ μ ν : Fin 4) :
-    S.toCoordinateMetric.riemann x ρ σ μ ν
-      = riemannFromData S.christoffel S.christoffelDeriv x ρ σ μ ν := by
+lemma riemann_eq_data (S : FLRWSpacetime) (p : S.RegularPoint)
+    (ha_diff : ∀ᶠ t in nhds (p.x 0), DifferentiableAt ℝ S.a t)
+    (ha2 : DifferentiableAt ℝ (deriv S.a) (p.x 0)) (ρ σ μ ν : Fin 4) :
+    S.toCoordinateMetric.riemann p.x ρ σ μ ν
+      = riemannFromData S.christoffel S.christoffelDeriv p.x ρ σ μ ν := by
   simp only [CoordinateMetric.riemann_apply, S.toCoordinateMetric_g,
     S.toCoordinateMetric_ginv]
-  exact S.riemann_eq_data_raw x ha hr hkr hsin ha_diff ha2 ρ σ μ ν
+  exact S.riemann_eq_data_raw p.x p.ha p.hr p.hkr p.hsin ha_diff ha2 ρ σ μ ν
 
 /-- The FLRW Ricci tensor, stated with the chart-level `CoordinateMetric` operator. -/
-lemma ricciTensor (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
-    (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
-    (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
-    (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) (σ ν : Fin 4) :
-    S.toCoordinateMetric.ricciTensor x σ ν
+lemma ricciTensor (S : FLRWSpacetime) (p : S.RegularPoint)
+    (ha_diff : ∀ᶠ t in nhds (p.x 0), DifferentiableAt ℝ S.a t)
+    (ha2 : DifferentiableAt ℝ (deriv S.a) (p.x 0)) (σ ν : Fin 4) :
+    S.toCoordinateMetric.ricciTensor p.x σ ν
       = if σ = ν then
-          if σ = 0 then -3 * deriv (deriv S.a) (x 0) / S.a (x 0)
+          if σ = 0 then -3 * deriv (deriv S.a) (p.x 0) / S.a (p.x 0)
           else if σ = 1 then
-            (S.a (x 0) * deriv (deriv S.a) (x 0) + 2 * (deriv S.a (x 0)) ^ 2 + 2 * S.k)
-              / (1 - S.k * (x 1) ^ 2)
+            (S.a (p.x 0) * deriv (deriv S.a) (p.x 0) + 2 * (deriv S.a (p.x 0)) ^ 2 + 2 * S.k)
+              / (1 - S.k * (p.x 1) ^ 2)
           else if σ = 2 then
-            (S.a (x 0) * deriv (deriv S.a) (x 0) + 2 * (deriv S.a (x 0)) ^ 2 + 2 * S.k)
-              * (x 1) ^ 2
+            (S.a (p.x 0) * deriv (deriv S.a) (p.x 0) + 2 * (deriv S.a (p.x 0)) ^ 2 + 2 * S.k)
+              * (p.x 1) ^ 2
           else
-            (S.a (x 0) * deriv (deriv S.a) (x 0) + 2 * (deriv S.a (x 0)) ^ 2 + 2 * S.k)
-              * (x 1) ^ 2 * Real.sin (x 2) ^ 2
+            (S.a (p.x 0) * deriv (deriv S.a) (p.x 0) + 2 * (deriv S.a (p.x 0)) ^ 2 + 2 * S.k)
+              * (p.x 1) ^ 2 * Real.sin (p.x 2) ^ 2
         else 0 := by
   simp only [CoordinateMetric.ricciTensor_apply, S.toCoordinateMetric_g,
     S.toCoordinateMetric_ginv]
-  exact S.ricciTensor_raw x ha hr hkr hsin ha_diff ha2 σ ν
+  exact S.ricciTensor_raw p.x p.ha p.hr p.hkr p.hsin ha_diff ha2 σ ν
 
 /-- FLRW scalar curvature, stated with the chart-level `CoordinateMetric` operator. -/
-lemma ricciScalar (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
-    (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
-    (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
-    (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
-    S.toCoordinateMetric.ricciScalar x
-      = 6 * (deriv (deriv S.a) (x 0) / S.a (x 0) + (deriv S.a (x 0) / S.a (x 0)) ^ 2
-          + S.k / (S.a (x 0)) ^ 2) := by
+lemma ricciScalar (S : FLRWSpacetime) (p : S.RegularPoint)
+    (ha_diff : ∀ᶠ t in nhds (p.x 0), DifferentiableAt ℝ S.a t)
+    (ha2 : DifferentiableAt ℝ (deriv S.a) (p.x 0)) :
+    S.toCoordinateMetric.ricciScalar p.x
+      = 6 * (deriv (deriv S.a) (p.x 0) / S.a (p.x 0) + (deriv S.a (p.x 0) / S.a (p.x 0)) ^ 2
+          + S.k / (S.a (p.x 0)) ^ 2) := by
   simp only [CoordinateMetric.ricciScalar_apply, S.toCoordinateMetric_g,
     S.toCoordinateMetric_ginv]
-  exact S.ricciScalar_raw x ha hr hkr hsin ha_diff ha2
+  exact S.ricciScalar_raw p.x p.ha p.hr p.hkr p.hsin ha_diff ha2
 
 /-- The FLRW Einstein tensor, stated with the chart-level `CoordinateMetric` operator. -/
-lemma einsteinTensor (S : FLRWSpacetime) (x : Fin 4 → ℝ) (ha : S.a (x 0) ≠ 0)
-    (hr : x 1 ≠ 0) (hkr : 1 - S.k * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
-    (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
-    (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) (i j : Fin 4) :
-    S.toCoordinateMetric.einsteinTensor x i j
+lemma einsteinTensor (S : FLRWSpacetime) (p : S.RegularPoint)
+    (ha_diff : ∀ᶠ t in nhds (p.x 0), DifferentiableAt ℝ S.a t)
+    (ha2 : DifferentiableAt ℝ (deriv S.a) (p.x 0)) (i j : Fin 4) :
+    S.toCoordinateMetric.einsteinTensor p.x i j
       = if i = j then
-          if i = 0 then 3 * ((deriv S.a (x 0) / S.a (x 0)) ^ 2 + S.k / (S.a (x 0)) ^ 2)
-          else -(2 * (deriv (deriv S.a) (x 0) / S.a (x 0))
-            + (deriv S.a (x 0) / S.a (x 0)) ^ 2 + S.k / (S.a (x 0)) ^ 2) * S.metric x i j
+          if i = 0 then 3 * ((deriv S.a (p.x 0) / S.a (p.x 0)) ^ 2 + S.k / (S.a (p.x 0)) ^ 2)
+          else -(2 * (deriv (deriv S.a) (p.x 0) / S.a (p.x 0))
+            + (deriv S.a (p.x 0) / S.a (p.x 0)) ^ 2 + S.k / (S.a (p.x 0)) ^ 2) * S.metric p.x i j
         else 0 := by
   simp only [CoordinateMetric.einsteinTensor_apply, S.toCoordinateMetric_g,
     S.toCoordinateMetric_ginv]
-  exact S.einsteinTensor_raw x ha hr hkr hsin ha_diff ha2 i j
+  exact S.einsteinTensor_raw p.x p.ha p.hr p.hkr p.hsin ha_diff ha2 i j
 
 end FLRWSpacetime
 

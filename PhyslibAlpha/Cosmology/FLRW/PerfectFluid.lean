@@ -94,7 +94,7 @@ lemma einsteinTensor_00_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight) (Λ
       ↔ (deriv S.a (x 0) / S.a (x 0)) ^ 2
           = (8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * ρ - S.k / (S.a (x 0)) ^ 2 + Λ / 3 := by
   have hc : (c : ℝ) ≠ 0 := c.val_ne_zero
-  rw [S.einsteinTensor x ha hr hkr hsin ha_diff ha2 0 0]
+  rw [S.einsteinTensor ⟨x, ha, hr, hkr, hsin⟩ ha_diff ha2 0 0]
   simp only [metric, GeneralRelativity.perfectFluidStressEnergy, Matrix.of_apply, ↓reduceIte, and_self, mul_one]
   have hrhs : 8 * Real.pi * G.val / (c : ℝ) ^ 4 * (ρ * (c : ℝ) ^ 2 + p + p * -1)
       = 8 * Real.pi * G.val / (c : ℝ) ^ 2 * ρ := by
@@ -143,7 +143,7 @@ lemma einsteinTensor_spatial_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight
   have hc : (c : ℝ) ≠ 0 := c.val_ne_zero
   have hg11 : S.a (x 0) ^ 2 / (1 - S.k * x 1 ^ 2) ≠ 0 :=
     div_ne_zero (pow_ne_zero 2 ha) hkr
-  rw [S.einsteinTensor x ha hr hkr hsin ha_diff ha2 1 1]
+  rw [S.einsteinTensor ⟨x, ha, hr, hkr, hsin⟩ ha_diff ha2 1 1]
   simp only [metric, GeneralRelativity.perfectFluidStressEnergy, Matrix.of_apply, Fin.isValue, one_ne_zero,
     false_and, ↓reduceIte, mul_zero, zero_add]
   have hfac : -(2 * (deriv (deriv S.a) (x 0) / S.a (x 0)) + (deriv S.a (x 0) / S.a (x 0)) ^ 2
@@ -183,7 +183,7 @@ lemma einsteinTensor_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight) (Λ : 
       (S.einsteinTensor_spatial_iff_friedmann c Λ G ρ p x ha hr hkr hsin ha_diff ha2 hf1).mp
         (h 1 1)⟩
   · rintro ⟨hf1, hf2⟩ i j
-    rw [S.einsteinTensor x ha hr hkr hsin ha_diff ha2 i j]
+    rw [S.einsteinTensor ⟨x, ha, hr, hkr, hsin⟩ ha_diff ha2 i j]
     have hcoef : -(2 * (deriv (deriv S.a) (x 0) / S.a (x 0))
         + (deriv S.a (x 0) / S.a (x 0)) ^ 2 + S.k / (S.a (x 0)) ^ 2) + Λ
         = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * p :=

@@ -265,7 +265,7 @@ private lemma ricciTensor_raw (S : ReissnerNordstromSpacetime) (x : Fin 4 → �
   have hfdiff := S.eventually_differentiableAt_metricFn (x 1) hr
   have hf2diff := (S.hasDerivAt_deriv_metricFn (x 1) hr).differentiableAt
   rw [S.metric_eq_staticSpherical, S.metricInv_eq_staticSpherical,
-    S.toStaticSpherical.ricciTensor x hr hf hsin hfdiff hf2diff σ ν]
+    S.toStaticSpherical.ricciTensor ⟨x, hr, hf, hsin⟩ hfdiff hf2diff σ ν]
   simp only [toStaticSpherical_metricFn]
   rw [S.deriv_metricFn (x 1) hr, S.deriv_deriv_metricFn (x 1) hr]
   fin_cases σ <;> fin_cases ν <;> simp
@@ -282,7 +282,7 @@ private lemma ricciScalar_raw (S : ReissnerNordstromSpacetime) (x : Fin 4 → �
   have hfdiff := S.eventually_differentiableAt_metricFn (x 1) hr
   have hf2diff := (S.hasDerivAt_deriv_metricFn (x 1) hr).differentiableAt
   rw [S.metric_eq_staticSpherical, S.metricInv_eq_staticSpherical,
-    S.toStaticSpherical.ricciScalar x hr hf hsin hfdiff hf2diff]
+    S.toStaticSpherical.ricciScalar ⟨x, hr, hf, hsin⟩ hfdiff hf2diff]
   simp only [toStaticSpherical_metricFn]
   rw [S.deriv_metricFn (x 1) hr, S.deriv_deriv_metricFn (x 1) hr, metricFn]
   field_simp [hr]
