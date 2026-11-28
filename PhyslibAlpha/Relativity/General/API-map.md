@@ -37,6 +37,8 @@ contracted second-Bianchi curvature derivatives establish covariant divergence-f
 Einstein tensor and stress-energy conservation [15]. In four dimensions, the trace-free Maxwell
 stress-energy tensor [16] bridges index-level electrovacuum sources to Physlib's coordinate-free
 electromagnetic field strength [17]{2}{3}.
+A chart-level interface packages the domain, metric field, connection, causal classification and
+chart isometries, together with partial-chart smoothness and overlap certificates [89].
 Coordinate-free covariant differentiation on general smooth manifolds is a planned extension. [TODO]
 
 ### Geodesics, ADM 3+1 decomposition, linearized gravity, and physical constants
@@ -72,7 +74,9 @@ derivatives [37], and closed-form Riemann, Ricci, and Einstein curvature evaluat
 The orthonormal Schwarzschild Weyl electric tidal tensor yields the Kretschmann scalar 48 M² / r⁶
 and proves purely electric Weyl curvature [38], while `SchwarzschildSpacetime` with metric
 function f(r) = 1 - 2 M / r gives direct metric-derivative Christoffel and Riemann components and
-matches the exterior of `IncompressibleSphere` [39], with vacuum flatness proved by specializing
+matches the exterior of `IncompressibleSphere` [39], the ingoing Eddington-Finkelstein chart
+regularises the horizon with a cross term [90] while the Kruskal-Szekeres chart carries the radial
+function implicitly across it [91], with vacuum flatness proved by specializing
 the Schwarzschild-de Sitter coordinate metric at Λ = 0 [40]. Inside the fluid sphere,
 `IncompressibleSphere` formalizes Schwarzschild's 1916 constant-density interior pressure profile,
 surface continuity/differentiability junction properties, and compactness bound `α < (8 / 9) Ra`
@@ -521,7 +525,27 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `SchwarzschildSpacetime.toDeSitter`, `SchwarzschildSpacetime.toDeSitter_M`,
     `SchwarzschildSpacetime.toDeSitter_Λ`, `SchwarzschildSpacetime.toDeSitter_metricFn`,
     `SchwarzschildSpacetime.toDeSitter_metric`, `SchwarzschildSpacetime.toDeSitter_metricInv`
-
+89. PhyslibAlpha/Relativity/General/ManifoldInterface.lean — `ChartSpacetime`, `minkowskiChart`,
+    `ChartSpacetime.christoffel`, `ChartSpacetime.riemann`, `ChartSpacetime.IsCauchySurface`,
+    `ChartSpacetime.IsGloballyHyperbolic`, `minkowskiChart_globallyHyperbolic`,
+    `ChartSpacetime.Isometry`, `ChartSpacetime.Embedding`, `ChartSpacetime.IsIsometric`,
+    `PartialChartSpacetime`, `PartialChartSpacetime.IsSmooth`, `PartialChartTransition`,
+    `PartialChartTransition.refl`
+90. PhyslibAlpha/Relativity/General/Schwarzschild/EddingtonFinkelstein.lean —
+    `EddingtonFinkelstein.metric`, `EddingtonFinkelstein.metricInv`,
+    `EddingtonFinkelstein.metricTensor`, `EddingtonFinkelstein.partialChart`,
+    `EddingtonFinkelstein.partialChartDomain`, `EddingtonFinkelstein.partialChart_isSmooth`,
+    `EddingtonFinkelstein.horizonTensor`, `EddingtonFinkelstein.horizonTensor_ginv_rr`,
+    `EddingtonFinkelstein.horizonTensor_g_vr`, `EddingtonFinkelstein.ricciTensorOf_metric`,
+    `EddingtonFinkelstein.ricciTensorOf_metric_horizon`, `EddingtonFinkelstein.tortoiseStar`,
+    `EddingtonFinkelstein.deriv_tortoiseStar`
+91. PhyslibAlpha/Relativity/General/Schwarzschild/KruskalSzekeres.lean —
+    `KruskalSzekeres.metric`, `KruskalSzekeres.metricInv`, `KruskalSzekeres.metricTensor`,
+    `KruskalSzekeres.horizonPoint`, `KruskalSzekeres.horizonTensor`,
+    `KruskalSzekeres.horizonTensor_g_00`, `KruskalSzekeres.horizonTensor_g_11`,
+    `KruskalSzekeres.horizonTensor_regular`, `KruskalSzekeres.partialChart`,
+    `KruskalSzekeres.partialChartDomain`, `KruskalSzekeres.partialChart_isSmooth`,
+    `KruskalSzekeres.horizonPoint_mem_partialChartDomain`
 ## References
 
 1. Units API map — Physlib/Units/API-map.md

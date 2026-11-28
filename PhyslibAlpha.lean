@@ -839,12 +839,15 @@ public import PhyslibAlpha.Relativity.General.Linearized.MinkowskiDalembertian
 public import PhyslibAlpha.Relativity.General.Linearized.NewtonianPerturbation
 public import PhyslibAlpha.Relativity.General.Linearized.TraceReversed
 public import PhyslibAlpha.Relativity.General.Linearized.TTWave
+public import PhyslibAlpha.Relativity.General.ManifoldInterface
 public import PhyslibAlpha.Relativity.General.MinkowskiCoordinateMetric
 public import PhyslibAlpha.Relativity.General.ReissnerNordstrom.Basic
 public import PhyslibAlpha.Relativity.General.Schwarzschild.Basic
 public import PhyslibAlpha.Relativity.General.Schwarzschild.CoordinateCurvature
+public import PhyslibAlpha.Relativity.General.Schwarzschild.EddingtonFinkelstein
 public import PhyslibAlpha.Relativity.General.Schwarzschild.ElectricWeyl
 public import PhyslibAlpha.Relativity.General.Schwarzschild.IncompressibleSphere
+public import PhyslibAlpha.Relativity.General.Schwarzschild.KruskalSzekeres
 public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.Basic
 public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.CoordinateCurvature
 public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.DeSitterFrame
