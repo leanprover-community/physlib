@@ -29,6 +29,10 @@ This is a place for projects that have emerged out of the community that are dis
 
 These projects live on the *Physlib Lab* page of the website and link out to seperate websites.
 
+### Website
+
+This is the landing page for Physlib.
+
 ### PhyslibX (name still undetermined)
 
 This is the AI-generated, AI-reviewed version of Physlib. It's analogous to the Tau Ceti project for Mathlib. Results going into this do not undergo any human review.
