@@ -99,29 +99,29 @@ lemma toDeSitter_metricInv (S : SchwarzschildSpacetime) :
 
 /-- All six independent Schwarzschild Riemann components computed from the coordinate metric,
 specialized from `SchwarzschildDeSitterSpacetime.riemann_components_from_metric` at `Λ = 0`. -/
-lemma riemann_components_from_coordinateMetric (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ)
-    (hr : x 1 ≠ 0)
-    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
-    (S.toCoordinateMetric.riemann x 0 1 0 1
-        = 2 * S.M / ((x 1) ^ 3 * S.metricFn (x 1)))
-      ∧ (S.toCoordinateMetric.riemann x 0 2 0 2 = -S.M / (x 1))
-      ∧ (S.toCoordinateMetric.riemann x 0 3 0 3
-          = -(S.M / (x 1)) * Real.sin (x 2) ^ 2)
-      ∧ (S.toCoordinateMetric.riemann x 1 2 1 2 = -S.M / (x 1))
-      ∧ (S.toCoordinateMetric.riemann x 1 3 1 3
-          = -(S.M / (x 1)) * Real.sin (x 2) ^ 2)
-      ∧ (S.toCoordinateMetric.riemann x 2 3 2 3
-          = (2 * S.M / (x 1)) * Real.sin (x 2) ^ 2) := by
+lemma riemann_components_from_coordinateMetric (S : SchwarzschildSpacetime)
+    (p : S.toStaticSpherical.RegularPoint) :
+    (S.toCoordinateMetric.riemann p.x 0 1 0 1
+        = 2 * S.M / ((p.x 1) ^ 3 * S.metricFn (p.x 1)))
+      ∧ (S.toCoordinateMetric.riemann p.x 0 2 0 2 = -S.M / (p.x 1))
+      ∧ (S.toCoordinateMetric.riemann p.x 0 3 0 3
+          = -(S.M / (p.x 1)) * Real.sin (p.x 2) ^ 2)
+      ∧ (S.toCoordinateMetric.riemann p.x 1 2 1 2 = -S.M / (p.x 1))
+      ∧ (S.toCoordinateMetric.riemann p.x 1 3 1 3
+          = -(S.M / (p.x 1)) * Real.sin (p.x 2) ^ 2)
+      ∧ (S.toCoordinateMetric.riemann p.x 2 3 2 3
+          = (2 * S.M / (p.x 1)) * Real.sin (p.x 2) ^ 2) := by
   simp only [CoordinateMetric.riemann_apply, S.toCoordinateMetric_g, S.toCoordinateMetric_ginv]
-  have hf0 : S.toDeSitter.metricFn (x 1) ≠ 0 := by simp [hf]
-  obtain ⟨c1, c2, c3, c4, c5, c6⟩ := S.toDeSitter.riemann_components_from_metric x hr hf0 hsin
+  have hf0 : S.toDeSitter.toStaticSpherical.metricFn (p.x 1) ≠ 0 := by simpa using p.hf
+  obtain ⟨c1, c2, c3, c4, c5, c6⟩ :=
+    S.toDeSitter.riemann_components_from_metric ⟨p.x, p.hr, hf0, p.hsin⟩
   simp only [CoordinateMetric.riemann_apply, S.toDeSitter.toCoordinateMetric_g,
     S.toDeSitter.toCoordinateMetric_ginv] at c1 c2 c3 c4 c5 c6
   rw [S.toDeSitter_metric, S.toDeSitter_metricInv] at c1 c2 c3 c4 c5 c6
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
   · simp only [toDeSitter_M, toDeSitter_Λ, toDeSitter_metricFn, zero_div, add_zero] at c1
     rw [c1]
-    field_simp [hr, hf]
+    field_simp [p.hr, p.hf]
   · simpa [neg_div] using c2
   · simpa using c3
   · simpa [neg_div] using c4
@@ -130,24 +130,23 @@ lemma riemann_components_from_coordinateMetric (S : SchwarzschildSpacetime) (x :
 
 /-- Metric-level Ricci flatness for Schwarzschild: `Ric = 0` directly from `S.metric` and
 `S.metricInv`. -/
-lemma ricciTensor (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
-    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (σ ν : Fin 4) :
-    S.toCoordinateMetric.ricciTensor x σ ν = 0 := by
+lemma ricciTensor (S : SchwarzschildSpacetime)
+    (p : S.toStaticSpherical.RegularPoint) (σ ν : Fin 4) :
+    S.toCoordinateMetric.ricciTensor p.x σ ν = 0 := by
   simp only [CoordinateMetric.ricciTensor_apply, S.toCoordinateMetric_g, S.toCoordinateMetric_ginv]
-  have hf0 : S.toDeSitter.metricFn (x 1) ≠ 0 := by simp [hf]
-  have h := S.toDeSitter.ricciTensor x hr hf0 hsin σ ν
+  have hf0 : S.toDeSitter.toStaticSpherical.metricFn (p.x 1) ≠ 0 := by simpa using p.hf
+  have h := S.toDeSitter.ricciTensor ⟨p.x, p.hr, hf0, p.hsin⟩ σ ν
   simp only [CoordinateMetric.ricciTensor_apply, S.toDeSitter.toCoordinateMetric_g,
     S.toDeSitter.toCoordinateMetric_ginv] at h
   rw [S.toDeSitter_metric, S.toDeSitter_metricInv] at h
   simpa using h
 
 /-- Metric-level vanishing scalar curvature for Schwarzschild: `R = 0`. -/
-lemma ricciScalar (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
-    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
-    S.toCoordinateMetric.ricciScalar x = 0 := by
+lemma ricciScalar (S : SchwarzschildSpacetime) (p : S.toStaticSpherical.RegularPoint) :
+    S.toCoordinateMetric.ricciScalar p.x = 0 := by
   simp only [CoordinateMetric.ricciScalar_apply, S.toCoordinateMetric_g, S.toCoordinateMetric_ginv]
-  have hf0 : S.toDeSitter.metricFn (x 1) ≠ 0 := by simp [hf]
-  have h := S.toDeSitter.ricciScalar x hr hf0 hsin
+  have hf0 : S.toDeSitter.toStaticSpherical.metricFn (p.x 1) ≠ 0 := by simpa using p.hf
+  have h := S.toDeSitter.ricciScalar ⟨p.x, p.hr, hf0, p.hsin⟩
   simp only [CoordinateMetric.ricciScalar_apply, S.toDeSitter.toCoordinateMetric_g,
     S.toDeSitter.toCoordinateMetric_ginv] at h
   rw [S.toDeSitter_metric, S.toDeSitter_metricInv] at h
@@ -155,12 +154,12 @@ lemma ricciScalar (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠
 
 /-- Metric-level vacuum Einstein equation for Schwarzschild: `G_{ij} = 0` directly from
 `g = diag(-f, 1/f, r², r² sin²θ)`. -/
-lemma einsteinTensor (S : SchwarzschildSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
-    (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
-    S.toCoordinateMetric.einsteinTensor x i j = 0 := by
+lemma einsteinTensor (S : SchwarzschildSpacetime)
+    (p : S.toStaticSpherical.RegularPoint) (i j : Fin 4) :
+    S.toCoordinateMetric.einsteinTensor p.x i j = 0 := by
   simp only [CoordinateMetric.einsteinTensor_apply, S.toCoordinateMetric_g, S.toCoordinateMetric_ginv]
-  have hf0 : S.toDeSitter.metricFn (x 1) ≠ 0 := by simp [hf]
-  have h := S.toDeSitter.einsteinTensor x hr hf0 hsin i j
+  have hf0 : S.toDeSitter.toStaticSpherical.metricFn (p.x 1) ≠ 0 := by simpa using p.hf
+  have h := S.toDeSitter.einsteinTensor ⟨p.x, p.hr, hf0, p.hsin⟩ i j
   simp only [CoordinateMetric.einsteinTensor_apply, S.toDeSitter.toCoordinateMetric_g,
     S.toDeSitter.toCoordinateMetric_ginv] at h
   rw [S.toDeSitter_metric, S.toDeSitter_metricInv] at h
