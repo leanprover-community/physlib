@@ -5,7 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
-public import PhyslibAlpha.Relativity.General.FrameKretschmann
+public import PhyslibAlpha.Relativity.General.FrameSumOfSquares
 public import PhyslibAlpha.Relativity.General.Schwarzschild.Basic
 public import PhyslibAlpha.Relativity.Metrics.Minkowski
 public import PhyslibAlpha.Relativity.Tensors.RicciTensor

@@ -496,7 +496,7 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `MassiveGravityTheory.massSq`, `MassiveGravityTheory.propagatorCoupling`,
     `MassiveGravityTheory.generalRelativity`, `MassiveGravityTheory.fierzPauli`
 80. PhyslibAlpha/Relativity/Tensors/PerfectFluidStressEnergy.lean — `perfectFluidStressEnergy`
-81. PhyslibAlpha/Relativity/General/FrameKretschmann.lean —
+81. PhyslibAlpha/Relativity/General/FrameSumOfSquares.lean —
     `RiemannTensor.frameSumOfSquares`
 82. PhyslibAlpha/Relativity/General/InitialData/CovariantDerivTensor2.lean —
     `InitialData.covariantDerivTensor2`
