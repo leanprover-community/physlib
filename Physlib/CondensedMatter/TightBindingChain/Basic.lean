@@ -6,7 +6,9 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.QuantumMechanics.HilbertSpaces.FiniteTarget.Basic
+public import Physlib.QuantumMechanics.PlanckConstant
 public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 /-!
 
@@ -33,6 +35,8 @@ with periodic boundary conditions.
 - `energyEigenstate` : The energy eigenstates of the tight binding chain.
 - `energyEigenbasis` : The orthonormal basis of normalized energy eigenstates.
 - `energyEigenvalue` : The energy eigenvalues of the tight binding chain.
+- `abs_energyEigenvalue_sub_freeParticle_le` : Near `k = 0` the energy eigenvalue is that of a
+  free particle with effective mass `ℏ² / (2 t a²)`, up to a quartic error.
 - `hamiltonian_energyEigenstate` : The Hamiltonian acting on an energy eigenstate
   gives the corresponding energy eigenvalue times the energy eigenstate.
 - `hasEigenvalue_hamiltonian_iff` : The eigenvalues of the Hamiltonian are exactly the
@@ -554,6 +558,29 @@ lemma energyEigenbasis_apply (n : Fin T.N) :
   `E0 - 2 * t * Real.cos (k * T.a)`. -/
 noncomputable def energyEigenvalue (k : T.QuantaWaveNumber) : ℝ :=
   T.E0 - 2 * T.t * Real.cos (k * T.a)
+
+/-- Near the bottom of the band, the energy eigenvalue is that of a free particle of
+  effective mass `m* = ℏ² / (2 t a²)`: for `t ≠ 0` and `|k a| ≤ 1`,
+  `energyEigenvalue k` differs from `(E0 - 2 t) + (ℏ k)² / (2 m*)` by at most
+  `5/48 * |t| * |k a|⁴`. -/
+lemma abs_energyEigenvalue_sub_freeParticle_le (ht : T.t ≠ 0) (k : T.QuantaWaveNumber)
+    (hk : |(k : ℝ) * T.a| ≤ 1) :
+    |T.energyEigenvalue k - (T.E0 - 2 * T.t)
+      - ((Constants.ℏ : ℝ) * k) ^ 2 / (2 * ((Constants.ℏ : ℝ) ^ 2 / (2 * T.t * T.a ^ 2)))|
+      ≤ 5 / 48 * |T.t| * |(k : ℝ) * T.a| ^ 4 := by
+  have hℏ := Constants.ℏ_ne_zero
+  have ha := T.a_pos.ne'
+  have hfree : ((Constants.ℏ : ℝ) * k) ^ 2 / (2 * ((Constants.ℏ : ℝ) ^ 2 / (2 * T.t * T.a ^ 2)))
+      = T.t * ((k : ℝ) * T.a) ^ 2 := by
+    field_simp
+  have hcos := Real.cos_bound hk
+  have h : T.energyEigenvalue k - (T.E0 - 2 * T.t) - T.t * ((k : ℝ) * T.a) ^ 2
+      = -(2 * T.t) * (Real.cos ((k : ℝ) * T.a) - (1 - ((k : ℝ) * T.a) ^ 2 / 2)) := by
+    rw [energyEigenvalue]; ring
+  rw [hfree, h, abs_mul, abs_neg, abs_mul, abs_two]
+  calc 2 * |T.t| * |Real.cos ((k : ℝ) * T.a) - (1 - ((k : ℝ) * T.a) ^ 2 / 2)|
+      ≤ 2 * |T.t| * (|(k : ℝ) * T.a| ^ 4 * (5 / 96)) := by gcongr
+    _ = _ := by ring
 
 /-!
 
