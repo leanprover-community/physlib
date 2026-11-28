@@ -20,6 +20,9 @@ The topology on `Matrix m n R` is the product topology, so a series of matrices 
 `a i j`. The same holds for summability. These statements are the matrix versions of
 `Pi.hasSum` and `Pi.summable`, applied once for the rows and once for the columns.
 
+Both lemmas were added to Mathlib in mathlib4#46524. Once Physlib uses a Mathlib version
+containing them, this file must be removed, since the declarations would clash.
+
 ## ii. Key results
 
 - `Matrix.hasSum_iff` : a matrix series has sum `a` if and only if every entry series has the
