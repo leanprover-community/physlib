@@ -66,14 +66,13 @@ dimension `n : ℕ` for any smooth coordinate metric `(g, ginv)`.
 
 namespace GeneralRelativity
 
-/-! Compatibility names for the refactored core pipeline.  The local Bianchi
-calculus below was written against the former `pd`, `ricciOf`, `scalarOf`, and
-`einsteinOf` names; the upstream core now calls the same operations
-`coordDeriv`, `ricciTensorOf`, `ricciScalarOf`, and `einsteinTensorOf`. -/
+/-- The coordinate derivative of a constant field vanishes. -/
 lemma pd_const {n : ℕ} (μ : Fin n) (c : ℝ) (x : Fin n → ℝ) :
     CoordinateCurvature.coordDeriv μ (fun _ => c) x = 0 :=
   CoordinateCurvature.coordDeriv_const μ c x
 
+/-- The coordinate derivative depends only on the values of the field, so equal
+fields have equal coordinate derivatives. -/
 lemma pd_congr {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ)
     (h : ∀ y, f y = g y) : CoordinateCurvature.coordDeriv μ f x = CoordinateCurvature.coordDeriv μ g x :=
   CoordinateCurvature.coordDeriv_congr μ x h
@@ -135,25 +134,32 @@ lemma differentiableAt_line {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n �
     simpa [Function.update_eq_self] using hf.hasFDerivAt
   exact (hfx.comp_hasDerivAt (x μ) hu).differentiableAt
 
+/-- The coordinate derivative of a sum is the sum of the coordinate derivatives. -/
 lemma pd_add {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ}
     (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x) :
     CoordinateCurvature.coordDeriv μ (fun y => f y + g y) x = CoordinateCurvature.coordDeriv μ f x + CoordinateCurvature.coordDeriv μ g x :=
   deriv_add (differentiableAt_line hf μ) (differentiableAt_line hg μ)
 
+/-- The coordinate derivative of a difference is the difference of the coordinate
+derivatives. -/
 lemma pd_sub {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ}
     (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x) :
     CoordinateCurvature.coordDeriv μ (fun y => f y - g y) x = CoordinateCurvature.coordDeriv μ f x - CoordinateCurvature.coordDeriv μ g x :=
   deriv_sub (differentiableAt_line hf μ) (differentiableAt_line hg μ)
 
+/-- The coordinate derivative of a negated field is the negation of its coordinate
+derivative. -/
 lemma pd_neg {n : ℕ} (μ : Fin n) (f : (Fin n → ℝ) → ℝ) (x : Fin n → ℝ) :
     CoordinateCurvature.coordDeriv μ (fun y => -f y) x = -CoordinateCurvature.coordDeriv μ f x := by
   simp [CoordinateCurvature.coordDeriv]
 
+/-- A constant factor comes out of the coordinate derivative. -/
 lemma pd_const_mul {n : ℕ} (μ : Fin n) (c : ℝ) {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ}
     (hf : DifferentiableAt ℝ f x) :
     CoordinateCurvature.coordDeriv μ (fun y => c * f y) x = c * CoordinateCurvature.coordDeriv μ f x :=
   deriv_const_mul c (differentiableAt_line hf μ)
 
+/-- The coordinate derivative satisfies the Leibniz rule. -/
 lemma pd_mul {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ}
     (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x) :
     CoordinateCurvature.coordDeriv μ (fun y => f y * g y) x = CoordinateCurvature.coordDeriv μ f x * g x + f x * CoordinateCurvature.coordDeriv μ g x := by
@@ -161,6 +167,8 @@ lemma pd_mul {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} {x : Fin n �
     (differentiableAt_line hg μ).hasDerivAt
   simpa [CoordinateCurvature.coordDeriv, Function.update_eq_self] using hm.deriv
 
+/-- The coordinate derivative of a finite sum is the sum of the coordinate
+derivatives. -/
 lemma pd_sum {n : ℕ} {ι : Type*} (μ : Fin n) (s : Finset ι)
     (f : ι → (Fin n → ℝ) → ℝ) {x : Fin n → ℝ}
     (hf : ∀ i ∈ s, DifferentiableAt ℝ (f i) x) :
