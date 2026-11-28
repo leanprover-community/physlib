@@ -39,6 +39,15 @@ so the band is empty.
 ## iv. References
 
 * https://www.damtp.cam.ac.uk/user/tong/aqm/aqmtwo.pdf. [ref: tong_statistical_physics]
+* M. H. Al-Hashimi and U.-J. Wiese, *Minimal position-velocity uncertainty wave packets in
+  relativistic and non-relativistic quantum mechanics*, Ann. Phys. 324 (2009) 2599, Section 3.2:
+  on the infinite lattice, "a moving wave packet on the lattice cannot have a minimal uncertainty
+  product". https://arxiv.org/abs/0907.5178 [ref: al_hashimi_wiese_minimal_uncertainty]
+* A. Sehrawat, *Deriving quantum constraints and tight uncertainty relations*, Section II,
+  eq. (23): the expectation values form a compact set; Appendix A.2, for Schrödinger's
+  relation: "the UR is saturated by every pure state for a qubit", so the band is empty for
+  `N = 2`.
+  https://arxiv.org/abs/1706.09319 [ref: sehrawat_quantum_constraints]
 -/
 
 @[expose] public section
