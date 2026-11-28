@@ -74,7 +74,7 @@ attribute [-simp] Nat.succ_eq_add_one
 noncomputable def ofScalarPotential {d} (c : SpeedOfLight) :
     ((Time × Space d) →d[ℝ] ℝ) →ₗ[ℝ] TempDistElectromagneticPotential d where
   toFun φ :=
-  Lorentz.Vector.ofTemporalComponent ∘L (tempDistTimeSlice c).symm (((1 : ℝ) / c.val) • φ)
+  Lorentz.Vector.ofTemporalComponent ∘L (timeSliceOfTempDist c).symm (((1 : ℝ) / c.val) • φ)
   map_add' φ₁ φ₂ := by
     ext ε
     simp
@@ -119,7 +119,7 @@ lemma ofStaticScalarPotentialFunction_eq_zero_of_not_isDistBounded {d}
 noncomputable def ofVectorPotential {d} (c : SpeedOfLight) :
     ((Time × Space d) →d[ℝ] EuclideanSpace ℝ (Fin d)) →ₗ[ℝ]
     TempDistElectromagneticPotential d where
-  toFun A := (tempDistTimeSlice c).symm (Lorentz.Vector.ofSpatialComponent ∘L A)
+  toFun A := (timeSliceOfTempDist c).symm (Lorentz.Vector.ofSpatialComponent ∘L A)
   map_add' A₁ A₂ := by
     ext ε
     simp
@@ -143,12 +143,12 @@ TODO "Add a constructor for TempDistElectromagneticPotential from electric and
 
 lemma distTensorDeriv_eq_sum_sum {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) :
-    distTensorDeriv A ε =∑ μ, ∑ ν, (SpaceTime.distDeriv μ A ε ν) •
+    derivOfDistTensor A ε =∑ μ, ∑ ν, (derivOfTempDist μ A ε ν) •
       Lorentz.CoVector.basis μ ⊗ₜ[ℝ] Lorentz.Vector.basis ν := by
-  simp [distTensorDeriv_apply]
+  simp [derivOfDistTensor_apply]
   congr
   funext μ
-  conv_lhs => rw [← Lorentz.Vector.basis.sum_repr (SpaceTime.distDeriv μ A ε)]
+  conv_lhs => rw [← Lorentz.Vector.basis.sum_repr (derivOfTempDist μ A ε)]
   rw [tmul_sum]
   congr
   funext ν
@@ -165,8 +165,8 @@ lemma distTensorDeriv_eq_sum_sum {d} (A : TempDistElectromagneticPotential d)
 lemma distTensorDeriv_basis_repr_apply {d} {μν : (Fin 1 ⊕ Fin d) × (Fin 1 ⊕ Fin d)}
     (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) :
-    (Lorentz.CoVector.basis.tensorProduct Lorentz.Vector.basis).repr (distTensorDeriv A ε) μν =
-    distDeriv μν.1 A ε μν.2 := by
+    (Lorentz.CoVector.basis.tensorProduct Lorentz.Vector.basis).repr (derivOfDistTensor A ε) μν =
+    derivOfTempDist μν.1 A ε μν.2 := by
   match μν with
   | (μ, ν) =>
   rw [distTensorDeriv_eq_sum_sum]
@@ -184,8 +184,8 @@ lemma distTensorDeriv_basis_repr_apply {d} {μν : (Fin 1 ⊕ Fin d) × (Fin 1 �
 lemma toTensor_distTensorDeriv_basis_repr_apply {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) (b : ComponentIdx (S := realLorentzTensor d)
       (Fin.append ![Color.down] ![Color.up])) :
-    (Tensor.basis _).repr (Tensorial.toTensor (distTensorDeriv A ε)) b =
-    distDeriv (b 0) A ε (b 1) := by
+    (Tensor.basis _).repr (Tensorial.toTensor (derivOfDistTensor A ε)) b =
+    derivOfTempDist (b 0) A ε (b 1) := by
   rw [Tensorial.basis_toTensor_apply]
   rw [Tensorial.basis_map_prod]
   simp only [Nat.reduceSucc, Nat.reduceAdd, Basis.repr_reindex, Fin.isValue]

@@ -125,10 +125,10 @@ lemma isExtrema_iff_space_time {𝓕 : FreeSpace}
       field_simp
     rw [mu0_factor_eq, mul_eq_zero, or_iff_right 𝓕.μ₀_ne_zero]
   refine and_congr ?_ ?_
-  · simp only [gradLagrangian_sum_inl_0, SpaceTime.tempDistTimeSlice_symm_apply]
+  · simp only [gradLagrangian_sum_inl_0, SpaceTime.timeSliceOfTempDist_symm_apply]
     rw [hsurj.forall]
     exact forall_congr' fun ε => hgauss _ _
-  · simp only [gradLagrangian_sum_inr_i, SpaceTime.tempDistTimeSlice_symm_apply]
+  · simp only [gradLagrangian_sum_inr_i, SpaceTime.timeSliceOfTempDist_symm_apply]
     rw [hsurj.forall]
     exact forall_congr' fun ε => forall_congr' fun i => hampere _ _ _
 
@@ -184,14 +184,14 @@ lemma isExterma_iff_tensor {𝓕 : FreeSpace}
     (A : TempDistElectromagneticPotential d)
     (J : TempDistLorentzCurrentDensity d) :
     IsExtrema 𝓕 A J ↔ ∀ ε,
-    {((1/ 𝓕.μ₀ : ℝ) • distTensorDeriv A.fieldStrength ε | κ κ ν') + - (J ε | ν')}ᵀ = 0 := by
+    {((1/ 𝓕.μ₀ : ℝ) • derivOfDistTensor A.fieldStrength ε | κ κ ν') + - (J ε | ν')}ᵀ = 0 := by
   apply Iff.intro
   · intro h
     simp only [IsExtrema] at h
     intro x
     have h1 : ((Tensorial.toTensor (M := Lorentz.Vector d)).symm
         (permT id (IsReindexing.auto) {((1/ 𝓕.μ₀ : ℝ) •
-          distTensorDeriv A.fieldStrength x | κ κ ν') + - (J x | ν')}ᵀ)) = 0 := by
+          derivOfDistTensor A.fieldStrength x | κ κ ν') + - (J x | ν')}ᵀ)) = 0 := by
       funext ν
       have h2 : gradLagrangian 𝓕 A J x ν = 0 := by simp [h]
       rw [gradLagrangian_eq_tensor A J] at h2
@@ -226,7 +226,7 @@ lemma isExterma_equivariant {𝓕 : FreeSpace}
   rw [isExterma_iff_tensor]
   conv_lhs =>
     enter [x, 1, 1, 2, 2, 2]
-    rw [fieldStrength_equivariant, distTensorDeriv_equivariant]
+    rw [fieldStrength_equivariant, derivOfDistTensor_equivariant]
     rw [lorentzGroup_smul_dist_apply]
   conv_lhs =>
     enter [x]

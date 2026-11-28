@@ -22,7 +22,7 @@ distributions on `SpaceTime d`.
 ## ii. Key results
 
 - `deriv` : The derivative of a function `SpaceTime d → M` along the `μ` coordinate.
-- `manifoldDeriv` : The derivative of a function from `SpaceTime d` to a manifold along
+- `derivOfManifold` : The derivative of a function from `SpaceTime d` to a manifold along
   the `μ` coordinate.
 - `contDiff_deriv` : If `f` is `C^{n+1}` then `∂_ μ f` is `C^n`.
 - `differentiable_deriv` : If `f` is `C^2` then `∂_ μ f` is differentiable.
@@ -32,8 +32,9 @@ distributions on `SpaceTime d`.
 - `deriv_sum_inl` : The derivative along the temporal coordinate in terms of the
   derivative on `Time`.
 - `iteratedDeriv` : Iterated derivatives along a multiset of coordinates.
-- `distDeriv` : The derivative of a distribution on `SpaceTime d` along the `μ` coordinate.
-- `distDeriv_commute` : Derivatives of distributions on `SpaceTime d` commute.
+- `derivOfTempDist` : The derivative of a tempered distribution on `SpaceTime d` along the
+  `μ` coordinate.
+- `derivOfTempDist_commute` : Derivatives of tempered distributions on `SpaceTime d` commute.
 
 ## iii. Table of contents
 
@@ -96,18 +97,18 @@ lemma deriv_eq {M : Type} [AddCommGroup M] [Module ℝ M] [TopologicalSpace M]
 
 /-- The derivative of a function from `SpaceTime d` to a manifold along the `μ`
 coordinate, as a tangent vector at the value of the function. -/
-noncomputable def manifoldDeriv {E H N : Type} [NormedAddCommGroup E] [NormedSpace ℝ E]
+noncomputable def derivOfManifold {E H N : Type} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [TopologicalSpace H] (I : ModelWithCorners ℝ E H) [TopologicalSpace N]
     [ChartedSpace H N] {d : ℕ} (μ : Fin 1 ⊕ Fin d) (f : SpaceTime d → N) :
     (y : SpaceTime d) → TangentSpace I (f y) :=
   fun y => mfderiv 𝓘(ℝ, SpaceTime d) I f y
     ((Lorentz.Vector.basis μ : SpaceTime d) : TangentSpace 𝓘(ℝ, SpaceTime d) y)
 
-lemma manifoldDeriv_eq {E H N : Type} [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma derivOfManifold_eq {E H N : Type} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [TopologicalSpace H] (I : ModelWithCorners ℝ E H) [TopologicalSpace N]
     [ChartedSpace H N] {d : ℕ} (μ : Fin 1 ⊕ Fin d) (f : SpaceTime d → N)
     (y : SpaceTime d) :
-    manifoldDeriv I μ f y =
+    derivOfManifold I μ f y =
       mfderiv 𝓘(ℝ, SpaceTime d) I f y
         ((Lorentz.Vector.basis μ : SpaceTime d) : TangentSpace 𝓘(ℝ, SpaceTime d) y) := rfl
 
@@ -120,18 +121,18 @@ lemma deriv_eq_mfderiv {M : Type} [NormedAddCommGroup M] [NormedSpace ℝ M]
   rw [deriv_eq, mfderiv_eq_fderiv]
   rfl
 
-lemma deriv_eq_manifoldDeriv {M : Type} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma deriv_eq_derivOfManifold {M : Type} [NormedAddCommGroup M] [NormedSpace ℝ M]
     {d : ℕ} (μ : Fin 1 ⊕ Fin d) (f : SpaceTime d → M) (y : SpaceTime d) :
-    deriv μ f y = manifoldDeriv 𝓘(ℝ, M) μ f y := by
-  rw [deriv_eq_mfderiv, manifoldDeriv_eq]
+    deriv μ f y = derivOfManifold 𝓘(ℝ, M) μ f y := by
+  rw [deriv_eq_mfderiv, derivOfManifold_eq]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma manifoldDeriv_const {E H N : Type} [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma derivOfManifold_const {E H N : Type} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [TopologicalSpace H] (I : ModelWithCorners ℝ E H) [TopologicalSpace N]
     [ChartedSpace H N] {d : ℕ} (μ : Fin 1 ⊕ Fin d) (n : N) (y : SpaceTime d) :
-    manifoldDeriv I μ (fun _ : SpaceTime d => n) y = 0 := by
-  simp [manifoldDeriv]
+    derivOfManifold I μ (fun _ : SpaceTime d => n) y = 0 := by
+  simp [derivOfManifold]
 
 /-!
 
@@ -450,9 +451,9 @@ lemma iteratedDeriv_const_smul {M R : Type} [NormedAddCommGroup M] [NormedSpace 
 
 open Distribution SchwartzMap
 
-/-- Given a distribution (function) `f : SpaceTime d →d[ℝ] M` the derivative
+/-- Given a tempered distribution (function) `f : SpaceTime d →d[ℝ] M` the derivative
   of `f` in direction `μ`. -/
-noncomputable def distDeriv {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+noncomputable def derivOfTempDist {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     (μ : Fin 1 ⊕ Fin d) : ((SpaceTime d) →d[ℝ] M) →ₗ[ℝ] (SpaceTime d) →d[ℝ] M where
   toFun f :=
     let ev : (SpaceTime d →L[ℝ] M) →L[ℝ] M := {
@@ -467,24 +468,24 @@ noncomputable def distDeriv {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     simp
   map_smul' a f := by simp
 
-lemma distDeriv_apply {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma derivOfTempDist_apply {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     (μ : Fin 1 ⊕ Fin d) (f : (SpaceTime d) →d[ℝ] M) (ε : 𝓢(SpaceTime d, ℝ)) :
-    distDeriv μ f ε = fderivD ℝ f ε (Lorentz.Vector.basis μ) := by
-  simp [distDeriv, Distribution.fderivD]
+    derivOfTempDist μ f ε = fderivD ℝ f ε (Lorentz.Vector.basis μ) := by
+  simp [derivOfTempDist, Distribution.fderivD]
 
-lemma distDeriv_apply' {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma derivOfTempDist_apply' {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     (μ : Fin 1 ⊕ Fin d) (f : (SpaceTime d) →d[ℝ] M) (ε : 𝓢(SpaceTime d, ℝ)) :
-    distDeriv μ f ε =
+    derivOfTempDist μ f ε =
     - f ((SchwartzMap.evalCLM ℝ (SpaceTime d) ℝ (Lorentz.Vector.basis μ))
     ((fderivCLM ℝ (SpaceTime d) ℝ) ε)) := by
-  simp [distDeriv_apply, Distribution.fderivD]
+  simp [derivOfTempDist_apply, Distribution.fderivD]
 
-lemma apply_fderiv_eq_distDeriv {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma apply_fderiv_eq_derivOfTempDist {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     (μ : Fin 1 ⊕ Fin d) (f : (SpaceTime d) →d[ℝ] M) (ε : 𝓢(SpaceTime d, ℝ)) :
     f ((SchwartzMap.evalCLM ℝ (SpaceTime d) ℝ (Lorentz.Vector.basis μ))
     ((fderivCLM ℝ (SpaceTime d) ℝ) ε)) =
-    - distDeriv μ f ε := by
-  simp [distDeriv_apply']
+    - derivOfTempDist μ f ε := by
+  simp [derivOfTempDist_apply']
 
 /-!
 
@@ -493,11 +494,11 @@ lemma apply_fderiv_eq_distDeriv {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
 -/
 
 open ContDiff
-lemma distDeriv_commute {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma derivOfTempDist_commute {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     (μ ν : Fin 1 ⊕ Fin d) (f : (SpaceTime d) →d[ℝ] M) :
-    distDeriv μ (distDeriv ν f) = distDeriv ν (distDeriv μ f) := by
+    derivOfTempDist μ (derivOfTempDist ν f) = derivOfTempDist ν (derivOfTempDist μ f) := by
   ext κ
-  simp only [distDeriv_apply, fderivD_apply, neg_neg]
+  simp only [derivOfTempDist_apply, fderivD_apply, neg_neg]
   congr 1
   ext x
   exact congrFun (deriv_commute ν μ ⇑κ (smooth κ 2)) x
@@ -510,18 +511,18 @@ We now show how the Lorentz group action on distributions interacts with derivat
 
 -/
 
-lemma distDeriv_comp_lorentz_action {μ : Fin 1 ⊕ Fin d} (Λ : LorentzGroup d)
+lemma derivOfTempDist_comp_lorentz_action {μ : Fin 1 ⊕ Fin d} (Λ : LorentzGroup d)
     (f : (SpaceTime d) →d[ℝ] M) :
-    distDeriv μ (Λ • f) = ∑ ν, Λ⁻¹.1 ν μ • (Λ • distDeriv ν f) := by
+    derivOfTempDist μ (Λ • f) = ∑ ν, Λ⁻¹.1 ν μ • (Λ • derivOfTempDist ν f) := by
   symm
-  trans (∑ ν, Λ • Λ⁻¹.1 ν μ • (distDeriv ν) f)
+  trans (∑ ν, Λ • Λ⁻¹.1 ν μ • (derivOfTempDist ν) f)
   · congr
     funext i
     rw [SMulCommClass.smul_comm]
-  trans Λ • (∑ ν, Λ⁻¹.1 ν μ • (distDeriv ν) f)
+  trans Λ • (∑ ν, Λ⁻¹.1 ν μ • (derivOfTempDist ν) f)
   · exact Eq.symm Finset.smul_sum
   ext η
-  rw [lorentzGroup_smul_dist_apply, distDeriv_apply, fderivD_apply,
+  rw [lorentzGroup_smul_dist_apply, derivOfTempDist_apply, fderivD_apply,
     lorentzGroup_smul_dist_apply]
   rw [← smul_neg]
   congr
@@ -529,7 +530,7 @@ lemma distDeriv_comp_lorentz_action {μ : Fin 1 ⊕ Fin d} (Λ : LorentzGroup d)
   simp only [FunLike.coe_smul, Pi.smul_apply]
   conv_lhs =>
     enter [2, x]
-    rw [distDeriv_apply, fderivD_apply]
+    rw [derivOfTempDist_apply, fderivD_apply]
     simp only [smul_neg]
     rw [← map_smul]
   rw [Finset.sum_neg_distrib]
@@ -563,15 +564,15 @@ derivative of `f` as a tensor. In particular this is `∂_μ f` viewed as a tens
 open TensorProduct
 
 /-- The derivative of a tensor, as a tensor. -/
-def tensorDeriv (f : SpaceTime d → M) :
+def derivOfTensor (f : SpaceTime d → M) :
     SpaceTime d → Lorentz.CoVector d ⊗[ℝ] M := fun x =>
   ∑ μ, (Lorentz.CoVector.basis μ) ⊗ₜ (∂_ μ f x)
 
-lemma tensorDeriv_equivariant (f : SpaceTime d → M) (Λ : LorentzGroup d) (x : SpaceTime d)
+lemma derivOfTensor_equivariant (f : SpaceTime d → M) (Λ : LorentzGroup d) (x : SpaceTime d)
     (hf : Differentiable ℝ f) :
-    tensorDeriv (fun x => Λ • f (Λ⁻¹ • x)) x =
-    Λ • tensorDeriv f (Λ⁻¹ • x) := by
-  simp [tensorDeriv]
+    derivOfTensor (fun x => Λ • f (Λ⁻¹ • x)) x =
+    Λ • derivOfTensor f (Λ⁻¹ • x) := by
+  simp [derivOfTensor]
   conv_lhs =>
     enter [2, μ]
     rw [deriv_equivariant f Λ x hf μ, tmul_sum]
@@ -586,15 +587,15 @@ lemma tensorDeriv_equivariant (f : SpaceTime d → M) (Λ : LorentzGroup d) (x :
 
 open TensorSpecies.Tensorial Lorentz Tensor
 
-lemma tensorDeriv_toTensor_basis_repr
+lemma derivOfTensor_toTensor_basis_repr
     {f : SpaceTime d → M}
     (hf : Differentiable ℝ f) (x : SpaceTime d)
     (b : Tensor.ComponentIdx (Fin.append ![realLorentzTensor.Color.down] c)) :
-    (Tensor.basis _).repr (Tensorial.toTensor (tensorDeriv f x)) b =
+    (Tensor.basis _).repr (Tensorial.toTensor (derivOfTensor f x)) b =
     ∂_ (Lorentz.CoVector.indexEquiv (ComponentIdx.prod b).1)
       (fun x => (Tensor.basis _).repr (Tensorial.toTensor (f x))
         (ComponentIdx.prod b).2) x := by
-  simp [tensorDeriv]
+  simp [derivOfTensor]
   conv_lhs =>
     enter [2, μ]
     rw [Tensorial.toTensor_tprod, Tensor.prodT_basis_repr_apply]
@@ -621,15 +622,15 @@ lemma tensorDeriv_toTensor_basis_repr
   · simp
 
 /-- The expansion of `tensorDeriv` in terms of the tensor basis vector. -/
-lemma tensorDeriv_eq_sum_tensor_basis
+lemma derivOfTensor_eq_sum_tensor_basis
     {f : SpaceTime d → M} (hf : Differentiable ℝ f) (x : SpaceTime d) :
-    tensorDeriv f x = ∑ b, ∂_ (CoVector.indexEquiv (ComponentIdx.prod b).1)
+    derivOfTensor f x = ∑ b, ∂_ (CoVector.indexEquiv (ComponentIdx.prod b).1)
       (fun x => (Tensor.basis _).repr (toTensor (f x)) (ComponentIdx.prod b).2) x •
     toTensor.symm (Tensor.basis _ b) := by
   apply Tensorial.toTensor.injective
   apply (Tensor.basis (Fin.append _ _)).repr.injective
   ext b
-  simp [Finsupp.single_apply, tensorDeriv_toTensor_basis_repr hf]
+  simp [Finsupp.single_apply, derivOfTensor_toTensor_basis_repr hf]
 
 /-!
 
@@ -638,11 +639,11 @@ lemma tensorDeriv_eq_sum_tensor_basis
 -/
 open InnerProductSpace
 /-- The derivative of a tensor, as a tensor for distributions. -/
-def distTensorDeriv {M d} [NormedAddCommGroup M]
+def derivOfDistTensor {M d} [NormedAddCommGroup M]
     [InnerProductSpace ℝ M] [FiniteDimensional ℝ M] :
     ((SpaceTime d) →d[ℝ] M) →ₗ[ℝ] ((SpaceTime d) →d[ℝ] Lorentz.CoVector d ⊗[ℝ] M) where
   toFun f := {
-    toFun ε := ∑ μ, (Lorentz.CoVector.basis μ) ⊗ₜ distDeriv μ f ε
+    toFun ε := ∑ μ, (Lorentz.CoVector.basis μ) ⊗ₜ derivOfTempDist μ f ε
     map_add' ε1 ε2 := by
       simp [← Finset.sum_add_distrib, tmul_add]
     map_smul' a ε := by
@@ -668,21 +669,21 @@ def distTensorDeriv {M d} [NormedAddCommGroup M]
     ext ε
     simp [tmul_smul, Finset.smul_sum]
 
-lemma distTensorDeriv_apply {M d} [NormedAddCommGroup M]
+lemma derivOfDistTensor_apply {M d} [NormedAddCommGroup M]
     [InnerProductSpace ℝ M] [FiniteDimensional ℝ M] (f : (SpaceTime d) →d[ℝ] M)
     (ε : 𝓢(SpaceTime d, ℝ)) :
-    distTensorDeriv f ε = ∑ μ, (Lorentz.CoVector.basis μ) ⊗ₜ distDeriv μ f ε := by
-  simp [distTensorDeriv]
+    derivOfDistTensor f ε = ∑ μ, (Lorentz.CoVector.basis μ) ⊗ₜ derivOfTempDist μ f ε := by
+  simp [derivOfDistTensor]
 
-lemma distTensorDeriv_equivariant {M : Type} [NormedAddCommGroup M]
+lemma derivOfDistTensor_equivariant {M : Type} [NormedAddCommGroup M]
     [InnerProductSpace ℝ M] [FiniteDimensional ℝ M] [(realLorentzTensor d).Tensorial c M]
     (f : (SpaceTime d) →d[ℝ] M) (Λ : LorentzGroup d) :
-    distTensorDeriv (Λ • f) = Λ • distTensorDeriv f := by
+    derivOfDistTensor (Λ • f) = Λ • derivOfDistTensor f := by
   ext ε
-  rw [distTensorDeriv_apply]
+  rw [derivOfDistTensor_apply]
   conv_lhs =>
     enter [2, μ]
-    rw [distDeriv_comp_lorentz_action]
+    rw [derivOfTempDist_comp_lorentz_action]
     simp only [FunLike.coe_sum, FunLike.coe_smul, Finset.sum_apply,
       Pi.smul_apply]
     rw [tmul_sum]
@@ -695,19 +696,19 @@ lemma distTensorDeriv_equivariant {M : Type} [NormedAddCommGroup M]
   change _ = (TensorSpecies.Tensorial.smulLinearMap Λ) _
   simp only [Nat.succ_eq_add_one, Nat.reduceAdd, ContinuousLinearMap.coe_comp,
     ContinuousLinearMap.coe_coe, Function.comp_apply]
-  rw [distTensorDeriv_apply]
+  rw [derivOfDistTensor_apply]
   simp [TensorSpecies.Tensorial.smulLinearMap_apply, map_sum]
 
-lemma distTensorDeriv_toTensor_basis_repr {M : Type} [NormedAddCommGroup M]
+lemma derivOfDistTensor_toTensor_basis_repr {M : Type} [NormedAddCommGroup M]
     [InnerProductSpace ℝ M] [FiniteDimensional ℝ M] [(realLorentzTensor d).Tensorial c M]
     {f : (SpaceTime d) →d[ℝ] M}
     (ε : 𝓢(SpaceTime d, ℝ))
     (b : Tensor.ComponentIdx (Fin.append ![realLorentzTensor.Color.down] c)) :
-    (Tensor.basis _).repr (Tensorial.toTensor (distTensorDeriv f ε)) b =
+    (Tensor.basis _).repr (Tensorial.toTensor (derivOfDistTensor f ε)) b =
     (Tensor.basis _).repr (Tensorial.toTensor
-    (distDeriv (Lorentz.CoVector.indexEquiv (ComponentIdx.prod b).1) f ε))
+    (derivOfTempDist (Lorentz.CoVector.indexEquiv (ComponentIdx.prod b).1) f ε))
     (ComponentIdx.prod b).2 := by
-  simp [distTensorDeriv]
+  simp [derivOfDistTensor]
   conv_lhs =>
     enter [2, μ]
     rw [Tensorial.toTensor_tprod, Tensor.prodT_basis_repr_apply]

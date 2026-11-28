@@ -76,9 +76,9 @@ noncomputable def electricField {d} (c : SpeedOfLight) :
 lemma electricField_eq_fieldStrength {d} {c : SpeedOfLight}
     (A : TempDistElectromagneticPotential d) (ε : 𝓢(Time × Space d, ℝ))
     (i : Fin d) : A.electricField c ε i = - c * (Vector.basis.tensorProduct Vector.basis).repr
-      (tempDistTimeSlice c (A.fieldStrength) ε) (Sum.inl 0, Sum.inr i) := by
-  simp only [tempDistTimeSlice_apply, Fin.isValue, fieldStrength_basis_repr_eq_single, inl_0_inl_0,
-    one_mul, inr_i_inr_i, neg_mul, sub_neg_eq_add]
+      (timeSliceOfTempDist c (A.fieldStrength) ε) (Sum.inl 0, Sum.inr i) := by
+  simp only [timeSliceOfTempDist_apply, Fin.isValue, fieldStrength_basis_repr_eq_single,
+    inl_0_inl_0, one_mul, inr_i_inr_i, neg_mul, sub_neg_eq_add]
   simp only [electricField, scalarPotential, Vector.temporalCLM, Fin.isValue, map_smul,
     ContinuousLinearMap.comp_smulₛₗ, Real.ringHom_apply, LinearMap.coe_mk, AddHom.coe_mk,
     vectorPotential, Vector.spatialCLM, Space.distTimeDeriv_apply_CLM, FunLike.coe_sub,
@@ -86,8 +86,8 @@ lemma electricField_eq_fieldStrength {d} {c : SpeedOfLight}
     _root_.neg_apply, FunLike.coe_smul, Pi.smul_apply,
     Function.comp_apply, PiLp.sub_apply, PiLp.neg_apply, PiLp.smul_apply, Space.distSpaceGrad_apply,
     Space.distSpaceDeriv_apply_CLM, LinearMap.coe_toContinuousLinearMap', smul_eq_mul,
-    ← tempDistTimeSlice_apply, distTimeSlice_distDeriv_inl, one_div, Vector.apply_smul,
-    distTimeSlice_distDeriv_inr]
+    ← timeSliceOfTempDist_apply, timeSliceOfTempDist_derivOfTempDist_inl, one_div,
+    Vector.apply_smul, timeSliceOfTempDist_derivOfTempDist_inr]
   field_simp
   ring
 

@@ -119,7 +119,7 @@ open Distribution
 
 /-- The time slice of a distribution on `SpaceTime d` to form a distribution
   on `Time × Space d`. -/
-noncomputable def distTimeSlice{F} [NormedAddCommGroup F] [NormedSpace ℝ F]
+noncomputable def timeSliceOfDist {F} [NormedAddCommGroup F] [NormedSpace ℝ F]
     (c : SpeedOfLight := 1) :
     Distribution (⟨Set.univ (α := SpaceTime d), isOpen_univ⟩) F ⊤ ≃L[ℝ]
     Distribution (⟨Set.univ (α := Time × Space d), isOpen_univ⟩) F ⊤ where
@@ -143,7 +143,7 @@ noncomputable def distTimeSlice{F} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 /-- The time slice of a tempered distribution on `SpaceTime d` to form a distribution
   on `Time × Space d`. -/
-noncomputable def tempDistTimeSlice {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+noncomputable def timeSliceOfTempDist {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     (c : SpeedOfLight := 1) :
     ((SpaceTime d) →d[ℝ] M) ≃L[ℝ] ((Time × Space d) →d[ℝ] M) where
   toFun f :=
@@ -169,14 +169,14 @@ noncomputable def tempDistTimeSlice {M d} [NormedAddCommGroup M] [NormedSpace �
   continuous_invFun :=
     ((compCLMOfContinuousLinearEquiv ℝ (toTimeAndSpace c).symm).precomp M).continuous
 
-lemma tempDistTimeSlice_apply {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma timeSliceOfTempDist_apply {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     (c : SpeedOfLight) (f : (SpaceTime d) →d[ℝ] M)
-    (κ : 𝓢(Time × Space d, ℝ)) : tempDistTimeSlice c f κ =
+    (κ : 𝓢(Time × Space d, ℝ)) : timeSliceOfTempDist c f κ =
     f (compCLMOfContinuousLinearEquiv ℝ (toTimeAndSpace c) κ) := by rfl
 
-lemma tempDistTimeSlice_symm_apply {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma timeSliceOfTempDist_symm_apply {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     (c : SpeedOfLight) (f : (Time × (Space d)) →d[ℝ] M)
-    (κ : 𝓢(SpaceTime d, ℝ)) : (tempDistTimeSlice c).symm f κ =
+    (κ : 𝓢(SpaceTime d, ℝ)) : (timeSliceOfTempDist c).symm f κ =
     f (compCLMOfContinuousLinearEquiv ℝ (toTimeAndSpace c).symm κ) := by rfl
 
 /-!
@@ -185,15 +185,15 @@ lemma tempDistTimeSlice_symm_apply {M d} [NormedAddCommGroup M] [NormedSpace ℝ
 
 -/
 
-lemma distTimeSlice_distDeriv_inl {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma timeSliceOfTempDist_derivOfTempDist_inl {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     {c : SpeedOfLight}
     (f : (SpaceTime d) →d[ℝ] M) :
-    tempDistTimeSlice c (distDeriv (Sum.inl 0) f) =
-    (1/c.val) • Space.distTimeDeriv (tempDistTimeSlice c f) := by
+    timeSliceOfTempDist c (derivOfTempDist (Sum.inl 0) f) =
+    (1/c.val) • Space.distTimeDeriv (timeSliceOfTempDist c f) := by
   ext κ
-  rw [tempDistTimeSlice_apply, distDeriv_apply, fderivD_apply]
+  rw [timeSliceOfTempDist_apply, derivOfTempDist_apply, fderivD_apply]
   simp only [Fin.isValue, one_div, FunLike.coe_smul, Pi.smul_apply]
-  rw [distTimeDeriv_apply, fderivD_apply, tempDistTimeSlice_apply]
+  rw [distTimeDeriv_apply, fderivD_apply, timeSliceOfTempDist_apply]
   simp only [Fin.isValue, smul_neg, neg_inj]
   rw [← map_smul]
   congr
@@ -210,34 +210,34 @@ lemma distTimeSlice_distDeriv_inl {M d} [NormedAddCommGroup M] [NormedSpace ℝ 
     exact SchwartzMap.differentiable κ
   · fun_prop
 
-lemma distDeriv_inl_distTimeSlice_symm {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma derivOfTempDist_inl_timeSliceOfTempDist_symm {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     {c : SpeedOfLight}
     (f : (Time × Space d) →d[ℝ] M) :
-    distDeriv (Sum.inl 0) ((tempDistTimeSlice c).symm f) =
-    (1/c.val) • (tempDistTimeSlice c).symm (Space.distTimeDeriv f) := by
-  obtain ⟨f, rfl⟩ := (tempDistTimeSlice c).surjective f
+    derivOfTempDist (Sum.inl 0) ((timeSliceOfTempDist c).symm f) =
+    (1/c.val) • (timeSliceOfTempDist c).symm (Space.distTimeDeriv f) := by
+  obtain ⟨f, rfl⟩ := (timeSliceOfTempDist c).surjective f
   simp only [ContinuousLinearEquiv.symm_apply_apply]
-  apply (tempDistTimeSlice c).injective
+  apply (timeSliceOfTempDist c).injective
   simp only [Fin.isValue, one_div, map_smul, ContinuousLinearEquiv.apply_symm_apply]
-  rw [distTimeSlice_distDeriv_inl]
+  rw [timeSliceOfTempDist_derivOfTempDist_inl]
   simp
 
-lemma distTimeSlice_symm_distTimeDeriv_eq {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma timeSliceOfTempDist_symm_timeDerivOfTempDist_eq {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     {c : SpeedOfLight}
     (f : (Time × Space d) →d[ℝ] M) :
-    (tempDistTimeSlice c).symm (Space.distTimeDeriv f) =
-    c.val • distDeriv (Sum.inl 0) ((tempDistTimeSlice c).symm f) := by
-  rw [distDeriv_inl_distTimeSlice_symm]
+    (timeSliceOfTempDist c).symm (Space.distTimeDeriv f) =
+    c.val • derivOfTempDist (Sum.inl 0) ((timeSliceOfTempDist c).symm f) := by
+  rw [derivOfTempDist_inl_timeSliceOfTempDist_symm]
   simp
 
-lemma distTimeSlice_distDeriv_inr {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma timeSliceOfTempDist_derivOfTempDist_inr {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     {c : SpeedOfLight}
     (i : Fin d) (f : (SpaceTime d) →d[ℝ] M) :
-    tempDistTimeSlice c (distDeriv (Sum.inr i) f) =
-    Space.distSpaceDeriv i (tempDistTimeSlice c f) := by
+    timeSliceOfTempDist c (derivOfTempDist (Sum.inr i) f) =
+    Space.distSpaceDeriv i (timeSliceOfTempDist c f) := by
   ext κ
-  rw [tempDistTimeSlice_apply, distDeriv_apply, fderivD_apply]
-  rw [distSpaceDeriv_apply, fderivD_apply, tempDistTimeSlice_apply]
+  rw [timeSliceOfTempDist_apply, derivOfTempDist_apply, fderivD_apply]
+  rw [distSpaceDeriv_apply, fderivD_apply, timeSliceOfTempDist_apply]
   simp only [neg_inj]
   congr 1
   ext x
@@ -251,16 +251,16 @@ lemma distTimeSlice_distDeriv_inr {M d} [NormedAddCommGroup M] [NormedSpace ℝ 
     exact SchwartzMap.differentiable κ
   · fun_prop
 
-lemma distDeriv_inr_distTimeSlice_symm {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma derivOfTempDist_inr_timeSliceOfTempDist_symm {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     {c : SpeedOfLight}
     (i : Fin d) (f : (Time × Space d) →d[ℝ] M) :
-    distDeriv (Sum.inr i) ((tempDistTimeSlice c).symm f) =
-    (tempDistTimeSlice c).symm (Space.distSpaceDeriv i f) := by
-  obtain ⟨f, rfl⟩ := (tempDistTimeSlice c).surjective f
+    derivOfTempDist (Sum.inr i) ((timeSliceOfTempDist c).symm f) =
+    (timeSliceOfTempDist c).symm (Space.distSpaceDeriv i f) := by
+  obtain ⟨f, rfl⟩ := (timeSliceOfTempDist c).surjective f
   simp only [ContinuousLinearEquiv.symm_apply_apply]
-  apply (tempDistTimeSlice c).injective
+  apply (timeSliceOfTempDist c).injective
   simp only [ContinuousLinearEquiv.apply_symm_apply]
-  rw [distTimeSlice_distDeriv_inr]
+  rw [timeSliceOfTempDist_derivOfTempDist_inr]
 
 end SpaceTime
 
