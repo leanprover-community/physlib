@@ -53,7 +53,10 @@ and n = 2/3, and after their Big Bang they too solve the Friedmann equations. [2
 ### Hubble and deceleration parameters
 
 The Hubble parameter H = ∂ₜ a / a is a function of the scale factor and cosmic time, and is
-nonzero wherever the scale factor and its derivative both are. [9] The deceleration parameter is
+nonzero wherever the scale factor and its derivative both are. [9] The present time t₀ of a
+model is an instant in its interval, a datum of the model rather than a free instant, and the
+Hubble constant H₀ is the Hubble parameter at t₀, nonzero when the scale factor has nonzero
+derivative there. [9] The deceleration parameter is
 q = −(∂ₜ ∂ₜ a) a / (∂ₜ a)². The derivative ∂ₜ H obeys the quotient-rule formula, q equals
 −(1 + (∂ₜ H) / H²) and ∂ₜ H equals −H² (1 + q), and ∂ₜ H < 0 holds exactly when q > −1, both
 pointwise and in existential form. [10]
@@ -115,7 +118,8 @@ of a source emitting at t and observed at t₀ is χ = c ∫ dτ / a from t to t
 ∂ₜ χ = −c / a. The redshift is 1 + z = a(t₀) / a(t), with ∂ₜ z = −(1 + z) H, and ∂ₜ a = a H;
 combining the two, ∂ₜ χ = (c / (a(t₀) H)) ∂ₜ z, the change of variables dχ = c dz / H for
 a(t₀) = 1. The proper distance D = a χ obeys the Hubble–Lemaître law ∂ₜ D = H D, and the recession
-velocity ∂ₜ D equals c exactly at the Hubble radius R_H = c / H. [28] The transverse comoving
+velocity ∂ₜ D equals c exactly at the Hubble radius R_H = c / H, which is positive when H > 0
+and satisfies H R_H = c. [28] The transverse comoving
 distance r(χ) is the profile of the spatial geometry of the model. With K its curvature parameter
 and curvature radius 1 / √|K|, it is (1 / √K) sin(√K χ), χ or (1 / √(−K)) sinh(√(−K) χ) for
 positive, zero or negative K. The particle and event horizons at t integrate c / a over the times
@@ -142,7 +146,8 @@ the integral χ = c ∫ dz / H(z) in the redshift for a(t₀) = 1. [TODO]
    `FLRW.FriedmannSolution.densityParameter_add_curvature`
 7. Physlib/Cosmology/FLRW/Solutions.lean — `FLRW.milne`, `FLRW.friedmannSolution_milne`
 8. Physlib/Cosmology/FLRW/Basic.lean — `FirstOrderFriedmann`, `SecondOrderFriedmann`
-9. Physlib/Cosmology/FLRW/Basic.lean — `hubbleConstant`, `hubbleConstant_ne_zero`
+9. Physlib/Cosmology/FLRW/Basic.lean — `hubbleConstant`, `hubbleConstant_ne_zero`, `PresentTime`,
+   `presentHubbleParameter`, `presentHubbleParameter_eq`, `presentHubbleParameter_ne_zero`
 10. Physlib/Cosmology/FLRW/Basic.lean — `decelerationParameter`, `deriv_hubbleConstant`,
    `decelerationParameter_eq_one_plus_hubbleConstant`, `deriv_hubbleConstant_eq_neg_sq_mul`,
    `deriv_hubbleConstant_neg_iff`, `exists_deriv_hubbleConstant_neg_iff`
@@ -196,7 +201,8 @@ the integral χ = c ∫ dz / H(z) in the redshift for a(t₀) = 1. [TODO]
    `FLRW.deriv_comovingDistance`, `FLRW.redshift`, `FLRW.one_add_redshift`, `FLRW.deriv_redshift`,
    `FLRW.deriv_scaleFactor_eq_mul_hubbleConstant`,
    `FLRW.deriv_comovingDistance_eq_mul_deriv_redshift`, `FLRW.properDistance`,
-   `FLRW.deriv_properDistance`, `FLRW.hubbleRadius`, `FLRW.deriv_properDistance_eq_iff`
+   `FLRW.deriv_properDistance`, `FLRW.hubbleRadius`, `FLRW.hubbleRadius_pos`,
+   `FLRW.hubbleConstant_mul_hubbleRadius`, `FLRW.deriv_properDistance_eq_iff`
 29. Physlib/Cosmology/FLRW/Distances.lean — `FLRW.transverseComovingDistance`,
    `FLRW.transverseComovingDistance_of_curvature_pos`,
    `FLRW.transverseComovingDistance_of_curvature_eq_zero`,
