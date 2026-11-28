@@ -210,6 +210,59 @@ lemma metric_compat {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fin 
   rw [h1, h2, hpd_sym]
   ring
 
+/-- The coordinate derivative of the inverse metric: differentiating `g * ginv = 1`
+and solving for `∂ ginv` gives `∂_l ginv^{ib} = -∑_{j,k} ginv^{ik} (∂_l g_{kj}) ginv^{jb}`. -/
+private lemma coordDeriv_ginv_eq {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fin n → ℝ}
+    (hInvL : ∀ᶠ y in 𝓝 x, ∀ i j, ∑ k, ginv y i k * g y k j = if i = j then 1 else 0)
+    (hInvR : ∀ i j, ∑ k, g x i k * ginv x k j = if i = j then 1 else 0)
+    (hgD : ∀ i j, DifferentiableAt ℝ (fun y => g y i j) x)
+    (hginvD : ∀ i j, DifferentiableAt ℝ (fun y => ginv y i j) x)
+    (l i b : Fin n) :
+    CoordinateCurvature.coordDeriv l (fun y => ginv y i b) x =
+      -∑ j, ∑ k, ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x
+        * ginv x j b := by
+  have hdiff : ∀ j, ∑ k, (CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * g x k j
+      + ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x) = 0 := by
+    intro j
+    have hconst : CoordinateCurvature.coordDeriv l (fun y => ∑ k, ginv y i k * g y k j) x = 0 := by
+      rw [coordDeriv_congr_nhds l x (hInvL.mono fun y hy => hy i j)]
+      exact coordDeriv_const l _ x
+    rw [coordDeriv_sum l (fun k y => ginv y i k * g y k j) x
+      (fun k => slice_differentiableAt l ((hginvD i k).mul (hgD k j)))] at hconst
+    rw [← hconst]
+    apply Finset.sum_congr rfl
+    intro k _
+    exact (coordDeriv_mul l x (slice_differentiableAt l (hginvD i k))
+      (slice_differentiableAt l (hgD k j))).symm
+  have h1 : CoordinateCurvature.coordDeriv l (fun y => ginv y i b) x =
+      ∑ k, CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * (∑ j, g x k j
+        * ginv x j b) := by
+    simp [hInvR]
+  rw [h1]
+  simp_rw [Finset.mul_sum]
+  rw [Finset.sum_comm]
+  have hstep : ∀ j, (∑ k, CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * (g x k j
+    * ginv x j b)) =
+      -(∑ k, ginv x i k *
+        CoordinateCurvature.coordDeriv l (fun y => g y k j) x * ginv x j b) := by
+    intro j
+    have hd := hdiff j
+    have hmul : (∑ k, (CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * g x k j
+        + ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x) * ginv x j b)
+          = 0 := by
+      rw [← Finset.sum_mul, hd, zero_mul]
+    have hsplit : (∑ k, (CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * g x k j
+        + ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x) * ginv x j b) =
+        (∑ k, CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * (g x k j * ginv x j b))
+          + ∑ k, ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x
+            * ginv x j b := by
+      rw [← Finset.sum_add_distrib]
+      apply Finset.sum_congr rfl
+      intro k _
+      ring
+    linarith
+  simp_rw [hstep, Finset.sum_neg_distrib]
+
 /-- **Inverse metric compatibility**: `∇_l g^{ij} = 0`. -/
 lemma inv_metric_compat {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fin n → ℝ}
     (hgSymm : ∀ᶠ y in 𝓝 x, ∀ i j, g y i j = g y j i)
@@ -224,50 +277,9 @@ lemma inv_metric_compat {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : 
     intro m j
     have h0 := hInvL.self_of_nhds m j
     simpa [hginvSymm] using h0
-  have hdiff : ∀ j, ∑ k, (CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * g x k j
-      + ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x) = 0 := by
-    intro j
-    have hconst : CoordinateCurvature.coordDeriv l (fun y => ∑ k, ginv y i k * g y k j) x = 0 := by
-      rw [coordDeriv_congr_nhds l x (hInvL.mono fun y hy => hy i j)]
-      exact coordDeriv_const l _ x
-    rw [coordDeriv_sum l (fun k y => ginv y i k * g y k j) x
-      (fun k => slice_differentiableAt l ((hginvD i k).mul (hgD k j)))] at hconst
-    rw [← hconst]
-    apply Finset.sum_congr rfl
-    intro k _
-    exact (coordDeriv_mul l x (slice_differentiableAt l (hginvD i k))
-      (slice_differentiableAt l (hgD k j))).symm
   have hpd_ginv : CoordinateCurvature.coordDeriv l (fun y => ginv y i b) x =
       -∑ j, ∑ k, ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x
-        * ginv x j b := by
-    have h1 : CoordinateCurvature.coordDeriv l (fun y => ginv y i b) x =
-        ∑ k, CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * (∑ j, g x k j
-          * ginv x j b) := by
-      simp [hInvR]
-    rw [h1]
-    simp_rw [Finset.mul_sum]
-    rw [Finset.sum_comm]
-    have hstep : ∀ j, (∑ k, CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * (g x k j
-      * ginv x j b)) =
-        -(∑ k, ginv x i k *
-          CoordinateCurvature.coordDeriv l (fun y => g y k j) x * ginv x j b) := by
-      intro j
-      have hd := hdiff j
-      have hmul : (∑ k, (CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * g x k j
-          + ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x) * ginv x j b)
-            = 0 := by
-        rw [← Finset.sum_mul, hd, zero_mul]
-      have hsplit : (∑ k, (CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * g x k j
-          + ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x) * ginv x j b) =
-          (∑ k, CoordinateCurvature.coordDeriv l (fun y => ginv y i k) x * (g x k j * ginv x j b))
-            + ∑ k, ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x
-              * ginv x j b := by
-        rw [← Finset.sum_add_distrib]
-        apply Finset.sum_congr rfl
-        intro k _
-        ring
-      linarith
-    simp_rw [hstep, Finset.sum_neg_distrib]
+        * ginv x j b := coordDeriv_ginv_eq g ginv hInvL hInvR hgD hginvD l i b
   have hmc : ∀ k j, CoordinateCurvature.coordDeriv l (fun y => g y k j) x =
       (∑ a, christoffel g ginv x a l k * g x a j)
         + ∑ a, christoffel g ginv x a l j * g x k a := by
