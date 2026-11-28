@@ -300,6 +300,7 @@ public import PhyslibAlpha.Mathematics.Distribution.TimeSliceFourier
 public import PhyslibAlpha.Mathematics.Distribution.TimeSliceSmooth
 public import PhyslibAlpha.Mathematics.Distribution.Translation
 public import PhyslibAlpha.Mathematics.ExteriorAlgebra
+public import PhyslibAlpha.Mathematics.FinSum
 public import PhyslibAlpha.Mathematics.ForMathlib.Algebra.Polynomial.Commute
 public import PhyslibAlpha.Mathematics.ForMathlib.Algebra.Polynomial.SumSmulPow
 public import PhyslibAlpha.Mathematics.ForMathlib.Analysis.Normed.Algebra.LieProductFormula
@@ -329,6 +330,7 @@ public import PhyslibAlpha.Mathematics.LadderSystem.Vacuum
 public import PhyslibAlpha.Mathematics.LeviCivita.Basic
 public import PhyslibAlpha.Mathematics.LieAlgebraUnit
 public import PhyslibAlpha.Mathematics.LinearCombination
+public import PhyslibAlpha.Mathematics.MatrixInverse
 public import PhyslibAlpha.Mathematics.MeasureTheory.BoundedMeasurable
 public import PhyslibAlpha.Mathematics.MeasureTheory.EuclideanProd
 public import PhyslibAlpha.Mathematics.MeasureTheory.IntegrationFunctional

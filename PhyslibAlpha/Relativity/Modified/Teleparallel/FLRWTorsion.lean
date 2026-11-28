@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import PhyslibAlpha.Cosmology.FLRW.FriedmannEquations
+public import PhyslibAlpha.Mathematics.MatrixInverse
 public import PhyslibAlpha.Relativity.Modified.Teleparallel.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases

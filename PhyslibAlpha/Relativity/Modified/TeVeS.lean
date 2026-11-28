@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.LinearAlgebra.Matrix.Notation
+public import PhyslibAlpha.Mathematics.MatrixInverse
 public import PhyslibAlpha.Relativity.Metrics.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring

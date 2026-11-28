@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.LinearAlgebra.Matrix.Notation
+public import PhyslibAlpha.Mathematics.FinSum
 public import PhyslibAlpha.Relativity.Metrics.MetricTrace
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
@@ -191,12 +192,6 @@ private lemma kkMetricInv_apply_four_lt (ginv4 : Tensor2 4) (A : Fin 4 → ℝ) 
     {j : Fin 5} (hj : j.val < 4) :
     kkMetricInv ginv4 A φ 4 j = -contravariantPotential ginv4 A ⟨j.val, hj⟩ := by
   simp [kkMetricInv, hj]
-
-/-- Split a sum over `Fin 5` into its first four terms and the last term. -/
-lemma sum_fin5_split (f : Fin 5 → ℝ) :
-    (∑ k : Fin 5, f k) = (∑ k : Fin 4, f ⟨k.val, by omega⟩) + f 4 := by
-  rw [Fin.sum_univ_castSucc]
-  rfl
 
 @[simp]
 private lemma kkMetricInv_apply_four_four (ginv4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ) :

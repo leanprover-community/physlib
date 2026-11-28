@@ -6,6 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import PhyslibAlpha.Mathematics.MatrixInverse
 public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
