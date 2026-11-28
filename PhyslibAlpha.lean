@@ -826,10 +826,13 @@ public import PhyslibAlpha.Relativity.General.GravitationalConstant
 public import PhyslibAlpha.Relativity.General.InitialData.AnisotropicSlice
 public import PhyslibAlpha.Relativity.General.InitialData.Basic
 public import PhyslibAlpha.Relativity.General.InitialData.CauchyInterfaces
+public import PhyslibAlpha.Relativity.General.InitialData.ExplicitDevelopments
 public import PhyslibAlpha.Relativity.General.InitialData.CovariantDerivTensor2
 public import PhyslibAlpha.Relativity.General.InitialData.FlatSlice
+public import PhyslibAlpha.Relativity.General.InitialData.GaugeRecovery
 public import PhyslibAlpha.Relativity.General.InitialData.InitialDataInterface
 public import PhyslibAlpha.Relativity.General.InitialData.ManifoldSobolev
+public import PhyslibAlpha.Relativity.General.InitialData.MaximalDevelopment
 public import PhyslibAlpha.Relativity.General.InitialData.ReducedCauchy
 public import PhyslibAlpha.Relativity.General.InitialData.ReducedWave3D
 public import PhyslibAlpha.Relativity.General.InitialData.SobolevInitialData

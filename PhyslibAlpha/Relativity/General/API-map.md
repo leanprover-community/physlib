@@ -623,6 +623,32 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `Schwarzschild.exteriorPartialDomain`,
     `Schwarzschild.exteriorPartialDomain_isOpen`,
     `Schwarzschild.exteriorPartialChart`
+107. PhyslibAlpha/Relativity/General/InitialData/ManifoldSobolev.lean — `ManifoldSobolev`
+108. PhyslibAlpha/Relativity/General/InitialData/CauchyInterfaces.lean —
+    `ReducedCauchyProblem`, `ReducedLocalExistenceCertificate`, `GaugeRecoveryProblem`,
+    `GaugeRecoveryCertificate`, `DevelopmentInterface`, `MaximalDevelopmentCertificate`,
+    `ChartSpacetime.IsChartDevelopment`, `ExplicitDevelopmentObligations`,
+    `ExplicitDevelopmentCertificate`
+109. PhyslibAlpha/Relativity/General/Linearized/LinearizedWaveGauge.lean —
+    `Linearized.WaveGaugePerturbation`, `Linearized.ttWave_waveGauge`,
+    `Linearized.linearizedEinstein_eq_zero_of_waveGauge`
+110. PhyslibAlpha/Relativity/Metrics/ConformalDecomposition.lean — `ConformalData`,
+    `ConformalData.physicalMetric`, `ConformalData.extrinsicCurvature`,
+    `hamiltonianResidual`, `linearisedHamiltonianResidual`, `momentumResidual`,
+    `IsLichnerowiczYorkSolution`, `shiftMomentumResidual`, `IsShiftSolution`
+111. PhyslibAlpha/Relativity/General/InitialData/ReducedCauchy.lean —
+    `directionalWave3D`, `directionalWave3D_wave_equation`, `spatialLaplacian3D_add`,
+    `harmonicGaugeCond`, `linearizedBox_reducedLocalExistence`, `ttWave_reduced_solution`,
+    `flrw_reducedLocalExistence`
+112. PhyslibAlpha/Relativity/General/InitialData/MaximalDevelopment.lean —
+    `OrderedDevelopmentSystem`, `OrderedDevelopmentSystem.exists_maximal`,
+    `OrderedDevelopmentSystem.unique_up_to_isometry`, `chartDevelopmentInterface`,
+    `intervalDevelopmentSystem`, `intervalMaximalDevelopmentCertificate`
+113. PhyslibAlpha/Relativity/General/InitialData/GaugeRecovery.lean —
+    `bianchi_constraint_propagation_split`, `linearizedBox_gaugeRecovery`,
+    `flrw_constraint_propagates`, `flrw_full_einstein_of_reduced`, `flrw_gaugeRecovery`
+114. PhyslibAlpha/Relativity/General/InitialData/ExplicitDevelopments.lean —
+    `explicitSolutionObligations`, `explicitSolutions_certificate`
 
 ## References
 

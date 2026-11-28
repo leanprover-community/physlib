@@ -46,7 +46,10 @@ it is not a manifold-level derivation of the linearized equations.
 
 ## iv. References
 
-* None.
+* S. M. Carroll, *Lecture Notes on General Relativity*, arXiv:gr-qc/9712019,
+  Ch. 7. [ref: Carroll1997]
+* R. M. Wald, *General Relativity*, University of Chicago Press, 1984, Ch. 7.
+  [ref: wald_1984_general_relativity]
 
 -/
 

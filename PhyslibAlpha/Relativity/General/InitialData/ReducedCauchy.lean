@@ -71,7 +71,10 @@ hyperbolic theorem without symmetry.
 
 ## iv. References
 
-* None.
+* L. C. Evans, *Partial Differential Equations*, 2nd ed., AMS, 2010, §2.4.
+  [ref: Evans2010PDE]
+* R. M. Wald, *General Relativity*, University of Chicago Press, 1984, Ch. 7.
+  [ref: wald_1984_general_relativity]
 
 -/
 
@@ -617,7 +620,8 @@ lemma flrw_ivp_exists_in_ball (Λ a₀ v₀ : ℝ) (ha₀ : a₀ ≠ 0) :
         HasDerivAt z (flrwField Λ (z t)) t ∧
         z t ∈ closedBall (a₀, v₀) (|a₀| / 2) := by
   have hf := contDiffAt_flrwField Λ a₀ v₀ ha₀
-  obtain ⟨z, hz0, ε, hε, hz⟩ := hf.exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt₀ 0
+  obtain ⟨z, hz0, ε, hε, hz⟩ :=
+    hf.exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt₀ 0
   have hz' : ∀ t ∈ Ioo (-ε) ε, HasDerivAt z (flrwField Λ (z t)) t := by
     intro t ht
     exact hz t (by simpa using ht)
