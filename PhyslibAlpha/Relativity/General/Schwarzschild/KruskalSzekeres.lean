@@ -146,7 +146,8 @@ lemma kruskalRadius_zero (M : ℝ) (hM : 0 < M) :
     simp [kruskalF]
     field_simp [hM.ne']
     ring
-  have hval : kruskalF M (Function.invFun (fun r : {r : ℝ // 0 < r} => kruskalF M r.val) 0).val = 0 := by
+  have hval : kruskalF M (Function.invFun (fun r : {r : ℝ // 0 < r} => kruskalF M r.val) 0).val
+    = 0 := by
     exact Function.invFun_eq hex
   have hrpos : 0 < (Function.invFun (fun r : {r : ℝ // 0 < r} => kruskalF M r.val) 0).val := by
     exact (Function.invFun (fun r : {r : ℝ // 0 < r} => kruskalF M r.val) 0).property
@@ -198,7 +199,8 @@ lemma deriv_kruskalF (M r : ℝ) (hM : 0 < M) :
         Real.exp (r / (2 * M)) * deriv (fun s : ℝ => s / (2 * M)) r := by
       have hexp : deriv Real.exp (r / (2 * M)) = Real.exp (r / (2 * M)) := by
         rw [Real.deriv_exp]
-      have hcomp := deriv_comp r (Real.differentiable_exp.differentiableAt) (by fun_prop : DifferentiableAt ℝ (fun s => s / (2 * M)) r)
+      have hcomp := deriv_comp r (Real.differentiable_exp.differentiableAt) (by fun_prop :
+        DifferentiableAt ℝ (fun s => s / (2 * M)) r)
       rw [hexp] at hcomp
       exact hcomp
     rw [hchain]
@@ -209,7 +211,8 @@ lemma deriv_kruskalF (M r : ℝ) (hM : 0 < M) :
       rw [heq, deriv_const_mul_id ((2 * M)⁻¹), one_div]
     rw [this]
     exact mul_one_div _ _
-  have hkr : (fun s : ℝ => kruskalF M s) = (fun s : ℝ => (s / (2 * M) - 1) * Real.exp (s / (2 * M))) := by
+  have hkr : (fun s : ℝ => kruskalF M s) = (fun s : ℝ => (s / (2 * M) - 1) * Real.exp (s / (2
+    * M))) := by
     funext s
     simp [kruskalF]
   rw [hkr, hmul, hd1, hd2]
@@ -400,7 +403,8 @@ lemma metric_mul_inv (M : ℝ) (x : Fin 4 → ℝ) (hM : 0 < M)
   have hr : 0 < r := kruskalRadius_pos M hM _
   have hrne : kruskalRadius M (x 1 ^ 2 - x 0 ^ 2) ≠ 0 := hr.ne'
   have hF : 32 * M ^ 3 / r * Real.exp (-r / (2 * M)) ≠ 0 := by
-    exact mul_ne_zero (div_ne_zero (mul_ne_zero (by norm_num : (32 : ℝ) ≠ 0) (pow_ne_zero 3 (by linarith : M ≠ 0))) hr.ne') (Real.exp_ne_zero _)
+    exact mul_ne_zero (div_ne_zero (mul_ne_zero (by norm_num : (32 : ℝ) ≠ 0) (pow_ne_zero 3 (by
+      linarith : M ≠ 0))) hr.ne') (Real.exp_ne_zero _)
   ext i j
   fin_cases i <;> fin_cases j <;>
     simp [metric, metricInv, Matrix.mul_apply, Fin.sum_univ_four] <;>
@@ -413,7 +417,8 @@ lemma metricInv_mul (M : ℝ) (x : Fin 4 → ℝ) (hM : 0 < M)
   have hr : 0 < r := kruskalRadius_pos M hM _
   have hrne : kruskalRadius M (x 1 ^ 2 - x 0 ^ 2) ≠ 0 := hr.ne'
   have hF : 32 * M ^ 3 / r * Real.exp (-r / (2 * M)) ≠ 0 := by
-    exact mul_ne_zero (div_ne_zero (mul_ne_zero (by norm_num : (32 : ℝ) ≠ 0) (pow_ne_zero 3 (by linarith : M ≠ 0))) hr.ne') (Real.exp_ne_zero _)
+    exact mul_ne_zero (div_ne_zero (mul_ne_zero (by norm_num : (32 : ℝ) ≠ 0) (pow_ne_zero 3 (by
+      linarith : M ≠ 0))) hr.ne') (Real.exp_ne_zero _)
   ext i j
   fin_cases i <;> fin_cases j <;>
     simp [metric, metricInv, Matrix.mul_apply, Fin.sum_univ_four] <;>

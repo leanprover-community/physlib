@@ -124,7 +124,8 @@ lemma ricciScalar_eq_zero (S : SchwarzschildSpacetime) (p : S.toStaticSpherical.
 lemma einsteinTensor_eq_zero (S : SchwarzschildSpacetime)
     (p : S.toStaticSpherical.RegularPoint) (i j : Fin 4) :
     S.toCoordinateMetric.einsteinTensor p.x i j = 0 := by
-  simp only [CoordinateMetric.einsteinTensor_apply, S.toCoordinateMetric_g, S.toCoordinateMetric_ginv]
+  simp only [CoordinateMetric.einsteinTensor_apply, S.toCoordinateMetric_g,
+    S.toCoordinateMetric_ginv]
   have hf0 : S.toDeSitter.toStaticSpherical.metricFn (p.x 1) ≠ 0 := by simpa using p.hf
   have h := S.toDeSitter.einsteinTensor_eq ⟨p.x, p.hr, hf0, p.hsin⟩ i j
   simp only [CoordinateMetric.einsteinTensor_apply, S.toDeSitter.toCoordinateMetric_g,

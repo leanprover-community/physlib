@@ -280,7 +280,8 @@ lemma ricciScalar_spatialRiemannTensorOf
     (hgC2 : ∀ i j, ContDiffAt ℝ 2 (fun y => h y i j) x)
     (hΓD : ∀ k i j, DifferentiableAt ℝ (fun y => CoordinateCurvature.christoffel h hinv y k i j) x)
     (hΓ : ∀ᶠ y in 𝓝 x, ∀ k i j,
-      CoordinateCurvature.christoffel h hinv y k i j = CoordinateCurvature.christoffel h hinv y k j i) :
+      CoordinateCurvature.christoffel h hinv y k i j
+        = CoordinateCurvature.christoffel h hinv y k j i) :
     ricciScalar M (spatialRiemannTensorOf h hinv x hgSymm hInv hgC2 hΓD hΓ) =
       CoordinateCurvature.ricciScalar h hinv x := by
   simp only [ricciScalar, ricci, spatialRiemannTensorOf, CoordinateCurvature.ricciScalar,

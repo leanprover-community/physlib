@@ -117,7 +117,8 @@ noncomputable def metricInv (S : StaticSphericalMetric) (x : Fin 4 → ℝ) : Te
     else 0
 
 /-- Off-diagonal entries of the static spherically symmetric inverse metric vanish. -/
-@[simp] lemma metricInv_offdiag (S : StaticSphericalMetric) (x : Fin 4 → ℝ) {i j : Fin 4} (hij : i ≠ j) :
+@[simp] lemma metricInv_offdiag (S : StaticSphericalMetric) (x : Fin 4
+  → ℝ) {i j : Fin 4} (hij : i ≠ j) :
     S.metricInv x i j = 0 := by
   simp [metricInv, hij]
 

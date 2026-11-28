@@ -334,7 +334,8 @@ noncomputable def bardeenData (K : ScalarKinematics) : BardeenData where
 /-- The gauge transform of a kinematics point: the metric potentials transform
 as in Section C, while the background and the supplied Bardeen derivative data
 are inert. -/
-noncomputable def gaugeKinematics (K : ScalarKinematics) (xi0 xi0' xi' xi'' : ℝ) : ScalarKinematics where
+noncomputable def gaugeKinematics (K : ScalarKinematics) (xi0 xi0' xi' xi'' : ℝ) : ScalarKinematics
+  where
   a := K.a
   a1 := K.a1
   phi := gaugePhi K.a K.a1 K.phi xi0 xi0'

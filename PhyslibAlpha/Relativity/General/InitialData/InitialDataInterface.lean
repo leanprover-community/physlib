@@ -241,7 +241,8 @@ noncomputable def spatialRiemannTensorOfConstMetric
     (by
       intro k i j
       have hc : (fun y : Fin 3 → ℝ =>
-          CoordinateCurvature.christoffel (fun _ => M.g) (fun _ => M.ginv) y k i j) = fun _ => 0 := by
+          CoordinateCurvature.christoffel (fun _ => M.g) (fun _ => M.ginv) y k i j)
+            = fun _ => 0 := by
         funext y
         exact CoordinateCurvature.christoffel_const (fun _ => M.g) (fun _ => M.ginv) M.g
           (fun _ => rfl) y k i j
@@ -275,7 +276,8 @@ lemma spatialRiemannTensorOfConstMetric_eq_flat
     (by
       intro k i j
       have hc : (fun y : Fin 3 → ℝ =>
-          CoordinateCurvature.christoffel (fun _ => M.g) (fun _ => M.ginv) y k i j) = fun _ => 0 := by
+          CoordinateCurvature.christoffel (fun _ => M.g) (fun _ => M.ginv) y k i j)
+            = fun _ => 0 := by
         funext y
         exact CoordinateCurvature.christoffel_const (fun _ => M.g) (fun _ => M.ginv) M.g
           (fun _ => rfl) y k i j
@@ -350,7 +352,8 @@ noncomputable def ChartInitialData.ofFields
     (hΓD : ∀ k i j,
       DifferentiableAt ℝ (fun y => CoordinateCurvature.christoffel h hinv y k i j) x)
     (hΓ : ∀ᶠ y in 𝓝 x, ∀ k i j,
-      CoordinateCurvature.christoffel h hinv y k i j = CoordinateCurvature.christoffel h hinv y k j i)
+      CoordinateCurvature.christoffel h hinv y k i j
+        = CoordinateCurvature.christoffel h hinv y k j i)
     (Ksymm : IsSymm (K x))
     (vacuum : (InitialData.mk M
       (spatialRiemannTensorOf h hinv x hgSymm hInv hgC2 hΓD hΓ)
@@ -492,7 +495,8 @@ noncomputable def warpedSpatialRiemann : RiemannTensor 3 := by
 
 lemma warpedChristoffel_011 (x : Fin 3 → ℝ) :
     CoordinateCurvature.christoffel warpedSpatialMetric warpedSpatialMetricInv x 0 1 1 = -x 0 := by
-  have hderiv : CoordinateCurvature.coordDeriv 0 (fun y : Fin 3 → ℝ => 1 + (y 0) ^ 2) x = 2 * x 0 := by
+  have hderiv : CoordinateCurvature.coordDeriv 0 (fun y : Fin 3 → ℝ => 1 + (y 0) ^ 2) x = 2
+    * x 0 := by
     apply CoordinateCurvature.coordDeriv_of_hasDerivAt
     have h : (fun s : ℝ => 1 + (Function.update x 0 s 0) ^ 2) =
         fun s : ℝ => 1 + s ^ 2 := by
@@ -510,7 +514,8 @@ lemma warpedChristoffel_001 (x : Fin 3 → ℝ) :
   simp [CoordinateCurvature.coordDeriv_const]
 
 lemma warpedChristoffel_zero (x : Fin 3 → ℝ) (hx : x = 0) :
-    ∀ k i j, CoordinateCurvature.christoffel warpedSpatialMetric warpedSpatialMetricInv x k i j = 0 := by
+    ∀ k i j, CoordinateCurvature.christoffel warpedSpatialMetric warpedSpatialMetricInv x k i j
+      = 0 := by
   subst hx
   have hderiv : CoordinateCurvature.coordDeriv 0 (fun y : Fin 3 → ℝ => 1 + (y 0) ^ 2) 0 = 0 := by
     apply CoordinateCurvature.coordDeriv_of_hasDerivAt
@@ -537,18 +542,21 @@ lemma warpedChristoffel_zero (x : Fin 3 → ℝ) (hx : x = 0) :
 lemma warpedRiemann_0101 :
     CoordinateCurvature.riemann warpedSpatialMetric warpedSpatialMetricInv 0 0 1 0 1 = -1 := by
   have h1 : CoordinateCurvature.coordDeriv 0
-      (fun y => CoordinateCurvature.christoffel warpedSpatialMetric warpedSpatialMetricInv y 0 1 1) 0 = -1 := by
+      (fun y => CoordinateCurvature.christoffel warpedSpatialMetric warpedSpatialMetricInv y 0 1 1)
+        0 = -1 := by
     rw [CoordinateCurvature.coordDeriv_congr 0 0 (fun y => warpedChristoffel_011 y)]
     simp [CoordinateCurvature.coordDeriv]
   have h2 : CoordinateCurvature.coordDeriv 1
-      (fun y => CoordinateCurvature.christoffel warpedSpatialMetric warpedSpatialMetricInv y 0 0 1) 0 = 0 := by
+      (fun y => CoordinateCurvature.christoffel warpedSpatialMetric warpedSpatialMetricInv y 0 0 1)
+        0 = 0 := by
     rw [CoordinateCurvature.coordDeriv_congr 1 0 (fun y => warpedChristoffel_001 y)]
     exact CoordinateCurvature.coordDeriv_const 1 0 0
   have h3 : (∑ l : Fin 3,
       (CoordinateCurvature.christoffel warpedSpatialMetric warpedSpatialMetricInv 0 0 0 l *
         CoordinateCurvature.christoffel warpedSpatialMetric warpedSpatialMetricInv 0 l 1 1 -
       CoordinateCurvature.christoffel warpedSpatialMetric warpedSpatialMetricInv 0 0 1 l *
-        CoordinateCurvature.christoffel warpedSpatialMetric warpedSpatialMetricInv 0 l 0 1)) = 0 := by
+        CoordinateCurvature.christoffel warpedSpatialMetric warpedSpatialMetricInv 0 l 0 1))
+          = 0 := by
     have hz := warpedChristoffel_zero 0 rfl
     simp [hz]
   simp only [CoordinateCurvature.riemann, h1, h2, h3]
@@ -706,13 +714,15 @@ noncomputable def minkowskiChartInitialDataDerived : ChartInitialData minkowskiC
   let hΓD : ∀ k i j,
       DifferentiableAt ℝ (fun y => CoordinateCurvature.christoffel h hinv y k i j) 0 := by
     intro k i j
-    have hc : (fun y : Fin 3 → ℝ => CoordinateCurvature.christoffel h hinv y k i j) = fun _ => 0 := by
+    have hc : (fun y : Fin 3 → ℝ => CoordinateCurvature.christoffel h hinv y k i j)
+      = fun _ => 0 := by
       funext y
       exact CoordinateCurvature.christoffel_const h hinv euclideanMetric3.g (fun _ => rfl) y k i j
     rw [hc]
     exact differentiableAt_const 0
   let hΓ : ∀ᶠ y in 𝓝 (0 : Fin 3 → ℝ), ∀ k i j,
-      CoordinateCurvature.christoffel h hinv y k i j = CoordinateCurvature.christoffel h hinv y k j i := by
+      CoordinateCurvature.christoffel h hinv y k i j
+        = CoordinateCurvature.christoffel h hinv y k j i := by
     filter_upwards with y k i j
     rw [CoordinateCurvature.christoffel_const h hinv euclideanMetric3.g (fun _ => rfl) y k i j,
       CoordinateCurvature.christoffel_const h hinv euclideanMetric3.g (fun _ => rfl) y k j i]
@@ -726,7 +736,8 @@ noncomputable def minkowskiChartInitialDataDerived : ChartInitialData minkowskiC
   have hΓ0 : (fun k i j => CoordinateCurvature.christoffel h hinv 0 k i j) = 0 := by
     funext k i j
     exact CoordinateCurvature.christoffel_const h hinv euclideanMetric3.g (fun _ => rfl) 0 k i j
-  refine ChartInitialData.ofFields minkowskiChart euclideanMetric3 h hinv K 0 hgSymm hInv hgC2 hΓD hΓ
+  refine ChartInitialData.ofFields minkowskiChart euclideanMetric3 h hinv K 0
+    hgSymm hInv hgC2 hΓD hΓ
     Matrix.isSymm_zero ?_
   rw [hR3, hdK, hΓ0]
   simpa [h, K, flatInitialData] using flatInitialData_isVacuum

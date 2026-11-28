@@ -114,7 +114,8 @@ noncomputable def metricFn (S : ReissnerNordstromSpacetime) (r : ℝ) : ℝ :=
 
 /-- View a Reissner–Nordström spacetime as a `StaticSpherical.StaticSphericalMetric` with profile
 `S.metricFn`. -/
-noncomputable def toStaticSpherical (S : ReissnerNordstromSpacetime) : StaticSpherical.StaticSphericalMetric :=
+noncomputable def toStaticSpherical (S : ReissnerNordstromSpacetime) :
+  StaticSpherical.StaticSphericalMetric :=
   ⟨S.metricFn⟩
 
 /-- The Reissner–Nordström metric as a `CoordinateMetric 4` on its regular chart, where the radial
@@ -310,8 +311,11 @@ lemma maxwellFieldInvariant_coulomb (S : ReissnerNordstromSpacetime) (x : Fin 4 
     (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     GeneralRelativity.maxwellFieldInvariant (S.toStaticSpherical.metricTensor x hr hf hsin)
       (S.coulombFieldStrength (x 1)) = -2 * S.Q ^ 2 / (x 1) ^ 4 := by
-  simp only [GeneralRelativity.maxwellFieldInvariant, StaticSpherical.StaticSphericalMetric.metricTensor, StaticSpherical.StaticSphericalMetric.metric,
-    StaticSpherical.StaticSphericalMetric.metricInv, toStaticSpherical, coulombFieldStrength, Matrix.of_apply, Fin.sum_univ_four]
+  simp only [GeneralRelativity.maxwellFieldInvariant,
+    StaticSpherical.StaticSphericalMetric.metricTensor,
+    StaticSpherical.StaticSphericalMetric.metric,
+    StaticSpherical.StaticSphericalMetric.metricInv, toStaticSpherical, coulombFieldStrength,
+      Matrix.of_apply, Fin.sum_univ_four]
   norm_num
   field_simp [hr, hf, hsin]
   ring
@@ -330,7 +334,9 @@ lemma maxwellStressEnergy_apply (S : ReissnerNordstromSpacetime) (x : Fin 4 → 
       else 0 := by
   simp only [GeneralRelativity.maxwellStressEnergy]
   rw [maxwellFieldInvariant_coulomb S x hr hf hsin]
-  simp only [StaticSpherical.StaticSphericalMetric.metricTensor, StaticSpherical.StaticSphericalMetric.metric, StaticSpherical.StaticSphericalMetric.metricInv, toStaticSpherical,
+  simp only [StaticSpherical.StaticSphericalMetric.metricTensor,
+    StaticSpherical.StaticSphericalMetric.metric, StaticSpherical.StaticSphericalMetric.metricInv,
+    toStaticSpherical,
     coulombFieldStrength, Matrix.of_apply, Fin.sum_univ_four]
   fin_cases i <;> fin_cases j <;> simp
   all_goals field_simp [hr, hf, hsin]

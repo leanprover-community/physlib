@@ -257,7 +257,8 @@ private lemma christoffel_eq_efGamma (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠
     (hsin : Real.sin (x 2) ≠ 0) (k i j : Fin 4) :
     CoordinateCurvature.christoffel (metric M) (metricInv M) x k i j = efGamma M x k i j := by
   fin_cases k <;> fin_cases i <;> fin_cases j <;>
-    simp [CoordinateCurvature.christoffel, CoordinateCurvature.coordDeriv, efGamma, metric, metricInv,
+    simp [CoordinateCurvature.christoffel, CoordinateCurvature.coordDeriv, efGamma, metric,
+      metricInv,
       Fin.sum_univ_four] <;>
     try field_simp [hr, hsin] <;>
     try ring_nf
@@ -302,7 +303,8 @@ lemma ricciTensorOf_metric (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     filter_upwards [hr', hsin'] with y hy1 hy2
     exact christoffel_eq_efGamma M y hy1 hy2 k i j
   fin_cases σ <;> fin_cases ν <;>
-    simp [CoordinateCurvature.ricciTensor, CoordinateCurvature.riemann, hcoord, coordDeriv_efGamma_eq,
+    simp [CoordinateCurvature.ricciTensor, CoordinateCurvature.riemann, hcoord,
+      coordDeriv_efGamma_eq,
       christoffel_eq_efGamma, Fin.sum_univ_four, hr, hsin]
   all_goals simp [efGamma, efGammaDeriv]
   all_goals try field_simp [hr, hsin]
@@ -612,7 +614,8 @@ lemma schwarzschild_eq_pullback (M : ℝ) (x : SpacetimeChart) (hM : 0 < M)
   ext σ ν
   fin_cases σ <;> fin_cases ν <;>
     simp [Schwarzschild.SchwarzschildSpacetime.metric, Schwarzschild.SchwarzschildSpacetime.metric,
-      StaticSpherical.StaticSphericalMetric.metric, schwarzschildSpacetime, Schwarzschild.SchwarzschildSpacetime.metricFn,
+      StaticSpherical.StaticSphericalMetric.metric, schwarzschildSpacetime,
+        Schwarzschild.SchwarzschildSpacetime.metricFn,
       Schwarzschild.SchwarzschildSpacetime.toStaticSpherical,
       metric, schwarzschildToEF, transitionJacobian,
       Matrix.mul_apply, Matrix.transpose_apply, Fin.sum_univ_four] <;>

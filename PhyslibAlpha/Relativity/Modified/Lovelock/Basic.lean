@@ -20,7 +20,8 @@ Algebraic `(2,2)` curvature tensors and the Gauss–Bonnet and Lanczos invariant
 
 At quadratic order in curvature, the Gauss–Bonnet density `𝒢 = R² - 4 R^a_b R^b_a + R^{cd}_{ab}
 R^{ab}_{cd}` yields the Lanczos variation tensor `H^i_j`. The five-index contraction identity and
-the constant-curvature model live in `Lovelock/Contract5.lean` and `Lovelock/ConstantCurvature.lean`.
+the constant-curvature model live in `Lovelock/Contract5.lean` and
+`Lovelock/ConstantCurvature.lean`.
 
 ## ii. Key results
 

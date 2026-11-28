@@ -187,10 +187,12 @@ private lemma christoffelDeriv_eq_staticSpherical (S : SchwarzschildDeSitterSpac
   fin_cases μ
   · simp [christoffelDeriv, StaticSpherical.StaticSphericalMetric.christoffelDeriv]
   · fin_cases k <;> fin_cases i <;> fin_cases j <;>
-      simp [christoffelDeriv, StaticSpherical.StaticSphericalMetric.christoffelDeriv, toStaticSpherical, hd1, hd2]
+      simp [christoffelDeriv, StaticSpherical.StaticSphericalMetric.christoffelDeriv,
+        toStaticSpherical, hd1, hd2]
     all_goals field_simp [hf]; ring
   · fin_cases k <;> fin_cases i <;> fin_cases j <;>
-      simp [christoffelDeriv, StaticSpherical.StaticSphericalMetric.christoffelDeriv, toStaticSpherical]
+      simp [christoffelDeriv, StaticSpherical.StaticSphericalMetric.christoffelDeriv,
+        toStaticSpherical]
   · simp [christoffelDeriv, StaticSpherical.StaticSphericalMetric.christoffelDeriv]
 
 /-- All 64 Christoffel symbols computed from the coordinate metric equal
@@ -204,7 +206,8 @@ lemma christoffel_eq (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (h
   have hmi : S.metricInv = S.toStaticSpherical.metricInv := rfl
   have h := S.toStaticSpherical.christoffel_eq x hr hf hsin
     (S.hasDerivAt_metricFn (x 1) hr).differentiableAt k i j
-  simp only [CoordinateMetric.christoffel_apply, StaticSpherical.StaticSphericalMetric.toCoordinateMetric_g,
+  simp only [CoordinateMetric.christoffel_apply,
+    StaticSpherical.StaticSphericalMetric.toCoordinateMetric_g,
     StaticSpherical.StaticSphericalMetric.toCoordinateMetric_ginv] at h
   rw [hm, hmi, h, S.christoffel_eq_staticSpherical x hr k i j]
 
@@ -220,7 +223,8 @@ lemma pd_christoffel_eq (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ)
   have hmi : S.metricInv = S.toStaticSpherical.metricInv := rfl
   have h := S.toStaticSpherical.pd_christoffel_eq x hr hf hsin
     (S.eventually_differentiableAt_metricFn (x 1) hr) μ a b c
-  simp only [CoordinateMetric.christoffel_apply, StaticSpherical.StaticSphericalMetric.toCoordinateMetric_g,
+  simp only [CoordinateMetric.christoffel_apply,
+    StaticSpherical.StaticSphericalMetric.toCoordinateMetric_g,
     StaticSpherical.StaticSphericalMetric.toCoordinateMetric_ginv] at h
   rw [hm, hmi, h]
   have hr_nhds : ∀ᶠ y in nhds x, y 1 ≠ 0 :=
@@ -260,7 +264,8 @@ verifies the cosmological Einstein-space equations `Ric_{ij} = Λ g_{ij}` and `G
 /-- The coordinate Riemann tensor of the Schwarzschild–de Sitter metric equals the Riemann tensor
 built from its closed-form Christoffel and derivative tables at every 4-tuple `(ρ, σ, μ, ν)`, for
 general `Λ`. -/
-private lemma riemann_eq_data_raw (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+private lemma riemann_eq_data_raw (S : SchwarzschildDeSitterSpacetime)
+    (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (ρ σ μ ν : Fin 4) :
     CoordinateCurvature.riemann S.metric S.metricInv x ρ σ μ ν
       = riemannFromData S.christoffel S.christoffelDeriv x ρ σ μ ν := by
@@ -277,7 +282,8 @@ private lemma riemann_eq_data_raw (S : SchwarzschildDeSitterSpacetime) (x : Fin 
 
 /-- All six independent Schwarzschild–de Sitter Riemann components computed directly from the
 coordinate metric, for general `Λ`. -/
-private lemma riemann_components_from_metric_raw (S : SchwarzschildDeSitterSpacetime) (x : Fin 4 → ℝ)
+private lemma riemann_components_from_metric_raw (S : SchwarzschildDeSitterSpacetime)
+    (x : Fin 4 → ℝ)
     (hr : x 1 ≠ 0) (hf : S.metricFn (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     (CoordinateCurvature.riemann S.metric S.metricInv x 0 1 0 1
         = (2 * S.M / (x 1) ^ 3 + S.Λ / 3) / S.metricFn (x 1))

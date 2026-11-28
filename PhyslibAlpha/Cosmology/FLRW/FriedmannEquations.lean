@@ -97,12 +97,14 @@ lemma einsteinTensor_00_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight) (Λ
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
     (S.toCoordinateMetric.einsteinTensor x 0 0 + Λ * S.metric x 0 0
-        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * GeneralRelativity.perfectFluidStressEnergy c ρ p (S.metric x) 0 0)
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4
+          * GeneralRelativity.perfectFluidStressEnergy c ρ p (S.metric x) 0 0)
       ↔ (deriv S.a (x 0) / S.a (x 0)) ^ 2
           = (8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * ρ - S.k / (S.a (x 0)) ^ 2 + Λ / 3 := by
   have hc : (c : ℝ) ≠ 0 := c.val_ne_zero
   rw [S.einsteinTensor ⟨x, ha, hr, hkr, hsin⟩ ha_diff ha2 0 0]
-  simp only [metric, GeneralRelativity.perfectFluidStressEnergy, Matrix.of_apply, ↓reduceIte, and_self, mul_one]
+  simp only [metric, GeneralRelativity.perfectFluidStressEnergy, Matrix.of_apply, ↓reduceIte,
+    and_self, mul_one]
   have hrhs : 8 * Real.pi * G.val / (c : ℝ) ^ 4 * (ρ * (c : ℝ) ^ 2 + p + p * -1)
       = 8 * Real.pi * G.val / (c : ℝ) ^ 2 * ρ := by
     field_simp [hc]
@@ -144,14 +146,16 @@ lemma einsteinTensor_spatial_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight
     (hf1 : (deriv S.a (x 0) / S.a (x 0)) ^ 2
       = (8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * ρ - S.k / (S.a (x 0)) ^ 2 + Λ / 3) :
     (S.toCoordinateMetric.einsteinTensor x 1 1 + Λ * S.metric x 1 1
-        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * GeneralRelativity.perfectFluidStressEnergy c ρ p (S.metric x) 1 1)
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4
+          * GeneralRelativity.perfectFluidStressEnergy c ρ p (S.metric x) 1 1)
       ↔ deriv (deriv S.a) (x 0) / S.a (x 0)
           = -(4 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * (ρ + 3 * p / (c : ℝ) ^ 2) + Λ / 3 := by
   have hc : (c : ℝ) ≠ 0 := c.val_ne_zero
   have hg11 : S.a (x 0) ^ 2 / (1 - S.k * x 1 ^ 2) ≠ 0 :=
     div_ne_zero (pow_ne_zero 2 ha) hkr
   rw [S.einsteinTensor ⟨x, ha, hr, hkr, hsin⟩ ha_diff ha2 1 1]
-  simp only [metric, GeneralRelativity.perfectFluidStressEnergy, Matrix.of_apply, Fin.isValue, one_ne_zero,
+  simp only [metric, GeneralRelativity.perfectFluidStressEnergy, Matrix.of_apply, Fin.isValue,
+    one_ne_zero,
     false_and, ↓reduceIte, mul_zero, zero_add]
   have hfac : -(2 * (deriv (deriv S.a) (x 0) / S.a (x 0)) + (deriv S.a (x 0) / S.a (x 0)) ^ 2
         + S.k / (S.a (x 0)) ^ 2) * (S.a (x 0) ^ 2 / (1 - S.k * x 1 ^ 2))
@@ -175,7 +179,8 @@ lemma einsteinTensor_iff_friedmann (S : FLRWSpacetime) (c : SpeedOfLight) (Λ : 
     (ha_diff : ∀ᶠ t in nhds (x 0), DifferentiableAt ℝ S.a t)
     (ha2 : DifferentiableAt ℝ (deriv S.a) (x 0)) :
     (∀ i j, S.toCoordinateMetric.einsteinTensor x i j + Λ * S.metric x i j
-        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * GeneralRelativity.perfectFluidStressEnergy c ρ p (S.metric x) i j)
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4
+          * GeneralRelativity.perfectFluidStressEnergy c ρ p (S.metric x) i j)
       ↔ ((deriv S.a (x 0) / S.a (x 0)) ^ 2
             = (8 * Real.pi * G.val / (3 * (c : ℝ) ^ 2)) * ρ - S.k / (S.a (x 0)) ^ 2 + Λ / 3)
           ∧ (deriv (deriv S.a) (x 0) / S.a (x 0)
@@ -347,7 +352,8 @@ lemma einsteinTensor_ofCosmology_iff_friedmann (c : SpeedOfLight) (U : Cosmology
     (hkr : 1 - U.geometry.curvature * (x 1) ^ 2 ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     (∀ i j, (FLRWSpacetime.ofCosmology c U).toCoordinateMetric.einsteinTensor x i j
           + Λ * (FLRWSpacetime.ofCosmology c U).metric x i j
-        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * GeneralRelativity.perfectFluidStressEnergy c (F.ρ t) (F.p t)
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4
+          * GeneralRelativity.perfectFluidStressEnergy c (F.ρ t) (F.p t)
             ((FLRWSpacetime.ofCosmology c U).metric x) i j)
       ↔ Cosmology.FLRW.FriedmannEquation.FirstOrderFriedmann U.a F.ρ U.geometry.curvature Λ
             G.val c t
@@ -395,7 +401,8 @@ lemma friedmannSolution_of_einsteinTensor (c : SpeedOfLight) (U : Cosmology.FLRW
       let x : Fin 4 → ℝ := ![(c : ℝ) * t.val, r₀, θ₀, 0]
       (FLRWSpacetime.ofCosmology c U).toCoordinateMetric.einsteinTensor x i j
           + Λ * (FLRWSpacetime.ofCosmology c U).metric x i j
-        = 8 * Real.pi * G.val / (c : ℝ) ^ 4 * GeneralRelativity.perfectFluidStressEnergy c (F.ρ t) (F.p t)
+        = 8 * Real.pi * G.val / (c : ℝ) ^ 4
+          * GeneralRelativity.perfectFluidStressEnergy c (F.ρ t) (F.p t)
             ((FLRWSpacetime.ofCosmology c U).metric x) i j) :
     U.FriedmannSolution F Λ G.val c := by
   refine ⟨fun t ht => ?_, fun t ht => ?_⟩

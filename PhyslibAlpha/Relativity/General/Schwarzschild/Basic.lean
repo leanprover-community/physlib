@@ -29,7 +29,8 @@ matching to the exterior of `IncompressibleSphere`.
 
 Starting from the line element `g = diag(-f, f⁻¹, r², r² sin²θ)` with radial metric function
 `f = 1 - 2M/r`, where `M` is the mass of `S : SchwarzschildSpacetime`, this module views the metric
-as a `StaticSpherical.StaticSphericalMetric`, computes radial derivatives of the metric and its static Newtonian
+as a `StaticSpherical.StaticSphericalMetric`,
+  computes radial derivatives of the metric and its static Newtonian
 potential `Φ = -M/r`, and evaluates the radial Christoffel symbols `Γ^t_{tr}` and `Γ^r_{rr}`
 from the metric components.
 
@@ -94,7 +95,8 @@ namespace SchwarzschildSpacetime
 /-- The Schwarzschild radial metric function `f(r) = 1 - 2M / r`. -/
 noncomputable def metricFn (S : SchwarzschildSpacetime) (r : ℝ) : ℝ := 1 - 2 * S.M / r
 
-/-- View a Schwarzschild spacetime as a `StaticSpherical.StaticSphericalMetric` with profile `S.metricFn`. -/
+/-- View a Schwarzschild spacetime as a `StaticSpherical.StaticSphericalMetric` with profile
+  `S.metricFn`. -/
 noncomputable def toStaticSpherical (S : SchwarzschildSpacetime) :
     StaticSpherical.StaticSphericalMetric :=
   ⟨S.metricFn⟩
@@ -269,7 +271,8 @@ lemma deriv_christoffelTtr (S : SchwarzschildSpacetime) (r : ℝ) (hr : r ≠ 0)
 
 Matching the exterior mass `M = r_s / 2` to the constant-density sphere connects the point-mass
 Schwarzschild geometry to the uniform-density stellar interior. The Riemann, Ricci, scalar, and
-Einstein tensors are computed from the coordinate metric in `Schwarzschild/CoordinateCurvature.lean`.
+Einstein tensors are computed from the coordinate metric in
+`Schwarzschild/CoordinateCurvature.lean`.
 
 -/
 

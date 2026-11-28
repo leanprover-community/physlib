@@ -19,9 +19,10 @@ coordinate counterpart.
 ## i. Overview
 
 Contracting the Ricci tensor against the inverse metric produces the scalar curvature invariant
-`R = g^{ij} Ric_{ij}`, both for a bundled `MetricTensor` acting on an algebraic `RiemannTensor` and,
-coordinate by coordinate, for a metric field and its inverse.  This module defines both `ricciScalar`
-functions and verifies that they vanish identically for flat spacetime and for a constant metric.
+`R = g^{ij} Ric_{ij}`, both for a bundled `MetricTensor` acting on an algebraic `RiemannTensor`
+and, coordinate by coordinate, for a metric field and its inverse.  This module defines both
+`ricciScalar` functions and verifies that they vanish identically for flat spacetime and for a
+constant metric.
 
 ## ii. Key results
 

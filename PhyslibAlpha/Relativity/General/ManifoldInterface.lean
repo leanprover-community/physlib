@@ -412,7 +412,8 @@ lemma minkowskiChart_metricCovariantDeriv_zero
     (x : SpacetimeChart) (i j k : Fin 4) :
     minkowskiChart.metricCovariantDeriv x i j k = 0 := by
   rw [ChartSpacetime.metricCovariantDeriv]
-  have hpd : CoordinateCurvature.coordDeriv i (fun y => minkowskiChart.coordinateMetric y j k) x = 0 := by
+  have hpd : CoordinateCurvature.coordDeriv i (fun y => minkowskiChart.coordinateMetric y j k) x
+    = 0 := by
     have hconst : ∀ y, minkowskiChart.coordinateMetric y j k = minkowskiMetric4 j k := by
       intro y
       simp [ChartSpacetime.coordinateMetric, minkowskiChart, minkowski]
@@ -471,7 +472,8 @@ lemma ChartSpacetime.metricCovariantDeriv_eq_zero (X : ChartSpacetime)
             + CoordinateCurvature.coordDeriv p (fun y => X.coordinateMetric y i m) x
             - CoordinateCurvature.coordDeriv m (fun y => X.coordinateMetric y i p) x)) *
           X.coordinateMetric x l q
-          = ∑ m : Fin 4, (1 / 2) * (CoordinateCurvature.coordDeriv i (fun y => X.coordinateMetric y p m) x
+          = ∑ m : Fin 4, (1 / 2)
+            * (CoordinateCurvature.coordDeriv i (fun y => X.coordinateMetric y p m) x
               + CoordinateCurvature.coordDeriv p (fun y => X.coordinateMetric y i m) x
               - CoordinateCurvature.coordDeriv m (fun y => X.coordinateMetric y i p) x) *
               (∑ l : Fin 4, X.coordinateInverseMetric x l m * X.coordinateMetric x l q) := by

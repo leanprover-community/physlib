@@ -470,7 +470,8 @@ lemma spatialLaplacian3D_brillLindquistPhi (M : ℝ) {x : SpaceChart} (hx : norm
       exact coordDeriv_brillLindquistPhi M (hball s hs) i
     rw [coordDeriv2, coordDeriv, hev.deriv_eq]
     have hxi : HasDerivAt (fun s : ℝ => -(M / 2) * Function.update x i s i) (-(M / 2)) (x i) := by
-      have hfun : (fun s : ℝ => -(M / 2) * Function.update x i s i) = fun s : ℝ => -(M / 2) * s := by
+      have hfun : (fun s : ℝ => -(M / 2) * Function.update x i s i) =
+          fun s : ℝ => -(M / 2) * s := by
         funext s; simp
       rw [hfun]
       simpa using (hasDerivAt_id (x i)).const_mul (-(M / 2))
@@ -488,10 +489,12 @@ lemma spatialLaplacian3D_brillLindquistPhi (M : ℝ) {x : SpaceChart} (hx : norm
     simp only [Function.update_eq_self]
     have hsq2 : Real.sqrt (norm3Sq x) ^ 2 = norm3Sq x := Real.sq_sqrt hrpos.le
     have hpow5 : Real.sqrt (norm3Sq x) ^ 5 = norm3Sq x * Real.sqrt (norm3Sq x) ^ 3 := by
-      calc Real.sqrt (norm3Sq x) ^ 5 = Real.sqrt (norm3Sq x) ^ 2 * Real.sqrt (norm3Sq x) ^ 3 := by ring
+      calc Real.sqrt (norm3Sq x) ^ 5 = Real.sqrt (norm3Sq x) ^ 2
+        * Real.sqrt (norm3Sq x) ^ 3 := by ring
         _ = norm3Sq x * Real.sqrt (norm3Sq x) ^ 3 := by rw [hsq2]
     have hpow6 : (Real.sqrt (norm3Sq x) ^ 3) ^ 2 = norm3Sq x * Real.sqrt (norm3Sq x) ^ 4 := by
-      calc (Real.sqrt (norm3Sq x) ^ 3) ^ 2 = Real.sqrt (norm3Sq x) ^ 2 * Real.sqrt (norm3Sq x) ^ 4 := by ring
+      calc (Real.sqrt (norm3Sq x) ^ 3) ^ 2 = Real.sqrt (norm3Sq x) ^ 2
+        * Real.sqrt (norm3Sq x) ^ 4 := by ring
         _ = norm3Sq x * Real.sqrt (norm3Sq x) ^ 4 := by rw [hsq2]
     field_simp [hsqrt]
     rw [hsq2]
@@ -563,7 +566,8 @@ lemma christoffel_eq_sdsSpatialG (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
     have hd := hasDerivAt_pow 2 (x 0)
     convert hd.deriv using 1
     ring
-  have h0_22 : CoordinateCurvature.coordDeriv 0 (fun y : SpaceChart => y 0 ^ 2 * Real.sin (y 1) ^ 2) x =
+  have h0_22 : CoordinateCurvature.coordDeriv 0 (fun y : SpaceChart => y 0 ^ 2
+    * Real.sin (y 1) ^ 2) x =
       2 * x 0 * Real.sin (x 1) ^ 2 := by
     have hfun : (fun s : ℝ => Function.update x 0 s 0 ^ 2 *
         Real.sin (Function.update x 0 s 1) ^ 2) = fun s => s ^ 2 * Real.sin (x 1) ^ 2 := by
@@ -572,7 +576,8 @@ lemma christoffel_eq_sdsSpatialG (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
     have hd := (hasDerivAt_pow 2 (x 0)).mul_const (Real.sin (x 1) ^ 2)
     convert hd.deriv using 1
     ring
-  have h1_22 : CoordinateCurvature.coordDeriv 1 (fun y : SpaceChart => y 0 ^ 2 * Real.sin (y 1) ^ 2) x =
+  have h1_22 : CoordinateCurvature.coordDeriv 1 (fun y : SpaceChart => y 0 ^ 2
+    * Real.sin (y 1) ^ 2) x =
       2 * x 0 ^ 2 * Real.sin (x 1) * Real.cos (x 1) := by
     have hfun : (fun s : ℝ => Function.update x 1 s 0 ^ 2 *
         Real.sin (Function.update x 1 s 1) ^ 2) = fun s => x 0 ^ 2 * Real.sin s ^ 2 := by
@@ -582,7 +587,8 @@ lemma christoffel_eq_sdsSpatialG (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
       (CoordinateCurvature.hasDerivAt_sin_sq (x 1)).const_mul (x 0 ^ 2)
     convert hd.deriv using 1
     ring
-  have h2_22 : CoordinateCurvature.coordDeriv 2 (fun y : SpaceChart => y 0 ^ 2 * Real.sin (y 1) ^ 2) x = 0 := by
+  have h2_22 : CoordinateCurvature.coordDeriv 2 (fun y : SpaceChart => y 0 ^ 2
+    * Real.sin (y 1) ^ 2) x = 0 := by
     have hfun : (fun s : ℝ => Function.update x 2 s 0 ^ 2 *
         Real.sin (Function.update x 2 s 1) ^ 2) = fun _ => x 0 ^ 2 * Real.sin (x 1) ^ 2 := by
       funext s; simp
@@ -596,8 +602,9 @@ lemma christoffel_eq_sdsSpatialG (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
 lemma pd_christoffel_eq_pd_sdsSpatialG (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠ 0)
     (hf : (sdsSpacetime M Λ).metricFn (x 0) ≠ 0) (hsin : Real.sin (x 1) ≠ 0)
     (μ k i j : Fin 3) :
-    CoordinateCurvature.coordDeriv μ (fun y => CoordinateCurvature.christoffel (sdsSpatialMetric M Λ)
-        (sdsSpatialMetricInv M Λ) y k i j) x =
+    CoordinateCurvature.coordDeriv μ
+        (fun y => CoordinateCurvature.christoffel (sdsSpatialMetric M Λ)
+          (sdsSpatialMetricInv M Λ) y k i j) x =
       CoordinateCurvature.coordDeriv μ (fun y => sdsSpatialG M Λ y k i j) x := by
   have hev_r : ∀ᶠ r in 𝓝 (x 0), r ≠ 0 ∧ (sdsSpacetime M Λ).metricFn r ≠ 0 := by
     have h1 : ∀ᶠ r in 𝓝 (x 0), r ≠ 0 := continuousAt_id.eventually_ne hr
@@ -606,7 +613,8 @@ lemma pd_christoffel_eq_pd_sdsSpatialG (M Λ : ℝ) (x : SpaceChart) (hr : x 0 �
     exact h1.and h2
   have hev_th : ∀ᶠ th in 𝓝 (x 1), Real.sin th ≠ 0 :=
     Real.continuous_sin.continuousAt.eventually_ne hsin
-  have hcont : ∀ p : Fin 3, ContinuousAt (fun y : SpaceChart => y p) x := fun p => continuousAt_apply p x
+  have hcont : ∀ p : Fin 3,
+    ContinuousAt (fun y : SpaceChart => y p) x := fun p => continuousAt_apply p x
   have hev_y : ∀ᶠ y in 𝓝 x,
       y 0 ≠ 0 ∧ (sdsSpacetime M Λ).metricFn (y 0) ≠ 0 ∧ Real.sin (y 1) ≠ 0 := by
     have hr' := (hcont 0).eventually hev_r
@@ -769,7 +777,8 @@ lemma spatialScalarCurvOf_sdsSpatial (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠
         sdsSpatialG M Λ x k i j :=
     christoffel_eq_sdsSpatialG M Λ x hr hf hsin
   have hpd : ∀ μ k i j,
-      CoordinateCurvature.coordDeriv μ (fun y => CoordinateCurvature.christoffel (sdsSpatialMetric M Λ)
+      CoordinateCurvature.coordDeriv μ (fun y => CoordinateCurvature.christoffel (sdsSpatialMetric M
+        Λ)
           (sdsSpatialMetricInv M Λ) y k i j) x =
         sdsSpatialDG M Λ μ x k i j := by
     intro μ k i j
@@ -777,14 +786,16 @@ lemma spatialScalarCurvOf_sdsSpatial (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠
       pd_sdsSpatialG_eq_sdsSpatialDG M Λ x hr hf hsin μ k i j]
   have hcos_sq : Real.cos (x 1) ^ 2 = 1 - Real.sin (x 1) ^ 2 := by
     linear_combination Real.sin_sq_add_cos_sq (x 1)
-  have hric00 : CoordinateCurvature.ricciTensor (sdsSpatialMetric M Λ) (sdsSpatialMetricInv M Λ) x 0 0 =
+  have hric00 : CoordinateCurvature.ricciTensor (sdsSpatialMetric M Λ) (sdsSpatialMetricInv M Λ) x 0
+    0 =
       -(2 * (sdsSpacetime M Λ).metricFnHalfDeriv (x 0) /
         (x 0 * (sdsSpacetime M Λ).metricFn (x 0))) := by
     simp [CoordinateCurvature.ricciTensor, CoordinateCurvature.riemann, Fin.sum_univ_three,
       hpd, hG, sdsSpatialG, sdsSpatialDG]
     field_simp [hr, hf]
     ring
-  have hric11 : CoordinateCurvature.ricciTensor (sdsSpatialMetric M Λ) (sdsSpatialMetricInv M Λ) x 1 1 =
+  have hric11 : CoordinateCurvature.ricciTensor (sdsSpatialMetric M Λ) (sdsSpatialMetricInv M Λ) x 1
+    1 =
       1 - (sdsSpacetime M Λ).metricFn (x 0) -
         x 0 * (sdsSpacetime M Λ).metricFnHalfDeriv (x 0) := by
     simp [CoordinateCurvature.ricciTensor, CoordinateCurvature.riemann, Fin.sum_univ_three,
@@ -792,7 +803,8 @@ lemma spatialScalarCurvOf_sdsSpatial (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠
     field_simp [hr, hsin]
     rw [hcos_sq]
     ring
-  have hric22 : CoordinateCurvature.ricciTensor (sdsSpatialMetric M Λ) (sdsSpatialMetricInv M Λ) x 2 2 =
+  have hric22 : CoordinateCurvature.ricciTensor (sdsSpatialMetric M Λ) (sdsSpatialMetricInv M Λ) x 2
+    2 =
       Real.sin (x 1) ^ 2 * (1 - (sdsSpacetime M Λ).metricFn (x 0) -
         x 0 * (sdsSpacetime M Λ).metricFnHalfDeriv (x 0)) := by
     simp [CoordinateCurvature.ricciTensor, CoordinateCurvature.riemann, Fin.sum_univ_three,
@@ -801,7 +813,8 @@ lemma spatialScalarCurvOf_sdsSpatial (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠
     rw [hcos_sq]
     ring
   have hoff : ∀ σ ν : Fin 3, σ ≠ ν →
-      CoordinateCurvature.ricciTensor (sdsSpatialMetric M Λ) (sdsSpatialMetricInv M Λ) x σ ν = 0 := by
+      CoordinateCurvature.ricciTensor (sdsSpatialMetric M Λ) (sdsSpatialMetricInv M Λ) x σ ν
+        = 0 := by
     intro σ ν hne
     fin_cases σ <;> fin_cases ν
     · exact absurd rfl hne
@@ -820,7 +833,8 @@ lemma spatialScalarCurvOf_sdsSpatial (M Λ : ℝ) (x : SpaceChart) (hr : x 0 ≠
     · simp [CoordinateCurvature.ricciTensor, CoordinateCurvature.riemann, Fin.sum_univ_three,
         hpd, hG, sdsSpatialG, sdsSpatialDG]
     · exact absurd rfl hne
-  simp [spatialScalarCurvOf, CoordinateCurvature.ricciScalar, Fin.sum_univ_three, sdsSpatialMetricInv,
+  simp [spatialScalarCurvOf, CoordinateCurvature.ricciScalar, Fin.sum_univ_three,
+    sdsSpatialMetricInv,
     hric00, hric11, hric22]
   field_simp [hr, hf, hsin]
   simp only [SchwarzschildDeSitter.SchwarzschildDeSitterSpacetime.metricFn,
