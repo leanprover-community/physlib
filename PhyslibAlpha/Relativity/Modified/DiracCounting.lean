@@ -63,7 +63,9 @@ bracket is not formalised.
 ## iv. References
 
 * P. A. M. Dirac, *Lectures on Quantum Mechanics*, Yeshiva University, 1964.
+  [ref: Dirac1964Lectures]
 * M. Henneaux, C. Teitelboim, *Quantization of Gauge Systems*, Princeton, 1992.
+  [ref: HenneauxTeitelboim1992]
 -/
 
 @[expose] public section

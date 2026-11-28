@@ -54,6 +54,7 @@ not claim a global development.
 ## iv. References
 
 * R. M. Wald, *General Relativity*, University of Chicago Press, 1984, Ch. 6.
+  [ref: wald_1984_general_relativity, Ch. 6]
 -/
 @[expose] public section
 

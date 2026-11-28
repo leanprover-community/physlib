@@ -41,9 +41,9 @@ the paper.
 ## iv. References
 
 * J. Bekenstein, M. Milgrom, *Does the missing mass problem signal the
-  breakdown of Newtonian gravity?*, ApJ 286 (1984) 7.
+  breakdown of Newtonian gravity?*, ApJ 286 (1984) 7. [ref: BekensteinMilgrom1984]
 * M. Milgrom, *A modification of the Newtonian dynamics as a possible
-  alternative to the hidden mass hypothesis*, ApJ 270 (1983) 365.
+  alternative to the hidden mass hypothesis*, ApJ 270 (1983) 365. [ref: Milgrom1983a]
 -/
 
 @[expose] public section

@@ -69,6 +69,8 @@ metric and its inverse remain regular across `r = 2M`.  The singularity
 
 * S. M. Carroll, *Lecture Notes on General Relativity*, arXiv:gr-qc/9712019,
   Ch. 7, pp. 175–176. [ref: Carroll1997, pp. 175–176]
+* R. M. Wald, *General Relativity*, University of Chicago Press, 1984, Ch. 6.
+  [ref: wald_1984_general_relativity, Ch. 6]
 
 -/
 @[expose] public section

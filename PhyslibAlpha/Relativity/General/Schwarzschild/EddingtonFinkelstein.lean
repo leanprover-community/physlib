@@ -83,6 +83,8 @@ through the Schwarzschild chart and does not assume `1 - 2M/r ≠ 0`.
 
 * S. M. Carroll, *Lecture Notes on General Relativity*, arXiv:gr-qc/9712019,
   Ch. 7, pp. 174–175. [ref: Carroll1997, pp. 174–175]
+* R. M. Wald, *General Relativity*, University of Chicago Press, 1984, Ch. 6.
+  [ref: wald_1984_general_relativity, Ch. 6]
 
 -/
 @[expose] public section

@@ -97,8 +97,10 @@ its derivative data and the identification `F' = mu ∘ sqrt` as hypotheses.
 
 ## iv. References
 
-* J. Bekenstein, M. Milgrom, ApJ 286 (1984) 7.
-* M. Milgrom, ApJ 270 (1983) 365.
+* J. Bekenstein, M. Milgrom, *Does the missing mass problem signal the breakdown of
+  Newtonian gravity?*, ApJ 286 (1984) 7. [ref: BekensteinMilgrom1984]
+* M. Milgrom, *A modification of the Newtonian dynamics as a possible alternative to
+  the hidden mass hypothesis*, ApJ 270 (1983) 365. [ref: Milgrom1983a]
 -/
 
 @[expose] public section
