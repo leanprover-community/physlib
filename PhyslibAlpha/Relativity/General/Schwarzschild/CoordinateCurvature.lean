@@ -6,6 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.CoordinateCurvature
+public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.Embedding
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 

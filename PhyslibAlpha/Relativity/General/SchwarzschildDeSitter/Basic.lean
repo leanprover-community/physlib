@@ -48,9 +48,6 @@ leaving the Weyl tidal field unchanged.
   coordinate metric, inverse, and metric function.
 - `SchwarzschildDeSitterSpacetime.metricFn_zero_lambda` : reduction to
   `SchwarzschildSpacetime.metricFn` at `Λ = 0`.
-- `SchwarzschildSpacetime.toDeSitter` : embedding `S ↦ ⟨S.M, 0⟩` of a Schwarzschild spacetime
-  into Schwarzschild–de Sitter at `Λ = 0`, with `toDeSitter_M`, `toDeSitter_Λ`,
-  `toDeSitter_metricFn`, `toDeSitter_metric`, and `toDeSitter_metricInv` recording the reduction.
 - `SchwarzschildDeSitterSpacetime.riemann_t_rtr`,
   `SchwarzschildDeSitterSpacetime.riemann_t_thetatheta`,
   `SchwarzschildDeSitterSpacetime.riemann_t_phitphi`,
@@ -398,46 +395,5 @@ lemma weyl_phiphi (S : SchwarzschildDeSitterSpacetime) (r th : ℝ) (hr : r ≠ 
 end SchwarzschildDeSitterSpacetime
 
 end SchwarzschildDeSitter
-
-namespace Schwarzschild
-
-namespace SchwarzschildSpacetime
-
-open SchwarzschildDeSitter
-
-/-- Embed a Schwarzschild spacetime into `SchwarzschildDeSitterSpacetime` at `Λ = 0`. -/
-def toDeSitter (S : SchwarzschildSpacetime) : SchwarzschildDeSitterSpacetime :=
-  ⟨S.M, 0⟩
-
-/-- Mass parameter of `S.toDeSitter` equals `S.M`. -/
-@[simp]
-lemma toDeSitter_M (S : SchwarzschildSpacetime) : S.toDeSitter.M = S.M := rfl
-
-/-- Cosmological constant of `S.toDeSitter` vanishes. -/
-@[simp]
-lemma toDeSitter_Λ (S : SchwarzschildSpacetime) : S.toDeSitter.Λ = 0 := rfl
-
-/-- At `Λ = 0`, `S.toDeSitter.metricFn` agrees pointwise with `S.metricFn`. -/
-@[simp]
-lemma toDeSitter_metricFn (S : SchwarzschildSpacetime) (r : ℝ) :
-    S.toDeSitter.metricFn r = S.metricFn r :=
-  SchwarzschildDeSitterSpacetime.metricFn_zero_lambda S.M r
-
-/-- At `Λ = 0`, `S.toDeSitter.metric` reduces to `S.metric`. -/
-lemma toDeSitter_metric (S : SchwarzschildSpacetime) : S.toDeSitter.metric = S.metric := by
-  ext x i j
-  simp [SchwarzschildDeSitterSpacetime.metric, SchwarzschildDeSitterSpacetime.toStaticSpherical,
-    StaticSpherical.StaticSphericalMetric.metric, metric, toStaticSpherical]
-
-/-- At `Λ = 0`, `S.toDeSitter.metricInv` reduces to `S.metricInv`. -/
-lemma toDeSitter_metricInv (S : SchwarzschildSpacetime) :
-    S.toDeSitter.metricInv = S.metricInv := by
-  ext x i j
-  simp [SchwarzschildDeSitterSpacetime.metricInv, SchwarzschildDeSitterSpacetime.toStaticSpherical,
-    StaticSpherical.StaticSphericalMetric.metricInv, metricInv, toStaticSpherical]
-
-end SchwarzschildSpacetime
-
-end Schwarzschild
 
 end GeneralRelativity

@@ -848,6 +848,7 @@ public import PhyslibAlpha.Relativity.General.Schwarzschild.IncompressibleSphere
 public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.Basic
 public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.CoordinateCurvature
 public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.DeSitterFrame
+public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.Embedding
 public import PhyslibAlpha.Relativity.IsLorentzDeriv
 public import PhyslibAlpha.Relativity.LorentzGroup.Basic
 public import PhyslibAlpha.Relativity.LorentzGroup.Boosts.Axis

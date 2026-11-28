@@ -80,7 +80,9 @@ surface continuity/differentiability junction properties, and compactness bound 
 Schwarzschild-de Sitter (Kottler) metric f(r) = 1 - 2 M / r - Λ r² / 3 yields constant-curvature
 de Sitter frame components, Kretschmann invariant 48 M² / r⁶ + 8 Λ² / 3, and frame Bianchi
 conservation [42], Λ-independent Weyl electric components [43], and full coordinate-metric
-verification of R_{ij} = Λ g_{ij}, R = 4 Λ, and G_{ij} = -Λ g_{ij} [44]. Adding electric charge
+verification of R_{ij} = Λ g_{ij}, R = 4 Λ, and G_{ij} = -Λ g_{ij} [44]; every Schwarzschild
+spacetime embeds in this family at Λ = 0 with the same mass, its metric function, metric and
+inverse reducing to the Schwarzschild ones [88]. Adding electric charge
 yields the Reissner-Nordström electrovacuum metric f(r) = 1 - 2 M / r + Q² / r², the radial
 Coulomb-Maxwell field strength tensor F_{ab}, and the trace-free electromagnetic stress-energy
 tensor satisfying the Einstein-Maxwell equations [45]. Rotating black holes are represented by
@@ -312,8 +314,6 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `SchwarzschildDeSitterSpacetime.metric`, `SchwarzschildDeSitterSpacetime.metricInv`,
     `SchwarzschildDeSitterSpacetime.toStaticSpherical`,
     `SchwarzschildDeSitterSpacetime.toCoordinateMetric`,
-    `SchwarzschildSpacetime.toDeSitter`, `SchwarzschildSpacetime.toDeSitter_metric`,
-    `SchwarzschildSpacetime.toDeSitter_metricInv`,
     `SchwarzschildDeSitterSpacetime.christoffelTtr`,
     `SchwarzschildDeSitterSpacetime.christoffelRrr`, `SchwarzschildDeSitterSpacetime.weyl_rr`,
     `SchwarzschildDeSitterSpacetime.weyl_thetatheta`, `SchwarzschildDeSitterSpacetime.weyl_phiphi`
@@ -512,6 +512,10 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `lovelockContract5_eq_neg_eight_lanczos`, `bach_lanczos_lt_five`, `bach_lanczos_four`
 87. PhyslibAlpha/Relativity/Modified/Lovelock/ConstantCurvature.lean — `constantCurvature`,
     `gaussBonnetScalar_constantCurvature_four`, `lanczosTensor_constantCurvature_five`
+88. PhyslibAlpha/Relativity/General/SchwarzschildDeSitter/Embedding.lean —
+    `SchwarzschildSpacetime.toDeSitter`, `SchwarzschildSpacetime.toDeSitter_M`,
+    `SchwarzschildSpacetime.toDeSitter_Λ`, `SchwarzschildSpacetime.toDeSitter_metricFn`,
+    `SchwarzschildSpacetime.toDeSitter_metric`, `SchwarzschildSpacetime.toDeSitter_metricInv`
 
 ## References
 
