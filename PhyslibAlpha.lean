@@ -23,7 +23,6 @@ public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeFieldData.Fermi
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeFieldData.FermionMatterField
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeFieldData.FermionModule
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.AdjointCoeff
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.Basic
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.GaugeJetGroup
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.JetOperations
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.LieAlgebra.Adjoint

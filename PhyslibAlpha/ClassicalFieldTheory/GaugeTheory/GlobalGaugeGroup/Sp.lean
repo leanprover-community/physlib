@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.Basic
+public import Physlib.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.Basic
 public import Mathlib.LinearAlgebra.SymplecticGroup
 /-!
 # The global gauge group Sp(n)

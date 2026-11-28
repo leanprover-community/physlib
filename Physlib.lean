@@ -1,4 +1,5 @@
 module
+public import Physlib.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.Basic
 public import Physlib.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.Basic
 public import Physlib.ClassicalFieldTheory.Local.Variation
 public import Physlib.ClassicalMechanics.Basic
