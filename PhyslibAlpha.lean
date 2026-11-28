@@ -825,12 +825,14 @@ public import PhyslibAlpha.Relativity.General.GeodesicSystem
 public import PhyslibAlpha.Relativity.General.GravitationalConstant
 public import PhyslibAlpha.Relativity.General.InitialData.AnisotropicSlice
 public import PhyslibAlpha.Relativity.General.InitialData.Basic
+public import PhyslibAlpha.Relativity.General.InitialData.CauchyInterfaces
 public import PhyslibAlpha.Relativity.General.InitialData.CovariantDerivTensor2
-public import PhyslibAlpha.Relativity.General.InitialData.SpaceChart
 public import PhyslibAlpha.Relativity.General.InitialData.FlatSlice
 public import PhyslibAlpha.Relativity.General.InitialData.InitialDataInterface
+public import PhyslibAlpha.Relativity.General.InitialData.ManifoldSobolev
 public import PhyslibAlpha.Relativity.General.InitialData.ReducedWave3D
 public import PhyslibAlpha.Relativity.General.InitialData.SobolevInitialData
+public import PhyslibAlpha.Relativity.General.InitialData.SpaceChart
 public import PhyslibAlpha.Relativity.General.InitialData.WaveCauchy
 public import PhyslibAlpha.Relativity.General.InitialData.WaveEnergy
 public import PhyslibAlpha.Relativity.General.InitialData.WaveEnergy3D
@@ -847,6 +849,7 @@ public import PhyslibAlpha.Relativity.General.Linearized.LinearizedChristoffel
 public import PhyslibAlpha.Relativity.General.Linearized.LinearizedEinstein
 public import PhyslibAlpha.Relativity.General.Linearized.LinearizedRicci
 public import PhyslibAlpha.Relativity.General.Linearized.LinearizedRiemann
+public import PhyslibAlpha.Relativity.General.Linearized.LinearizedWaveGauge
 public import PhyslibAlpha.Relativity.General.Linearized.LorenzGauge
 public import PhyslibAlpha.Relativity.General.Linearized.MinkowskiDalembertian
 public import PhyslibAlpha.Relativity.General.Linearized.NewtonianPerturbation
@@ -875,6 +878,7 @@ public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.Reynolds
 public import PhyslibAlpha.Relativity.LorentzMix
 public import PhyslibAlpha.Relativity.Metrics.Basic
 public import PhyslibAlpha.Relativity.Metrics.Christoffel
+public import PhyslibAlpha.Relativity.Metrics.ConformalDecomposition
 public import PhyslibAlpha.Relativity.Metrics.ConformalMetric
 public import PhyslibAlpha.Relativity.Metrics.SpaceTimeDerivBridge
 public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
