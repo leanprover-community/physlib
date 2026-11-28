@@ -1,8 +1,8 @@
 ---
 name: physlib-alpha-api-map
-description: Help a newcomer contribute an API map for physics, supporting Physlib issue 1891. Take an issue, physics topic, or request to get started through an edited map, checked references, and a reviewable diff.
-argument-hint: "[issue, physics topic, or request to choose a contribution]"
+description: Help a newcomer with expertise in an area of physics write a new API map for that area, or improve an existing one, through a conversation that ends in a reviewable diff and a short summary of what changed. Use it only when someone says they want to write or improve an API map.
+argument-hint: "[area of physics]"
 ---
 
 Read `.agents/skills/physlib-alpha-api-map/SKILL.md` and follow it.
-The contribution request is: $ARGUMENTS
+The area of physics is: $ARGUMENTS
