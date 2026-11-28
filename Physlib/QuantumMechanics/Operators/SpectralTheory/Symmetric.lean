@@ -7,6 +7,7 @@ module
 
 public import Physlib.QuantumMechanics.Operators.EssentiallySelfAdjoint
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.Basic
+public import Mathlib.Analysis.Complex.Convex
 /-!
 
 # Spectral theory for symmetric operators
@@ -36,6 +37,10 @@ Plancherel's theorem), so this Hamiltonian, defined on their span, is essentiall
     all complex numbers with non-zero imaginary part.
 - `regularityDomain_isConnected_iff` : The regularity domain of a symmetric operator is connected
     if and only if it contains a real number.
+- `IsSymmetric.norm_sub_smul_I_sq` : `‖(T - μ i) x‖² = ‖T x‖² + μ² ‖x‖²` for a symmetric operator
+    and real `μ`.
+- `IsSymmetric.defectNumber_eq_of_im_pos`, `IsSymmetric.defectNumber_eq_of_im_neg` : The defect
+    number of a densely defined symmetric operator is constant on each open half-plane.
 - `IsSymmetric.isEssentiallySelfAdjoint_of_defectNumber_eq_zero` : The basic criterion for
     essential self-adjointness: symmetric + densely defined + vanishing defect numbers at `± i`.
 - `IsSymmetric.isEssentiallySelfAdjoint_of_dense_span_eigenvectors` : A symmetric operator whose
@@ -46,7 +51,8 @@ Plancherel's theorem), so this Hamiltonian, defined on their span, is essentiall
 - A. Numerical range
 - B. Regularity domain
 - C. Point spectrum
-- D. Essential self-adjointness
+- D. The norm of `T - μ i`
+- E. Essential self-adjointness
 
 ## iv. References
 
@@ -242,10 +248,39 @@ lemma mem_range_sub_of_apply_eq_of_im_ne_zero {x : T.domain} {c z : ℂ}
     exact mem_range_sub_of_apply_eq hx fun h ↦ (h ▸ hz) rfl
 
 /-!
-## D. Essential self-adjointness
+
+## D. The norm of `T - μ i`
+
+-/
+
+/-- For a symmetric operator and real `μ`, `‖(T - μ i) x‖² = ‖T x‖² + μ² ‖x‖²`. -/
+lemma norm_sub_smul_I_sq (μ : ℝ) (x : T.domain) :
+    ‖T x - ((μ : ℂ) * I) • (x : H)‖ ^ 2 = ‖T x‖ ^ 2 + μ ^ 2 * ‖(x : H)‖ ^ 2 := by
+  simp [@norm_sub_sq ℂ, inner_smul_right, hT, norm_smul, mul_pow]
+
+/-!
+
+## E. Essential self-adjointness
+
 -/
 
 variable [CompleteSpace H]
+
+/-- The defect number of a densely defined symmetric operator is constant on the upper
+half-plane. -/
+lemma defectNumber_eq_of_im_pos (hdense : T.HasDenseDomain) {z₁ z₂ : ℂ} (h₁ : 0 < z₁.im)
+    (h₂ : 0 < z₂.im) : T.defectNumber z₁ = T.defectNumber z₂ :=
+  (hT.isClosable hdense).defectNumber_const <|
+    (convex_halfSpace_im_gt 0).isPreconnected.subset_connectedComponentIn h₁
+      (fun _ hz ↦ hT.mem_regularityDomain_of_im_ne_zero (ne_of_gt hz)) h₂
+
+/-- The defect number of a densely defined symmetric operator is constant on the lower
+half-plane. -/
+lemma defectNumber_eq_of_im_neg (hdense : T.HasDenseDomain) {z₁ z₂ : ℂ} (h₁ : z₁.im < 0)
+    (h₂ : z₂.im < 0) : T.defectNumber z₁ = T.defectNumber z₂ :=
+  (hT.isClosable hdense).defectNumber_const <|
+    (convex_halfSpace_im_lt 0).isPreconnected.subset_connectedComponentIn h₁
+      (fun _ hz ↦ hT.mem_regularityDomain_of_im_ne_zero (ne_of_lt hz)) h₂
 
 /-- The basic criterion for essential self-adjointness: a symmetric, densely-defined operator
 whose defect numbers at `I` and `-I` both vanish is essentially self-adjoint. -/
@@ -255,7 +290,7 @@ lemma isEssentiallySelfAdjoint_of_defectNumber_eq_zero
   have hrange {z : ℂ} (hz : z.im ≠ 0) (hd : T.defectNumber z = 0) :
       (T.closure - z • 1).toFun.range = ⊤ := by
     have hz' : z ∈ T.regularityDomain := hT.mem_regularityDomain_of_im_ne_zero hz
-    have hcl : T.closure.IsClosed := (hT.isClosable hdense).closure_isClosed
+    have hcl : T.closure.IsClosed := hT.closure_isClosed hdense
     rw [← hcl.defectNumber_eq_zero_iff (T.regularityDomain_closure ▸ hz'),
       defectNumber_closure hz']
     exact hd
