@@ -9,20 +9,38 @@ Your goal is to measure how aligned changes made are to the rules and statements
 
 Importantly: You should not post anything without explicit human confirmation.
 
+The physlibAlpha worker (`scripts/worker/physlibAlpha_worker.py`, section 12) runs this skill
+in its non-interactive mode (below) on each PR it opens, and posts the report itself: the human
+who runs the worker confirms the posting by running it.
+
 Below are the steps you should follow.
+
+## Non-interactive mode
+
+The request may say `non-interactive`, followed by the path of an empty folder, for example
+`#1049 non-interactive /tmp/review`. This is for running the check where nobody is there to
+answer, for example by a script. In this mode:
+
+- Never ask anything. Where a step below says to ask or tell the user, follow what that step
+  says for non-interactive mode instead.
+- Use the given folder as `WORK`, rather than creating one.
+- Never post, edit or delete a comment, however the report turns out. Whoever ran you posts it,
+  if they choose to.
+- End with a final message giving the path of `$WORK/report.md`, or, if you could not make the
+  report, why not.
 
 ## Step 1: The setup
 
 Firstly we have to decide two things. Firstly, what changes we need to check, and secondly, what files we need to check them against.
 
-The request should either have a PR number e.g. `#1049` (we will use `#<N>` to describe a PR) or say `local`. If it does not, then you should ask the user for one.
+The request should either have a PR number e.g. `#1049` (we will use `#<N>` to describe a PR) or say `local`. If it does not, then you should ask the user for one (in non-interactive mode, stop, and say so in your final message).
 
 It may also (optionally) have a list of handbook files e.g. `Basic, Naming, References`. If it does we will only run our test on these files. If no such list is provided, we will run it on all the files appearing in `./docs/ContributionHandbook/`.
 
 Now we have to create a local copy of the repo for the changes.
 Importantly, you should never `build` the project.
 
-Create a new empty scratch directory, which we will call `WORK` below. For PR we will use a dedicated worktree:
+Create a new empty scratch directory, which we will call `WORK` below (in non-interactive mode, use the folder you were given). For PR we will use a dedicated worktree:
 
 ```bash
 git fetch https://github.com/leanprover-community/physlib.git "pull/<N>/head"
@@ -42,7 +60,7 @@ git diff "$(git merge-base HEAD FETCH_HEAD)" > "$WORK/local.diff"
 git ls-files --others --exclude-standard > "$WORK/local-untracked.txt"
 ```
 
-You should also determine where a copy of Mathlib is. Use a checkout where there is a `.lake/packages/mathlib` folder (usually the directory this skill was called from). Do not make your own at any point. If there is a disagreement in the Mathlib version between the one found and the one needed for the changes, let the user know. Again, do not make or download your own copy.
+You should also determine where a copy of Mathlib is. Use a checkout where there is a `.lake/packages/mathlib` folder (usually the directory this skill was called from). Do not make your own at any point. If there is a disagreement in the Mathlib version between the one found and the one needed for the changes, let the user know (in non-interactive mode, carry on, and say so in your final message). Again, do not make or download your own copy.
 
 ## Step 2: Running the alignment tests
 
@@ -65,6 +83,9 @@ We now need to create the report. Run:
 ```
 python3 .agents/skills/handbook-alignment/report.py "$WORK/raw-Outputs" > "$WORK/report.md"
 ```
+
+In non-interactive mode, stop here, and go to Step 4: do not show the report, look for earlier
+reports, or post anything.
 
 Show the report to the user. For local changes, stop here.
 
@@ -108,3 +129,5 @@ Clean up any of the files created, for example:
 ```bash
 git worktree remove --force "$WORK/pr-<N>"
 ```
+
+In non-interactive mode, keep `$WORK/report.md`.
