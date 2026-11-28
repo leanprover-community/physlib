@@ -68,12 +68,13 @@ structure MetricPerturbation where
   /-- Pointwise symmetry `h_{ij}(x) = h_{ji}(x)`. -/
   symm : ∀ x, IsSymm (h x)
 
-/-- Componentwise symmetry `P.h x i j = P.h x j i` of a metric perturbation `P`. -/
+/-- A metric perturbation is symmetric in its two indices: `h_{ij} = h_{ji}` at every chart
+point. -/
 lemma MetricPerturbation.symm_apply (P : MetricPerturbation) (x : Fin 4 → ℝ) (i j : Fin 4) :
     P.h x i j = P.h x j i :=
   (P.symm x).apply j i
 
-/-- Pointwise `C²` regularity of every component of a metric perturbation `P` at `x`. -/
+/-- Every component of a metric perturbation is `C²` at the chart point. -/
 def MetricPerturbation.IsC2At (P : MetricPerturbation) (x : Fin 4 → ℝ) : Prop :=
   ∀ a b, ContDiffAt ℝ 2 (fun z => P.h z a b) x
 

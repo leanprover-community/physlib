@@ -90,12 +90,13 @@ structure MOGTheory where
   /-- Inverse Yukawa range parameter `μ`. -/
   μ : ℝ
 
-/-- MOG enhancement factor `1 + T.α (1 - e^{-T.μ r})` evaluated for a `MOGTheory`. -/
+/-- The MOG enhancement factor `1 + α (1 - e^{-μ r})` of a `MOGTheory`, as a function of the
+distance `r`. -/
 noncomputable def MOGTheory.yukawaEnhancementFactor (T : MOGTheory) (r : ℝ) : ℝ :=
   1 + T.α * (1 - Real.exp (-(T.μ * r)))
 
-/-- The MOG gravitational potential `-(G M / r) · T.yukawaEnhancementFactor r` evaluated for a
-`MOGTheory` and Newtonian constant `G : GravitationalConstant`. -/
+/-- The MOG gravitational potential `-(G M / r)` times the enhancement factor, for a `MOGTheory`,
+a Newtonian constant `G : GravitationalConstant`, a source mass `M` and a distance `r`. -/
 noncomputable def MOGTheory.potential (T : MOGTheory) (G : GravitationalConstant)
     (M r : ℝ) : ℝ :=
   -((G.val * M) / r) * T.yukawaEnhancementFactor r
