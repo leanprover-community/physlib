@@ -33,6 +33,8 @@ computed in `Operators/SpectralTheory/Multiplication.lean`.
 
 - `mulOperator μ f` (notation `𝓜 μ f`) : The operator defined by `ψ ↦ f • ψ`
     with maximal domain `{ψ : SpaceDHilbertSpace d μ | MemHS (f • ψ) μ}`.
+- `mulOperator_apply_schwartzIncl` : When `μ` and `f` have temperate growth, `𝓜 μ f` acts on
+    embedded Schwartz maps by pointwise multiplication.
 - `mulOperator_adjoint_eq_conj` : The adjoint of `𝓜 μ f` is the multiplication operator
     defined by the conjugate of `f`.
 - `mulOperator_isSelfAdjoint` : The multiplication operator of a real function is self-adjoint.
@@ -227,18 +229,30 @@ lemma mulOperator_hasDenseDomain
       suffices ‖u x‖ ≤ n by simp [s, this]
       exact (Nat.le_ceil _).trans (by exact_mod_cast hn)
 
-open SchwartzMap SchwartzSubmodule in
+open SchwartzMap in
 /-- The multiplication operator corresponding to a function of temperate growth
   contains all Schwartz maps in its domain. -/
 lemma mulOperator_domain_ge_of_hasTemperateGrowth {f : Space d → ℂ} (hf : f.HasTemperateGrowth)
-    (μ : Measure (Space d)) [μ.HasTemperateGrowth] [μ.IsOpenPosMeasure] :
+    (μ : Measure (Space d)) [μ.HasTemperateGrowth] :
     SchwartzSubmodule d μ ≤ (𝓜 μ f).domain := by
-  intro ψ hψ
-  obtain ⟨g, hg⟩ := (schwartzEquiv μ).surjective ⟨ψ, hψ⟩
-  let w : 𝓢(Space d, ℂ) := smulLeftCLM ℂ f g
-  refine (memHS_coe <| schwartzEquiv μ w).ae_eq ?_
-  filter_upwards [schwartzEquiv_coe_ae w, schwartzEquiv_coe_ae g]
-  simp_all [w, smulLeftCLM_apply_apply hf]
+  rintro ψ ⟨g, rfl⟩
+  let w := smulLeftCLM ℂ f g
+  refine (memHS_coe (schwartzIncl μ w)).ae_eq ?_
+  filter_upwards [coeFn_toLp w 2 μ, coeFn_toLp g 2 μ] with x hw hg
+  simpa [schwartzIncl, w, Pi.smul_apply, smulLeftCLM_apply_apply hf, hg] using hw
+
+open SchwartzMap in
+/-- On the Schwartz submodule, the multiplication operator `𝓜 μ f` acts by pointwise
+  multiplication by the function `f` of temperate growth. -/
+lemma mulOperator_apply_schwartzIncl {f : Space d → ℂ} (hf : f.HasTemperateGrowth)
+    (μ : Measure (Space d)) [μ.HasTemperateGrowth] (g : 𝓢(Space d, ℂ)) :
+    𝓜 μ f ⟨schwartzIncl μ g, mulOperator_domain_ge_of_hasTemperateGrowth hf μ ⟨g, rfl⟩⟩ =
+      schwartzIncl μ (smulLeftCLM ℂ f g) := by
+  apply ext_iff.mpr
+  filter_upwards [mulOperator_apply_ae
+    ⟨schwartzIncl μ g, mulOperator_domain_ge_of_hasTemperateGrowth hf μ ⟨g, rfl⟩⟩,
+    coeFn_toLp g 2 μ, coeFn_toLp (smulLeftCLM ℂ f g) 2 μ] with x h hg hw
+  simpa [schwartzIncl, Pi.smul_apply, smulLeftCLM_apply_apply hf, hg, hw] using h
 
 /-!
 ## C. Adjoint
