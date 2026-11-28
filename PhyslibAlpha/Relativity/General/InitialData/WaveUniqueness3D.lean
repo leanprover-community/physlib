@@ -6,7 +6,7 @@ Authors: Alex Vergara Gil
 
 module
 
-public import PhyslibAlpha.Relativity.General.InitialData.WaveEnergy3DWave
+public import PhyslibAlpha.Relativity.General.InitialData.WaveEnergy3D
 
 /-!
 

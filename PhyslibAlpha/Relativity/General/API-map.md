@@ -57,10 +57,10 @@ vacuum data [20] from non-vacuum initial data with anisotropic extrinsic curvatu
 analytic infrastructure behind the constraints is in place as well: the 3D divergence theorem
 [97], the one-dimensional wave Cauchy problem with its d'Alembert representation [98], the
 reduced wave equation in three space dimensions [99], the one- and three-dimensional wave
-energies [100][101] and their conservation [102][103], and the uniqueness of one- and
-three-dimensional wave solutions [104][105]. The initial-data interface assembles these into
-Sobolev data and well-posedness statements [106][107], and the Schwarzschild manifold chart
-carries the corresponding initial data [108]. Around the
+energy [100] and the three-dimensional energy with its conservation [101], and the uniqueness
+of one- and three-dimensional wave solutions [102][103]. The initial-data interface assembles
+these into Sobolev data and well-posedness statements [104][105], and the Schwarzschild manifold
+chart carries the corresponding initial data [106]. Around the
 Minkowski background g = η + h, first-order perturbation theory packages symmetric metric
 perturbations `MetricPerturbation` [22], defines the Minkowski trace `perturbationTrace` and
 trace-reversed perturbation h̄_{ij} = h_{ij} - ½ η_{ij} h [23], and defines the Minkowski
@@ -598,23 +598,20 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
 100. PhyslibAlpha/Relativity/General/InitialData/WaveEnergy.lean — `waveEnergy`,
     `hasDerivAt_waveEnergy`, `waveEnergy_eq_initial`, `wave_zero_of_zero_data`
 101. PhyslibAlpha/Relativity/General/InitialData/WaveEnergy3D.lean — `waveEnergy3D`,
-    `hasDerivAt_waveEnergy3D`
-102. PhyslibAlpha/Relativity/General/InitialData/WaveEnergy3DConservation.lean —
-    `waveEnergy3D_eq_initial_of_divergence`
-103. PhyslibAlpha/Relativity/General/InitialData/WaveEnergy3DWave.lean — `waveFlux3D`,
+    `hasDerivAt_waveEnergy3D`, `waveEnergy3D_eq_initial_of_divergence`, `waveFlux3D`,
     `waveEnergy3D_eq_initial_of_wave`, `waveEnergy3DIntegrand_nonneg`,
     `eq_zero_of_waveEnergy3D_eq_zero`
-104. PhyslibAlpha/Relativity/General/InitialData/WaveUniqueness.lean — `WaveSolutionOn`,
+102. PhyslibAlpha/Relativity/General/InitialData/WaveUniqueness.lean — `WaveSolutionOn`,
     `wave_unique_of_same_data`
-105. PhyslibAlpha/Relativity/General/InitialData/WaveUniqueness3D.lean — `WaveSolution3D`,
+103. PhyslibAlpha/Relativity/General/InitialData/WaveUniqueness3D.lean — `WaveSolution3D`,
     `wave_zero_of_zero_data3D`, `wave_unique3D_of_same_data`
-106. PhyslibAlpha/Relativity/General/InitialData/InitialDataInterface.lean —
+104. PhyslibAlpha/Relativity/General/InitialData/InitialDataInterface.lean —
     `ChartSpacetime.spatialMetric`, `ChartSpacetime.spatialMetricField`,
     `spatialRiemannTensorOf`, `extrinsicDerivativeOf`,
     `spatialRiemannTensorOfConstMetric_eq_flat`, `ChartInitialData`
-107. PhyslibAlpha/Relativity/General/InitialData/SobolevInitialData.lean — `sobolevH1NormSq1D`,
+105. PhyslibAlpha/Relativity/General/InitialData/SobolevInitialData.lean — `sobolevH1NormSq1D`,
     `sobolev_embedding_1D`, `trace_estimate_1D`, `sobolevH1NormSq3D`, `l2_le_sobolevH1_3D`
-108. PhyslibAlpha/Relativity/General/Schwarzschild/SchwarzschildManifold.lean —
+106. PhyslibAlpha/Relativity/General/Schwarzschild/SchwarzschildManifold.lean —
     `schwarzschildSpacetime`, `Schwarzschild.SchwarzschildSpacetime.toStaticSpherical`,
     `Schwarzschild.SchwarzschildSpacetime.metricFn`,
     `Schwarzschild.SchwarzschildSpacetime.metric`,

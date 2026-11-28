@@ -832,8 +832,6 @@ public import PhyslibAlpha.Relativity.General.InitialData.SobolevInitialData
 public import PhyslibAlpha.Relativity.General.InitialData.WaveCauchy
 public import PhyslibAlpha.Relativity.General.InitialData.WaveEnergy
 public import PhyslibAlpha.Relativity.General.InitialData.WaveEnergy3D
-public import PhyslibAlpha.Relativity.General.InitialData.WaveEnergy3DConservation
-public import PhyslibAlpha.Relativity.General.InitialData.WaveEnergy3DWave
 public import PhyslibAlpha.Relativity.General.InitialData.WaveUniqueness
 public import PhyslibAlpha.Relativity.General.InitialData.WaveUniqueness3D
 public import PhyslibAlpha.Relativity.General.Kerr.Basic
