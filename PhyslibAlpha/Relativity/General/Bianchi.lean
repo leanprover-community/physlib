@@ -132,6 +132,38 @@ noncomputable def covDiv2 {n : ℕ} (g ginv T : (Fin n → ℝ) → Tensor2 n)
 
 /-! ## C. Metric compatibility and Riemann symmetries -/
 
+/-- Component form of the second covariant derivative of a `(0, 2)` tensor:
+`∇_l T_{ij} = ∂_l T_{ij} - Γ^a_{li} T_{aj} - Γ^a_{lj} T_{ia}`. -/
+lemma covDeriv2_eq {n : ℕ} (g ginv T : (Fin n → ℝ) → Tensor2 n)
+    (x : Fin n → ℝ) (l i j : Fin n) :
+    covDeriv2 g ginv T x l i j =
+      CoordinateCurvature.coordDeriv l (fun y => T y i j) x
+        - ∑ a, christoffel g ginv x a l i * T x a j
+        - ∑ a, christoffel g ginv x a l j * T x i a := rfl
+
+/-- Component form of the second covariant derivative of a `(2, 0)` tensor. -/
+lemma covDeriv2Up_eq {n : ℕ} (g ginv T : (Fin n → ℝ) → Tensor2 n)
+    (x : Fin n → ℝ) (l i j : Fin n) :
+    covDeriv2Up g ginv T x l i j =
+      CoordinateCurvature.coordDeriv l (fun y => T y i j) x
+        + ∑ a, christoffel g ginv x i l a * T x a j
+        + ∑ a, christoffel g ginv x j l a * T x i a := rfl
+
+/-- Component form of the covariant derivative of the Riemann tensor. -/
+lemma covDerivRiemann_eq {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
+    (x : Fin n → ℝ) (l ρ σ μ ν : Fin n) :
+    covDerivRiemann g ginv x l ρ σ μ ν =
+      CoordinateCurvature.coordDeriv l (fun y => riemann g ginv y ρ σ μ ν) x
+        + ∑ a, christoffel g ginv x ρ l a * riemann g ginv x a σ μ ν
+        - ∑ a, christoffel g ginv x a l σ * riemann g ginv x ρ a μ ν
+        - ∑ a, christoffel g ginv x a l μ * riemann g ginv x ρ σ a ν
+        - ∑ a, christoffel g ginv x a l ν * riemann g ginv x ρ σ μ a := rfl
+
+/-- Component form of the covariant divergence of a `(0, 2)` tensor. -/
+lemma covDiv2_eq {n : ℕ} (g ginv T : (Fin n → ℝ) → Tensor2 n)
+    (x : Fin n → ℝ) (j : Fin n) :
+    covDiv2 g ginv T x j = ∑ μ, ∑ ν, ginv x μ ν * covDeriv2 g ginv T x μ ν j := rfl
+
 /-- The Christoffel symbols are symmetric in their lower two indices whenever
 `g` is symmetric near `x`. -/
 lemma christoffel_symm {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fin n → ℝ}
@@ -203,7 +235,7 @@ lemma metric_compat {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fin 
   have hpd_sym : CoordinateCurvature.coordDeriv l (fun y => g y j i) x =
       CoordinateCurvature.coordDeriv l (fun y => g y i j) x :=
     coordDeriv_congr_nhds l x (hgSymm.mono fun y hy => hy j i)
-  unfold covDeriv2
+  rw [covDeriv2]
   rw [h1, h2, hpd_sym]
   ring
 
@@ -218,7 +250,7 @@ lemma coordDeriv_g_eq {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fi
       (∑ a, christoffel g ginv x a l k * g x a j)
         + ∑ a, christoffel g ginv x a l j * g x k a := by
   have h := metric_compat g ginv hgSymm hInv l k j
-  unfold covDeriv2 at h
+  rw [covDeriv2_eq] at h
   linarith
 
 /-- Neighborhood form of `coordDeriv_g_eq`: on a neighborhood of `x`, the coordinate
@@ -234,7 +266,7 @@ lemma coordDeriv_g_eq_nhds {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x
     eventually_eventually_nhds.mpr hgSymm
   filter_upwards [hS, hInv] with y hyS hyInv
   have h := metric_compat g ginv hyS hyInv c a b
-  unfold covDeriv2 at h
+  rw [covDeriv2_eq] at h
   linarith
 
 /-- The coordinate derivative of the inverse metric: differentiating `g * ginv = 1`
@@ -352,8 +384,7 @@ lemma inv_metric_compat {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : 
             intro j _
             simp_rw [hInvL.self_of_nhds]
             simp
-  unfold covDeriv2Up
-  rw [hpd_ginv]
+  rw [covDeriv2Up_eq, hpd_ginv]
   have hsplit : (∑ j, ∑ k, ginv x i k * CoordinateCurvature.coordDeriv l (fun y => g y k j) x
     * ginv x j b) =
       (∑ j, ∑ k, ginv x i k * (∑ a, christoffel g ginv x a l k * g x a j) * ginv x j b)
@@ -369,11 +400,23 @@ lemma inv_metric_compat {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : 
   rw [hsplit, hterm1, hterm2]
   ring
 
+/-- The component projection of `riemann`:
+`R^ρ_{σμν} = ∂_μ Γ^ρ_{νσ} - ∂_ν Γ^ρ_{μσ}
+  + ∑_l (Γ^ρ_{μl} Γ^l_{νσ} - Γ^ρ_{νl} Γ^l_{μσ})`.
+Every curvature lemma states its goal through this projection instead of unfolding `riemann`. -/
+lemma riemann_apply {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
+    (x : Fin n → ℝ) (ρ σ μ ν : Fin n) :
+    riemann g ginv x ρ σ μ ν =
+      CoordinateCurvature.coordDeriv μ (fun y => christoffel g ginv y ρ ν σ) x
+        - CoordinateCurvature.coordDeriv ν (fun y => christoffel g ginv y ρ μ σ) x
+        + ∑ l, (christoffel g ginv x ρ μ l * christoffel g ginv x l ν σ
+          - christoffel g ginv x ρ ν l * christoffel g ginv x l μ σ) := rfl
+
 /-- Antisymmetry of the Riemann tensor in its last two indices. -/
 lemma riemann_skew_last {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     (x : Fin n → ℝ) (ρ σ μ ν : Fin n) :
     riemann g ginv x ρ σ μ ν = -riemann g ginv x ρ σ ν μ := by
-  unfold riemann
+  rw [riemann_apply, riemann_apply]
   have hsum : (∑ l, (christoffel g ginv x ρ μ l * christoffel g ginv x l ν σ
       - christoffel g ginv x ρ ν l * christoffel g ginv x l μ σ)) =
       -(∑ l, (christoffel g ginv x ρ ν l * christoffel g ginv x l μ σ
@@ -805,7 +848,7 @@ lemma second_bianchi {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) {x : Fin
               - christoffel g ginv x r p c
                 * CoordinateCurvature.coordDeriv a (fun y => christoffel g ginv y c m s) x) := by
     intro a r s m p
-    unfold riemann
+    simp only [riemann_apply]
     have hsub : DifferentiableAt ℝ (fun y =>
         CoordinateCurvature.coordDeriv m (fun z => christoffel g ginv z r p s) y
           - CoordinateCurvature.coordDeriv p (fun z => christoffel g ginv z r m s) y) x :=

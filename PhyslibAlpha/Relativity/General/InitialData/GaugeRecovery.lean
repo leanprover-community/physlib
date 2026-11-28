@@ -6,7 +6,7 @@ Authors: Alex Vergara Gil
 
 module
 
-public import PhyslibAlpha.Relativity.General.Bianchi
+public import PhyslibAlpha.Relativity.General.BianchiContracted
 public import PhyslibAlpha.Relativity.General.InitialData.ReducedCauchy
 public import PhyslibAlpha.Cosmology.FLRW.Basic
 public import PhyslibAlpha.Cosmology.FLRW.FriedmannEquations
@@ -105,7 +105,8 @@ lemma bianchi_constraint_propagation_split
     (hginvD : ∀ i j, DifferentiableAt ℝ (fun y => ginv y i j) x)
     (hΓC2 : ∀ k i j, ContDiffAt ℝ 2 (fun y => CoordinateCurvature.christoffel g ginv y k i j) x)
     (l : Fin 4) :
-    ginv x 0 0 * CoordinateCurvature.coordDeriv 0 (fun y => CoordinateCurvature.einsteinTensor g ginv y 0 l) x =
+    ginv x 0 0 * CoordinateCurvature.coordDeriv 0
+      (fun y => CoordinateCurvature.einsteinTensor g ginv y 0 l) x =
       -(ginv x 0 0 *
           (-(∑ a : Fin 4, CoordinateCurvature.christoffel g ginv x a 0 0 *
               CoordinateCurvature.einsteinTensor g ginv x a l)
@@ -121,7 +122,8 @@ lemma bianchi_constraint_propagation_split
   have hsum4 : ∀ f : Fin 4 → ℝ, (∑ μ : Fin 4, f μ) = f 0 + ∑ μ : Fin 3, f μ.succ :=
     Fin.sum_univ_succ
   rw [hsum4] at hdiv
-  rw [hsum4 (fun ν => ginv x 0 ν * Bianchi.covDeriv2 g ginv (CoordinateCurvature.einsteinTensor g ginv) x 0 ν l)] at hdiv
+  rw [hsum4 (fun ν => ginv x 0 ν *
+    Bianchi.covDeriv2 g ginv (CoordinateCurvature.einsteinTensor g ginv) x 0 ν l)] at hdiv
   have h00 : Bianchi.covDeriv2 g ginv (CoordinateCurvature.einsteinTensor g ginv) x 0 0 l =
       CoordinateCurvature.coordDeriv 0 (fun y => CoordinateCurvature.einsteinTensor g ginv y 0 l) x
         - ∑ a : Fin 4, CoordinateCurvature.christoffel g ginv x a 0 0 *
@@ -204,7 +206,8 @@ private lemma linearizedBox_fullEinstein_aux (I : BoxIntegral.Box (Fin 3))
     (t : ℝ) (x : SpaceChart) (hx : x ∈ BoxIntegral.Box.Ioo I) (i j : Fin 4) :
     Linearized.linearizedEinstein P ![t, x 0, x 1, x 2] i j = 0 := by
   have hgauge := lorenzGauge_propagates_box I P hsol
-  have hopen_pre : IsOpen {y : Fin 4 → ℝ | (fun m : Fin 3 => y m.succ) ∈ BoxIntegral.Box.Ioo I} := by
+  have hopen_pre :
+      IsOpen {y : Fin 4 → ℝ | (fun m : Fin 3 => y m.succ) ∈ BoxIntegral.Box.Ioo I} := by
     have hcont : Continuous (fun y : Fin 4 → ℝ => fun m : Fin 3 => y m.succ) :=
       continuous_pi fun m => continuous_apply m.succ
     exact (isOpen_boxIoo I).preimage hcont
@@ -327,7 +330,8 @@ lemma flrw_full_einstein_of_reduced
     (hham0 : 3 * a' 0 ^ 2 = Λ * a 0 ^ 2)
     {x : Fin 4 → ℝ} (hx0 : x 0 ∈ Ioo (-δ) δ)
     (hr : x 1 ≠ 0) (hsin : Real.sin (x 2) ≠ 0) (i j : Fin 4) :
-    CoordinateCurvature.einsteinTensor ((flrwSpacetime a 0).metric) ((flrwSpacetime a 0).metricInv) x i j +
+    CoordinateCurvature.einsteinTensor ((flrwSpacetime a 0).metric)
+      ((flrwSpacetime a 0).metricInv) x i j +
       Λ * (flrwSpacetime a 0).metric x i j = 0 := by
   have hham := flrw_constraint_propagates a a' a'' Λ δ hδ ha_ne ha1 ha2 hevol hham0
   have ha_x0 : a (x 0) ≠ 0 := ha_ne (x 0) hx0
@@ -354,7 +358,8 @@ lemma flrw_full_einstein_of_reduced
     have hcancel := mul_left_cancel₀ ha_x0 hprod
     field_simp [ha_x0]
     linarith
-  have hiff := (Cosmology.FLRW.FLRWSpacetime.einsteinTensor_iff_friedmann (flrwSpacetime a 0) 1 Λ 1 0 0 x
+  have hiff := (Cosmology.FLRW.FLRWSpacetime.einsteinTensor_iff_friedmann
+    (flrwSpacetime a 0) 1 Λ 1 0 0 x
     ha_x0 hr (by norm_num) hsin hdiff_nhds hd2.differentiableAt).mpr
       ⟨by simpa using hf1, by simpa using hf2⟩ i j
   have heq : (flrwSpacetime a 0).toCoordinateMetric.einsteinTensor x i j =
@@ -385,7 +390,8 @@ noncomputable def flrwGaugeRecoveryProblem (Λ δ : ℝ) (hδ : 0 < δ) :
   IsFullEinsteinSolution := fun a =>
     ∀ x : Fin 4 → ℝ, x 0 ∈ Ioo (-δ) δ → x 1 ≠ 0 → Real.sin (x 2) ≠ 0 →
       ∀ i j : Fin 4,
-        CoordinateCurvature.einsteinTensor ((flrwSpacetime a 0).metric) ((flrwSpacetime a 0).metricInv) x i j +
+        CoordinateCurvature.einsteinTensor ((flrwSpacetime a 0).metric)
+      ((flrwSpacetime a 0).metricInv) x i j +
           Λ * (flrwSpacetime a 0).metric x i j = 0
   ConstraintsPreserved := fun a =>
     ∀ t ∈ Ioo (-δ) δ, ∃ a', HasDerivAt a a' t ∧ 3 * a' ^ 2 = Λ * a t ^ 2

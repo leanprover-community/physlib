@@ -317,11 +317,12 @@ the new ports brought long proofs, uncited modules and invented names.
     `inv_metric_compat` now uses `coordDeriv_g_eq` (component form of metric compatibility);
     `riemann_lower_skew_first` uses `coordDeriv_g_eq_nhds` and `coordDeriv_coordDeriv_g`
     (second coordinate derivative of the metric), replacing the inline `hmc_nhds`/`h2pd` haves.
-  - [ ] `General/Bianchi.lean` *(Proofs 3)* — 19 `unfold`/`change` steps; add component API.
-    *(Note: a mechanical `unfold X` → `rw [X]` conversion is **not** valid here — `unfold`
-    rewrites every occurrence, but `rw [X]` fixes the arguments from the first match, so the
-    mixed-argument goals in `riemann_skew_last` etc. break. Needs genuine named component lemmas
-    for `covDeriv2`/`covDeriv2Up`/`riemann`/`ricciTensor`/`ricciScalar`/`covDiv2`/`covDerivRiemann`.)*
+  - [x] `General/Bianchi.lean` *(Proofs 3)* — done (working tree): added the component projection
+    lemmas `covDeriv2_eq`, `covDeriv2Up_eq`, `covDerivRiemann_eq`, `covDiv2_eq` and
+    `riemann_apply`, and replaced every `unfold riemann`/`unfold covDeriv2`/`unfold covDeriv2Up`
+    in `Bianchi.lean` and `BianchiContracted.lean` by those rewrites (`riemann_skew_last`, the
+    commutator lemma and `second_bianchi`'s inner step).  Only a `change` restating a notation
+    remains; API-map 95 lists the new lemmas.
   - [x] `InitialData/SobolevInitialData.lean` *(Proofs 3)* — done in `e3760897` + `bbcf03ff`: the 12
     `unfold coordDeriv; rw [hfun]` steps use `coordDeriv_eq_of_slice_eq`, and the norm/energy
     operators (`sobolevH1NormSq1D/3D`, `waveEnergy3DIntegrand`, `norm3Sq`, `spatialLaplacian3D`) are
