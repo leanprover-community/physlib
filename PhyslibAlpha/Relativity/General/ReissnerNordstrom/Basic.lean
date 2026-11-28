@@ -37,7 +37,7 @@ element `ds² = -f(r) dt² + f(r)⁻¹ dr² + r² dΩ²` with radial metric func
 Using the static spherically symmetric curvature formulas in `GeneralRelativity.StaticSpherical`,
 this module proves:
 
-- `ReissnerNordstromSpacetime.ricciScalar` : vanishing Ricci scalar `R = 0`, matching
+- `ReissnerNordstromSpacetime.ricciScalar_eq_zero` : vanishing Ricci scalar `R = 0`, matching
   `ReissnerNordstromSpacetime.maxwellStressEnergy_trace_zero` (`g^{ij} T^{EM}_{ij} = 0` in 4D);
 - `ReissnerNordstromSpacetime.einsteinTensor_eq_maxwell` : the full 4D electrovacuum
   Einstein–Maxwell field equations `G_{ij} = 8 π T^{EM}_{ij}` at every index pair `(i, j)`;
@@ -54,7 +54,7 @@ this module proves:
 - `ReissnerNordstromSpacetime.coulombFieldStrength` : radial electric field strength, which feeds
   the Gaussian-unit Maxwell stress-energy `maxwellStressEnergyGaussian` of
   `Tensors/MaxwellStressEnergy.lean`.
-- `ReissnerNordstromSpacetime.ricciTensor`, `ReissnerNordstromSpacetime.ricciScalar`,
+- `ReissnerNordstromSpacetime.ricciTensor_eq`, `ReissnerNordstromSpacetime.ricciScalar_eq_zero`,
   `ReissnerNordstromSpacetime.maxwellStressEnergy_trace_zero`,
   `ReissnerNordstromSpacetime.einsteinTensor_eq_maxwell` : coordinate-metric verification of the
   Einstein–Maxwell solution.
@@ -67,7 +67,7 @@ this module proves:
 
 ## iii. Table of contents
 
-- A. Metric, derivatives, and electrovacuum Maxwell field
+- A. Metric, Maxwell field, and horizon radii
 - B. Electrovacuum Einstein equations from the coordinate metric
 - C. Horizons, extremal limit, and overcharged regime
 
@@ -91,7 +91,7 @@ open GeneralRelativity.CoordinateCurvature GeneralRelativity.StaticSpherical
 
 /-!
 
-## A. Metric, derivatives, and electrovacuum Maxwell field
+## A. Metric, Maxwell field, and horizon radii
 
 The charged static spherically symmetric line element is fixed by `f(r) = 1 - 2M/r + Q²/r²`
 together with the antisymmetric radial Coulomb field tensor `F_{01} = -Q/r² = -F_{10}`.
@@ -156,6 +156,27 @@ lemma metricFn_zero_charge (M r : ℝ) :
     (ReissnerNordstromSpacetime.mk M 0).metricFn r =
       (Schwarzschild.SchwarzschildSpacetime.mk M).metricFn r := by
   simp [metricFn, Schwarzschild.SchwarzschildSpacetime.metricFn]
+
+/-- Radial Coulomb Maxwell field strength tensor `F_{ab}`
+(`F_{01} = -Q/r²`, `F_{10} = Q/r²`). -/
+noncomputable def coulombFieldStrength (S : ReissnerNordstromSpacetime) (r : ℝ) : Tensor2 4 :=
+  Matrix.of fun i j =>
+    if i = 0 ∧ j = 1 then -S.Q / r ^ 2
+    else if i = 1 ∧ j = 0 then S.Q / r ^ 2
+    else 0
+
+/-- Antisymmetry of the Coulomb Maxwell field strength tensor `S.coulombFieldStrength`. -/
+lemma coulombFieldStrength_antisymm (S : ReissnerNordstromSpacetime) (r : ℝ) (i j : Fin 4) :
+    S.coulombFieldStrength r i j = -S.coulombFieldStrength r j i := by
+  fin_cases i <;> fin_cases j <;> simp [coulombFieldStrength] <;> ring
+
+/-- Outer event horizon radius `r₊ = M + √(M² - Q²)` for `|Q| ≤ M`. -/
+noncomputable def horizonPlus (S : ReissnerNordstromSpacetime) : ℝ :=
+  S.M + Real.sqrt (S.M ^ 2 - S.Q ^ 2)
+
+/-- Inner Cauchy horizon radius `r₋ = M - √(M² - Q²)` for `|Q| ≤ M`. -/
+noncomputable def horizonMinus (S : ReissnerNordstromSpacetime) : ℝ :=
+  S.M - Real.sqrt (S.M ^ 2 - S.Q ^ 2)
 
 /-- First radial derivative of `S.metricFn`: `f'(r) = 2 M / r² - 2 Q² / r³`. -/
 lemma hasDerivAt_metricFn (S : ReissnerNordstromSpacetime) (r : ℝ) (hr : r ≠ 0) :
@@ -228,19 +249,6 @@ lemma deriv_metricFn (S : ReissnerNordstromSpacetime) (r : ℝ) (hr : r ≠ 0) :
 lemma deriv_deriv_metricFn (S : ReissnerNordstromSpacetime) (r : ℝ) (hr : r ≠ 0) :
     deriv (deriv S.metricFn) r = -4 * S.M / r ^ 3 + 6 * S.Q ^ 2 / r ^ 4 :=
   (S.hasDerivAt_deriv_metricFn r hr).deriv
-
-/-- Radial Coulomb Maxwell field strength tensor `F_{ab}`
-(`F_{01} = -Q/r²`, `F_{10} = Q/r²`). -/
-noncomputable def coulombFieldStrength (S : ReissnerNordstromSpacetime) (r : ℝ) : Tensor2 4 :=
-  Matrix.of fun i j =>
-    if i = 0 ∧ j = 1 then -S.Q / r ^ 2
-    else if i = 1 ∧ j = 0 then S.Q / r ^ 2
-    else 0
-
-/-- Antisymmetry of the Coulomb Maxwell field strength tensor `S.coulombFieldStrength`. -/
-lemma coulombFieldStrength_antisymm (S : ReissnerNordstromSpacetime) (r : ℝ) (i j : Fin 4) :
-    S.coulombFieldStrength r i j = -S.coulombFieldStrength r j i := by
-  fin_cases i <;> fin_cases j <;> simp [coulombFieldStrength] <;> ring
 
 /-!
 
@@ -363,7 +371,7 @@ private lemma einsteinTensor_eq_maxwell_raw (S : ReissnerNordstromSpacetime) (x 
 
 /-- Coordinate Ricci tensor of a Reissner–Nordström spacetime, stated with the chart-level
 operator. -/
-lemma ricciTensor (S : ReissnerNordstromSpacetime)
+lemma ricciTensor_eq (S : ReissnerNordstromSpacetime)
     (p : S.toStaticSpherical.RegularPoint) (σ ν : Fin 4) :
     S.toCoordinateMetric.ricciTensor p.x σ ν
       = if σ = ν then
@@ -377,7 +385,7 @@ lemma ricciTensor (S : ReissnerNordstromSpacetime)
   exact S.ricciTensor_raw p.x p.hr p.hf p.hsin σ ν
 
 /-- The Reissner–Nordström scalar curvature vanishes, stated with the chart-level operator. -/
-lemma ricciScalar (S : ReissnerNordstromSpacetime)
+lemma ricciScalar_eq_zero (S : ReissnerNordstromSpacetime)
     (p : S.toStaticSpherical.RegularPoint) :
     S.toCoordinateMetric.ricciScalar p.x = 0 := by
   simp only [CoordinateMetric.ricciScalar_apply, S.toCoordinateMetric_g,
@@ -400,19 +408,12 @@ lemma einsteinTensor_eq_maxwell (S : ReissnerNordstromSpacetime)
 
 ## C. Horizons, extremal limit, and overcharged regime
 
-Depending on the charge-to-mass ratio `|Q|/M`, a Reissner–Nordström spacetime exhibits two
-distinct horizons (`|Q| < M`), a single degenerate extremal horizon (`|Q| = M`), or a naked
-singularity (`|Q| > M`).
+The radii themselves are the chart operations `S.horizonPlus` and `S.horizonMinus` of Section A,
+where `S.metricFn` is assembled. Depending on the charge-to-mass ratio `|Q|/M`, a
+Reissner–Nordström spacetime exhibits two distinct horizons (`|Q| < M`), a single degenerate
+extremal horizon (`|Q| = M`), or a naked singularity (`|Q| > M`).
 
 -/
-
-/-- Outer event horizon radius `r₊ = M + √(M² - Q²)` for `|Q| ≤ M`. -/
-noncomputable def horizonPlus (S : ReissnerNordstromSpacetime) : ℝ :=
-  S.M + Real.sqrt (S.M ^ 2 - S.Q ^ 2)
-
-/-- Inner Cauchy horizon radius `r₋ = M - √(M² - Q²)` for `|Q| ≤ M`. -/
-noncomputable def horizonMinus (S : ReissnerNordstromSpacetime) : ℝ :=
-  S.M - Real.sqrt (S.M ^ 2 - S.Q ^ 2)
 
 /-- Vanishing of `S.metricFn` at any root of `r² - 2 M r + Q² = 0`. -/
 lemma metricFn_eq_zero_of_quad (S : ReissnerNordstromSpacetime) {r : ℝ} (hr : r ≠ 0)

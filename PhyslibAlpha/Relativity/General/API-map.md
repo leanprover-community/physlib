@@ -295,8 +295,8 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [76]{5}{6}.
 40. PhyslibAlpha/Relativity/General/Schwarzschild/CoordinateCurvature.lean —
     `SchwarzschildSpacetime.toDeSitter`, `SchwarzschildSpacetime.toDeSitter_metric`,
     `SchwarzschildSpacetime.riemann_components_from_coordinateMetric`,
-    `SchwarzschildSpacetime.ricciTensor`,
-    `SchwarzschildSpacetime.ricciScalar`, `SchwarzschildSpacetime.einsteinTensor`
+    `SchwarzschildSpacetime.ricciTensor_eq_zero`,
+    `SchwarzschildSpacetime.ricciScalar_eq_zero`, `SchwarzschildSpacetime.einsteinTensor_eq_zero`
 41. PhyslibAlpha/Relativity/General/Schwarzschild/IncompressibleSphere.lean —
     `IncompressibleSphere`, `rs`, `chia`, `cosChia`, `cosChia_sq`, `cosChia_pos`,
     `cosChia_lt_one`, `rs_div_Ra`, `one_third_lt_cosChia_iff_rs`
@@ -320,9 +320,9 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [76]{5}{6}.
     `SchwarzschildDeSitterSpacetime.christoffel`, `SchwarzschildDeSitterSpacetime.christoffelDeriv`,
     `SchwarzschildDeSitterSpacetime.christoffel_eq`,
     `SchwarzschildDeSitterSpacetime.riemann_components_from_metric`,
-    `SchwarzschildDeSitterSpacetime.ricciTensor`,
-    `SchwarzschildDeSitterSpacetime.ricciScalar`,
-    `SchwarzschildDeSitterSpacetime.einsteinTensor`
+    `SchwarzschildDeSitterSpacetime.ricciTensor_eq`,
+    `SchwarzschildDeSitterSpacetime.ricciScalar_eq`,
+    `SchwarzschildDeSitterSpacetime.einsteinTensor_eq`
 45. PhyslibAlpha/Relativity/General/ReissnerNordstrom/Basic.lean —
     `ReissnerNordstromSpacetime`, `ReissnerNordstromSpacetime.metricFn`,
     `ReissnerNordstromSpacetime.metric`, `ReissnerNordstromSpacetime.metricInv`,
