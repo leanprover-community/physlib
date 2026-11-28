@@ -24,6 +24,7 @@ forces the difference itself to vanish.
 ## ii. Key results
 
 - `WaveSolution3D`
+- `WaveSolution3D.sub` : the difference of two regular solutions is a regular solution.
 - `wave_unique3D_of_same_data`
 
 ## iii. Table of contents
@@ -153,6 +154,105 @@ lemma wave_zero_of_zero_data3D
       rw [← hrepr]
       exact S.hu_face_upper t i (i.removeNth x)
 
+/-- The difference of two regular 3D solutions is a regular solution of the same
+problem, with the difference of the derivative fields and the difference bound
+`Mw` on the differentiated energy density. -/
+lemma WaveSolution3D.sub
+    (u v : ℝ → SpaceChart → ℝ) (ut vt : ℝ → SpaceChart → ℝ)
+    (grad vgrad : ℝ → SpaceChart → SpaceChart)
+    (utt vtt : ℝ → SpaceChart → ℝ) (gradt vgradt : ℝ → SpaceChart → SpaceChart)
+    (Dut vDut : ℝ → SpaceChart → SpaceChart →L[ℝ] ℝ)
+    (Dgrad vDgrad : ℝ → SpaceChart → SpaceChart →L[ℝ] SpaceChart)
+    (lap vlap : ℝ → SpaceChart → ℝ) (I : Box (Fin 3)) (M N Mw : ℝ)
+    (S : WaveSolution3D u ut grad utt gradt Dut Dgrad lap I M)
+    (T : WaveSolution3D v vt vgrad vtt vgradt vDut vDgrad vlap I N)
+    (hboundw : ∀ s x,
+      ‖waveEnergy3DDerivIntegrand
+        (fun s x => ut s x - vt s x)
+        (fun s x => utt s x - vtt s x)
+        (fun s x => grad s x - vgrad s x)
+        (fun s x => gradt s x - vgradt s x) s x‖ ≤ Mw)
+    (hdivw : ∀ s, IntegrableOn
+      (fun x => ∑ i : Fin 3,
+        waveFlux3DDeriv
+          (fun s x => ut s x - vt s x)
+          (fun s x => grad s x - vgrad s x)
+          (fun s x => Dut s x - vDut s x)
+          (fun s x => Dgrad s x - vDgrad s x)
+          s x (Pi.single i 1) i) (Box.Icc I)) :
+    WaveSolution3D
+      (fun s x => u s x - v s x) (fun s x => ut s x - vt s x)
+      (fun s x => grad s x - vgrad s x) (fun s x => utt s x - vtt s x)
+      (fun s x => gradt s x - vgradt s x)
+      (fun s x => Dut s x - vDut s x) (fun s x => Dgrad s x - vDgrad s x)
+      (fun s x => lap s x - vlap s x) I Mw := by
+  refine {
+    hu_t := ?_
+    hu_face_upper := ?_
+    hu_face_lower := ?_
+    hut := ?_
+    hgrad := ?_
+    hut_cont := ?_
+    hgrad_cont := ?_
+    hutt_cont := ?_
+    hgradt_cont := ?_
+    hbound := ?_
+    hut_spatial := ?_
+    hgrad_spatial := ?_
+    hlap := ?_
+    hgradut := ?_
+    hwave := ?_
+    hdiv_int := ?_
+    hut_face_upper := ?_
+    hut_face_lower := ?_ }
+  · intro s x
+    convert (S.hu_t s x).sub (T.hu_t s x) using 1
+  · intro s i y
+    simp [(S.hu_face_upper s i y), (T.hu_face_upper s i y)]
+  · intro s i y
+    simp [(S.hu_face_lower s i y), (T.hu_face_lower s i y)]
+  · intro s x
+    convert (S.hut s x).sub (T.hut s x) using 1
+  · intro s x
+    convert (S.hgrad s x).sub (T.hgrad s x) using 1
+  · convert S.hut_cont.sub T.hut_cont using 1
+    funext p
+    simp [Function.uncurry, Pi.sub_apply]
+  · convert S.hgrad_cont.sub T.hgrad_cont using 1
+    funext p
+    simp [Function.uncurry, Pi.sub_apply]
+  · convert S.hutt_cont.sub T.hutt_cont using 1
+    funext p
+    simp [Function.uncurry, Pi.sub_apply]
+  · convert S.hgradt_cont.sub T.hgradt_cont using 1
+    funext p
+    simp [Function.uncurry, Pi.sub_apply]
+  · simpa using hboundw
+  · intro t x
+    convert (S.hut_spatial t x).sub (T.hut_spatial t x) using 1
+  · intro t x
+    convert (S.hgrad_spatial t x).sub (T.hgrad_spatial t x) using 1
+  · intro t x
+    have h1 := S.hlap t x
+    have h2 := T.hlap t x
+    change (∑ i : Fin 3,
+      (Dgrad t x (Pi.single i 1) i - vDgrad t x (Pi.single i 1) i)) =
+        lap t x - vlap t x
+    rw [Finset.sum_sub_distrib, h1, h2]
+  · intro t x i
+    have h1 := S.hgradut t x i
+    have h2 := T.hgradut t x i
+    change Dut t x (Pi.single i 1) - vDut t x (Pi.single i 1) =
+      gradt t x i - vgradt t x i
+    rw [h1, h2]
+  · intro t x
+    simp [(S.hwave t x), (T.hwave t x)]
+  · simpa using hdivw
+  · intro s i y
+    simp [(S.hut_face_upper s i y), (T.hut_face_upper s i y)]
+  · intro s i y
+    simp [(S.hut_face_lower s i y), (T.hut_face_lower s i y)]
+
 /-- **General-data uniqueness in 3D.**  Two regular wave solutions with the same
 initial position, velocity and spatial gradient, and the same homogeneous
 Dirichlet data, agree on the closed box.  The proof applies the zero-data theorem
@@ -187,81 +287,17 @@ lemma wave_unique3D_of_same_data
   let w : ℝ → SpaceChart → ℝ := fun s x => u s x - v s x
   let wt : ℝ → SpaceChart → ℝ := fun s x => ut s x - vt s x
   let wgrad : ℝ → SpaceChart → SpaceChart := fun s x => grad s x - vgrad s x
-  let wtt : ℝ → SpaceChart → ℝ := fun s x => utt s x - vtt s x
-  let wgradt : ℝ → SpaceChart → SpaceChart := fun s x => gradt s x - vgradt s x
-  let wDut : ℝ → SpaceChart → SpaceChart →L[ℝ] ℝ := fun s x => Dut s x - vDut s x
-  let wDgrad : ℝ → SpaceChart → SpaceChart →L[ℝ] SpaceChart := fun s x => Dgrad s x - vDgrad s x
-  let wlap : ℝ → SpaceChart → ℝ := fun s x => lap s x - vlap s x
 
-  have hW : WaveSolution3D w wt wgrad wtt wgradt wDut wDgrad wlap I Mw := by
-    refine {
-      hu_t := ?_
-      hu_face_upper := ?_
-      hu_face_lower := ?_
-      hut := ?_
-      hgrad := ?_
-      hut_cont := ?_
-      hgrad_cont := ?_
-      hutt_cont := ?_
-      hgradt_cont := ?_
-      hbound := ?_
-      hut_spatial := ?_
-      hgrad_spatial := ?_
-      hlap := ?_
-      hgradut := ?_
-      hwave := ?_
-      hdiv_int := ?_
-      hut_face_upper := ?_
-      hut_face_lower := ?_ }
-    · intro s x
-      convert (S.hu_t s x).sub (T.hu_t s x) using 1
-    · intro s i y
-      simp [w, S.hu_face_upper s i y, T.hu_face_upper s i y]
-    · intro s i y
-      simp [w, S.hu_face_lower s i y, T.hu_face_lower s i y]
-    · intro s x
-      convert (S.hut s x).sub (T.hut s x) using 1
-    · intro s x
-      convert (S.hgrad s x).sub (T.hgrad s x) using 1
-    · convert S.hut_cont.sub T.hut_cont using 1
-      funext p
-      simp [wt, Function.uncurry, Pi.sub_apply]
-    · convert S.hgrad_cont.sub T.hgrad_cont using 1
-      funext p
-      simp [wgrad, Function.uncurry, Pi.sub_apply]
-    · convert S.hutt_cont.sub T.hutt_cont using 1
-      funext p
-      simp [wtt, Function.uncurry, Pi.sub_apply]
-    · convert S.hgradt_cont.sub T.hgradt_cont using 1
-      funext p
-      simp [wgradt, Function.uncurry, Pi.sub_apply]
-    · simpa [wt, wtt, wgrad, wgradt] using hboundw
-    · intro t x
-      convert (S.hut_spatial t x).sub (T.hut_spatial t x) using 1
-    · intro t x
-      convert (S.hgrad_spatial t x).sub (T.hgrad_spatial t x) using 1
-    · intro t x
-      have h1 := S.hlap t x
-      have h2 := T.hlap t x
-      change (∑ i : Fin 3,
-        (Dgrad t x (Pi.single i 1) i - vDgrad t x (Pi.single i 1) i)) =
-          lap t x - vlap t x
-      rw [Finset.sum_sub_distrib, h1, h2]
-    · intro t x i
-      have h1 := S.hgradut t x i
-      have h2 := T.hgradut t x i
-      change Dut t x (Pi.single i 1) - vDut t x (Pi.single i 1) =
-        gradt t x i - vgradt t x i
-      rw [h1, h2]
-    · intro t x
-      simp [wtt, wlap, S.hwave t x, T.hwave t x]
-    · simpa [wt, wgrad, wDut, wDgrad] using hdivw
-    · intro s i y
-      simp [wt, S.hut_face_upper s i y, T.hut_face_upper s i y]
-    · intro s i y
-      simp [wt, S.hut_face_lower s i y, T.hut_face_lower s i y]
-
-  have hzero := wave_zero_of_zero_data3D w wt wgrad wtt wgradt wDut wDgrad wlap I Mw hW
+  have hW : WaveSolution3D w wt wgrad
+      (fun s x => utt s x - vtt s x) (fun s x => gradt s x - vgradt s x)
+      (fun s x => Dut s x - vDut s x) (fun s x => Dgrad s x - vDgrad s x)
+      (fun s x => lap s x - vlap s x) I Mw :=
+    WaveSolution3D.sub u v ut vt grad vgrad utt vtt gradt vgradt Dut vDut Dgrad vDgrad
+      lap vlap I M N Mw S T hboundw hdivw
+  have hzero := wave_zero_of_zero_data3D w wt wgrad
+    (fun s x => utt s x - vtt s x) (fun s x => gradt s x - vgradt s x)
+    (fun s x => Dut s x - vDut s x) (fun s x => Dgrad s x - vDgrad s x)
+    (fun s x => lap s x - vlap s x) I Mw hW
     (by intro x; simp [w, hinit x])
     (by intro x; simp [wt, hvel x])
     (by intro x i; simp [wgrad, hgrad0 x i])

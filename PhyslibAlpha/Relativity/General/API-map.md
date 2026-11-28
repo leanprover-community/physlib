@@ -607,9 +607,9 @@ the Nordtvedt Strong Equivalence Principle violation parameter η_N [77]{5}{6}.
     `waveEnergy3D_eq_initial_of_wave`, `waveEnergy3DIntegrand_nonneg`,
     `eq_zero_of_waveEnergy3D_eq_zero`
 102. PhyslibAlpha/Relativity/General/InitialData/WaveUniqueness.lean — `WaveSolutionOn`,
-    `wave_unique_of_same_data`
+    `WaveSolutionOn.sub`, `wave_unique_of_same_data`
 103. PhyslibAlpha/Relativity/General/InitialData/WaveUniqueness3D.lean — `WaveSolution3D`,
-    `wave_zero_of_zero_data3D`, `wave_unique3D_of_same_data`
+    `WaveSolution3D.sub`, `wave_zero_of_zero_data3D`, `wave_unique3D_of_same_data`
 104. PhyslibAlpha/Relativity/General/InitialData/InitialDataInterface.lean —
     `ChartSpacetime.spatialMetric`, `ChartSpacetime.spatialMetricField`,
     `spatialRiemannTensorOf`, `extrinsicDerivativeOf`,

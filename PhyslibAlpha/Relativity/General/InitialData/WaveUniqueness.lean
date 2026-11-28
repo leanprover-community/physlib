@@ -23,6 +23,7 @@ the resulting general-data uniqueness theorem.
 ## ii. Key results
 
 - `WaveSolutionOn`
+- `WaveSolutionOn.sub` : the difference of two regular solutions is a regular solution.
 - `wave_unique_of_same_data`
 
 ## iii. Table of contents
@@ -65,6 +66,78 @@ structure WaveSolutionOn
   hbc0 : ∀ s, ut s 0 = 0
   hbcL : ∀ s, ut s L = 0
 
+/-- The difference of two regular solutions is a regular solution of the same
+problem, with the difference of the derivative fields and the difference bound
+`Mw` on the differentiated energy density. -/
+lemma WaveSolutionOn.sub
+    (u ut ux utt uxt utx uxx v vt vx vtt vxt vtx vxx : ℝ → ℝ → ℝ) (L Mu Mv Mw : ℝ)
+    (S : WaveSolutionOn u ut ux utt uxt utx uxx L Mu)
+    (T : WaveSolutionOn v vt vx vtt vxt vtx vxx L Mv)
+    (hboundw : ∀ s x, ‖waveEnergyDerivIntegrand
+      (fun s x => ut s x - vt s x)
+      (fun s x => ux s x - vx s x)
+      (fun s x => utt s x - vtt s x)
+      (fun s x => uxt s x - vxt s x) s x‖ ≤ Mw) :
+    WaveSolutionOn
+      (fun s x => u s x - v s x) (fun s x => ut s x - vt s x)
+      (fun s x => ux s x - vx s x) (fun s x => utt s x - vtt s x)
+      (fun s x => uxt s x - vxt s x) (fun s x => utx s x - vtx s x)
+      (fun s x => uxx s x - vxx s x) L Mw := by
+  refine {
+    hu_t := ?_
+    hut := ?_
+    hux := ?_
+    hut_x := ?_
+    hux_x := ?_
+    hut_cont := ?_
+    hux_cont := ?_
+    hutt_cont := ?_
+    huxt_cont := ?_
+    hutx_cont := ?_
+    huxx_cont := ?_
+    hbound := ?_
+    hwave := ?_
+    hmixed := ?_
+    hbc0 := ?_
+    hbcL := ?_ }
+  · intro s x
+    convert (S.hu_t s x).sub (T.hu_t s x) using 1
+  · intro s x
+    convert (S.hut s x).sub (T.hut s x) using 1
+  · intro s x
+    convert (S.hux s x).sub (T.hux s x) using 1
+  · intro s x
+    convert (S.hut_x s x).sub (T.hut_x s x) using 1
+  · intro s x
+    convert (S.hux_x s x).sub (T.hux_x s x) using 1
+  · convert S.hut_cont.sub T.hut_cont using 1
+    funext p
+    simp [Function.uncurry, Pi.sub_apply]
+  · convert S.hux_cont.sub T.hux_cont using 1
+    funext p
+    simp [Function.uncurry, Pi.sub_apply]
+  · convert S.hutt_cont.sub T.hutt_cont using 1
+    funext p
+    simp [Function.uncurry, Pi.sub_apply]
+  · convert S.huxt_cont.sub T.huxt_cont using 1
+    funext p
+    simp [Function.uncurry, Pi.sub_apply]
+  · convert S.hutx_cont.sub T.hutx_cont using 1
+    funext p
+    simp [Function.uncurry, Pi.sub_apply]
+  · convert S.huxx_cont.sub T.huxx_cont using 1
+    funext p
+    simp [Function.uncurry, Pi.sub_apply]
+  · exact hboundw
+  · intro s x
+    simp [(S.hwave s x), (T.hwave s x)]
+  · intro s x
+    simp [(S.hmixed s x), (T.hmixed s x)]
+  · intro s
+    simp [(S.hbc0 s), (T.hbc0 s)]
+  · intro s
+    simp [(S.hbcL s), (T.hbcL s)]
+
 /-- **General-data uniqueness for the 1D wave Cauchy problem.**  Two regular
 solutions with the same initial position, velocity and spatial derivative, and
 the same Dirichlet boundary values, agree on the closed interval. -/
@@ -91,59 +164,8 @@ lemma wave_unique_of_same_data
   let wtx : ℝ → ℝ → ℝ := fun s x => utx s x - vtx s x
   let wxx : ℝ → ℝ → ℝ := fun s x => uxx s x - vxx s x
 
-  have hw_t : ∀ s x, HasDerivAt (fun s : ℝ => w s x) (wt s x) s := by
-    intro s x
-    convert (S.hu_t s x).sub (T.hu_t s x) using 1
-  have hwt : ∀ s x, HasDerivAt (fun s : ℝ => wt s x) (wtt s x) s := by
-    intro s x
-    convert (S.hut s x).sub (T.hut s x) using 1
-  have hwx : ∀ s x, HasDerivAt (fun s : ℝ => wx s x) (wxt s x) s := by
-    intro s x
-    convert (S.hux s x).sub (T.hux s x) using 1
-  have hwt_x : ∀ s x, HasDerivAt (fun x : ℝ => wt s x) (wtx s x) x := by
-    intro s x
-    convert (S.hut_x s x).sub (T.hut_x s x) using 1
-  have hwx_x : ∀ s x, HasDerivAt (fun x : ℝ => wx s x) (wxx s x) x := by
-    intro s x
-    convert (S.hux_x s x).sub (T.hux_x s x) using 1
-
-  have hcont_wt : Continuous (Function.uncurry wt) := by
-    convert S.hut_cont.sub T.hut_cont using 1
-    funext p
-    simp [wt, Function.uncurry, Pi.sub_apply]
-  have hcont_wx : Continuous (Function.uncurry wx) := by
-    convert S.hux_cont.sub T.hux_cont using 1
-    funext p
-    simp [wx, Function.uncurry, Pi.sub_apply]
-  have hcont_wtt : Continuous (Function.uncurry wtt) := by
-    convert S.hutt_cont.sub T.hutt_cont using 1
-    funext p
-    simp [wtt, Function.uncurry, Pi.sub_apply]
-  have hcont_wxt : Continuous (Function.uncurry wxt) := by
-    convert S.huxt_cont.sub T.huxt_cont using 1
-    funext p
-    simp [wxt, Function.uncurry, Pi.sub_apply]
-  have hcont_wtx : Continuous (Function.uncurry wtx) := by
-    convert S.hutx_cont.sub T.hutx_cont using 1
-    funext p
-    simp [wtx, Function.uncurry, Pi.sub_apply]
-  have hcont_wxx : Continuous (Function.uncurry wxx) := by
-    convert S.huxx_cont.sub T.huxx_cont using 1
-    funext p
-    simp [wxx, Function.uncurry, Pi.sub_apply]
-
-  have hwavew : ∀ s x, wtt s x = wxx s x := by
-    intro s x
-    simp [wtt, wxx, S.hwave s x, T.hwave s x]
-  have hmixedw : ∀ s x, wxt s x = wtx s x := by
-    intro s x
-    simp [wxt, wtx, S.hmixed s x, T.hmixed s x]
-  have hbc0w : ∀ s, wt s 0 = 0 := by
-    intro s
-    simp [wt, S.hbc0 s, T.hbc0 s]
-  have hbcLw : ∀ s, wt s L = 0 := by
-    intro s
-    simp [wt, S.hbcL s, T.hbcL s]
+  have hW : WaveSolutionOn w wt wx wtt wxt wtx wxx L Mw :=
+    WaveSolutionOn.sub u ut ux utt uxt utx uxx v vt vx vtt vxt vtx vxx L Mu Mv Mw S T hboundw
   have hinitw : ∀ x, w 0 x = 0 := by
     intro x
     simp [w, hinit x]
@@ -161,9 +183,9 @@ lemma wave_unique_of_same_data
     simp [w, hbdL s]
 
   have hzero := wave_zero_of_zero_data_Icc w wt wx wtt wxt wtx wxx L Mw hL
-    hw_t hwt hwx hwt_x hwx_x
-    hcont_wt hcont_wx hcont_wtt hcont_wxt hcont_wtx hcont_wxx
-    hboundw hwavew hmixedw hbc0w hbcLw hinitw hvelw hux0w hbd0w hbdLw
+    hW.hu_t hW.hut hW.hux hW.hut_x hW.hux_x
+    hW.hut_cont hW.hux_cont hW.hutt_cont hW.huxt_cont hW.hutx_cont hW.huxx_cont
+    hW.hbound hW.hwave hW.hmixed hW.hbc0 hW.hbcL hinitw hvelw hux0w hbd0w hbdLw
   intro t x hx
   have h := hzero t x hx
   simpa [w] using sub_eq_zero.mp h
